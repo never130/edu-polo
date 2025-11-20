@@ -71,16 +71,21 @@ class ImportarCursosForm(forms.Form):
 class AsignacionDocenteForm(forms.Form):
     """Formulario para asignar un docente a una comisión."""
     
-    # Obtenemos el Rol 'Docente'
-    try:
-        rol_docente = Rol.objects.get(nombre='Docente')
-        # Creamos un queryset solo con usuarios que tengan el rol de Docente
-        queryset_docentes = Usuario.objects.filter(fk_id_rol=rol_docente)
-    except Rol.DoesNotExist:
-        # Si el rol no existe, el queryset estará vacío para evitar errores
-        queryset_docentes = Usuario.objects.none()
-
     docente = forms.ModelChoiceField(
-        queryset=queryset_docentes,
+        queryset=Usuario.objects.none(),  # Se actualizará en __init__
         label="Seleccionar Docente"
     )
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Obtenemos el Rol 'Docente' solo cuando se inicializa el formulario
+        try:
+            rol_docente = Rol.objects.get(nombre='Docente')
+            # Creamos un queryset solo con usuarios que tengan el rol de Docente
+            queryset_docentes = Usuario.objects.filter(fk_id_rol=rol_docente)
+        except (Rol.DoesNotExist, Exception):
+            # Si el rol no existe o hay algún error (ej: tabla no existe aún), el queryset estará vacío
+            queryset_docentes = Usuario.objects.none()
+        
+        # Actualizamos el queryset del campo
+        self.fields['docente'].queryset = queryset_docentes

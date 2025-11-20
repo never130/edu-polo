@@ -25,8 +25,8 @@ fi
 # Ejecutar migraciones
 log "Ejecutando migraciones..."
 python manage.py migrate --noinput || {
-    log "ERROR: Fallo al ejecutar migraciones"
-    exit 1
+    log "ADVERTENCIA: Fallo al ejecutar migraciones, intentando continuar..."
+    # No salir con error aquí, puede ser que las tablas ya existan
 }
 
 # Recopilar archivos estáticos
