@@ -5,6 +5,8 @@ FROM python:3.11-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV DEBIAN_FRONTEND=noninteractive
+# Suprimir warning de pip como root (común en contenedores Docker)
+ENV PIP_ROOT_USER_ACTION=ignore
 
 # Establecer directorio de trabajo
 WORKDIR /app
