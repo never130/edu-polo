@@ -173,72 +173,111 @@
             transform: translateY(-2px);
         }
         
-        /* Container Principal */
-        .main-container {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 2rem;
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 2rem;
-            align-items: start;
+        /* Hero Section */
+        .hero-section {
             position: relative;
-            z-index: 1;
+            padding: 4rem 2rem;
+            text-align: center;
+            color: white;
+            margin-bottom: 2rem;
         }
-        
-        /* Sección de Cursos */
-        .cursos-section {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
-            padding: 3rem;
-            border-radius: 24px;
-            box-shadow: 
-                0 20px 60px rgba(0, 0, 0, 0.15),
-                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+
+        .hero-content {
             position: relative;
-            z-index: 1;
+            z-index: 2;
+            max-width: 800px;
         }
-        
-        .section-header {
-            margin-bottom: 3rem;
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            line-height: 1.2;
+        }
+
+        .hero-content p {
+            font-size: 1.4rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        /* Steps Section */
+        .steps-section {
+            margin-bottom: 6rem;
             text-align: center;
         }
-        
-        .section-header h2 {
-            background: linear-gradient(135deg, #1e40af 0%, #7c3aed 50%, #db2777 100%);
+
+        .steps-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            font-size: 3rem;
-            font-weight: 800;
-            font-family: 'Poppins', sans-serif;
-            margin-bottom: 0.8rem;
-            letter-spacing: -0.03em;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .step-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .step-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 1rem;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
         }
-        
-        .section-header h2::before {
-            content: '📚';
-            font-size: 3.5rem;
-            display: inline-block;
-            filter: drop-shadow(0 4px 16px rgba(59, 130, 246, 0.3));
-            animation: float 3s ease-in-out infinite;
+
+        .step-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #1e293b;
         }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        .section-header p {
+
+        .step-card p {
             color: #64748b;
-            font-size: 1.25rem;
-            font-weight: 500;
-            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
         }
+
+        /* Polos Section Override */
+        .polos-section {
+            padding: 2rem 0;
+        }
+        
+        .polos-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 3rem;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
         
         .cursos-grid {
             display: grid;
@@ -472,51 +511,7 @@
             align-self: flex-end;
         }
         
-        /* Sidebar Login */
-        .login-sidebar {
-            position: sticky;
-            top: 100px;
-        }
-        
-        .login-card {
-            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
-            padding: 2.5rem;
-            border-radius: 24px;
-            box-shadow: 
-                0 20px 60px rgba(15, 23, 42, 0.2),
-                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
-            border: 1px solid rgba(226, 232, 240, 0.8);
-            backdrop-filter: blur(20px);
-        }
-        
-        .login-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        
-        .login-header img {
-            height: 75px;
-            margin-bottom: 1.2rem;
-            filter: drop-shadow(0 4px 12px rgba(59, 130, 246, 0.2));
-        }
-        
-        .login-header h3 {
-            background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 2rem;
-            font-weight: 800;
-            margin-bottom: 0.6rem;
-            letter-spacing: -0.02em;
-        }
-        
-        .login-header p {
-            color: #64748b;
-            font-size: 1rem;
-            font-weight: 500;
-        }
-        
+        /* Form Groups (Used in Modal) */
         .form-group {
             margin-bottom: 1.5rem;
         }
@@ -552,71 +547,6 @@
         
         .form-group input::placeholder {
             color: #94a3b8;
-        }
-        
-        .divider {
-            text-align: center;
-            margin: 1.5rem 0;
-            position: relative;
-        }
-        
-        .divider::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: #e0e0e0;
-        }
-        
-        .divider span {
-            background: white;
-            padding: 0 1rem;
-            position: relative;
-            color: #999;
-            font-size: 0.9rem;
-        }
-        
-        .user-info-card {
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
-            padding: 2rem;
-            border-radius: 20px;
-            color: white;
-            text-align: center;
-            box-shadow: 
-                0 20px 40px rgba(59, 130, 246, 0.3),
-                0 0 0 1px rgba(255, 255, 255, 0.2) inset;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .user-info-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: rotate 20s linear infinite;
-        }
-        
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        
-        .user-info-card h3 {
-            margin-bottom: 0.8rem;
-            position: relative;
-            z-index: 1;
-            font-weight: 700;
-        }
-        
-        .user-info-card p {
-            position: relative;
-            z-index: 1;
         }
         
         .error-message {
@@ -659,22 +589,210 @@
             font-size: 1.1rem;
         }
         
+        /* Estilos para Mosaicos de Polos */
+        .polos-section {
+            margin-bottom: 3rem;
+        }
+
+        .polos-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            color: #1e293b;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(255,255,255,0.5);
+        }
+
+        .polos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .polo-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            text-decoration: none;
+            color: #1e293b;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+        }
+
+        .polo-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.3);
+            border-color: #60a5fa;
+            background: white;
+        }
+
+        .polo-card .icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            transition: transform 0.4s ease;
+        }
+
+        .polo-card:hover .icon {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        .polo-card h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .polo-card p {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .polo-card.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .polo-card.active h3 {
+            background: none;
+            -webkit-text-fill-color: white;
+            color: white;
+        }
+
+        .polo-card.active p {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-container {
+            background: white;
+            border-radius: 24px;
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
+        }
+
+        .modal-overlay.show .modal-container {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            padding: 2rem;
+            color: white;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-body {
+            padding: 2rem;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .modal-info-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-info-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .modal-info-value {
+            color: #334155;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .modal-footer {
+            padding: 1.5rem 2rem;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
         /* Responsive */
         @media (max-width: 1200px) {
-            .main-container {
-                grid-template-columns: 1fr 350px;
-            }
+            /* Eliminado grid específico */
         }
         
         @media (max-width: 1024px) {
-            .main-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .login-sidebar {
-                position: static;
-                order: -1;
-            }
+            /* Eliminado ajustes de sidebar */
         }
         
         @media (max-width: 768px) {
@@ -752,16 +870,11 @@
                 <h1>Edu-Polo</h1>
             </div>
             <div class="navbar-actions">
+                <a href="#cursos" class="btn btn-secondary">Ver Cursos</a>
                 {% if user_authenticated %}
-                    <span style="color: #667eea; font-weight: 600;">👤 {{ user.first_name }} {{ user.last_name }}</span>
-                    <a href="{% url 'dashboard' %}" class="btn btn-primary">Mi Dashboard</a>
-                    <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-logout">Cerrar Sesión</button>
-                    </form>
+                <a href="{% url 'dashboard' %}" class="btn btn-primary">Ir al Panel 🚀</a>
                 {% else %}
-                    <a href="#login" class="btn btn-primary">Iniciar Sesión</a>
-                    <a href="{% url 'usuario:registro' %}" class="btn btn-primary">Registrarse</a>
+                <a href="#" class="btn btn-primary" onclick="openLoginModal(); return false;">Ingresar</a>
                 {% endif %}
             </div>
         </div>
@@ -769,184 +882,188 @@
 
     <!-- Container Principal -->
     <div class="main-container">
-        <!-- Sección de Cursos -->
-        <div class="cursos-section">
-            <div class="section-header">
-                <h2>Cursos Disponibles</h2>
-                <p>Explora nuestra oferta educativa y comienza tu aprendizaje</p>
+        
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <div class="hero-content">
+                <h1>Descubre tu Futuro Tecnológico</h1>
             </div>
-
-            {% if cursos %}
-                <div class="cursos-grid">
-                    {% for curso in cursos %}
-                    <div class="curso-card">
-                        <div class="curso-header">
-                            <span class="curso-icon">📖</span>
-                            <div class="curso-title">
-                                <h3>{{ curso.nombre }}</h3>
-                                <span class="curso-estado">{{ curso.get_estado_display }}</span>
-                            </div>
-                        </div>
-                        
-                        <p class="curso-descripcion">
-                            {{ curso.descripcion|default:"Curso de formación profesional de alta calidad." }}
-                        </p>
-                        
-                        <div class="curso-info">
-                            {% if curso.edad_minima %}
-                            <div class="info-item">
-                                <span>👤</span>
-                                <span><strong>Edad mínima:</strong> {{ curso.edad_minima }} años</span>
-                            </div>
-                            {% endif %}
-                            {% if curso.requisitos %}
-                            <div class="info-item info-item-requisitos">
-                                <span>📋</span>
-                                <div class="requisitos-content">
-                                    <strong>Requisitos:</strong>
-                                    <p class="requisitos-texto">{{ curso.requisitos }}</p>
-                                </div>
-                            </div>
-                            {% endif %}
-                        </div>
-                        
-                        {% if curso.comisiones_abiertas %}
-                        <div class="comisiones">
-                            <h4>🗓️ Comisiones Disponibles</h4>
-                            {% for comision in curso.comisiones_abiertas %}
-                            <div class="comision-item">
-                                <div class="comision-header">
-                                    <strong style="color: #667eea;">Comisión #{{ comision.id_comision }}</strong>
-                                    {% if comision.cupo_lleno %}
-                                        <span class="comision-cupos cupo-lleno">
-                                            🚫 Cupo Lleno
-                                        </span>
-                                    {% elif comision.cupos_disponibles <= 5 %}
-                                        <span class="comision-cupos cupos-limitados">
-                                            ⚠️ {{ comision.cupos_disponibles }} cupos restantes
-                                        </span>
-                                    {% else %}
-                                        <span class="comision-cupos cupos-disponibles">
-                                            ✅ {{ comision.cupos_disponibles }} cupos disponibles
-                                        </span>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="comision-detalles">
-                                    <p><strong>📍 Lugar:</strong> {{ comision.lugar|default:"Por definir" }}</p>
-                                    <p><strong>📅 Inicio:</strong> {{ comision.fecha_inicio|date:"d/m/Y"|default:"Por definir" }}</p>
-                                    <p><strong>⏰ Horario:</strong> {{ comision.dias_horarios|default:"Por definir" }}</p>
-                                    <p><strong>👥 Cupo máximo:</strong> {{ comision.cupo_maximo }} personas</p>
-                                </div>
-                                
-                                {% if not comision.cupo_lleno %}
-                                    {% if user_authenticated %}
-                                        <a href="{% url 'inscripciones:formulario' comision.id_comision %}" class="btn btn-primary btn-inscribir">
-                                            ✅ Inscribirme Ahora
-                                        </a>
-                                    {% else %}
-                                        <a href="#login" class="btn btn-primary btn-inscribir" onclick="mostrarAlertaLogin()">
-                                            🔒 Iniciar Sesión para Inscribirte
-                                        </a>
-                                    {% endif %}
-                                {% else %}
-                                    <button disabled class="btn btn-inscribir" style="background: #ccc; cursor: not-allowed;">
-                                        🚫 Cupo Completo
-                                    </button>
-                                {% endif %}
-                            </div>
-                            {% endfor %}
-                        </div>
-                        {% else %}
-                        <p style="color: #999; text-align: center; padding: 1rem;">
-                            No hay comisiones abiertas en este momento
-                        </p>
-                        {% endif %}
-                    </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="no-cursos">
-                    <div class="icon">📭</div>
-                    <h3 style="color: #667eea;">No hay cursos disponibles en este momento</h3>
-                    <p style="color: #666;">Vuelve pronto para ver nuestra nueva oferta educativa</p>
-                </div>
-            {% endif %}
         </div>
 
-        <!-- Sidebar Login -->
-        <aside class="login-sidebar" id="login">
-            <div class="login-card">
-                {% if user_authenticated %}
-                    <div class="user-info-card">
-                        <h3>👤 Bienvenido/a</h3>
-                        <p style="font-size: 1.2rem; margin-bottom: 1rem;">{{ user.first_name }} {{ user.last_name }}</p>
-                        <a href="{% url 'dashboard' %}" class="btn btn-secondary" style="width: 100%; margin-top: 1rem;">
-                            Ir a Mi Dashboard
-                        </a>
-                    </div>
-                {% else %}
-                    <div class="login-header">
-                        <img src="{% static 'img/LOGO COLOR.png' %}" alt="Logo Polo">
-                        <h3>Iniciar Sesión</h3>
-                        <p style="color: #666;">Accede para inscribirte</p>
-                    </div>
-
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="error-message">{{ message }}</div>
-                        {% endfor %}
-                    {% endif %}
-
-                    <form method="post" action="{% url 'login' %}">
-                        {% csrf_token %}
-                        
-                        <div class="form-group">
-                            <label>👤 Usuario (DNI)</label>
-                            <input type="text" name="username" required placeholder="Ingresa tu DNI" autofocus>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>🔒 Contraseña</label>
-                            <input type="password" name="password" required placeholder="Ingresa tu contraseña">
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary" style="width: 100%; margin: 0 auto; display: block;">
-                            🚀 Iniciar Sesión
-                        </button>
-                    </form>
+        <!-- Sección de Cursos -->
+        <div class="cursos-section" id="sedes">
+            
+            <!-- Mosaicos de Polos -->
+            <div class="polos-section">
+                <h2 class="polos-title">Nuestras Ciudades Tecnológicas</h2>
+                {% if polos %}
+                <div class="polos-grid">
+                    {% for polo in polos %}
+                    <a href="{% url 'cursos_por_polo' polo.id_polo %}" class="polo-card">
+                        <div class="icon">🏢</div>
+                        <h3>{{ polo.nombre }}</h3>
+                        <p>{{ polo.ciudad }}</p>
+                    </a>
+                    {% endfor %}
+                </div>
                 {% endif %}
             </div>
-        </aside>
+
+        </div>
+
     </div>
     
     <script>
         function mostrarAlertaLogin() {
-            // Scroll suave al formulario de login
-            document.getElementById('login').scrollIntoView({ 
-                behavior: 'smooth',
-                block: 'center'
-            });
+            openLoginModal();
+        }
+    </script>
+
+<!-- Modal Login -->
+<div id="loginModal" class="modal-overlay">
+    <div class="modal-container" style="max-width: 400px;">
+        <div class="modal-header" style="padding: 1.5rem; text-align: center;">
+            <button class="modal-close" onclick="closeLoginModal()">×</button>
+            <img src="{% static 'img/LOGO COLOR.png' %}" alt="Logo Polo" style="height: 60px; margin-bottom: 1rem; filter: brightness(0) invert(1);">
+            <h3 class="modal-title" style="font-size: 1.5rem;">Iniciar Sesión</h3>
+            <p style="opacity: 0.9; font-size: 0.9rem; font-weight: 400;">Accede a tu cuenta Edu-Polo</p>
+        </div>
+        <div class="modal-body">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="error-message" style="margin-bottom: 1rem; padding: 0.8rem; font-size: 0.9rem;">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+                
+                <div class="form-group" style="margin-bottom: 1.2rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: #475569; font-weight: 600;">👤 Usuario (DNI)</label>
+                    <input type="text" name="username" required placeholder="Ingresa tu DNI" style="width: 100%; padding: 0.8rem; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 1rem; outline: none; transition: border-color 0.3s;">
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: #475569; font-weight: 600;">🔒 Contraseña</label>
+                    <input type="password" name="password" required placeholder="Ingresa tu contraseña" style="width: 100%; padding: 0.8rem; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 1rem; outline: none; transition: border-color 0.3s;">
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; display: block; padding: 1rem; font-size: 1.1rem;">
+                    🚀 Iniciar Sesión
+                </button>
+            </form>
             
-            // Resaltar el formulario de login
-            const loginCard = document.querySelector('.login-card');
-            loginCard.style.animation = 'highlight 1s ease';
-            
-            setTimeout(() => {
-                alert('🔒 Debes iniciar sesión para inscribirte a los cursos.\n\nSi no tienes cuenta, puedes registrarte haciendo clic en "Crear Cuenta Nueva".');
-            }, 300);
+            <div style="margin-top: 1.5rem; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
+                <p style="color: #64748b; margin-bottom: 0.5rem;">¿No tienes cuenta?</p>
+                <a href="{% url 'usuario:registro' %}" class="btn btn-secondary" style="width: 100%; display: block; text-align: center; background: white; color: #3b82f6; border: 2px solid #e2e8f0;">Crear Cuenta Nueva</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openLoginModal() {
+        const modal = document.getElementById('loginModal');
+        modal.style.display = 'flex';
+        // Force reflow
+        modal.offsetHeight;
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLoginModal() {
+        const modal = document.getElementById('loginModal');
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }, 300);
+    }
+
+    // Close on outside click
+    document.getElementById('loginModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeLoginModal();
+        }
+    });
+
+    // Mostrar modal si hay errores de login
+    {% if messages %}
+        openLoginModal();
+    {% endif %}
+</script>
+
+<!-- Modal Curso -->
+<div id="cursoModal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <h3 class="modal-title" id="modalTitle">Título del Curso</h3>
+        </div>
+        <div class="modal-body">
+            <div class="modal-info-item">
+                <span class="modal-info-label">Descripción</span>
+                <p class="modal-info-value" id="modalDesc">Descripción del curso...</p>
+            </div>
+            <div class="modal-info-item" id="modalReqContainer">
+                <span class="modal-info-label">Requisitos</span>
+                <p class="modal-info-value" id="modalReq">Requisitos...</p>
+            </div>
+            <div class="modal-info-item" id="modalEdadContainer">
+                <span class="modal-info-label">Edad Mínima</span>
+                <p class="modal-info-value"><span id="modalEdad">0</span> años</p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal()">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal(title, desc, req, edad) {
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalDesc').textContent = desc || 'Sin descripción disponible.';
+        
+        if (req && req !== 'None') {
+            document.getElementById('modalReq').textContent = req;
+            document.getElementById('modalReqContainer').style.display = 'block';
+        } else {
+            document.getElementById('modalReqContainer').style.display = 'none';
         }
         
-        // Animación de highlight
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes highlight {
-                0%, 100% { transform: scale(1); box-shadow: 0 20px 60px rgba(15, 23, 42, 0.2); }
-                50% { transform: scale(1.02); box-shadow: 0 25px 70px rgba(59, 130, 246, 0.4); }
-            }
-        `;
-        document.head.appendChild(style);
-    </script>
+        if (edad && edad !== 'None') {
+            document.getElementById('modalEdad').textContent = edad;
+            document.getElementById('modalEdadContainer').style.display = 'block';
+        } else {
+            document.getElementById('modalEdadContainer').style.display = 'none';
+        }
+        
+        const modal = document.getElementById('cursoModal');
+        modal.style.display = 'flex';
+        // Force reflow
+        modal.offsetHeight;
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('cursoModal');
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }, 300);
+    }
+
+    // Close on outside click
+    document.getElementById('cursoModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeModal();
+        }
+    });
+</script>
+
 </body>
 </html>
 

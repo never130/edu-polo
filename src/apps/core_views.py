@@ -7,23 +7,45 @@ from apps.modulo_2.inscripciones.models import Inscripcion
 def landing(request):
     """
     Vista de la landing page
-    - Muestra cursos disponibles públicamente con login lateral
-    - Si está logueado: Puede inscribirse directamente
+    - Muestra mosaicos de Polos Creativos
     """
-    from apps.modulo_3.cursos.models import Curso
+    from apps.modulo_3.cursos.models import PoloCreativo
     
-    # Obtener cursos disponibles con comisiones abiertas, ordenados por el campo 'orden'
-    cursos = Curso.objects.filter(estado='Abierto').prefetch_related('comision_set__inscripciones').order_by('orden', 'id_curso')
-    
-    # Agregar comisiones abiertas a cada curso
-    for curso in cursos:
-        curso.comisiones_abiertas = curso.comision_set.filter(estado='Abierta')
+    # Obtener todos los polos para los mosaicos
+    polos = PoloCreativo.objects.filter(activo=True)
     
     context = {
-        'cursos': cursos,
+        'polos': polos,
         'user_authenticated': request.user.is_authenticated
     }
     return render(request, 'landing_cursos.html', context)
+
+
+def cursos_por_polo(request, polo_id):
+    """
+    Vista para mostrar los cursos de un Polo específico
+    """
+    from apps.modulo_3.cursos.models import Curso, PoloCreativo
+    from django.shortcuts import get_object_or_404
+    
+    polo_seleccionado = get_object_or_404(PoloCreativo, id_polo=polo_id)
+    
+    # Obtener cursos disponibles con comisiones abiertas en este polo
+    cursos = Curso.objects.filter(estado='Abierto').prefetch_related('comision_set__inscripciones').order_by('orden', 'id_curso')
+    
+    # Filtrar cursos que tengan comisiones en este polo
+    cursos = cursos.filter(comision__fk_id_polo=polo_seleccionado).distinct()
+            
+    # Agregar comisiones abiertas a cada curso para este polo
+    for curso in cursos:
+        curso.comisiones_abiertas = curso.comision_set.filter(estado='Abierta', fk_id_polo=polo_seleccionado)
+    
+    context = {
+        'polo_seleccionado': polo_seleccionado,
+        'cursos': cursos,
+        'user_authenticated': request.user.is_authenticated
+    }
+    return render(request, 'cursos_por_polo.html', context)
 
 
 @login_required

@@ -18,7 +18,7 @@ def custom_login(request):
         
         if not username or not password:
             messages.error(request, 'Por favor, ingresa tu DNI y contraseña.')
-            return redirect('login')
+            return redirect('landing')
         
         # Autenticar usando el backend personalizado
         user = authenticate(request, username=username, password=password)
@@ -32,17 +32,7 @@ def custom_login(request):
             return redirect(next_url)
         else:
             messages.error(request, '❌ DNI o contraseña incorrectos. Por favor, verifica tus datos.')
+            return redirect('landing')
     
-    # Renderizar la landing con cursos
-    from apps.modulo_3.cursos.models import Curso
-    
-    cursos = Curso.objects.filter(estado='Abierto').prefetch_related('comision_set__inscripciones')
-    
-    for curso in cursos:
-        curso.comisiones_abiertas = curso.comision_set.filter(estado='Abierta')
-    
-    context = {
-        'cursos': cursos,
-        'user_authenticated': False
-    }
-    return render(request, 'landing_cursos.html', context)
+    # Si es GET, redirigir a la landing
+    return redirect('landing')

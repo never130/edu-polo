@@ -31,6 +31,7 @@ urlpatterns = [
     path('dashboard/estudiante/', core_views.dashboard_estudiante, name='dashboard_estudiante'),
     path('dashboard/docente/', core_views.dashboard_docente, name='dashboard_docente'),
     path('dashboard/admin/', core_views.dashboard_admin, name='dashboard_admin'),
+    path('polo/<int:polo_id>/cursos/', core_views.cursos_por_polo, name='cursos_por_polo'),
     path('accounts/login/', custom_login, name='login'),
     path('accounts/logout/', auth_views.LogoutView.as_view(next_page='landing'), name='logout'),
     path('accounts/password-reset/', password_reset_request, name='password_reset_request'),
