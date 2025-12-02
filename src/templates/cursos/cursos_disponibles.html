@@ -1,0 +1,348 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Cursos Disponibles - Edu-Polo{% endblock %}
+
+{% block sidebar_menu %}
+<li><a href="{% url 'dashboard_estudiante' %}"><span class="icon">🏠</span> Inicio</a></li>
+<li><a href="{% url 'cursos:ver_disponibles' %}" class="active"><span class="icon">📚</span> Cursos Disponibles</a></li>
+<li><a href="{% url 'cursos:mis_inscripciones' %}"><span class="icon">✅</span> Mis Inscripciones</a></li>
+<li><a href="{% url 'usuario:gestionar_tutores' %}"><span class="icon">👨‍👩‍👧</span> Mis Tutores</a></li>
+<li><a href="#"><span class="icon">📊</span> Mi Progreso</a></li>
+<li><a href="#"><span class="icon">🎓</span> Certificados</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+{% endblock %}
+
+{% block content %}
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+        padding: 2.5rem;
+        border-radius: 20px;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+    }
+    
+    .page-header h2 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        font-weight: 800;
+    }
+    
+    .cursos-grid {
+        display: grid;
+        gap: 2rem;
+    }
+    
+    .curso-card {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+    }
+    
+    .curso-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(59, 130, 246, 0.15);
+        border-color: #3b82f6;
+    }
+    
+    .curso-header {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 3px solid #e2e8f0;
+    }
+    
+    .curso-icon {
+        font-size: 3.5rem;
+    }
+    
+    .curso-title h3 {
+        background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    .curso-estado {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    
+    .curso-descripcion {
+        color: #475569;
+        line-height: 1.8;
+        margin-bottom: 1.5rem;
+        font-size: 1.05rem;
+    }
+    
+    .curso-info {
+        display: grid;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 0.8rem;
+        background: #f8fafc;
+        border-radius: 10px;
+        border-left: 3px solid #3b82f6;
+    }
+    
+    .comisiones-titulo {
+        background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+    
+    .comision-item {
+        background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
+        padding: 1.8rem;
+        border-radius: 16px;
+        margin-bottom: 1.2rem;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+    }
+    
+    .comision-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.1);
+    }
+    
+    .comision-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .badge-cupos {
+        padding: 0.6rem 1.2rem;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .cupos-disponibles {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+    }
+    
+    .cupos-limitados {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+        animation: pulse 2s ease-in-out infinite;
+    }
+    
+    .cupo-lleno {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+    
+    .comision-detalles {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.2rem;
+    }
+    
+    .detalle-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #64748b;
+        font-size: 0.95rem;
+    }
+    
+    .btn-inscribir {
+        width: 100%;
+        padding: 1rem;
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    }
+    
+    .btn-inscribir:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+    
+    .btn-inscribir:disabled,
+    .btn-inscribir.disabled {
+        background: #cbd5e1;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .no-cursos {
+        text-align: center;
+        padding: 4rem;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    @media (max-width: 768px) {
+        .comision-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .comision-detalles {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="page-header">
+    <h2>📚 Cursos Disponibles</h2>
+    <p>Explora nuestra oferta educativa e inscríbete en los cursos que te interesen</p>
+</div>
+
+{% if cursos %}
+    <div class="cursos-grid">
+        {% for curso in cursos %}
+        <div class="curso-card">
+            <div class="curso-header">
+                <span class="curso-icon">📖</span>
+                <div class="curso-title">
+                    <h3>{{ curso.nombre }}</h3>
+                    <span class="curso-estado">{{ curso.get_estado_display }}</span>
+                </div>
+            </div>
+            
+            <p class="curso-descripcion">
+                {{ curso.descripcion|default:"Curso de formación profesional de alta calidad." }}
+            </p>
+            
+            <div class="curso-info">
+                {% if curso.edad_minima %}
+                <div class="info-item">
+                    <span>👤</span>
+                    <span><strong>Edad mínima:</strong> {{ curso.edad_minima }} años</span>
+                </div>
+                {% endif %}
+                {% if curso.requisitos %}
+                <div class="info-item">
+                    <span>📋</span>
+                    <span><strong>Requisitos:</strong> {{ curso.requisitos }}</span>
+                </div>
+                {% endif %}
+            </div>
+            
+            {% if curso.comisiones_abiertas %}
+            <div style="margin-top: 2rem;">
+                <h4 class="comisiones-titulo">🗓️ Comisiones Disponibles</h4>
+                {% for comision in curso.comisiones_abiertas %}
+                <div class="comision-item">
+                    <div class="comision-header">
+                        <strong style="color: #1e40af; font-size: 1.1rem;">
+                            Comisión #{{ comision.id_comision }} - {{ comision.modalidad }}
+                        </strong>
+                        {% if comision.cupo_lleno %}
+                            <span class="badge-cupos cupo-lleno">
+                                🚫 CUPO LLENO
+                            </span>
+                        {% elif comision.cupos_limitados %}
+                            <span class="badge-cupos cupos-limitados">
+                                ⚠️ {{ comision.cupos_disponibles }} cupos restantes
+                            </span>
+                        {% else %}
+                            <span class="badge-cupos cupos-disponibles">
+                                ✅ {{ comision.cupos_disponibles }} cupos disponibles
+                            </span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="comision-detalles">
+                        <div class="detalle-item">
+                            <span>📍</span>
+                            <span><strong>Lugar:</strong> {{ comision.lugar|default:"Por definir" }}</span>
+                        </div>
+                        <div class="detalle-item">
+                            <span>📅</span>
+                            <span><strong>Inicio:</strong> {{ comision.fecha_inicio|date:"d/m/Y"|default:"Por definir" }}</span>
+                        </div>
+                        <div class="detalle-item">
+                            <span>⏰</span>
+                            <span><strong>Horario:</strong> {{ comision.dias_horarios|default:"Por definir" }}</span>
+                        </div>
+                        <div class="detalle-item">
+                            <span>👥</span>
+                            <span><strong>Cupo:</strong> {{ comision.inscritos_count }}/{{ comision.cupo_maximo }}</span>
+                        </div>
+                        {% if comision.fk_id_polo %}
+                        <div class="detalle-item">
+                            <span>🏢</span>
+                            <span><strong>Polo:</strong> {{ comision.fk_id_polo.nombre }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    {% if not comision.cupo_lleno %}
+                        <a href="{% url 'inscripciones:formulario' comision.id_comision %}" class="btn-inscribir">
+                            ✅ Inscribirme a esta Comisión
+                        </a>
+                    {% else %}
+                        <button class="btn-inscribir disabled" disabled>
+                            🚫 Cupo Completo
+                        </button>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p style="color: #999; text-align: center; padding: 2rem; background: #f8fafc; border-radius: 12px;">
+                No hay comisiones abiertas para este curso en este momento
+            </p>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="no-cursos">
+        <span style="font-size: 5rem;">📭</span>
+        <h3 style="color: #3b82f6; margin: 1rem 0; font-size: 1.8rem;">No hay cursos disponibles</h3>
+        <p style="color: #64748b; font-size: 1.1rem;">Vuelve pronto para ver nuestra nueva oferta educativa</p>
+    </div>
+{% endif %}
+
+{% endblock %}
+

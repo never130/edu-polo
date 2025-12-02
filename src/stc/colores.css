@@ -1,0 +1,40 @@
+/* ==============================================
+  PALETA DE COLORES - EduPolo
+  Basado en el manual de marca "Polo Creativo".
+  Usar estas variables en todos los demás archivos CSS.
+  ==============================================
+*/
+
+:root {
+  /* --- Paleta Principal (Naranjas) --- */
+  /* Extraídos del logo */
+  --color-primario-brillante: #EB5F1A; /* (R: 235, G: 96, B: 26) */
+  --color-primario: #EC670D;           /* (R: 236, G: 103, B: 13) */
+  --color-primario-claro: #EF7D2D;     /* (R: 239, G: 125, B: 45) */
+  --color-primario-oscuro: #DB6012;    /* (R: 219, G: 96, B: 18) */
+
+  /* --- Color Acento (Azul) --- */
+  /* Extraído del logo */
+  --color-acento: #33BCEE;             /* (R: 51, G: 188, B: 238) */
+
+  /* --- Colores Secundarios (Decoración) --- */
+  /* Extraídos de la paleta de "elementos decorativos" y "tipografía" */
+  --color-secundario-naranja: #EA5918;
+  --color-secundario-amarillo: #F5A61C;
+
+  /* --- Colores Neutrales (Base) --- */
+  /* Estos no están en el PDF pero son esenciales para la UI */
+  --color-base-blanco: #FFFFFF;
+  --color-base-fondo: #F3F4F6;       /* Gris muy claro para fondos de página */
+  --color-base-bordes: #E5E7EB;     /* Gris claro para bordes y líneas */
+  --color-base-texto-claro: #6B7280;/* Gris para texto secundario */
+  --color-base-texto: #374151;      /* Gris oscuro para texto principal */
+  --color-base-titulos: #111827;     /* Casi negro para títulos */
+
+  /* --- Colores de UI (Feedback) --- */
+  /* Para mensajes de éxito, error, etc. */
+  --color-ui-exito: #10B981;        /* Verde (ej. "Guardado con éxito") */
+  --color-ui-error: #EF4444;        /* Rojo (ej. "Campo obligatorio") */
+  --color-ui-advertencia: #F59E0B;  /* Amarillo/Naranja (ej. "Verifique los datos") */
+  --color-ui-info: #3B82F6;         /* Azul (ej. "Importación en proceso") */
+}

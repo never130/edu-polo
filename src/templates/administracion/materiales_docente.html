@@ -1,0 +1,78 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Materiales - Docente{% endblock %}
+
+{% block user_role %}Docente{% endblock %}
+
+{% block sidebar_menu %}
+<li><a href="{% url 'dashboard_docente' %}"><span class="icon">🏠</span> Inicio</a></li>
+<li><a href="{% url 'administracion:mis_cursos_docente' %}"><span class="icon">📚</span> Mis Cursos</a></li>
+<li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
+<li><a href="{% url 'administracion:materiales_docente' %}" class="active"><span class="icon">📁</span> Materiales</a></li>
+<li><a href="{% url 'administracion:estudiantes_docente' %}"><span class="icon">👥</span> Estudiantes</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+{% endblock %}
+
+{% block content %}
+<div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 2.5rem; border-radius: 20px; color: white; margin-bottom: 2rem;">
+    <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem;">📁 Materiales</h2>
+    <p style="opacity: 0.9;">Selecciona una comisión para gestionar sus materiales</p>
+</div>
+
+{% if messages %}
+    <div style="margin-bottom: 1.5rem;">
+        {% for message in messages %}
+            <div style="padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 0.5rem; font-weight: 600; {% if message.tags == 'error' %}background: #fee2e2; color: #991b1b;{% elif message.tags == 'success' %}background: #d1fae5; color: #065f46;{% elif message.tags == 'warning' %}background: #fef3c7; color: #92400e;{% else %}background: #dbeafe; color: #1e40af;{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% if cursos_dict %}
+    {% for curso_id, curso_data in cursos_dict.items %}
+    <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 2rem;">
+        <div style="padding: 1.5rem 2rem; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+            <h3 style="margin: 0; font-size: 1.5rem;">{{ curso_data.curso.nombre }}</h3>
+            <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">{{ curso_data.curso.descripcion|truncatewords:20 }}</p>
+        </div>
+        
+        <div style="padding: 2rem;">
+            {% for comision_data in curso_data.comisiones %}
+            <div style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid #e2e8f0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <h4 style="color: #1e293b; margin: 0 0 0.5rem 0; font-size: 1.2rem;">
+                            Comisión #{{ comision_data.comision.id_comision }}
+                        </h4>
+                        <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; color: #64748b; font-size: 0.9rem;">
+                            {% if comision_data.comision.fk_id_polo %}
+                            <span>📍 {{ comision_data.comision.fk_id_polo.nombre }}</span>
+                            {% endif %}
+                            {% if comision_data.comision.dias_horarios %}
+                            <span>🕐 {{ comision_data.comision.dias_horarios }}</span>
+                            {% endif %}
+                            <span>📁 {{ comision_data.total_materiales }} material{{ comision_data.total_materiales|pluralize:"es" }}</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
+                        <a href="{% url 'administracion:materiales_comision' comision_data.comision.id_comision %}" style="padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;">
+                            📁 Ver Materiales
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div style="background: white; padding: 3rem; border-radius: 16px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+        <p style="color: #64748b; font-size: 1.1rem; margin: 0;">No tienes cursos asignados en este momento.</p>
+    </div>
+{% endif %}
+{% endblock %}
+
+
+

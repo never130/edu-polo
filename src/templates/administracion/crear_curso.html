@@ -1,0 +1,172 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Crear Curso - Panel Administrador{% endblock %}
+
+{% block user_role %}Administrador{% endblock %}
+
+{% block sidebar_menu %}
+<li><a href="{% url 'dashboard_admin' %}"><span class="icon">🏠</span> Inicio</a></li>
+<li><a href="{% url 'administracion:panel_cursos' %}" class="active"><span class="icon">📚</span> Gestión Cursos</a></li>
+<li><a href="{% url 'administracion:panel_comisiones' %}"><span class="icon">📋</span> Gestión Comisiones</a></li>
+<li><a href="{% url 'administracion:panel_inscripciones' %}"><span class="icon">✅</span> Inscripciones</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:gestion_usuarios' %}"><span class="icon">👥</span> Gestión Usuarios</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:buscador_estudiantes' %}"><span class="icon">🔍</span> Buscar Estudiantes</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:panel_polos' %}"><span class="icon">🏢</span> Polos</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:estadisticas' %}"><span class="icon">📊</span> Estadísticas</a></li>
+<li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
+<li><a href="{% url 'administracion:docentes_cursos' %}"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'admin:index' %}"><span class="icon">⚙️</span> Django Admin</a></li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<style>
+    .form-container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        padding: 3rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+    
+    .form-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 3px solid #e2e8f0;
+    }
+    
+    .form-header h2 {
+        background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 2.2rem;
+        font-weight: 800;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.6rem;
+        color: #334155;
+        font-weight: 600;
+    }
+    
+    .required::after {
+        content: ' *';
+        color: #ef4444;
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .btn-submit {
+        width: 100%;
+        padding: 1.2rem;
+        background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 2rem;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+    }
+</style>
+
+<div class="form-container">
+    <div class="form-header">
+        <h2>➕ Crear Nuevo Curso</h2>
+        <p style="color: #64748b;">Completa la información del curso</p>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label class="required">Nombre del Curso</label>
+            <input type="text" name="nombre" required placeholder="Ej: Programación Web Full Stack">
+        </div>
+        
+        <div class="form-group">
+            <label>Descripción</label>
+            <textarea name="descripcion" rows="4" placeholder="Describe el curso, objetivos y contenidos..."></textarea>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>Edad Mínima</label>
+                <input type="number" name="edad_minima" min="0" max="100" placeholder="Ej: 16">
+            </div>
+            <div class="form-group">
+                <label>Orden de Visualización</label>
+                <input type="number" name="orden" min="0" value="0" placeholder="0 = más arriba">
+                <small style="color: #64748b; font-size: 0.85rem; display: block; margin-top: 0.3rem;">Número que determina el orden en el index principal (menor = más arriba)</small>
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>Contenido Multimedia (URL)</label>
+                <input type="url" name="contenido_multimedia" placeholder="https://youtube.com/...">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Requisitos</label>
+            <textarea name="requisitos" rows="3" placeholder="Especifica los requisitos previos para el curso..."></textarea>
+        </div>
+        
+        <button type="submit" class="btn-submit">
+            ✅ Crear Curso
+        </button>
+        
+        <div style="text-align: center; margin-top: 1rem;">
+            <a href="{% url 'administracion:panel_cursos' %}" style="color: #64748b; text-decoration: none;">← Volver</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+

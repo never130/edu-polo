@@ -1,0 +1,235 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Crear Comisión - Panel Administrador{% endblock %}
+
+{% block user_role %}Administrador{% endblock %}
+
+{% block sidebar_menu %}
+<li><a href="{% url 'dashboard_admin' %}"><span class="icon">🏠</span> Inicio</a></li>
+<li><a href="{% url 'administracion:panel_cursos' %}"><span class="icon">📚</span> Gestión Cursos</a></li>
+<li><a href="{% url 'administracion:panel_comisiones' %}" class="active"><span class="icon">📋</span> Gestión Comisiones</a></li>
+<li><a href="{% url 'administracion:panel_inscripciones' %}"><span class="icon">✅</span> Inscripciones</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:gestion_usuarios' %}"><span class="icon">👥</span> Gestión Usuarios</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:buscador_estudiantes' %}"><span class="icon">🔍</span> Buscar Estudiantes</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:panel_polos' %}"><span class="icon">🏢</span> Polos</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:estadisticas' %}"><span class="icon">📊</span> Estadísticas</a></li>
+<li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
+<li><a href="{% url 'administracion:docentes_cursos' %}"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'admin:index' %}"><span class="icon">⚙️</span> Django Admin</a></li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<style>
+    .form-container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        padding: 3rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+    
+    .form-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 3px solid #e2e8f0;
+    }
+    
+    .form-header h2 {
+        background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 2.2rem;
+        font-weight: 800;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.6rem;
+        color: #334155;
+        font-weight: 600;
+    }
+    
+    .required::after {
+        content: ' *';
+        color: #ef4444;
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .highlight-field {
+        background: linear-gradient(145deg, #fef3c7 0%, #fde68a 100%);
+        padding: 1.5rem;
+        border-radius: 16px;
+        border: 2px solid #f59e0b;
+        margin-bottom: 2rem;
+    }
+    
+    .highlight-field label {
+        color: #92400e;
+        font-size: 1.1rem;
+    }
+    
+    .highlight-field input {
+        font-size: 1.2rem;
+        font-weight: 700;
+        border-color: #f59e0b;
+    }
+    
+    .btn-submit {
+        width: 100%;
+        padding: 1.2rem;
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 2rem;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+    }
+</style>
+
+<div class="form-container">
+    <div class="form-header">
+        <h2>➕ Crear Nueva Comisión</h2>
+        <p style="color: #64748b;">Define los detalles de la comisión, horarios y cupos</p>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label class="required">Curso</label>
+            <select name="curso" required>
+                <option value="">Seleccione un curso...</option>
+                {% for curso in cursos %}
+                <option value="{{ curso.id_curso }}">{{ curso.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>Polo Creativo</label>
+                <select name="polo">
+                    <option value="">Virtual (sin polo específico)</option>
+                    {% for polo in polos %}
+                    <option value="{{ polo.id_polo }}">{{ polo.nombre }} - {{ polo.ciudad }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="required">Modalidad</label>
+                <select name="modalidad" required>
+                    <option value="Presencial">Presencial</option>
+                    <option value="Virtual">Virtual</option>
+                    <option value="Hibrido">Híbrido</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>👨‍🏫 Docente Asignado</label>
+            <select name="docente">
+                <option value="">Sin asignar (se puede asignar después)</option>
+                {% for docente in docentes_disponibles %}
+                <option value="{{ docente.id }}">
+                    {{ docente.nombre_completo }} - DNI: {{ docente.dni }}
+                    {% if docente.especialidad %} ({{ docente.especialidad }}){% endif %}
+                </option>
+                {% endfor %}
+            </select>
+            <small style="color: #64748b; display: block; margin-top: 0.5rem;">
+                💡 Puedes asignar un docente ahora o hacerlo más tarde desde el panel de comisiones.
+            </small>
+        </div>
+        
+        <!-- CAMPO DESTACADO: CUPO MÁXIMO -->
+        <div class="highlight-field">
+            <div class="form-group">
+                <label class="required">👥 CUPO MÁXIMO DE ESTUDIANTES</label>
+                <input type="number" name="cupo_maximo" required min="1" max="100" value="20" placeholder="20">
+                <small style="color: #92400e; font-weight: 500; display: block; margin-top: 0.5rem;">
+                    ⭐ Define la cantidad máxima de estudiantes para esta comisión. El sistema descontará automáticamente con cada inscripción.
+                </small>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Días y Horarios</label>
+            <textarea name="dias_horarios" rows="2" placeholder="Ej: Lunes y Miércoles 18:00 - 21:00"></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>Lugar</label>
+            <input type="text" name="lugar" placeholder="Ej: Aula 201 - Polo Creativo Ushuaia">
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>Fecha de Inicio</label>
+                <input type="date" name="fecha_inicio">
+            </div>
+            <div class="form-group">
+                <label>Fecha de Fin</label>
+                <input type="date" name="fecha_fin">
+            </div>
+        </div>
+        
+        <button type="submit" class="btn-submit">
+            ✅ Crear Comisión
+        </button>
+        
+        <div style="text-align: center; margin-top: 1rem;">
+            <a href="{% url 'administracion:panel_comisiones' %}" style="color: #64748b; text-decoration: none;">← Volver</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+

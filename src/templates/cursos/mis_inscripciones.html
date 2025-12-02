@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mis Inscripciones - Edu-Polo{% endblock %}
+
+{% block content %}
+<style>
+    .page-header {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .page-header h1 {
+        color: #667eea;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .inscripciones-grid {
+        display: grid;
+        gap: 2rem;
+    }
+    
+    .inscripcion-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        transition: transform 0.3s ease;
+    }
+    
+    .inscripcion-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .inscripcion-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 3px solid #667eea;
+    }
+    
+    .inscripcion-titulo {
+        flex: 1;
+    }
+    
+    .inscripcion-titulo h2 {
+        color: #667eea;
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .inscripcion-titulo p {
+        color: #666;
+        font-size: 0.95rem;
+    }
+    
+    .estado-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+    
+    .estado-aprobada {
+        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        color: white;
+    }
+    
+    .estado-pendiente {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        color: white;
+    }
+    
+    .estado-rechazada {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+    }
+    
+    .inscripcion-detalles {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .detalle-item {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .detalle-icon {
+        font-size: 1.5rem;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        border-radius: 10px;
+    }
+    
+    .detalle-info {
+        flex: 1;
+    }
+    
+    .detalle-info .label {
+        font-size: 0.85rem;
+        color: #999;
+        margin-bottom: 0.2rem;
+    }
+    
+    .detalle-info .value {
+        font-weight: 600;
+        color: #333;
+        font-size: 1rem;
+    }
+    
+    .no-inscripciones {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .no-inscripciones .icon {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .no-inscripciones h2 {
+        color: #667eea;
+        margin-bottom: 1rem;
+    }
+    
+    .btn-explorar {
+        display: inline-block;
+        margin-top: 1.5rem;
+        padding: 1rem 2rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-explorar:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+</style>
+
+<div class="page-header">
+    <h1>📚 Mis Inscripciones</h1>
+    <p>Gestiona todos tus cursos en un solo lugar</p>
+</div>
+
+{% if inscripciones %}
+    <div class="inscripciones-grid">
+        {% for inscripcion in inscripciones %}
+        <div class="inscripcion-card">
+            <div class="inscripcion-header">
+                <div class="inscripcion-titulo">
+                    <h2>{{ inscripcion.comision.fk_id_curso.nombre }}</h2>
+                    <p>Comisión #{{ inscripcion.comision.id_comision }}</p>
+                </div>
+                <span class="estado-badge estado-{{ inscripcion.estado }}">
+                    {% if inscripcion.estado == 'aprobada' %}✅{% elif inscripcion.estado == 'pendiente' %}⏳{% else %}❌{% endif %}
+                    {{ inscripcion.get_estado_display }}
+                </span>
+            </div>
+            
+            <div class="inscripcion-detalles">
+                <div class="detalle-item">
+                    <div class="detalle-icon">📅</div>
+                    <div class="detalle-info">
+                        <div class="label">Fecha de Inicio</div>
+                        <div class="value">
+                            {{ inscripcion.comision.fecha_inicio|date:"d/m/Y"|default:"Por definir" }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detalle-item">
+                    <div class="detalle-icon">📍</div>
+                    <div class="detalle-info">
+                        <div class="label">Lugar</div>
+                        <div class="value">{{ inscripcion.comision.lugar|default:"Por definir" }}</div>
+                    </div>
+                </div>
+                
+                <div class="detalle-item">
+                    <div class="detalle-icon">⏰</div>
+                    <div class="detalle-info">
+                        <div class="label">Horario</div>
+                        <div class="value">{{ inscripcion.comision.dias_horarios|default:"Por definir" }}</div>
+                    </div>
+                </div>
+                
+                <div class="detalle-item">
+                    <div class="detalle-icon">📝</div>
+                    <div class="detalle-info">
+                        <div class="label">Inscrito el</div>
+                        <div class="value">{{ inscripcion.fecha_inscripcion|date:"d/m/Y" }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            {% if inscripcion.observaciones %}
+            <div style="margin-top: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 10px;">
+                <strong>📌 Observaciones:</strong>
+                <p style="margin-top: 0.5rem; color: #666;">{{ inscripcion.observaciones }}</p>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="no-inscripciones">
+        <div class="icon">📭</div>
+        <h2>No tienes inscripciones activas</h2>
+        <p style="color: #666; font-size: 1.1rem;">¡Explora nuestros cursos y comienza tu aprendizaje hoy!</p>
+        <a href="/" class="btn-explorar">🔍 Explorar Cursos</a>
+    </div>
+{% endif %}
+
+<div style="text-align: center; margin-top: 3rem;">
+    <a href="/" class="btn-explorar">← Volver a Cursos</a>
+</div>
+
+{% endblock %}
+
+
+

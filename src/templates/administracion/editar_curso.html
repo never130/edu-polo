@@ -1,0 +1,91 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Editar Curso - Panel Administrador{% endblock %}
+
+{% block user_role %}Administrador{% endblock %}
+
+{% block sidebar_menu %}
+<li><a href="{% url 'dashboard_admin' %}"><span class="icon">🏠</span> Inicio</a></li>
+<li><a href="{% url 'administracion:panel_cursos' %}" class="active"><span class="icon">📚</span> Gestión Cursos</a></li>
+<li><a href="{% url 'administracion:panel_comisiones' %}"><span class="icon">📋</span> Gestión Comisiones</a></li>
+<li><a href="{% url 'administracion:panel_inscripciones' %}"><span class="icon">✅</span> Inscripciones</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:gestion_usuarios' %}"><span class="icon">👥</span> Gestión Usuarios</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:buscador_estudiantes' %}"><span class="icon">🔍</span> Buscar Estudiantes</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:panel_polos' %}"><span class="icon">🏢</span> Polos</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:estadisticas' %}"><span class="icon">📊</span> Estadísticas</a></li>
+<li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
+<li><a href="{% url 'administracion:docentes_cursos' %}"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'admin:index' %}"><span class="icon">⚙️</span> Django Admin</a></li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto; background: white; padding: 3rem; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
+    <div style="text-align: center; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 3px solid #e2e8f0;">
+        <h2 style="background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.2rem; font-weight: 800;">
+            ✏️ Editar Curso
+        </h2>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.6rem; color: #334155; font-weight: 600;">Nombre del Curso <span style="color: #ef4444;">*</span></label>
+            <input type="text" name="nombre" value="{{ curso.nombre }}" required style="width: 100%; padding: 1rem; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 1rem;">
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.6rem; color: #334155; font-weight: 600;">Descripción</label>
+            <textarea name="descripcion" rows="4" style="width: 100%; padding: 1rem; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 1rem;">{{ curso.descripcion }}</textarea>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+            <div>
+                <label style="display: block; margin-bottom: 0.6rem; color: #334155; font-weight: 600;">Edad Mínima</label>
+                <input type="number" name="edad_minima" value="{{ curso.edad_minima|default:'' }}" style="width: 100%; padding: 1rem; border: 2px solid #e2e8f0; border-radius: 12px;">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 0.6rem; color: #334155; font-weight: 600;">Estado</label>
+                <select name="estado" style="width: 100%; padding: 1rem; border: 2px solid #e2e8f0; border-radius: 12px;">
+                    <option value="Abierto" {% if curso.estado == 'Abierto' %}selected{% endif %}>Abierto</option>
+                    <option value="Cerrado" {% if curso.estado == 'Cerrado' %}selected{% endif %}>Cerrado</option>
+                </select>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.6rem; color: #334155; font-weight: 600;">Orden de Visualización</label>
+            <input type="number" name="orden" value="{{ curso.orden|default:0 }}" min="0" style="width: 100%; padding: 1rem; border: 2px solid #e2e8f0; border-radius: 12px;">
+            <small style="color: #64748b; font-size: 0.85rem; display: block; margin-top: 0.3rem;">Número que determina el orden en el index principal (menor = más arriba)</small>
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.6rem; color: #334155; font-weight: 600;">Contenido Multimedia (URL)</label>
+            <input type="url" name="contenido_multimedia" value="{{ curso.contenido_multimedia|default:'' }}" style="width: 100%; padding: 1rem; border: 2px solid #e2e8f0; border-radius: 12px;" placeholder="https://youtube.com/...">
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.6rem; color: #334155; font-weight: 600;">Requisitos</label>
+            <textarea name="requisitos" rows="3" style="width: 100%; padding: 1rem; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 1rem;">{{ curso.requisitos }}</textarea>
+        </div>
+        
+        <button type="submit" style="width: 100%; padding: 1.2rem; background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); color: white; border: none; border-radius: 12px; font-size: 1.2rem; font-weight: 700; cursor: pointer; margin-top: 2rem;">
+            ✅ Guardar Cambios
+        </button>
+        
+        <div style="text-align: center; margin-top: 1rem;">
+            <a href="{% url 'administracion:panel_cursos' %}" style="color: #64748b; text-decoration: none;">← Volver</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+

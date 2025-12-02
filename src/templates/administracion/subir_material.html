@@ -1,0 +1,154 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Subir Material - {{ comision.fk_id_curso.nombre }}{% endblock %}
+
+{% block user_role %}Docente{% endblock %}
+
+{% block sidebar_menu %}
+<li><a href="{% url 'dashboard_docente' %}"><span class="icon">🏠</span> Inicio</a></li>
+<li><a href="{% url 'administracion:mis_cursos_docente' %}"><span class="icon">📚</span> Mis Cursos</a></li>
+<li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
+<li><a href="{% url 'administracion:materiales_comision' comision.id_comision %}" class="active"><span class="icon">📁</span> Materiales</a></li>
+<li><a href="{% url 'administracion:estudiantes_comision' comision.id_comision %}"><span class="icon">👥</span> Estudiantes</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+{% endblock %}
+
+{% block content %}
+<div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 2.5rem; border-radius: 20px; color: white; margin-bottom: 2rem;">
+    <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem;">➕ Subir Material</h2>
+    <p style="opacity: 0.9;">{{ comision.fk_id_curso.nombre }} - Comisión #{{ comision.id_comision }}</p>
+</div>
+
+{% if messages %}
+    <div style="margin-bottom: 1.5rem;">
+        {% for message in messages %}
+            <div style="padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 0.5rem; font-weight: 600; {% if message.tags == 'error' %}background: #fee2e2; color: #991b1b;{% elif message.tags == 'success' %}background: #d1fae5; color: #065f46;{% elif message.tags == 'warning' %}background: #fef3c7; color: #92400e;{% else %}background: #dbeafe; color: #1e40af;{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div style="background: white; padding: 2.5rem; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); max-width: 700px; margin: 0 auto;">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div style="margin-bottom: 1.5rem;">
+            <label for="{{ form.nombre_archivo.id_for_label }}" style="display: block; margin-bottom: 0.6rem; color: #334155; font-weight: 600; font-size: 0.95rem;">
+                Nombre del Material <span style="color: #ef4444;">*</span>
+            </label>
+            {{ form.nombre_archivo }}
+            {% if form.nombre_archivo.errors %}
+                <div style="color: #ef4444; font-size: 0.85rem; margin-top: 0.3rem;">{{ form.nombre_archivo.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+            <label for="{{ form.descripcion.id_for_label }}" style="display: block; margin-bottom: 0.6rem; color: #334155; font-weight: 600; font-size: 0.95rem;">
+                Descripción
+            </label>
+            {{ form.descripcion }}
+            {% if form.descripcion.errors %}
+                <div style="color: #ef4444; font-size: 0.85rem; margin-top: 0.3rem;">{{ form.descripcion.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+            <label for="{{ form.tipo.id_for_label }}" style="display: block; margin-bottom: 0.6rem; color: #334155; font-weight: 600; font-size: 0.95rem;">
+                Tipo de Material <span style="color: #ef4444;">*</span>
+            </label>
+            {{ form.tipo }}
+            {% if form.tipo.errors %}
+                <div style="color: #ef4444; font-size: 0.85rem; margin-top: 0.3rem;">{{ form.tipo.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div id="archivo_field" style="margin-bottom: 1.5rem;">
+            <label for="{{ form.archivo.id_for_label }}" style="display: block; margin-bottom: 0.6rem; color: #334155; font-weight: 600; font-size: 0.95rem;">
+                Archivo (PDF, etc.) <span style="color: #ef4444;">*</span>
+            </label>
+            {{ form.archivo }}
+            {% if form.archivo.errors %}
+                <div style="color: #ef4444; font-size: 0.85rem; margin-top: 0.3rem;">{{ form.archivo.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div id="enlace_field" style="margin-bottom: 1.5rem; display: none;">
+            <label for="{{ form.enlace.id_for_label }}" style="display: block; margin-bottom: 0.6rem; color: #334155; font-weight: 600; font-size: 0.95rem;">
+                Enlace/URL <span style="color: #ef4444;">*</span>
+            </label>
+            {{ form.enlace }}
+            {% if form.enlace.errors %}
+                <div style="color: #ef4444; font-size: 0.85rem; margin-top: 0.3rem;">{{ form.enlace.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2.5rem;">
+            <a href="{% url 'administracion:materiales_comision' comision.id_comision %}" style="padding: 1rem 2rem; background: #e2e8f0; color: #334155; text-decoration: none; border-radius: 12px; font-weight: 600; transition: all 0.3s ease;">
+                Cancelar
+            </a>
+            <button type="submit" style="padding: 1rem 2rem; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.3s ease;">
+                ✅ Subir Material
+            </button>
+        </div>
+    </form>
+</div>
+
+<style>
+    #{{ form.nombre_archivo.id_for_label }}, #{{ form.descripcion.id_for_label }}, #{{ form.tipo.id_for_label }}, #{{ form.archivo.id_for_label }}, #{{ form.enlace.id_for_label }} {
+        width: 100%;
+        padding: 1rem 1.2rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f8fafc;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    #{{ form.nombre_archivo.id_for_label }}:focus, #{{ form.descripcion.id_for_label }}:focus, #{{ form.tipo.id_for_label }}:focus, #{{ form.archivo.id_for_label }}:focus, #{{ form.enlace.id_for_label }}:focus {
+        outline: none;
+        border-color: #f093fb;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(240, 147, 251, 0.1);
+    }
+    
+    #{{ form.descripcion.id_for_label }} {
+        resize: vertical;
+        min-height: 100px;
+    }
+</style>
+
+<script>
+    function toggleMaterialFields() {
+        const tipoSelect = document.getElementById('{{ form.tipo.id_for_label }}');
+        const archivoField = document.getElementById('archivo_field');
+        const enlaceField = document.getElementById('enlace_field');
+        const archivoInput = document.getElementById('{{ form.archivo.id_for_label }}');
+        const enlaceInput = document.getElementById('{{ form.enlace.id_for_label }}');
+        
+        if (tipoSelect.value === 'archivo') {
+            archivoField.style.display = 'block';
+            enlaceField.style.display = 'none';
+            enlaceInput.required = false;
+            archivoInput.required = true;
+        } else if (tipoSelect.value === 'enlace') {
+            archivoField.style.display = 'none';
+            enlaceField.style.display = 'block';
+            archivoInput.required = false;
+            enlaceInput.required = true;
+        }
+    }
+    
+    // Ejecutar al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        toggleMaterialFields();
+        const tipoSelect = document.getElementById('{{ form.tipo.id_for_label }}');
+        if (tipoSelect) {
+            tipoSelect.addEventListener('change', toggleMaterialFields);
+        }
+    });
+</script>
+{% endblock %}
+

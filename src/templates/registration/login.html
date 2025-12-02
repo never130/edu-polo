@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Iniciar Sesión - Edu-Polo{% endblock %}
+
+{% block content %}
+<style>
+    .login-container {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    
+    .login-card {
+        background: white;
+        padding: 3rem;
+        border-radius: 20px;
+        box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+    }
+    
+    .login-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .login-header img {
+        height: 80px;
+        margin-bottom: 1rem;
+    }
+    
+    .login-header h2 {
+        color: #667eea;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .login-header p {
+        color: #666;
+        font-size: 1.1rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #333;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+    
+    .form-group input {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+    
+    .form-group input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .btn-login {
+        width: 100%;
+        padding: 1rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-login:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+    
+    .error-message {
+        background-color: #ffe6e6;
+        color: #c0392b;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid #e74c3c;
+        animation: shake 0.5s ease;
+    }
+    
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-10px); }
+        75% { transform: translateX(10px); }
+    }
+    
+    .registro-link {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid #f0f0f0;
+    }
+    
+    .registro-link a {
+        color: #667eea;
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 1.05rem;
+    }
+    
+    .registro-link a:hover {
+        text-decoration: underline;
+    }
+    
+    .tipos-usuario {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        border-radius: 10px;
+    }
+    
+    .tipo-item {
+        text-align: center;
+    }
+    
+    .tipo-item .icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .tipo-item .label {
+        font-size: 0.9rem;
+        color: #666;
+        font-weight: 600;
+    }
+</style>
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <img src="{% static 'img/LOGO COLOR.png' %}" alt="Logo Polo">
+            <h2>Iniciar Sesión</h2>
+            <p>Accede a tu cuenta</p>
+        </div>
+
+        {% if form.errors %}
+            <div class="error-message">
+                <strong>❌ Error:</strong> Usuario o contraseña incorrectos. Por favor, intenta de nuevo.
+            </div>
+        {% endif %}
+
+        <form method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">
+                    👤 Usuario (DNI):
+                </label>
+                <input 
+                    type="text" 
+                    name="{{ form.username.name }}" 
+                    id="{{ form.username.id_for_label }}"
+                    required
+                    autofocus
+                    placeholder="Ingresa tu DNI"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password.id_for_label }}">
+                    🔒 Contraseña:
+                </label>
+                <input 
+                    type="password" 
+                    name="{{ form.password.name }}" 
+                    id="{{ form.password.id_for_label }}"
+                    required
+                    placeholder="Ingresa tu contraseña"
+                >
+            </div>
+
+            <button type="submit" class="btn-login">
+                🚀 Iniciar Sesión
+            </button>
+
+            <input type="hidden" name="next" value="{{ next }}">
+        </form>
+
+        <div class="tipos-usuario">
+            <div class="tipo-item">
+                <div class="icon">🎓</div>
+                <div class="label">Estudiante</div>
+            </div>
+            <div class="tipo-item">
+                <div class="icon">👨‍🏫</div>
+                <div class="label">Docente</div>
+            </div>
+            <div class="tipo-item">
+                <div class="icon">⚙️</div>
+                <div class="label">Admin</div>
+            </div>
+        </div>
+
+        <div class="registro-link">
+            <p>¿No tienes una cuenta? <a href="{% url 'usuario:registro' %}">Regístrate aquí</a></p>
+            <p style="margin-top: 1rem;"><a href="{% url 'password_reset_request' %}" style="color: #667eea; font-weight: 600; text-decoration: none; font-size: 0.95rem;">¿Olvidaste tu contraseña?</a></p>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 2rem;">
+        <a href="/" style="color: white; text-decoration: none; font-size: 1rem; opacity: 0.9;">
+            ← Volver al inicio
+        </a>
+    </div>
+</div>
+{% endblock %}

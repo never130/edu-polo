@@ -1,0 +1,240 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Panel de Asistencias{% if es_docente %} - Docente{% else %} - Admin{% endif %}{% endblock %}
+
+{% block user_role %}{% if es_docente %}Docente{% else %}{{ tipo_usuario|default:"Administrador" }}{% endif %}{% endblock %}
+
+{% block sidebar_menu %}
+{% if es_docente %}
+    {# Menú para Docentes #}
+    <li><a href="{% url 'dashboard_docente' %}"><span class="icon">🏠</span> Inicio</a></li>
+    <li><a href="{% url 'administracion:mis_cursos_docente' %}"><span class="icon">📚</span> Mis Cursos</a></li>
+    <li><a href="{% url 'administracion:panel_asistencia' %}" class="active"><span class="icon">📝</span> Asistencias</a></li>
+    <li><a href="{% url 'administracion:materiales_docente' %}"><span class="icon">📁</span> Materiales</a></li>
+    <li><a href="{% url 'administracion:estudiantes_docente' %}"><span class="icon">👥</span> Estudiantes</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+{% else %}
+    {# Menú para Administradores y Mesa de Entrada #}
+    <li><a href="{% url 'dashboard_admin' %}"><span class="icon">🏠</span> Inicio</a></li>
+    <li><a href="{% url 'administracion:panel_cursos' %}"><span class="icon">📚</span> Gestión Cursos</a></li>
+    <li><a href="{% url 'administracion:panel_comisiones' %}"><span class="icon">📋</span> Gestión Comisiones</a></li>
+    <li><a href="{% url 'administracion:panel_inscripciones' %}"><span class="icon">✅</span> Inscripciones</a></li>
+    {% if es_admin_completo %}
+    <li><a href="{% url 'administracion:gestion_usuarios' %}"><span class="icon">👥</span> Gestión Usuarios</a></li>
+    {% endif %}
+    <li><a href="{% url 'administracion:buscador_estudiantes' %}"><span class="icon">🔍</span> Buscar Estudiantes</a></li>
+    {% if es_admin_completo %}
+    <li><a href="{% url 'administracion:panel_polos' %}"><span class="icon">🏢</span> Polos</a></li>
+    {% endif %}
+    <li><a href="{% url 'administracion:estadisticas' %}"><span class="icon">📊</span> Estadísticas</a></li>
+    <li><a href="{% url 'administracion:panel_asistencia' %}" class="active"><span class="icon">📝</span> Asistencias</a></li>
+    <li><a href="{% url 'administracion:docentes_cursos' %}"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+    {% if es_admin_completo %}
+    <li><a href="{% url 'admin:index' %}"><span class="icon">⚙️</span> Django Admin</a></li>
+    {% endif %}
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); padding: 2.5rem; border-radius: 20px; color: white; margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem;">📝 Panel de Asistencias</h2>
+            <p style="opacity: 0.9;">Gestiona las asistencias de los estudiantes por curso y comisión</p>
+        </div>
+        {% if comision and not es_docente %}
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <a href="{% url 'administracion:exportar_asistencias_comision' %}?comision_id={{ comision.id_comision }}" style="padding: 0.8rem 1.5rem; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; border: 2px solid rgba(255,255,255,0.3); transition: all 0.3s;">
+                📥 Exportar Comisión
+            </a>
+            <a href="{% url 'administracion:exportar_asistencias_curso' %}?curso_id={{ comision.fk_id_curso.id_curso }}" style="padding: 0.8rem 1.5rem; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; border: 2px solid rgba(255,255,255,0.3); transition: all 0.3s;">
+                📥 Exportar Curso
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if messages %}
+    <div style="margin-bottom: 1.5rem;">
+        {% for message in messages %}
+            <div style="padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 0.5rem; font-weight: 600; {% if message.tags == 'error' %}background: #fee2e2; color: #991b1b;{% elif message.tags == 'success' %}background: #d1fae5; color: #065f46;{% elif message.tags == 'warning' %}background: #fef3c7; color: #92400e;{% else %}background: #dbeafe; color: #1e40af;{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<!-- Selección de Comisión -->
+<div style="background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 2rem;">
+    <h3 style="color: #334155; margin-bottom: 1.5rem; font-size: 1.5rem;">Seleccionar Comisión</h3>
+    <form method="get" style="display: flex; gap: 1rem; align-items: flex-end;">
+        <div style="flex: 1;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #334155;">Comisión</label>
+            <select name="comision_id" required style="width: 100%; padding: 0.9rem; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 1rem;">
+                <option value="">Selecciona una comisión...</option>
+                {% for com in comisiones %}
+                <option value="{{ com.id_comision }}" {% if comision and com.id_comision == comision.id_comision %}selected{% endif %}>
+                    {{ com.fk_id_curso.nombre }} - Comisión #{{ com.id_comision }}
+                    {% if com.fk_id_polo %} - {{ com.fk_id_polo.nombre }}{% endif %}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" style="padding: 0.9rem 2rem; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;">
+            Ver Asistencias
+        </button>
+    </form>
+</div>
+
+<!-- Mostrar todas las comisiones con asistencias -->
+{% if todas_comisiones_con_datos %}
+{% for item in todas_comisiones_con_datos %}
+<div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 2rem;">
+    <div style="padding: 1.5rem 2rem; background: #f8fafc; border-bottom: 2px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h3 style="color: #334155; margin: 0; font-size: 1.3rem;">
+                {{ item.comision.fk_id_curso.nombre }} - Comisión #{{ item.comision.id_comision }}
+                {% if item.comision.fk_id_polo %} - {{ item.comision.fk_id_polo.nombre }}{% endif %}
+            </h3>
+            <p style="color: #64748b; margin: 0.5rem 0 0 0;">Total de estudiantes: {{ item.total_estudiantes }}</p>
+        </div>
+        <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
+            <a href="{% url 'administracion:panel_asistencia' %}?comision_id={{ item.comision.id_comision }}" style="padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;">
+                🔍 Ver Detalle
+            </a>
+            {% if not es_docente %}
+            <a href="{% url 'administracion:exportar_asistencias_comision' %}?comision_id={{ item.comision.id_comision }}" style="padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;">
+                📥 Exportar
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div style="padding: 2rem;">
+        {% for inscripcion in item.inscripciones %}
+        <div style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid #e2e8f0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <div>
+                    <h4 style="color: #1e293b; margin: 0 0 0.3rem 0; font-size: 1.1rem;">
+                        {{ inscripcion.estudiante.usuario.persona.nombre_completo }}
+                    </h4>
+                    <p style="color: #64748b; margin: 0; font-size: 0.9rem;">DNI: {{ inscripcion.estudiante.usuario.persona.dni }}</p>
+                </div>
+                <a href="{% url 'administracion:crear_editar_asistencia' inscripcion.id %}" style="display: inline-block; padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;">
+                    ➕ Registrar Asistencia
+                </a>
+            </div>
+            
+            <!-- Lista de asistencias del estudiante -->
+            <div>
+                {% with asistencias_estudiante=inscripcion.asistencias.all|dictsortreversed:"fecha_clase" %}
+                {% if asistencias_estudiante %}
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.8rem;">
+                    {% for asistencia in asistencias_estudiante %}
+                    <div style="background: white; padding: 1rem; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 600; color: #334155; margin-bottom: 0.3rem;">{{ asistencia.fecha_clase|date:"d/m/Y" }}</div>
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                {% if asistencia.presente %}
+                                    <span style="color: #10b981; font-weight: 600;">✅ Presente</span>
+                                {% else %}
+                                    <span style="color: #ef4444; font-weight: 600;">❌ Ausente</span>
+                                {% endif %}
+                            </div>
+                            {% if asistencia.observaciones %}
+                            <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.3rem;">{{ asistencia.observaciones|truncatewords:5 }}</div>
+                            {% endif %}
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; flex-direction: column;">
+                            <a href="{% url 'administracion:crear_editar_asistencia' inscripcion.id %}?fecha_clase={{ asistencia.fecha_clase|date:'Y-m-d' }}" style="padding: 0.4rem 0.8rem; background: #6366f1; color: white; text-decoration: none; border-radius: 6px; font-size: 0.8rem; text-align: center;">✏️ Editar</a>
+                            <a href="{% url 'administracion:eliminar_asistencia' asistencia.id_asistencia %}" style="padding: 0.4rem 0.8rem; background: #ef4444; color: white; text-decoration: none; border-radius: 6px; font-size: 0.8rem; text-align: center;" onclick="return confirm('¿Estás seguro de eliminar esta asistencia?')">🗑️ Eliminar</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p style="color: #94a3b8; text-align: center; padding: 1rem;">No hay asistencias registradas para este estudiante.</p>
+                {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+{% if comision and inscripciones %}
+<!-- Vista detallada de una comisión específica -->
+<div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-top: 2rem;">
+    <div style="padding: 1.5rem 2rem; background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+        <h3 style="color: #334155; margin: 0; font-size: 1.3rem;">
+            {{ comision.fk_id_curso.nombre }} - Comisión #{{ comision.id_comision }}
+        </h3>
+        <p style="color: #64748b; margin: 0.5rem 0 0 0;">Total de estudiantes: {{ inscripciones.count }}</p>
+    </div>
+    
+    <div style="padding: 2rem;">
+        {% for inscripcion in inscripciones %}
+        <div style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid #e2e8f0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <div>
+                    <h4 style="color: #1e293b; margin: 0 0 0.3rem 0; font-size: 1.1rem;">
+                        {{ inscripcion.estudiante.usuario.persona.nombre_completo }}
+                    </h4>
+                    <p style="color: #64748b; margin: 0; font-size: 0.9rem;">DNI: {{ inscripcion.estudiante.usuario.persona.dni }}</p>
+                </div>
+                <a href="{% url 'administracion:crear_editar_asistencia' inscripcion.id %}" style="display: inline-block; padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;">
+                    ➕ Registrar Asistencia
+                </a>
+            </div>
+            
+            <!-- Lista de asistencias del estudiante -->
+            <div>
+                {% with asistencias_estudiante=inscripcion.asistencias.all|dictsortreversed:"fecha_clase" %}
+                {% if asistencias_estudiante %}
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.8rem;">
+                    {% for asistencia in asistencias_estudiante %}
+                    <div style="background: white; padding: 1rem; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 600; color: #334155; margin-bottom: 0.3rem;">{{ asistencia.fecha_clase|date:"d/m/Y" }}</div>
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                {% if asistencia.presente %}
+                                    <span style="color: #10b981; font-weight: 600;">✅ Presente</span>
+                                {% else %}
+                                    <span style="color: #ef4444; font-weight: 600;">❌ Ausente</span>
+                                {% endif %}
+                            </div>
+                            {% if asistencia.observaciones %}
+                            <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.3rem;">{{ asistencia.observaciones|truncatewords:5 }}</div>
+                            {% endif %}
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; flex-direction: column;">
+                            <a href="{% url 'administracion:crear_editar_asistencia' inscripcion.id %}?fecha_clase={{ asistencia.fecha_clase|date:'Y-m-d' }}" style="padding: 0.4rem 0.8rem; background: #6366f1; color: white; text-decoration: none; border-radius: 6px; font-size: 0.8rem; text-align: center;">✏️ Editar</a>
+                            <a href="{% url 'administracion:eliminar_asistencia' asistencia.id_asistencia %}" style="padding: 0.4rem 0.8rem; background: #ef4444; color: white; text-decoration: none; border-radius: 6px; font-size: 0.8rem; text-align: center;" onclick="return confirm('¿Estás seguro de eliminar esta asistencia?')">🗑️ Eliminar</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p style="color: #94a3b8; text-align: center; padding: 1rem;">No hay asistencias registradas para este estudiante.</p>
+                {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<style>
+    @media (max-width: 768px) {
+        .table-container {
+            overflow-x: scroll;
+        }
+    }
+</style>
+{% endblock %}

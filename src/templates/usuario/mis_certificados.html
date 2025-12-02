@@ -1,0 +1,153 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Mis Certificados - Edu-Polo{% endblock %}
+
+{% block sidebar_menu %}
+<li><a href="{% url 'dashboard_estudiante' %}"><span class="icon">🏠</span> Inicio</a></li>
+<li><a href="{% url 'cursos:ver_disponibles' %}"><span class="icon">📚</span> Cursos Disponibles</a></li>
+<li><a href="{% url 'cursos:mis_inscripciones' %}"><span class="icon">✅</span> Mis Inscripciones</a></li>
+<li><a href="{% url 'usuario:gestionar_tutores' %}"><span class="icon">👨‍👩‍👧</span> Mis Tutores</a></li>
+<li><a href="{% url 'usuario:mi_progreso' %}"><span class="icon">📊</span> Mi Progreso</a></li>
+<li><a href="{% url 'usuario:mis_certificados' %}" class="active"><span class="icon">🎓</span> Certificados</a></li>
+<li><a href="{% url 'usuario:materiales_estudiante' %}"><span class="icon">📁</span> Materiales</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+{% endblock %}
+
+{% block content %}
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        padding: 2.5rem;
+        border-radius: 20px;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
+    }
+    
+    .certificados-grid {
+        display: grid;
+        gap: 2rem;
+    }
+    
+    .certificado-card {
+        background: white;
+        padding: 0;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        overflow: hidden;
+        border: 3px solid #f59e0b;
+    }
+    
+    .certificado-header {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        padding: 2rem;
+        color: white;
+        text-align: center;
+    }
+    
+    .certificado-header h3 {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .certificado-body {
+        padding: 2.5rem;
+    }
+    
+    .certificado-info {
+        display: grid;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 1rem;
+        background: #f8fafc;
+        border-radius: 10px;
+    }
+    
+    .btn-descargar {
+        width: 100%;
+        padding: 1.2rem;
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+    }
+    
+    .btn-descargar:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+    }
+</style>
+
+<div class="page-header">
+    <h2>🎓 Mis Certificados</h2>
+    <p>Certificados obtenidos por cumplir con el 60-100% de asistencia</p>
+</div>
+
+{% if registros %}
+    <div class="certificados-grid">
+        {% for registro in registros %}
+        <div class="certificado-card">
+            <div class="certificado-header">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">🏆</div>
+                <h3>Certificado de Finalización</h3>
+                <p style="opacity: 0.95;">{{ registro.inscripcion.comision.fk_id_curso.nombre }}</p>
+            </div>
+            
+            <div class="certificado-body">
+                <div class="certificado-info">
+                    <div class="info-row">
+                        <span style="font-weight: 600; color: #334155;">Estudiante:</span>
+                        <span style="color: #64748b;">{{ estudiante.usuario.persona.nombre_completo }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span style="font-weight: 600; color: #334155;">DNI:</span>
+                        <span style="color: #64748b;">{{ estudiante.usuario.persona.dni }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span style="font-weight: 600; color: #334155;">Total de Clases:</span>
+                        <span style="color: #64748b;">{{ registro.total_clases }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span style="font-weight: 600; color: #334155;">Clases Asistidas:</span>
+                        <span style="color: #64748b;">{{ registro.clases_asistidas }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span style="font-weight: 600; color: #334155;">Porcentaje de Asistencia:</span>
+                        <span style="color: #10b981; font-weight: 700; font-size: 1.2rem;">{{ registro.porcentaje_asistencia }}%</span>
+                    </div>
+                </div>
+                
+                <a href="{% url 'usuario:descargar_certificado' registro.inscripcion.id %}" class="btn-descargar">
+                    📥 Descargar Certificado PDF
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div style="background: white; padding: 4rem; border-radius: 20px; text-align: center;">
+        <span style="font-size: 5rem;">🎓</span>
+        <h3 style="color: #f59e0b; margin: 1rem 0;">Aún no tienes certificados disponibles</h3>
+        <p style="color: #64748b; font-size: 1.1rem; margin-bottom: 1.5rem;">
+            Completa tus cursos con al menos 60% de asistencia para obtener tu certificado
+        </p>
+        <a href="{% url 'usuario:mi_progreso' %}" style="display: inline-block; padding: 1rem 2rem; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; text-decoration: none; border-radius: 12px; font-weight: 700;">
+            Ver Mi Progreso
+        </a>
+    </div>
+{% endif %}
+
+{% endblock %}
+
+

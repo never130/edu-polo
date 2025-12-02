@@ -1,0 +1,93 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Eliminar Asistencia{% if es_docente %} - Docente{% else %} - Admin{% endif %}{% endblock %}
+
+{% block user_role %}{% if es_docente %}Docente{% else %}{{ tipo_usuario|default:"Administrador" }}{% endif %}{% endblock %}
+
+{% block sidebar_menu %}
+{% if es_docente %}
+    {# Menú para Docentes #}
+    <li><a href="{% url 'dashboard_docente' %}"><span class="icon">🏠</span> Inicio</a></li>
+    <li><a href="{% url 'administracion:mis_cursos_docente' %}"><span class="icon">📚</span> Mis Cursos</a></li>
+    <li><a href="{% url 'administracion:panel_asistencia' %}" class="active"><span class="icon">📝</span> Asistencias</a></li>
+    <li><a href="{% url 'administracion:materiales_docente' %}"><span class="icon">📁</span> Materiales</a></li>
+    <li><a href="{% url 'administracion:estudiantes_docente' %}"><span class="icon">👥</span> Estudiantes</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+{% else %}
+    {# Menú para Administradores y Mesa de Entrada #}
+    <li><a href="{% url 'dashboard_admin' %}"><span class="icon">🏠</span> Inicio</a></li>
+    <li><a href="{% url 'administracion:panel_cursos' %}"><span class="icon">📚</span> Gestión Cursos</a></li>
+    <li><a href="{% url 'administracion:panel_comisiones' %}"><span class="icon">📋</span> Gestión Comisiones</a></li>
+    <li><a href="{% url 'administracion:panel_inscripciones' %}"><span class="icon">✅</span> Inscripciones</a></li>
+    {% if es_admin_completo %}
+    <li><a href="{% url 'administracion:gestion_usuarios' %}"><span class="icon">👥</span> Gestión Usuarios</a></li>
+    {% endif %}
+    <li><a href="{% url 'administracion:buscador_estudiantes' %}"><span class="icon">🔍</span> Buscar Estudiantes</a></li>
+    {% if es_admin_completo %}
+    <li><a href="{% url 'administracion:panel_polos' %}"><span class="icon">🏢</span> Polos</a></li>
+    {% endif %}
+    <li><a href="{% url 'administracion:estadisticas' %}"><span class="icon">📊</span> Estadísticas</a></li>
+    <li><a href="{% url 'administracion:panel_asistencia' %}" class="active"><span class="icon">📝</span> Asistencias</a></li>
+    <li><a href="{% url 'administracion:docentes_cursos' %}"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+    {% if es_admin_completo %}
+    <li><a href="{% url 'admin:index' %}"><span class="icon">⚙️</span> Django Admin</a></li>
+    {% endif %}
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); padding: 2.5rem; border-radius: 20px; color: white; margin-bottom: 2rem;">
+    <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem;">🗑️ Eliminar Asistencia</h2>
+    <p style="opacity: 0.9;">Confirma la eliminación de esta asistencia</p>
+</div>
+
+{% if messages %}
+    <div style="margin-bottom: 1.5rem;">
+        {% for message in messages %}
+            <div style="padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 0.5rem; font-weight: 600; {% if message.tags == 'error' %}background: #fee2e2; color: #991b1b;{% elif message.tags == 'success' %}background: #d1fae5; color: #065f46;{% elif message.tags == 'warning' %}background: #fef3c7; color: #92400e;{% else %}background: #dbeafe; color: #1e40af;{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div style="background: white; padding: 2.5rem; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); max-width: 600px; margin: 0 auto;">
+    <div style="background: #fef2f2; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #ef4444; margin-bottom: 2rem;">
+        <h3 style="color: #991b1b; margin: 0 0 1rem 0;">⚠️ ¿Estás seguro?</h3>
+        <p style="color: #7f1d1d; margin: 0;">Esta acción no se puede deshacer. La asistencia será eliminada permanentemente.</p>
+    </div>
+    
+    <div style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem;">
+        <h4 style="color: #334155; margin: 0 0 1rem 0;">Información de la Asistencia</h4>
+        <p style="color: #64748b; margin: 0.5rem 0;"><strong>Estudiante:</strong> {{ asistencia.inscripcion.estudiante.usuario.persona.nombre_completo }}</p>
+        <p style="color: #64748b; margin: 0.5rem 0;"><strong>Curso:</strong> {{ asistencia.inscripcion.comision.fk_id_curso.nombre }}</p>
+        <p style="color: #64748b; margin: 0.5rem 0;"><strong>Fecha:</strong> {{ asistencia.fecha_clase|date:"d/m/Y" }}</p>
+        <p style="color: #64748b; margin: 0.5rem 0;">
+            <strong>Estado:</strong> 
+            {% if asistencia.presente %}
+                <span style="color: #10b981; font-weight: 600;">✅ Presente</span>
+            {% else %}
+                <span style="color: #ef4444; font-weight: 600;">❌ Ausente</span>
+            {% endif %}
+        </p>
+        {% if asistencia.observaciones %}
+        <p style="color: #64748b; margin: 0.5rem 0;"><strong>Observaciones:</strong> {{ asistencia.observaciones }}</p>
+        {% endif %}
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+            <a href="{% url 'administracion:panel_asistencia' %}?comision_id={{ asistencia.inscripcion.comision.id_comision }}" style="padding: 0.9rem 2rem; background: #e2e8f0; color: #334155; text-decoration: none; border-radius: 12px; font-weight: 600;">
+                Cancelar
+            </a>
+            <button type="submit" style="padding: 0.9rem 2rem; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;">
+                🗑️ Eliminar Asistencia
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

@@ -1,0 +1,202 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Gestión de Comisiones - Panel Administrador{% endblock %}
+
+{% block user_role %}Administrador{% endblock %}
+
+{% block sidebar_menu %}
+<li><a href="{% url 'dashboard_admin' %}"><span class="icon">🏠</span> Inicio</a></li>
+<li><a href="{% url 'administracion:panel_cursos' %}"><span class="icon">📚</span> Gestión Cursos</a></li>
+<li><a href="{% url 'administracion:panel_comisiones' %}" class="active"><span class="icon">📋</span> Gestión Comisiones</a></li>
+<li><a href="{% url 'administracion:panel_inscripciones' %}"><span class="icon">✅</span> Inscripciones</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:gestion_usuarios' %}"><span class="icon">👥</span> Gestión Usuarios</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:buscador_estudiantes' %}"><span class="icon">🔍</span> Buscar Estudiantes</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:panel_polos' %}"><span class="icon">🏢</span> Polos</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:estadisticas' %}"><span class="icon">📊</span> Estadísticas</a></li>
+<li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
+<li><a href="{% url 'administracion:docentes_cursos' %}"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'admin:index' %}"><span class="icon">⚙️</span> Django Admin</a></li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        padding: 2.5rem;
+        border-radius: 20px;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .btn-crear {
+        background: white;
+        color: #7c3aed;
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 700;
+    }
+    
+    .comisiones-grid {
+        display: grid;
+        gap: 1.5rem;
+    }
+    
+    .comision-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        border: 1px solid #e2e8f0;
+    }
+    
+    .comision-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .cupos-badge {
+        padding: 0.6rem 1.2rem;
+        border-radius: 20px;
+        font-weight: 700;
+    }
+    
+    .cupos-ok {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+    }
+    
+    .cupos-alerta {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+    }
+    
+    .cupos-lleno {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+    }
+</style>
+
+<div class="page-header">
+    <div>
+        <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem;">📋 Gestión de Comisiones</h2>
+        <p style="opacity: 0.95;">Administra comisiones y controla cupos</p>
+    </div>
+    <a href="{% url 'administracion:crear_comision' %}" class="btn-crear">
+        ➕ Crear Nueva Comisión
+    </a>
+</div>
+
+{% if comisiones_con_docentes %}
+<div class="comisiones-grid">
+    {% for item in comisiones_con_docentes %}
+    {% with comision=item.comision docentes=item.docentes %}
+    <div class="comision-card">
+        <div class="comision-header">
+            <div>
+                <h3 style="color: #7c3aed; font-size: 1.5rem; margin-bottom: 0.5rem;">
+                    Comisión #{{ comision.id_comision }}
+                </h3>
+                <p style="color: #1e40af; font-weight: 600;">{{ comision.fk_id_curso.nombre }}</p>
+            </div>
+            {% if comision.cupo_lleno %}
+                <span class="cupos-badge cupos-lleno">🚫 LLENO ({{ comision.inscritos_count }}/{{ comision.cupo_maximo }})</span>
+            {% elif comision.cupos_limitados %}
+                <span class="cupos-badge cupos-alerta">⚠️ {{ comision.cupos_disponibles }}/{{ comision.cupo_maximo }}</span>
+            {% else %}
+                <span class="cupos-badge cupos-ok">✅ {{ comision.cupos_disponibles }}/{{ comision.cupo_maximo }}</span>
+            {% endif %}
+        </div>
+        
+        <div style="display: grid; gap: 0.8rem; margin-bottom: 1rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span>📍</span>
+                <span><strong>Lugar:</strong> {{ comision.lugar|default:"Por definir" }}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span>⏰</span>
+                <span><strong>Horario:</strong> {{ comision.dias_horarios|default:"Por definir" }}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span>🎯</span>
+                <span><strong>Modalidad:</strong> {{ comision.modalidad }}</span>
+            </div>
+            {% if comision.fk_id_polo %}
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span>🏢</span>
+                <span><strong>Polo:</strong> {{ comision.fk_id_polo.nombre }}</span>
+            </div>
+            {% endif %}
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span>👨‍🏫</span>
+                <span><strong>Docente:</strong> 
+                    {% if docentes %}
+                        {% for comision_docente in docentes %}
+                            {{ comision_docente.fk_id_docente.persona.nombre_completo }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <span style="color: #f59e0b; font-style: italic;">Sin asignar</span>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+        
+        {% if not docentes %}
+        <div style="background: #fef3c7; padding: 1rem; border-radius: 10px; border-left: 4px solid #f59e0b; margin-bottom: 1rem;">
+            <form method="post" action="{% url 'administracion:asignar_docente_comision' comision.id_comision %}" style="display: flex; gap: 0.8rem; align-items: center;">
+                {% csrf_token %}
+                <label style="font-weight: 600; color: #92400e;">Asignar Docente:</label>
+                <select name="docente_id" required style="flex: 1; padding: 0.6rem; border: 2px solid #f59e0b; border-radius: 8px;">
+                    <option value="">Selecciona un docente...</option>
+                    {% for docente in docentes_disponibles %}
+                    <option value="{{ docente.id }}">
+                        {{ docente.nombre_completo }} - DNI: {{ docente.dni }}
+                        {% if docente.especialidad %} ({{ docente.especialidad }}){% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+                <button type="submit" style="padding: 0.6rem 1.5rem; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                    ✅ Asignar
+                </button>
+            </form>
+        </div>
+        {% endif %}
+        
+        <div style="background: #f8fafc; padding: 1rem; border-radius: 10px; border-left: 4px solid #8b5cf6;">
+            <strong style="color: #7c3aed;">📊 Estadísticas:</strong><br>
+            <span style="color: #64748b;">
+                Inscritos: {{ comision.inscritos_count }} | 
+                Disponibles: {{ comision.cupos_disponibles }} | 
+                Ocupación: {{ comision.porcentaje_ocupacion }}%
+            </span>
+        </div>
+    </div>
+    {% endwith %}
+    {% endfor %}
+</div>
+{% else %}
+<div style="background: white; padding: 4rem; border-radius: 20px; text-align: center;">
+    <span style="font-size: 4rem;">📭</span>
+    <h3 style="color: #8b5cf6; margin: 1rem 0;">No hay comisiones creadas</h3>
+    <p style="color: #64748b;">Crea tu primera comisión</p>
+</div>
+{% endif %}
+
+{% endblock %}
+
+

@@ -1,0 +1,312 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Dashboard {{ tipo_usuario|default:"Administrador" }} - Edu-Polo{% endblock %}
+
+{% block user_role %}{{ tipo_usuario|default:"Administrador" }}{% endblock %}
+
+{% block sidebar_menu %}
+<li><a href="{% url 'dashboard_admin' %}" class="active"><span class="icon">🏠</span> Inicio</a></li>
+<li><a href="{% url 'administracion:panel_cursos' %}"><span class="icon">📚</span> Gestión Cursos</a></li>
+<li><a href="{% url 'administracion:panel_comisiones' %}"><span class="icon">📋</span> Gestión Comisiones</a></li>
+<li><a href="{% url 'administracion:panel_inscripciones' %}"><span class="icon">✅</span> Inscripciones</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:gestion_usuarios' %}"><span class="icon">👥</span> Gestión Usuarios</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:buscador_estudiantes' %}"><span class="icon">🔍</span> Buscar Estudiantes</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:panel_polos' %}"><span class="icon">🏢</span> Polos</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:estadisticas' %}"><span class="icon">📊</span> Estadísticas</a></li>
+<li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
+<li><a href="{% url 'administracion:docentes_cursos' %}"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'admin:index' %}"><span class="icon">⚙️</span> Django Admin</a></li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Panel de Control - {{ tipo_usuario|default:"Administrador" }}</h2>
+    <p>Vista general del sistema y estadísticas</p>
+</div>
+
+<div class="dashboard-cards">
+    <div class="dashboard-card">
+        <div class="card-icon">📚</div>
+        <div class="card-title">Total Cursos</div>
+        <div class="card-value">{{ total_cursos }}</div>
+    </div>
+    
+    <div class="dashboard-card">
+        <div class="card-icon">👥</div>
+        <div class="card-title">Total Estudiantes</div>
+        <div class="card-value">{{ total_estudiantes }}</div>
+    </div>
+    
+    <div class="dashboard-card">
+        <div class="card-icon">👨‍🏫</div>
+        <div class="card-title">Total Docentes</div>
+        <div class="card-value">{{ total_docentes }}</div>
+    </div>
+    
+    <div class="dashboard-card">
+        <div class="card-icon">✅</div>
+        <div class="card-title">Inscripciones Activas</div>
+        <div class="card-value">{{ total_inscripciones }}</div>
+    </div>
+</div>
+
+<!-- Estadísticas Detalladas -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+    
+    <!-- Cursos más Populares -->
+    <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+        <h3 style="color: #667eea; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            📈 Cursos Más Populares
+        </h3>
+        {% if cursos_populares %}
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                {% for curso in cursos_populares %}
+                <div style="padding: 1rem; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong style="color: #667eea;">{{ curso.nombre|truncatewords:5 }}</strong>
+                            <p style="color: #666; font-size: 0.9rem; margin-top: 0.3rem;">
+                                {{ curso.total_inscripciones }} inscripcion{{ curso.total_inscripciones|pluralize:"es" }}
+                            </p>
+                        </div>
+                        <span style="font-size: 2rem;">🔥</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="color: #999; text-align: center; padding: 2rem;">No hay datos disponibles</p>
+        {% endif %}
+    </div>
+    
+    <!-- Estado de Comisiones -->
+    <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+        <h3 style="color: #667eea; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            📊 Estado de Comisiones
+        </h3>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div style="padding: 1rem; background: #e8f5e9; border-radius: 10px; border-left: 4px solid #2ecc71;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 600; color: #27ae60;">Abiertas</span>
+                    <span style="font-size: 1.5rem; font-weight: 700; color: #27ae60;">{{ comisiones_abiertas }}</span>
+                </div>
+            </div>
+            <div style="padding: 1rem; background: #fff3e0; border-radius: 10px; border-left: 4px solid #f39c12;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 600; color: #e67e22;">Cerradas</span>
+                    <span style="font-size: 1.5rem; font-weight: 700; color: #e67e22;">{{ comisiones_cerradas }}</span>
+                </div>
+            </div>
+            <div style="padding: 1rem; background: #e3f2fd; border-radius: 10px; border-left: 4px solid #3498db;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 600; color: #2980b9;">Finalizadas</span>
+                    <span style="font-size: 1.5rem; font-weight: 700; color: #2980b9;">{{ comisiones_finalizadas }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Panel de Gestión Completo -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+    
+    <!-- Gestión de Cursos -->
+    <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+        <h3 style="color: #1e40af; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 1.3rem;">
+            📚 Gestión de Cursos
+        </h3>
+        <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+            <a href="{% url 'administracion:crear_curso' %}" style="padding: 1rem; background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); color: white; text-decoration: none; border-radius: 10px; text-align: center; font-weight: 600; transition: all 0.3s ease;">
+                ➕ Crear Nuevo Curso
+            </a>
+            <a href="{% url 'administracion:panel_cursos' %}" style="padding: 1rem; background: #f8fafc; color: #1e40af; text-decoration: none; border-radius: 10px; text-align: center; font-weight: 600; border: 2px solid #e2e8f0; transition: all 0.3s ease;">
+                📝 Ver/Editar Cursos
+            </a>
+        </div>
+    </div>
+    
+    <!-- Gestión de Comisiones -->
+    <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+        <h3 style="color: #7c3aed; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 1.3rem;">
+            📋 Gestión de Comisiones
+        </h3>
+        <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+            <a href="{% url 'administracion:crear_comision' %}" style="padding: 1rem; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; text-decoration: none; border-radius: 10px; text-align: center; font-weight: 600; transition: all 0.3s ease;">
+                ➕ Crear Nueva Comisión
+            </a>
+            <a href="{% url 'administracion:panel_comisiones' %}" style="padding: 1rem; background: #f8fafc; color: #7c3aed; text-decoration: none; border-radius: 10px; text-align: center; font-weight: 600; border: 2px solid #e2e8f0; transition: all 0.3s ease;">
+                📝 Ver/Editar Comisiones
+            </a>
+        </div>
+    </div>
+    
+    <!-- Gestión de Inscripciones -->
+    <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+        <h3 style="color: #ec4899; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 1.3rem;">
+            ✅ Inscripciones
+        </h3>
+        <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+            <a href="{% url 'administracion:panel_inscripciones' %}" style="padding: 1rem; background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); color: white; text-decoration: none; border-radius: 10px; text-align: center; font-weight: 600; transition: all 0.3s ease;">
+                👁️ Ver Todas las Inscripciones
+            </a>
+            <a href="{% url 'administracion:panel_inscripciones' %}?estado=confirmado" style="padding: 1rem; background: #f8fafc; color: #ec4899; text-decoration: none; border-radius: 10px; text-align: center; font-weight: 600; border: 2px solid #e2e8f0; transition: all 0.3s ease;">
+                ✅ Solo Confirmadas
+            </a>
+        </div>
+    </div>
+    
+    {% if es_admin_completo %}
+    <!-- Gestión de Usuarios -->
+    <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+        <h3 style="color: #10b981; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 1.3rem;">
+            👥 Gestión de Usuarios
+        </h3>
+        <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+            <a href="{% url 'administracion:buscador_estudiantes' %}" style="padding: 1rem; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; text-decoration: none; border-radius: 10px; text-align: center; font-weight: 600; transition: all 0.3s ease;">
+                🔍 Buscar Estudiantes
+            </a>
+            <a href="{% url 'admin:usuario_persona_changelist' %}" style="padding: 1rem; background: #f8fafc; color: #10b981; text-decoration: none; border-radius: 10px; text-align: center; font-weight: 600; border: 2px solid #e2e8f0; transition: all 0.3s ease;">
+                👤 Ver Todas las Personas
+            </a>
+        </div>
+    </div>
+    
+    <!-- Polos Creativos -->
+    <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+        <h3 style="color: #f59e0b; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 1.3rem;">
+            🏢 Polos Creativos
+        </h3>
+        <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+            <a href="{% url 'admin:cursos_polocreativo_add' %}" style="padding: 1rem; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; text-decoration: none; border-radius: 10px; text-align: center; font-weight: 600; transition: all 0.3s ease;">
+                ➕ Crear Nuevo Polo
+            </a>
+            <a href="{% url 'admin:cursos_polocreativo_changelist' %}" style="padding: 1rem; background: #f8fafc; color: #f59e0b; text-decoration: none; border-radius: 10px; text-align: center; font-weight: 600; border: 2px solid #e2e8f0; transition: all 0.3s ease;">
+                🏢 Ver Polos
+            </a>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Asistencias y Certificados -->
+    <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+        <h3 style="color: #6366f1; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 1.3rem;">
+            📝 Asistencias
+        </h3>
+        <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+            <a href="{% url 'administracion:panel_asistencia' %}" style="padding: 1rem; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; text-decoration: none; border-radius: 10px; text-align: center; font-weight: 600; transition: all 0.3s ease;">
+                📝 Panel de Asistencias
+            </a>
+            <a href="{% url 'admin:asistencia_registroasistencia_changelist' %}" style="padding: 1rem; background: #f8fafc; color: #6366f1; text-decoration: none; border-radius: 10px; text-align: center; font-weight: 600; border: 2px solid #e2e8f0; transition: all 0.3s ease;">
+                📈 Ver Estadísticas
+            </a>
+        </div>
+    </div>
+    
+    <!-- Docentes y Cursos Asignados -->
+    <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+        <h3 style="color: #f59e0b; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 1.3rem;">
+            👨‍🏫 Docentes y Cursos
+        </h3>
+        <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+            <a href="{% url 'administracion:docentes_cursos' %}" style="padding: 1rem; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; text-decoration: none; border-radius: 10px; text-align: center; font-weight: 600; transition: all 0.3s ease;">
+                👨‍🏫 Ver Docentes y Cursos Asignados
+            </a>
+        </div>
+    </div>
+</div>
+
+{% if es_admin_completo %}
+<!-- Acceso al Panel Django Completo -->
+<div style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); padding: 2rem; border-radius: 15px; margin-top: 2rem; text-align: center; color: white;">
+    <h3 style="margin-bottom: 1rem; font-size: 1.5rem;">⚙️ Panel de Administración Django</h3>
+    <p style="opacity: 0.9; margin-bottom: 1.5rem;">Acceso completo a todas las funcionalidades avanzadas del sistema</p>
+    <a href="{% url 'admin:index' %}" style="display: inline-block; padding: 1rem 2.5rem; background: white; color: #1e293b; text-decoration: none; border-radius: 12px; font-weight: 700; transition: all 0.3s ease;">
+        Ir al Panel Django →
+    </a>
+</div>
+{% endif %}
+
+<style>
+    .acciones-rapidas {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        margin-top: 2rem;
+    }
+    
+    .acciones-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .accion-btn {
+        display: block;
+        padding: 1.5rem;
+        color: white;
+        text-decoration: none;
+        border-radius: 10px;
+        text-align: center;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .accion-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+    
+    .accion-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .accion-secondary {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    
+    .accion-tertiary {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    
+    @media (max-width: 768px) {
+        .acciones-rapidas {
+            padding: 1.5rem;
+        }
+        
+        .acciones-grid {
+            grid-template-columns: 1fr;
+            gap: 0.8rem;
+        }
+        
+        .accion-btn {
+            padding: 1.2rem;
+            font-size: 0.95rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .acciones-rapidas {
+            padding: 1rem;
+        }
+        
+        .acciones-rapidas h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .accion-btn {
+            padding: 1rem;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+{% endblock %}
+

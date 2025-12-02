@@ -1,0 +1,139 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Dashboard Docente - Edu-Polo{% endblock %}
+
+{% block user_role %}Docente{% endblock %}
+
+{% block sidebar_menu %}
+<li><a href="{% url 'dashboard_docente' %}" class="active"><span class="icon">🏠</span> Inicio</a></li>
+<li><a href="{% url 'administracion:mis_cursos_docente' %}"><span class="icon">📚</span> Mis Cursos</a></li>
+<li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
+<li><a href="{% url 'administracion:materiales_docente' %}"><span class="icon">📁</span> Materiales</a></li>
+<li><a href="{% url 'administracion:estudiantes_docente' %}"><span class="icon">👥</span> Estudiantes</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>¡Bienvenido/a, {{ user.first_name }}!</h2>
+    <p>Dashboard de Docente</p>
+</div>
+
+<div class="dashboard-cards">
+    <div class="dashboard-card">
+        <div class="card-icon">📚</div>
+        <div class="card-title">Cursos Asignados</div>
+        <div class="card-value">0</div>
+    </div>
+    
+    <div class="dashboard-card">
+        <div class="card-icon">👥</div>
+        <div class="card-title">Total Estudiantes</div>
+        <div class="card-value">0</div>
+    </div>
+    
+    <div class="dashboard-card">
+        <div class="card-icon">📊</div>
+        <div class="card-title">Asistencias Hoy</div>
+        <div class="card-value">0</div>
+    </div>
+    
+    <div class="dashboard-card">
+        <div class="card-icon">📁</div>
+        <div class="card-title">Materiales Subidos</div>
+        <div class="card-value">0</div>
+    </div>
+</div>
+
+<div class="acciones-rapidas">
+    <h3 style="color: #667eea; margin-bottom: 1.5rem;">🎯 Acciones Rápidas</h3>
+    <div class="acciones-grid">
+        <a href="#" class="accion-btn accion-primary">
+            📊 Tomar Asistencia
+        </a>
+        <a href="#" class="accion-btn accion-secondary">
+            📁 Subir Material
+        </a>
+        <a href="#" class="accion-btn accion-tertiary">
+            👥 Ver Estudiantes
+        </a>
+    </div>
+</div>
+
+<style>
+    .acciones-rapidas {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        margin-top: 2rem;
+    }
+    
+    .acciones-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .accion-btn {
+        display: block;
+        padding: 1.5rem;
+        color: white;
+        text-decoration: none;
+        border-radius: 10px;
+        text-align: center;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .accion-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+    
+    .accion-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .accion-secondary {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    
+    .accion-tertiary {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    
+    @media (max-width: 768px) {
+        .acciones-rapidas {
+            padding: 1.5rem;
+        }
+        
+        .acciones-grid {
+            grid-template-columns: 1fr;
+            gap: 0.8rem;
+        }
+        
+        .accion-btn {
+            padding: 1.2rem;
+            font-size: 0.95rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .acciones-rapidas {
+            padding: 1rem;
+        }
+        
+        .acciones-rapidas h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .accion-btn {
+            padding: 1rem;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+{% endblock %}
+

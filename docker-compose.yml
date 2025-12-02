@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    # Para desarrollo: usar runserver
+    command: python manage.py runserver 0.0.0.0:8000
+    # Para producción: descomentar la siguiente línea y comentar la anterior
+    # command: gunicorn core.wsgi:application --bind 0.0.0.0:8000 --workers 3
+    volumes:
+      - ./src:/app/src
+      - static_volume:/app/src/staticfiles
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=django-insecure-krft_9r666lg^x48x^sm@^m@jsu*gx3(1*9v1=wg&84_!6@)=j
+      - DATABASE=sqlite
+      # Para usar PostgreSQL, descomentar y configurar:
+      # - DATABASE=postgres
+      # - DB_HOST=db
+      # - DB_PORT=5432
+      # - DB_NAME=edu_polo
+      # - DB_USER=postgres
+      # - DB_PASSWORD=postgres
+    depends_on:
+      - db
+    networks:
+      - django_network
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=edu_polo
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - django_network
+    restart: unless-stopped
+    # Comentar si no se usa PostgreSQL
+    # profiles:
+    #   - postgres
+
+volumes:
+  postgres_data:
+  static_volume:
+
+networks:
+  django_network:
+    driver: bridge
+

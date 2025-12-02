@@ -1,0 +1,237 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Gestionar Tutores - Edu-Polo{% endblock %}
+
+{% block sidebar_menu %}
+<li><a href="{% url 'dashboard_estudiante' %}"><span class="icon">🏠</span> Inicio</a></li>
+<li><a href="{% url 'cursos:ver_disponibles' %}"><span class="icon">📚</span> Cursos Disponibles</a></li>
+<li><a href="{% url 'cursos:mis_inscripciones' %}"><span class="icon">✅</span> Mis Inscripciones</a></li>
+<li><a href="{% url 'usuario:gestionar_tutores' %}" class="active"><span class="icon">👨‍👩‍👧</span> Mis Tutores</a></li>
+<li><a href="{% url 'usuario:mi_progreso' %}"><span class="icon">📊</span> Mi Progreso</a></li>
+<li><a href="{% url 'usuario:mis_certificados' %}"><span class="icon">🎓</span> Certificados</a></li>
+<li><a href="{% url 'usuario:materiales_estudiante' %}"><span class="icon">📁</span> Materiales</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+{% endblock %}
+
+{% block content %}
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+        padding: 2.5rem;
+        border-radius: 20px;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+    }
+    
+    .info-edad {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 1rem;
+        border-radius: 12px;
+        margin-top: 1rem;
+    }
+    
+    .alert-menor {
+        background: linear-gradient(145deg, #fef3c7 0%, #fde68a 100%);
+        border-left: 4px solid #f59e0b;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        color: #92400e;
+    }
+    
+    .tutores-grid {
+        display: grid;
+        gap: 1.5rem;
+    }
+    
+    .tutor-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+    }
+    
+    .tutor-card:hover {
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.12);
+        border-color: #3b82f6;
+    }
+    
+    .tutor-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .tutor-info h3 {
+        color: #1e40af;
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .parentesco-badge {
+        background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+        color: white;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    
+    .tutor-detalles {
+        display: grid;
+        gap: 1rem;
+    }
+    
+    .detalle-item {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 0.8rem;
+        background: #f8fafc;
+        border-radius: 10px;
+    }
+    
+    .detalle-item strong {
+        color: #334155;
+        min-width: 80px;
+    }
+    
+    .btn-eliminar {
+        background: #ef4444;
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-eliminar:hover {
+        background: #dc2626;
+        transform: translateY(-2px);
+    }
+    
+    .btn-agregar {
+        display: inline-block;
+        padding: 1.2rem 2rem;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+    
+    .btn-agregar:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+    
+    .no-tutores {
+        background: white;
+        padding: 3rem;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+    
+    .no-tutores .icon {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+    }
+</style>
+
+<div class="page-header">
+    <h2>👨‍👩‍👧 Gestionar Mis Tutores</h2>
+    <p>Administra los tutores responsables asociados a tu cuenta</p>
+    {% if edad %}
+    <div class="info-edad">
+        <strong>Tu edad:</strong> {{ edad }} años
+        {% if es_menor %}
+        <span style="color: #fbbf24; font-weight: 700;"> ⚠️ Menor de edad - Requiere al menos un tutor</span>
+        {% else %}
+        <span style="color: #34d399;"> ✅ Mayor de edad</span>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+{% if es_menor and not relaciones_tutores %}
+<div class="alert-menor">
+    <strong>⚠️ Atención:</strong> Como eres menor de 16 años, debes tener al menos un tutor registrado para poder inscribirte a cursos.
+</div>
+{% endif %}
+
+{% if relaciones_tutores %}
+    <div class="tutores-grid">
+        {% for relacion in relaciones_tutores %}
+        <div class="tutor-card">
+            <div class="tutor-header">
+                <div class="tutor-info">
+                    <h3>{{ relacion.tutor.usuario.persona.nombre_completo }}</h3>
+                    <span class="parentesco-badge">{{ relacion.get_parentesco_display }}</span>
+                </div>
+                <form method="post" action="{% url 'usuario:eliminar_tutor' relacion.id %}" style="display: inline;" onsubmit="return confirm('¿Estás seguro de eliminar este tutor?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-eliminar">🗑️ Eliminar</button>
+                </form>
+            </div>
+            
+            <div class="tutor-detalles">
+                <div class="detalle-item">
+                    <span>📋</span>
+                    <strong>DNI:</strong>
+                    <span>{{ relacion.tutor.usuario.persona.dni }}</span>
+                </div>
+                <div class="detalle-item">
+                    <span>📞</span>
+                    <strong>Teléfono:</strong>
+                    <span>{{ relacion.tutor.telefono_contacto }}</span>
+                </div>
+                {% if relacion.tutor.usuario.persona.correo %}
+                <div class="detalle-item">
+                    <span>📧</span>
+                    <strong>Email:</strong>
+                    <span>{{ relacion.tutor.usuario.persona.correo }}</span>
+                </div>
+                {% endif %}
+                <div class="detalle-item">
+                    <span>📅</span>
+                    <strong>Registrado:</strong>
+                    <span>{{ relacion.fecha_asignacion|date:"d/m/Y" }}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="no-tutores">
+        <div class="icon">👨‍👩‍👧</div>
+        <h3 style="color: #3b82f6; margin-bottom: 1rem;">No tienes tutores registrados</h3>
+        <p style="color: #64748b; font-size: 1.1rem;">
+            {% if es_menor %}
+            Como eres menor de 16 años, debes agregar al menos un tutor responsable.
+            {% else %}
+            Aunque no es obligatorio para mayores de edad, puedes agregar tutores si lo deseas.
+            {% endif %}
+        </p>
+    </div>
+{% endif %}
+
+<div style="text-align: center; margin-top: 2rem;">
+    <a href="{% url 'usuario:agregar_tutor' %}" class="btn-agregar">
+        ➕ Agregar Nuevo Tutor
+    </a>
+</div>
+
+{% endblock %}
+
+

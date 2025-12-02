@@ -1,0 +1,190 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Inscripciones - Panel Administrador{% endblock %}
+
+{% block user_role %}Administrador{% endblock %}
+
+{% block sidebar_menu %}
+<li><a href="{% url 'dashboard_admin' %}"><span class="icon">🏠</span> Inicio</a></li>
+<li><a href="{% url 'administracion:panel_cursos' %}"><span class="icon">📚</span> Gestión Cursos</a></li>
+<li><a href="{% url 'administracion:panel_comisiones' %}"><span class="icon">📋</span> Gestión Comisiones</a></li>
+<li><a href="{% url 'administracion:panel_inscripciones' %}" class="active"><span class="icon">✅</span> Inscripciones</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:gestion_usuarios' %}"><span class="icon">👥</span> Gestión Usuarios</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:buscador_estudiantes' %}"><span class="icon">🔍</span> Buscar Estudiantes</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:panel_polos' %}"><span class="icon">🏢</span> Polos</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:estadisticas' %}"><span class="icon">📊</span> Estadísticas</a></li>
+<li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
+<li><a href="{% url 'administracion:docentes_cursos' %}"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'admin:index' %}"><span class="icon">⚙️</span> Django Admin</a></li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); padding: 2.5rem; border-radius: 20px; color: white; margin-bottom: 2rem;">
+    <h2 style="font-size: 2.2rem;">✅ Inscripciones</h2>
+    <p>Total de inscripciones: {{ inscripciones.count }}</p>
+    
+    <form method="get" style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+        <input type="text" name="q" placeholder="Buscar por estudiante, DNI o curso..." value="{{ busqueda|default:'' }}" style="flex: 1; padding: 1rem; border: none; border-radius: 12px; font-size: 1rem;">
+        <button type="submit" style="padding: 1rem 2rem; background: white; color: #db2777; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;">
+            🔍 Buscar
+        </button>
+    </form>
+</div>
+
+{% if messages %}
+    <div style="margin-bottom: 1.5rem;">
+        {% for message in messages %}
+            <div style="padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 0.5rem; font-weight: 600; {% if message.tags == 'error' %}background: #fee2e2; color: #991b1b;{% elif message.tags == 'success' %}background: #d1fae5; color: #065f46;{% elif message.tags == 'warning' %}background: #fef3c7; color: #92400e;{% else %}background: #dbeafe; color: #1e40af;{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; gap: 1rem; flex-wrap: wrap;">
+    <button onclick="document.getElementById('modalInscribir').style.display='block'" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 1rem;">
+        ➕ Inscribir Estudiante
+    </button>
+    <a href="{% url 'administracion:exportar_inscripciones' %}" style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); color: white; padding: 0.8rem 1.5rem; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block;">
+        📥 Exportar a Excel
+    </a>
+</div>
+
+{% if inscripciones %}
+<div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead style="background: #f8fafc;">
+            <tr>
+                <th style="padding: 1.2rem; text-align: left; font-weight: 700;">Estudiante</th>
+                <th style="padding: 1.2rem; text-align: left; font-weight: 700;">Curso</th>
+                <th style="padding: 1.2rem; text-align: left; font-weight: 700;">Comisión</th>
+                <th style="padding: 1.2rem; text-align: left; font-weight: 700;">Fecha</th>
+                <th style="padding: 1.2rem; text-align: left; font-weight: 700;">Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for inscripcion in inscripciones %}
+            <tr style="border-bottom: 1px solid #e2e8f0;">
+                <td style="padding: 1.2rem;">
+                    <strong>{{ inscripcion.estudiante.usuario.persona.nombre_completo }}</strong><br>
+                    <small style="color: #94a3b8;">DNI: {{ inscripcion.estudiante.usuario.persona.dni }}</small>
+                </td>
+                <td style="padding: 1.2rem;">{{ inscripcion.comision.fk_id_curso.nombre }}</td>
+                <td style="padding: 1.2rem;">#{{ inscripcion.comision.id_comision }}</td>
+                <td style="padding: 1.2rem;">{{ inscripcion.fecha_hora_inscripcion|date:"d/m/Y H:i" }}</td>
+                <td style="padding: 1.2rem;">
+                    {% if inscripcion.estado == 'confirmado' %}
+                        <span style="background: #10b981; color: white; padding: 0.4rem 0.8rem; border-radius: 16px; font-size: 0.85rem; font-weight: 600;">✅ Confirmado</span>
+                    {% else %}
+                        <span style="background: #f59e0b; color: white; padding: 0.4rem 0.8rem; border-radius: 16px; font-size: 0.85rem; font-weight: 600;">{{ inscripcion.get_estado_display }}</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div style="background: white; padding: 3rem; border-radius: 16px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+    <p style="color: #94a3b8; font-size: 1.1rem;">No se encontraron inscripciones.</p>
+</div>
+{% endif %}
+
+<!-- Modal para Inscribir Estudiante -->
+<div id="modalInscribir" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+    <div style="background-color: white; margin: 5% auto; padding: 2rem; border-radius: 20px; width: 90%; max-width: 600px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2 style="color: #1e293b; font-size: 1.8rem; margin: 0;">➕ Inscribir Estudiante</h2>
+            <button onclick="document.getElementById('modalInscribir').style.display='none'" style="background: none; border: none; font-size: 2rem; cursor: pointer; color: #94a3b8;">&times;</button>
+        </div>
+        
+        <form method="post" action="{% url 'administracion:inscribir_estudiante' %}">
+            {% csrf_token %}
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #334155;">Estudiante *</label>
+                <select name="estudiante_id" required style="width: 100%; padding: 0.9rem; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 1rem;">
+                    <option value="">Selecciona un estudiante...</option>
+                    {% for estudiante in estudiantes %}
+                    <option value="{{ estudiante.id_estudiante }}">
+                        {{ estudiante.usuario.persona.nombre_completo }} - DNI: {{ estudiante.usuario.persona.dni }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #334155;">Comisión (con cupo disponible) *</label>
+                <select name="comision_id" required style="width: 100%; padding: 0.9rem; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 1rem;">
+                    <option value="">Selecciona una comisión...</option>
+                    {% for comision in comisiones_disponibles %}
+                    <option value="{{ comision.id_comision }}">
+                        {{ comision.fk_id_curso.nombre }} - Comisión #{{ comision.id_comision }} 
+                        ({{ comision.cupos_disponibles_calc }} cupos disponibles)
+                        {% if comision.fk_id_polo %} - {{ comision.fk_id_polo.nombre }}{% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            {% if not comisiones_disponibles %}
+            <div style="background: #fef3c7; border: 1px solid #fbbf24; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem;">
+                <p style="color: #92400e; margin: 0;">⚠️ No hay comisiones disponibles con cupo en este momento.</p>
+            </div>
+            {% endif %}
+            
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button type="button" onclick="document.getElementById('modalInscribir').style.display='none'" style="padding: 0.9rem 2rem; background: #e2e8f0; color: #334155; border: none; border-radius: 12px; font-weight: 600; cursor: pointer;">
+                    Cancelar
+                </button>
+                <button type="submit" {% if not comisiones_disponibles %}disabled{% endif %} style="padding: 0.9rem 2rem; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;">
+                    ✅ Inscribir
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    #modalInscribir select:focus {
+        outline: none;
+        border-color: #10b981;
+        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+    }
+    
+    #modalInscribir button[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+</style>
+
+<script>
+    // Cerrar modal al hacer clic fuera de él
+    window.onclick = function(event) {
+        const modal = document.getElementById('modalInscribir');
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+    
+    // Cerrar modal con tecla ESC
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            const modal = document.getElementById('modalInscribir');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+    });
+</script>
+
+{% endblock %}
+
+

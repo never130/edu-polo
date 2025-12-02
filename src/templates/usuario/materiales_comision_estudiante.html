@@ -1,0 +1,86 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Materiales - {{ curso.nombre }}{% endblock %}
+
+{% block user_role %}Estudiante{% endblock %}
+
+{% block sidebar_menu %}
+<li><a href="{% url 'dashboard_estudiante' %}"><span class="icon">🏠</span> Inicio</a></li>
+<li><a href="{% url 'cursos:ver_disponibles' %}"><span class="icon">📚</span> Cursos Disponibles</a></li>
+<li><a href="{% url 'cursos:mis_inscripciones' %}"><span class="icon">✅</span> Mis Inscripciones</a></li>
+<li><a href="{% url 'usuario:gestionar_tutores' %}"><span class="icon">👨‍👩‍👧</span> Mis Tutores</a></li>
+<li><a href="{% url 'usuario:mi_progreso' %}"><span class="icon">📊</span> Mi Progreso</a></li>
+<li><a href="{% url 'usuario:mis_certificados' %}"><span class="icon">🎓</span> Certificados</a></li>
+<li><a href="{% url 'usuario:materiales_estudiante' %}" class="active"><span class="icon">📁</span> Materiales</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+{% endblock %}
+
+{% block content %}
+<div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 2.5rem; border-radius: 20px; color: white; margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem;">📁 Materiales</h2>
+            <p style="opacity: 0.9;">{{ curso.nombre }} - Comisión #{{ comision.id_comision }}</p>
+            {% if comision.fk_id_polo %}
+            <p style="opacity: 0.8; font-size: 0.9rem; margin-top: 0.3rem;">📍 {{ comision.fk_id_polo.nombre }}</p>
+            {% endif %}
+        </div>
+        <a href="{% url 'usuario:materiales_estudiante' %}" style="padding: 0.8rem 1.5rem; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; border: 2px solid rgba(255,255,255,0.3);">
+            ← Volver a Materiales
+        </a>
+    </div>
+</div>
+
+{% if materiales %}
+    <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+        <div style="padding: 1.5rem 2rem; background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+            <p style="color: #64748b; margin: 0;">Total de materiales: {{ materiales|length }}</p>
+        </div>
+        
+        <div style="padding: 2rem;">
+            <div style="display: grid; gap: 1rem;">
+                {% for material in materiales %}
+                <div style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <div style="flex: 1;">
+                        <h4 style="color: #1e293b; margin: 0 0 0.5rem 0; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+                            {% if material.tipo == 'archivo' %}
+                                📄
+                            {% else %}
+                                🔗
+                            {% endif %}
+                            {{ material.nombre_archivo }}
+                        </h4>
+                        {% if material.descripcion %}
+                        <p style="color: #64748b; margin: 0.5rem 0 0 0; font-size: 0.9rem;">{{ material.descripcion }}</p>
+                        {% endif %}
+                        <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; color: #64748b; font-size: 0.85rem; margin-top: 0.5rem;">
+                            <span>📅 {{ material.fecha_subida|date:"d/m/Y H:i" }}</span>
+                            <span>{% if material.tipo == 'archivo' %}📄 Archivo{% else %}🔗 Enlace{% endif %}</span>
+                        </div>
+                    </div>
+                    <div>
+                        {% if material.tipo == 'archivo' %}
+                            <a href="{{ material.archivo.url }}" target="_blank" style="padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;">
+                                📥 Descargar
+                            </a>
+                        {% else %}
+                            <a href="{{ material.enlace }}" target="_blank" style="padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;">
+                                🔗 Abrir Enlace
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div style="background: white; padding: 3rem; border-radius: 16px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+        <p style="color: #64748b; font-size: 1.1rem; margin: 0;">No hay materiales disponibles para esta comisión en este momento.</p>
+    </div>
+{% endif %}
+{% endblock %}
+
+
+

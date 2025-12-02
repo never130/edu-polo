@@ -1,0 +1,158 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Docentes y Cursos Asignados - Edu-Polo{% endblock %}
+
+{% block user_role %}{{ tipo_usuario|default:"Administrador" }}{% endblock %}
+
+{% block sidebar_menu %}
+<li><a href="{% url 'dashboard_admin' %}"><span class="icon">🏠</span> Inicio</a></li>
+<li><a href="{% url 'administracion:panel_cursos' %}"><span class="icon">📚</span> Gestión Cursos</a></li>
+<li><a href="{% url 'administracion:panel_comisiones' %}"><span class="icon">📋</span> Gestión Comisiones</a></li>
+<li><a href="{% url 'administracion:panel_inscripciones' %}"><span class="icon">✅</span> Inscripciones</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:gestion_usuarios' %}"><span class="icon">👥</span> Gestión Usuarios</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:buscador_estudiantes' %}"><span class="icon">🔍</span> Buscar Estudiantes</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:panel_polos' %}"><span class="icon">🏢</span> Polos</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:estadisticas' %}"><span class="icon">📊</span> Estadísticas</a></li>
+<li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
+<li><a href="{% url 'administracion:docentes_cursos' %}" class="active"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'admin:index' %}"><span class="icon">⚙️</span> Django Admin</a></li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 2.5rem; border-radius: 20px; color: white; margin-bottom: 2rem;">
+    <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem;">👨‍🏫 Docentes y Cursos Asignados</h2>
+    <p style="opacity: 0.95;">Visualiza todos los docentes y los cursos que tienen asignados</p>
+</div>
+
+{% if messages %}
+    <div style="margin-bottom: 1.5rem;">
+        {% for message in messages %}
+            <div style="padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 0.5rem; font-weight: 600; {% if message.tags == 'error' %}background: #fee2e2; color: #991b1b;{% elif message.tags == 'success' %}background: #d1fae5; color: #065f46;{% elif message.tags == 'warning' %}background: #fef3c7; color: #92400e;{% else %}background: #dbeafe; color: #1e40af;{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% if docentes_con_cursos %}
+    {% for docente_data in docentes_con_cursos %}
+    <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 2rem;">
+        <div style="padding: 1.5rem 2rem; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white;">
+            <h3 style="margin: 0; font-size: 1.5rem; display: flex; align-items: center; gap: 0.8rem;">
+                👨‍🏫 {{ docente_data.persona.nombre }} {{ docente_data.persona.apellido }}
+            </h3>
+            <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 0.8rem; opacity: 0.95; font-size: 0.95rem;">
+                <span>📧 {{ docente_data.persona.correo }}</span>
+                {% if docente_data.persona.telefono %}
+                <span>📞 {{ docente_data.persona.telefono }}</span>
+                {% endif %}
+                <span>📚 {{ docente_data.total_comisiones }} comisión{{ docente_data.total_comisiones|pluralize:"es" }}</span>
+            </div>
+        </div>
+        
+        <div style="padding: 2rem;">
+            {% for curso_id, curso_info in docente_data.cursos_dict.items %}
+            <div style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid #e2e8f0;">
+                <div style="margin-bottom: 1rem;">
+                    <h4 style="color: #1e293b; margin: 0 0 0.5rem 0; font-size: 1.3rem; font-weight: 700;">
+                        📚 {{ curso_info.curso.nombre }}
+                    </h4>
+                    {% if curso_info.curso.descripcion %}
+                    <p style="color: #64748b; margin: 0; font-size: 0.95rem;">{{ curso_info.curso.descripcion|truncatewords:20 }}</p>
+                    {% endif %}
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    {% for comision_data in curso_info.comisiones %}
+                    <div style="background: white; padding: 1.2rem; border-radius: 10px; border-left: 4px solid #f59e0b;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                            <div>
+                                <h5 style="color: #1e293b; margin: 0 0 0.5rem 0; font-size: 1.1rem; font-weight: 600;">
+                                    Comisión #{{ comision_data.comision.id_comision }}
+                                </h5>
+                                <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; color: #64748b; font-size: 0.9rem;">
+                                    {% if comision_data.comision.fk_id_polo %}
+                                    <span>📍 {{ comision_data.comision.fk_id_polo.nombre }}</span>
+                                    {% endif %}
+                                    {% if comision_data.comision.dias_horarios %}
+                                    <span>🕐 {{ comision_data.comision.dias_horarios }}</span>
+                                    {% endif %}
+                                    <span>👥 {{ comision_data.total_estudiantes }} estudiante{{ comision_data.total_estudiantes|pluralize:"s" }}</span>
+                                    <span>📊 Cupo: {{ comision_data.comision.cupo_maximo }}</span>
+                                </div>
+                            </div>
+                            <div>
+                                {% if comision_data.comision.estado == 'Abierta' %}
+                                    <span style="padding: 0.4rem 0.8rem; background: #d1fae5; color: #065f46; border-radius: 8px; font-weight: 600; font-size: 0.85rem;">
+                                        ✅ {{ comision_data.comision.estado }}
+                                    </span>
+                                {% elif comision_data.comision.estado == 'En proceso' %}
+                                    <span style="padding: 0.4rem 0.8rem; background: #dbeafe; color: #1e40af; border-radius: 8px; font-weight: 600; font-size: 0.85rem;">
+                                        ⏳ {{ comision_data.comision.estado }}
+                                    </span>
+                                {% elif comision_data.comision.estado == 'Finalizada' %}
+                                    <span style="padding: 0.4rem 0.8rem; background: #e0e7ff; color: #3730a3; border-radius: 8px; font-weight: 600; font-size: 0.85rem;">
+                                        🎓 {{ comision_data.comision.estado }}
+                                    </span>
+                                {% else %}
+                                    <span style="padding: 0.4rem 0.8rem; background: #fee2e2; color: #991b1b; border-radius: 8px; font-weight: 600; font-size: 0.85rem;">
+                                        🚫 {{ comision_data.comision.estado }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if comision_data.estudiantes_inscriptos %}
+                        <div style="margin-top: 1.2rem; padding-top: 1.2rem; border-top: 2px solid #e2e8f0;">
+                            <h6 style="color: #1e293b; margin: 0 0 0.8rem 0; font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                                👥 Estudiantes Inscriptos ({{ comision_data.total_estudiantes }})
+                            </h6>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.8rem;">
+                                {% for estudiante in comision_data.estudiantes_inscriptos %}
+                                <div style="background: #f8fafc; padding: 0.9rem; border-radius: 8px; border-left: 3px solid #3b82f6;">
+                                    <div style="font-weight: 600; color: #1e293b; margin-bottom: 0.3rem; font-size: 0.95rem;">
+                                        {{ estudiante.nombre_completo }}
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.85rem; color: #64748b;">
+                                        <span>🆔 DNI: {{ estudiante.dni }}</span>
+                                        <span>📧 {{ estudiante.correo }}</span>
+                                        {% if estudiante.telefono != 'No especificado' %}
+                                        <span>📞 {{ estudiante.telefono }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% else %}
+                        <div style="margin-top: 1.2rem; padding-top: 1.2rem; border-top: 2px solid #e2e8f0;">
+                            <p style="color: #64748b; font-size: 0.9rem; margin: 0; font-style: italic;">
+                                📭 No hay estudiantes inscriptos en esta comisión
+                            </p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div style="background: white; padding: 4rem; border-radius: 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+        <span style="font-size: 4rem;">👨‍🏫</span>
+        <h3 style="color: #f59e0b; margin: 1rem 0;">No hay docentes con cursos asignados</h3>
+        <p style="color: #64748b;">Asigna docentes a comisiones para verlos aquí</p>
+    </div>
+{% endif %}
+{% endblock %}
+

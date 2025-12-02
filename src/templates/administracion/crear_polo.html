@@ -1,0 +1,256 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Crear Polo Creativo - Admin{% endblock %}
+
+{% block user_role %}Administrador{% endblock %}
+
+{% block sidebar_menu %}
+<li><a href="{% url 'dashboard_admin' %}"><span class="icon">🏠</span> Inicio</a></li>
+<li><a href="{% url 'administracion:panel_cursos' %}"><span class="icon">📚</span> Gestión Cursos</a></li>
+<li><a href="{% url 'administracion:panel_comisiones' %}"><span class="icon">📋</span> Gestión Comisiones</a></li>
+<li><a href="{% url 'administracion:panel_inscripciones' %}"><span class="icon">✅</span> Inscripciones</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:gestion_usuarios' %}"><span class="icon">👥</span> Gestión Usuarios</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:buscador_estudiantes' %}"><span class="icon">🔍</span> Buscar Estudiantes</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:panel_polos' %}" class="active"><span class="icon">🏢</span> Polos</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:estadisticas' %}"><span class="icon">📊</span> Estadísticas</a></li>
+<li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
+<li><a href="{% url 'administracion:docentes_cursos' %}"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'admin:index' %}"><span class="icon">⚙️</span> Django Admin</a></li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>➕ Crear Nuevo Polo Creativo</h2>
+    <p>Completa los datos del nuevo espacio físico donde se dictarán clases.</p>
+</div>
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<div class="form-card">
+    <form method="post" class="form-container">
+        {% csrf_token %}
+        
+        <div class="form-section">
+            <h3 class="section-title">
+                <span>🏢</span>
+                Información del Polo
+            </h3>
+            <div class="form-group">
+                <label for="nombre" class="required">Nombre del Polo</label>
+                <input type="text" name="nombre" id="nombre" required placeholder="Ej: Polo Creativo Ushuaia Centro">
+            </div>
+            <div class="form-group">
+                <label for="ciudad" class="required">Ciudad</label>
+                <select name="ciudad" id="ciudad" required>
+                    <option value="">Selecciona una ciudad</option>
+                    <option value="Ushuaia">Ushuaia</option>
+                    <option value="Rio Grande">Río Grande</option>
+                    <option value="Tolhuin">Tolhuin</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="direccion" class="required">Dirección Completa</label>
+                <input type="text" name="direccion" id="direccion" required placeholder="Ej: Av. Maipú 1234">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="telefono">Teléfono de Contacto</label>
+                    <input type="tel" name="telefono" id="telefono" placeholder="Ej: +54 2901 123456">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email de Contacto</label>
+                    <input type="email" name="email" id="email" placeholder="Ej: polo.ushuaia@innovacion.gob.ar">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                ➕ Crear Polo
+            </button>
+            <a href="{% url 'administracion:panel_polos' %}" class="btn btn-secondary">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .page-header {
+        margin-bottom: 2rem;
+    }
+    .page-header h2 {
+        font-size: 2rem;
+        color: #334155;
+        margin-bottom: 0.5rem;
+    }
+    .page-header p {
+        color: #64748b;
+        font-size: 1.05rem;
+    }
+    .messages {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 1.5rem;
+    }
+    .messages li {
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+    .messages li.success {
+        background: #d1fae5;
+        color: #065f46;
+    }
+    .messages li.error {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+    .form-card {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        max-width: 800px;
+        margin: 2rem auto;
+    }
+    .form-section {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .form-section:last-of-type {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    .section-title {
+        font-size: 1.5rem;
+        color: #f59e0b;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        font-weight: 700;
+    }
+    .form-row {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .form-row .form-group {
+        flex: 1;
+        margin-bottom: 0;
+    }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 0.6rem;
+        color: #334155;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+    .form-group label.required::after {
+        content: ' *';
+        color: #ef4444;
+        margin-left: 4px;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="tel"],
+    .form-group input[type="email"],
+    .form-group select {
+        width: 100%;
+        padding: 1rem 1.2rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f8fafc;
+        font-family: 'Inter', sans-serif;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #f59e0b;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1);
+    }
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    .btn {
+        padding: 0.9rem 2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: none;
+        font-size: 1rem;
+    }
+    .btn-primary {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+    }
+    .btn-primary:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+    }
+    .btn-secondary {
+        background: #e2e8f0;
+        color: #334155;
+    }
+    .btn-secondary:hover {
+        background: #cbd5e1;
+    }
+
+    @media (max-width: 768px) {
+        .form-row {
+            flex-direction: column;
+            gap: 0;
+        }
+        .form-card {
+            padding: 1.5rem;
+            margin: 1rem;
+        }
+        .section-title {
+            font-size: 1.3rem;
+        }
+        .form-group input, .form-group select {
+            padding: 0.8rem 1rem;
+        }
+        .btn {
+            padding: 0.8rem 1.5rem;
+            font-size: 0.9rem;
+        }
+        .form-actions {
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        .form-actions .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+

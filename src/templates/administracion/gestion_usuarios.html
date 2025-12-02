@@ -1,0 +1,457 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Gestión de Usuarios - Admin{% endblock %}
+
+{% block user_role %}Administrador{% endblock %}
+
+{% block sidebar_menu %}
+<li><a href="{% url 'dashboard_admin' %}"><span class="icon">🏠</span> Inicio</a></li>
+<li><a href="{% url 'administracion:panel_cursos' %}"><span class="icon">📚</span> Gestión Cursos</a></li>
+<li><a href="{% url 'administracion:panel_comisiones' %}"><span class="icon">📋</span> Gestión Comisiones</a></li>
+<li><a href="{% url 'administracion:panel_inscripciones' %}"><span class="icon">✅</span> Inscripciones</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:gestion_usuarios' %}" class="active"><span class="icon">👥</span> Gestión Usuarios</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:buscador_estudiantes' %}"><span class="icon">🔍</span> Buscar Estudiantes</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:panel_polos' %}"><span class="icon">🏢</span> Polos</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:estadisticas' %}"><span class="icon">📊</span> Estadísticas</a></li>
+<li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
+<li><a href="{% url 'administracion:docentes_cursos' %}"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'admin:index' %}"><span class="icon">⚙️</span> Django Admin</a></li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 2.5rem; border-radius: 20px; color: white; margin-bottom: 2rem;">
+    <h2 style="font-size: 2.2rem;">👥 Gestión de Usuarios del Sistema</h2>
+    <p>Administra, crea, edita o elimina usuarios con buscador en tiempo real.</p>
+    
+    <div style="display: flex; gap: 1rem; margin-top: 1.5rem; align-items: center; flex-wrap: wrap;">
+        <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="Buscar por nombre, apellido, DNI o email..." 
+            style="flex: 1; min-width: 300px; padding: 1rem; border: none; border-radius: 12px; font-size: 1rem;"
+            autocomplete="off"
+        >
+        <div id="loadingIndicator" style="display: none; color: white; font-weight: 600;">
+            ⏳ Buscando...
+        </div>
+        {% if puede_crear_usuarios %}
+        <a href="{% url 'administracion:crear_usuario' %}" style="background: white; color: #6366f1; padding: 1rem 1.5rem; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block; margin-right: 0.5rem;">
+            ➕ Crear Nuevo Usuario
+        </a>
+        {% endif %}
+        <a href="{% url 'administracion:exportar_usuarios_excel' %}" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 1rem 1.5rem; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">
+            📊 Exportar a Excel
+        </a>
+    </div>
+    <div style="margin-top: 1rem; color: rgba(255,255,255,0.9); font-size: 0.9rem;">
+        💡 Tip: La búsqueda se actualiza automáticamente mientras escribes (mínimo 2 caracteres)
+    </div>
+</div>
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<!-- Tabla de Usuarios (visible por defecto) -->
+<div id="tablaUsuariosDefault" style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+    <div style="padding: 1.5rem; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+        <h3 style="margin: 0; color: #334155; font-size: 1.2rem;">
+            📊 Total: <strong>{{ total_usuarios }}</strong> usuario(s) en el sistema
+        </h3>
+    </div>
+    
+    {% if usuarios %}
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead style="background: #f8fafc;">
+            <tr>
+                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">DNI</th>
+                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Nombre Completo</th>
+                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Email</th>
+                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Roles</th>
+                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Ciudad</th>
+                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user_data in usuarios %}
+            <tr>
+                <td style="padding: 1rem 1.5rem; color: #334155;"><strong>{{ user_data.persona.dni }}</strong></td>
+                <td style="padding: 1rem 1.5rem; color: #334155;">{{ user_data.persona.nombre_completo }}</td>
+                <td style="padding: 1rem 1.5rem; color: #334155;">{{ user_data.persona.correo }}</td>
+                <td style="padding: 1rem 1.5rem;">
+                    <span class="badge-roles">{{ user_data.roles }}</span>
+                </td>
+                <td style="padding: 1rem 1.5rem; color: #334155;">{{ user_data.persona.ciudad_residencia|default:"N/A" }}</td>
+                <td style="padding: 1rem 1.5rem;">
+                    <div style="display: flex; gap: 0.5rem;">
+                        <a href="{% url 'administracion:editar_usuario' user_data.persona.id %}" class="btn btn-editar">
+                            ✏️ Editar
+                        </a>
+                        <button onclick="abrirModalEliminar({{ user_data.persona.id }}, '{{ user_data.persona.nombre_completo }}')" class="btn btn-eliminar">
+                            🗑️ Eliminar
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <span class="icon">🤷‍♂️</span>
+        <p>No hay usuarios registrados en el sistema.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Resultados de Búsqueda (ocultos por defecto) -->
+<div id="resultadosTabla" style="display: none; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+    <div style="padding: 1.5rem; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0; color: #334155; font-size: 1.2rem;">
+            📊 Resultados: <span id="cantidadResultados">0</span> usuario(s) encontrado(s)
+        </h3>
+        <button onclick="limpiarBusqueda()" class="btn btn-secondary" style="padding: 0.6rem 1.2rem;">
+            🔄 Mostrar Todos
+        </button>
+    </div>
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead style="background: #f8fafc;">
+            <tr>
+                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">DNI</th>
+                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Nombre Completo</th>
+                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Email</th>
+                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Roles</th>
+                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Ciudad</th>
+                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="resultadosBody">
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal de confirmación de eliminación -->
+<div id="modalEliminar" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h3>⚠️ Confirmar Eliminación</h3>
+        <p>¿Estás seguro de que deseas eliminar a este usuario?</p>
+        <p><strong id="nombreUsuarioEliminar"></strong></p>
+        <p style="color: #ef4444; font-size: 0.9rem;">Esta acción no se puede deshacer.</p>
+        <form id="formEliminar" method="post">
+            {% csrf_token %}
+            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                <button type="button" onclick="cerrarModal()" class="btn btn-secondary">Cancelar</button>
+                <button type="submit" class="btn btn-danger">Eliminar Usuario</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .messages {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 1.5rem;
+    }
+    .messages li {
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+    .messages li.success {
+        background: #d1fae5;
+        color: #065f46;
+    }
+    .messages li.error {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        margin-top: 2rem;
+    }
+    .empty-state .icon {
+        font-size: 4rem;
+        color: #cbd5e1;
+        margin-bottom: 1rem;
+    }
+    .empty-state h3 {
+        font-size: 1.5rem;
+        color: #334155;
+        margin-bottom: 0.5rem;
+    }
+    .empty-state p {
+        font-size: 1.1rem;
+        color: #64748b;
+        margin-bottom: 1.5rem;
+    }
+    
+    tbody tr {
+        border-bottom: 1px solid #f1f5f9;
+        transition: background 0.2s ease;
+    }
+    tbody tr:hover {
+        background: #f8fafc;
+    }
+    tbody td {
+        padding: 1rem 1.5rem;
+        color: #334155;
+    }
+    
+    .btn {
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-block;
+        border: none;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+    
+    .btn-editar {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+    .btn-editar:hover {
+        background: #3b82f6;
+        color: white;
+    }
+    
+    .btn-eliminar {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+    .btn-eliminar:hover {
+        background: #ef4444;
+        color: white;
+    }
+    
+    .btn-secondary {
+        background: #e2e8f0;
+        color: #334155;
+    }
+    .btn-secondary:hover {
+        background: #cbd5e1;
+    }
+    
+    .btn-danger {
+        background: #ef4444;
+        color: white;
+    }
+    .btn-danger:hover {
+        background: #dc2626;
+    }
+    
+    .badge-roles {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+    
+    /* Modal */
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+    }
+    
+    .modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 16px;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    
+    .modal-content h3 {
+        color: #334155;
+        margin-bottom: 1rem;
+    }
+    
+    #searchInput:focus {
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
+    }
+    
+    @media (max-width: 768px) {
+        tbody td {
+            font-size: 0.85rem;
+            padding: 0.8rem;
+        }
+        .btn {
+            padding: 0.5rem 0.8rem;
+            font-size: 0.8rem;
+        }
+    }
+</style>
+
+<script>
+    let timeoutId = null;
+    const searchInput = document.getElementById('searchInput');
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    const tablaDefault = document.getElementById('tablaUsuariosDefault');
+    const resultadosTabla = document.getElementById('resultadosTabla');
+    const resultadosBody = document.getElementById('resultadosBody');
+    const cantidadResultados = document.getElementById('cantidadResultados');
+    
+    searchInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+        }
+        
+        if (query.length < 2) {
+            // Mostrar tabla por defecto
+            tablaDefault.style.display = 'block';
+            resultadosTabla.style.display = 'none';
+            return;
+        }
+        
+        loadingIndicator.style.display = 'block';
+        
+        timeoutId = setTimeout(() => {
+            buscarUsuarios(query);
+        }, 500);
+    });
+    
+    async function buscarUsuarios(query) {
+        try {
+            const response = await fetch(`{% url 'administracion:gestion_usuarios' %}?q=${encodeURIComponent(query)}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const data = await response.json();
+            
+            loadingIndicator.style.display = 'none';
+            
+            if (data.usuarios.length === 0) {
+                // Ocultar ambas tablas y mostrar mensaje
+                tablaDefault.style.display = 'none';
+                resultadosTabla.style.display = 'none';
+                
+                // Crear mensaje de no encontrado si no existe
+                let noResultDiv = document.getElementById('noResultados');
+                if (!noResultDiv) {
+                    noResultDiv = document.createElement('div');
+                    noResultDiv.id = 'noResultados';
+                    noResultDiv.className = 'empty-state';
+                    tablaDefault.parentNode.insertBefore(noResultDiv, tablaDefault);
+                }
+                noResultDiv.style.display = 'block';
+                noResultDiv.innerHTML = `
+                    <span class="icon">🤷‍♂️</span>
+                    <h3>No se encontraron usuarios</h3>
+                    <p>No hay usuarios que coincidan con "<strong>${query}</strong>".</p>
+                `;
+                return;
+            }
+            
+            // Ocultar mensaje de no resultados
+            const noResultDiv = document.getElementById('noResultados');
+            if (noResultDiv) {
+                noResultDiv.style.display = 'none';
+            }
+            
+            // Ocultar tabla por defecto y mostrar resultados
+            tablaDefault.style.display = 'none';
+            resultadosTabla.style.display = 'block';
+            cantidadResultados.textContent = data.usuarios.length;
+            
+            resultadosBody.innerHTML = '';
+            data.usuarios.forEach(usuario => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${usuario.dni}</strong></td>
+                    <td>${usuario.nombre_completo}</td>
+                    <td>${usuario.correo}</td>
+                    <td><span class="badge-roles">${usuario.roles}</span></td>
+                    <td>${usuario.ciudad}</td>
+                    <td>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <a href="/panel/usuarios/editar/${usuario.id}/" class="btn btn-editar">
+                                ✏️ Editar
+                            </a>
+                            <button onclick="abrirModalEliminar(${usuario.id}, '${usuario.nombre_completo}')" class="btn btn-eliminar">
+                                🗑️ Eliminar
+                            </button>
+                        </div>
+                    </td>
+                `;
+                resultadosBody.appendChild(row);
+            });
+            
+        } catch (error) {
+            console.error('Error al buscar:', error);
+            loadingIndicator.style.display = 'none';
+            emptyState.style.display = 'block';
+            resultadosTabla.style.display = 'none';
+            emptyState.innerHTML = `
+                <span class="icon">❌</span>
+                <h3>Error</h3>
+                <p>Error al realizar la búsqueda. Por favor, intenta de nuevo.</p>
+            `;
+        }
+    }
+    
+    function abrirModalEliminar(id, nombre) {
+        const modal = document.getElementById('modalEliminar');
+        const form = document.getElementById('formEliminar');
+        const nombreSpan = document.getElementById('nombreUsuarioEliminar');
+        
+        nombreSpan.textContent = nombre;
+        form.action = `/panel/usuarios/eliminar/${id}/`;
+        modal.style.display = 'flex';
+    }
+    
+    function cerrarModal() {
+        document.getElementById('modalEliminar').style.display = 'none';
+    }
+    
+    function limpiarBusqueda() {
+        searchInput.value = '';
+        tablaDefault.style.display = 'block';
+        resultadosTabla.style.display = 'none';
+        const noResultDiv = document.getElementById('noResultados');
+        if (noResultDiv) {
+            noResultDiv.style.display = 'none';
+        }
+    }
+    
+    searchInput.focus();
+</script>
+{% endblock %}
+

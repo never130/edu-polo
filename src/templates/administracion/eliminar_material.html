@@ -1,0 +1,59 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Eliminar Material{% endblock %}
+
+{% block user_role %}Docente{% endblock %}
+
+{% block sidebar_menu %}
+<li><a href="{% url 'dashboard_docente' %}"><span class="icon">🏠</span> Inicio</a></li>
+<li><a href="{% url 'administracion:mis_cursos_docente' %}"><span class="icon">📚</span> Mis Cursos</a></li>
+<li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
+<li><a href="{% url 'administracion:materiales_comision' material.fk_id_comision.id_comision %}"><span class="icon">📁</span> Materiales</a></li>
+<li><a href="{% url 'administracion:estudiantes_comision' material.fk_id_comision.id_comision %}"><span class="icon">👥</span> Estudiantes</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+{% endblock %}
+
+{% block content %}
+<div style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); padding: 2.5rem; border-radius: 20px; color: white; margin-bottom: 2rem;">
+    <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem;">🗑️ Eliminar Material</h2>
+    <p style="opacity: 0.9;">Confirma la eliminación de este material</p>
+</div>
+
+<div style="background: white; padding: 2.5rem; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); max-width: 600px; margin: 0 auto;">
+    <div style="margin-bottom: 2rem;">
+        <p style="color: #334155; font-size: 1.1rem; margin-bottom: 1rem;">¿Estás seguro de que deseas eliminar el siguiente material?</p>
+        
+        <div style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+            <h4 style="color: #1e293b; margin: 0 0 0.5rem 0; font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+                {% if material.tipo == 'archivo' %}
+                    📄
+                {% else %}
+                    🔗
+                {% endif %}
+                {{ material.nombre_archivo }}
+            </h4>
+            {% if material.descripcion %}
+            <p style="color: #64748b; margin: 0.5rem 0 0 0;">{{ material.descripcion }}</p>
+            {% endif %}
+            <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; color: #64748b; font-size: 0.85rem; margin-top: 0.5rem;">
+                <span>📅 {{ material.fecha_subida|date:"d/m/Y H:i" }}</span>
+                <span>{% if material.tipo == 'archivo' %}📄 Archivo{% else %}🔗 Enlace{% endif %}</span>
+            </div>
+        </div>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+            <a href="{% url 'administracion:materiales_comision' material.fk_id_comision.id_comision %}" style="padding: 1rem 2rem; background: #e2e8f0; color: #334155; text-decoration: none; border-radius: 12px; font-weight: 600; transition: all 0.3s ease;">
+                Cancelar
+            </a>
+            <button type="submit" style="padding: 1rem 2rem; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.3s ease;">
+                🗑️ Eliminar
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

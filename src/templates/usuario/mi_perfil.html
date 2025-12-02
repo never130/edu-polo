@@ -1,0 +1,455 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Mi Perfil - Edu-Polo{% endblock %}
+
+{% block user_role %}{{ tipo_usuario }}{% endblock %}
+
+{% block sidebar_menu %}
+{% if es_admin or es_mesa_entrada %}
+    {# Menú para Administrador y Mesa de Entrada #}
+    <li><a href="{% url 'dashboard_admin' %}"><span class="icon">🏠</span> Inicio</a></li>
+    <li><a href="{% url 'administracion:panel_cursos' %}"><span class="icon">📚</span> Gestión Cursos</a></li>
+    <li><a href="{% url 'administracion:panel_comisiones' %}"><span class="icon">📋</span> Gestión Comisiones</a></li>
+    <li><a href="{% url 'administracion:panel_inscripciones' %}"><span class="icon">✅</span> Inscripciones</a></li>
+    {% if es_admin_completo %}
+    <li><a href="{% url 'administracion:gestion_usuarios' %}"><span class="icon">👥</span> Gestión Usuarios</a></li>
+    {% endif %}
+    <li><a href="{% url 'administracion:buscador_estudiantes' %}"><span class="icon">🔍</span> Buscar Estudiantes</a></li>
+    {% if es_admin_completo %}
+    <li><a href="{% url 'administracion:panel_polos' %}"><span class="icon">🏢</span> Polos</a></li>
+    {% endif %}
+    <li><a href="{% url 'administracion:estadisticas' %}"><span class="icon">📊</span> Estadísticas</a></li>
+    <li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
+    <li><a href="{% url 'administracion:docentes_cursos' %}"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}" class="active"><span class="icon">👤</span> Mi Perfil</a></li>
+    {% if es_admin_completo %}
+    <li><a href="{% url 'admin:index' %}"><span class="icon">⚙️</span> Django Admin</a></li>
+    {% endif %}
+{% elif es_docente %}
+    {# Menú para Docentes #}
+    <li><a href="{% url 'dashboard_docente' %}"><span class="icon">🏠</span> Inicio</a></li>
+    <li><a href="{% url 'administracion:mis_cursos_docente' %}"><span class="icon">📚</span> Mis Cursos</a></li>
+    <li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
+    <li><a href="{% url 'administracion:materiales_docente' %}"><span class="icon">📁</span> Materiales</a></li>
+    <li><a href="{% url 'administracion:estudiantes_docente' %}"><span class="icon">👥</span> Estudiantes</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}" class="active"><span class="icon">👤</span> Mi Perfil</a></li>
+{% else %}
+    {# Menú para Estudiantes y otros usuarios #}
+    <li><a href="{% url 'dashboard_estudiante' %}"><span class="icon">🏠</span> Inicio</a></li>
+    <li><a href="{% url 'cursos:ver_disponibles' %}"><span class="icon">📚</span> Cursos Disponibles</a></li>
+    <li><a href="{% url 'cursos:mis_inscripciones' %}"><span class="icon">✅</span> Mis Inscripciones</a></li>
+    {% if es_estudiante %}
+    <li><a href="{% url 'usuario:gestionar_tutores' %}"><span class="icon">👨‍👩‍👧</span> Mis Tutores</a></li>
+    {% endif %}
+    <li><a href="{% url 'usuario:mi_progreso' %}"><span class="icon">📊</span> Mi Progreso</a></li>
+    <li><a href="{% url 'usuario:mis_certificados' %}"><span class="icon">🎓</span> Certificados</a></li>
+    {% if es_estudiante %}
+    <li><a href="{% url 'usuario:materiales_estudiante' %}"><span class="icon">📁</span> Materiales</a></li>
+    {% endif %}
+    <li><a href="{% url 'usuario:mi_perfil' %}" class="active"><span class="icon">👤</span> Mi Perfil</a></li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>👤 Mi Perfil</h2>
+    <p>Visualiza y edita tu información personal</p>
+</div>
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<div class="perfil-container">
+    <!-- Tarjeta Principal -->
+    <div class="perfil-card main-card">
+        <div class="perfil-header">
+            <div class="avatar-section">
+                <div class="avatar-circle">
+                    <span class="avatar-text">{{ persona.nombre.0 }}{{ persona.apellido.0 }}</span>
+                </div>
+                <div class="perfil-info-header">
+                    <h3>{{ persona.nombre_completo }}</h3>
+                    <span class="badge-tipo">{{ tipo_usuario }}</span>
+                </div>
+            </div>
+            <div class="perfil-actions">
+                <a href="{% url 'usuario:editar_perfil' %}" class="btn btn-primary">
+                    ✏️ Editar Perfil
+                </a>
+                <a href="{% url 'usuario:cambiar_contrasena' %}" class="btn btn-secondary">
+                    🔒 Cambiar Contraseña
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información Personal -->
+    <div class="perfil-card">
+        <div class="card-title">
+            <span class="icon">📋</span>
+            <h3>Información Personal</h3>
+        </div>
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">DNI</span>
+                <span class="info-value">{{ persona.dni }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Correo Electrónico</span>
+                <span class="info-value">{{ persona.correo }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Teléfono</span>
+                <span class="info-value">{{ persona.telefono|default:"No especificado" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Fecha de Nacimiento</span>
+                <span class="info-value">{{ persona.fecha_nacimiento|date:"d/m/Y"|default:"No especificado" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Edad</span>
+                <span class="info-value">{{ persona.edad|default:"No especificado" }} años</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Género</span>
+                <span class="info-value">{{ persona.get_genero_display|default:"No especificado" }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información de Residencia -->
+    <div class="perfil-card">
+        <div class="card-title">
+            <span class="icon">🏠</span>
+            <h3>Residencia</h3>
+        </div>
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">Ciudad</span>
+                <span class="info-value">{{ persona.ciudad_residencia|default:"No especificado" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Zona/Barrio</span>
+                <span class="info-value">{{ persona.zona_residencia|default:"No especificado" }}</span>
+            </div>
+            <div class="info-item full-width">
+                <span class="info-label">Domicilio Completo</span>
+                <span class="info-value">{{ persona.domicilio|default:"No especificado" }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información Adicional -->
+    {% if es_estudiante %}
+    <div class="perfil-card">
+        <div class="card-title">
+            <span class="icon">🎓</span>
+            <h3>Información Académica</h3>
+        </div>
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">Nivel de Estudios</span>
+                <span class="info-value">{{ perfil_adicional.get_nivel_estudios_display|default:"No especificado" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Institución Educativa</span>
+                <span class="info-value">{{ perfil_adicional.institucion_educativa|default:"No especificado" }}</span>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if es_docente %}
+    <div class="perfil-card">
+        <div class="card-title">
+            <span class="icon">👨‍🏫</span>
+            <h3>Información Profesional</h3>
+        </div>
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">Especialidad</span>
+                <span class="info-value">{{ perfil_adicional.especialidad|default:"No especificado" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Años de Experiencia</span>
+                <span class="info-value">{{ perfil_adicional.experiencia_anios|default:"No especificado" }}</span>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Información Médica y Autorizaciones -->
+    <div class="perfil-card">
+        <div class="card-title">
+            <span class="icon">🏥</span>
+            <h3>Salud y Autorizaciones</h3>
+        </div>
+        <div class="info-grid">
+            <div class="info-item full-width">
+                <span class="info-label">Condiciones Médicas/Alergias</span>
+                <span class="info-value">{{ persona.condiciones_medicas|default:"Ninguna registrada" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Autorización de Imagen</span>
+                <span class="info-value">
+                    {% if persona.autorizacion_imagen %}
+                        <span class="badge badge-success">✅ Autorizado</span>
+                    {% else %}
+                        <span class="badge badge-danger">❌ No autorizado</span>
+                    {% endif %}
+                </span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Autorización de Voz</span>
+                <span class="info-value">
+                    {% if persona.autorizacion_voz %}
+                        <span class="badge badge-success">✅ Autorizado</span>
+                    {% else %}
+                        <span class="badge badge-danger">❌ No autorizado</span>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .page-header {
+        margin-bottom: 2rem;
+    }
+    .page-header h2 {
+        font-size: 2.2rem;
+        color: #334155;
+        margin-bottom: 0.5rem;
+    }
+    .page-header p {
+        color: #64748b;
+        font-size: 1.05rem;
+    }
+    
+    .messages {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 1.5rem;
+    }
+    .messages li {
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+    .messages li.success {
+        background: #d1fae5;
+        color: #065f46;
+    }
+    .messages li.error {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+    
+    .perfil-container {
+        display: grid;
+        gap: 2rem;
+    }
+    
+    .perfil-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+    }
+    
+    .perfil-card:hover {
+        box-shadow: 0 6px 25px rgba(0,0,0,0.12);
+    }
+    
+    .perfil-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 2rem;
+    }
+    
+    .avatar-section {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+    
+    .avatar-circle {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+    }
+    
+    .avatar-text {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: white;
+    }
+    
+    .perfil-info-header h3 {
+        font-size: 1.8rem;
+        color: #334155;
+        margin-bottom: 0.5rem;
+    }
+    
+    .badge-tipo {
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        color: white;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    
+    .perfil-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn {
+        padding: 0.85rem 1.5rem;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-block;
+        font-size: 0.95rem;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+    
+    .btn-secondary {
+        background: white;
+        color: #3b82f6;
+        border: 2px solid #3b82f6;
+    }
+    
+    .btn-secondary:hover {
+        background: #3b82f6;
+        color: white;
+    }
+    
+    .card-title {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #f1f5f9;
+    }
+    
+    .card-title .icon {
+        font-size: 1.8rem;
+    }
+    
+    .card-title h3 {
+        font-size: 1.3rem;
+        color: #334155;
+        margin: 0;
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .info-item.full-width {
+        grid-column: 1 / -1;
+    }
+    
+    .info-label {
+        font-size: 0.85rem;
+        color: #64748b;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .info-value {
+        font-size: 1.05rem;
+        color: #334155;
+        font-weight: 500;
+    }
+    
+    .badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+    
+    .badge-success {
+        background: #d1fae5;
+        color: #065f46;
+    }
+    
+    .badge-danger {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+    
+    @media (max-width: 768px) {
+        .perfil-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .perfil-actions {
+            width: 100%;
+        }
+        
+        .btn {
+            width: 100%;
+            text-align: center;
+        }
+        
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .avatar-circle {
+            width: 80px;
+            height: 80px;
+        }
+        
+        .avatar-text {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+

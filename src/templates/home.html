@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio - Edu-Polo{% endblock %}
+
+{% block content %}
+<div style="background: rgba(255, 255, 255, 0.95); padding: 3rem; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+    <h1 style="color: #667eea; margin-bottom: 2rem; text-align: center;">¡Bienvenido a Edu-Polo!</h1>
+    
+    {% if user.is_authenticated %}
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <p style="font-size: 1.2rem; color: #333; margin-bottom: 2rem;">
+                Hola, <strong>{{ user.username }}</strong>. Has iniciado sesión correctamente.
+            </p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+            <a href="{% url 'admin:index' %}" style="display: block; padding: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 10px; text-align: center; transition: transform 0.3s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+                <h3 style="margin-bottom: 0.5rem;">📊 Panel de Administración</h3>
+                <p style="font-size: 0.9rem;">Gestionar el sistema</p>
+            </a>
+            
+            <a href="/cursos/" style="display: block; padding: 2rem; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; text-decoration: none; border-radius: 10px; text-align: center; transition: transform 0.3s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+                <h3 style="margin-bottom: 0.5rem;">📚 Cursos</h3>
+                <p style="font-size: 0.9rem;">Ver y gestionar cursos</p>
+            </a>
+            
+            <a href="/docentes/" style="display: block; padding: 2rem; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; text-decoration: none; border-radius: 10px; text-align: center; transition: transform 0.3s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+                <h3 style="margin-bottom: 0.5rem;">👨‍🏫 Docentes</h3>
+                <p style="font-size: 0.9rem;">Gestionar docentes</p>
+            </a>
+        </div>
+    {% else %}
+        <div style="text-align: center;">
+            <p style="font-size: 1.2rem; color: #333; margin-bottom: 2rem;">
+                Por favor, inicia sesión para acceder al sistema.
+            </p>
+            <a href="{% url 'login' %}" style="display: inline-block; padding: 1rem 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 5px; font-size: 1.1rem; transition: transform 0.3s ease;">
+                Iniciar Sesión
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    a[href^="/cursos/"],
+    a[href^="/docentes/"],
+    a[href*="admin"] {
+        transition: transform 0.3s ease;
+    }
+    a[href^="/cursos/"]:hover,
+    a[href^="/docentes/"]:hover,
+    a[href*="admin"]:hover {
+        transform: translateY(-5px);
+    }
+</style>
+{% endblock %}
+
+
+

@@ -1,0 +1,244 @@
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.db import transaction
+from apps.modulo_1.usuario.models import Persona, Usuario
+from apps.modulo_1.roles.models import Estudiante, Docente, UsuarioRol
+from datetime import date
+
+
+@login_required
+def mi_perfil(request):
+    """Vista del perfil del usuario con opción de edición"""
+    try:
+        # Obtener la persona asociada al usuario logueado
+        usuario = Usuario.objects.get(persona__dni=request.user.username)
+        persona = usuario.persona
+        
+        # Determinar el tipo de usuario
+        es_estudiante = Estudiante.objects.filter(usuario=usuario).exists()
+        es_docente = Docente.objects.filter(id_persona=persona).exists()
+        
+        # Verificar roles
+        roles = UsuarioRol.objects.filter(usuario_id=usuario).values_list('rol_id__nombre', flat=True)
+        es_admin = 'Administrador' in roles or request.user.is_staff
+        es_mesa_entrada = 'Mesa de Entrada' in roles
+        
+        # Obtener información adicional según el tipo
+        perfil_adicional = None
+        if es_estudiante:
+            perfil_adicional = Estudiante.objects.get(usuario=usuario)
+            tipo_usuario = 'Estudiante'
+        elif es_docente:
+            perfil_adicional = Docente.objects.get(id_persona=persona)
+            tipo_usuario = 'Docente'
+        elif es_admin:
+            tipo_usuario = 'Administrador'
+        elif es_mesa_entrada:
+            tipo_usuario = 'Mesa de Entrada'
+        else:
+            tipo_usuario = 'Usuario'
+        
+        context = {
+            'persona': persona,
+            'usuario': usuario,
+            'perfil_adicional': perfil_adicional,
+            'tipo_usuario': tipo_usuario,
+            'es_estudiante': es_estudiante,
+            'es_docente': es_docente,
+            'es_admin': es_admin,
+            'es_mesa_entrada': es_mesa_entrada,
+            'puede_crear_usuarios': es_admin,  # Solo administradores pueden crear usuarios
+        }
+        return render(request, 'usuario/mi_perfil.html', context)
+    except Usuario.DoesNotExist:
+        messages.error(request, 'No se encontró tu perfil de usuario.')
+        return redirect('dashboard')
+
+
+@login_required
+def editar_perfil(request):
+    """Vista para editar los datos personales del usuario"""
+    try:
+        usuario = Usuario.objects.get(persona__dni=request.user.username)
+        persona = usuario.persona
+        
+        # Determinar el tipo de usuario
+        es_estudiante = Estudiante.objects.filter(usuario=usuario).exists()
+        es_docente = Docente.objects.filter(id_persona=persona).exists()
+        
+        # Verificar roles
+        roles = UsuarioRol.objects.filter(usuario_id=usuario).values_list('rol_id__nombre', flat=True)
+        es_admin = 'Administrador' in roles or request.user.is_staff
+        es_mesa_entrada = 'Mesa de Entrada' in roles
+        
+        perfil_adicional = None
+        if es_estudiante:
+            perfil_adicional = Estudiante.objects.get(usuario=usuario)
+        elif es_docente:
+            perfil_adicional = Docente.objects.get(id_persona=persona)
+        
+        if request.method == 'POST':
+            try:
+                with transaction.atomic():
+                    # Actualizar datos personales básicos
+                    persona.nombre = request.POST.get('nombre', persona.nombre)
+                    persona.apellido = request.POST.get('apellido', persona.apellido)
+                    persona.telefono = request.POST.get('telefono', persona.telefono)
+                    persona.correo = request.POST.get('correo', persona.correo)
+                    
+                    # Fecha de nacimiento
+                    fecha_nac = request.POST.get('fecha_nacimiento')
+                    if fecha_nac:
+                        persona.fecha_nacimiento = fecha_nac
+                    
+                    # Género
+                    persona.genero = request.POST.get('genero', persona.genero)
+                    
+                    # Dirección
+                    persona.ciudad_residencia = request.POST.get('ciudad_residencia', persona.ciudad_residencia)
+                    persona.zona_residencia = request.POST.get('zona_residencia', persona.zona_residencia)
+                    persona.domicilio = request.POST.get('domicilio', persona.domicilio)
+                    
+                    # Condiciones médicas
+                    persona.condiciones_medicas = request.POST.get('condiciones_medicas', persona.condiciones_medicas)
+                    
+                    # Autorizaciones
+                    persona.autorizacion_imagen = request.POST.get('autorizacion_imagen') == 'on'
+                    persona.autorizacion_voz = request.POST.get('autorizacion_voz') == 'on'
+                    
+                    persona.save()
+                    
+                    # Actualizar datos adicionales según el tipo de usuario
+                    if es_estudiante and perfil_adicional:
+                        perfil_adicional.nivel_estudios = request.POST.get('nivel_estudios', perfil_adicional.nivel_estudios)
+                        perfil_adicional.institucion_educativa = request.POST.get('institucion_educativa', perfil_adicional.institucion_educativa)
+                        perfil_adicional.save()
+                    
+                    elif es_docente and perfil_adicional:
+                        perfil_adicional.especialidad = request.POST.get('especialidad', perfil_adicional.especialidad)
+                        perfil_adicional.experiencia_anios = request.POST.get('experiencia_anios', perfil_adicional.experiencia_anios)
+                        perfil_adicional.save()
+                    
+                    messages.success(request, '✅ ¡Perfil actualizado exitosamente!')
+                    return redirect('usuario:mi_perfil')
+                    
+            except Exception as e:
+                messages.error(request, f'❌ Error al actualizar el perfil: {str(e)}')
+        
+        # Determinar tipo de usuario para el template
+        if es_estudiante:
+            tipo_usuario = 'Estudiante'
+        elif es_docente:
+            tipo_usuario = 'Docente'
+        elif es_admin:
+            tipo_usuario = 'Administrador'
+        elif es_mesa_entrada:
+            tipo_usuario = 'Mesa de Entrada'
+        else:
+            tipo_usuario = 'Usuario'
+        
+        context = {
+            'persona': persona,
+            'usuario': usuario,
+            'perfil_adicional': perfil_adicional,
+            'es_estudiante': es_estudiante,
+            'es_docente': es_docente,
+            'es_admin': es_admin,
+            'es_mesa_entrada': es_mesa_entrada,
+            'tipo_usuario': tipo_usuario,
+        }
+        return render(request, 'usuario/editar_perfil.html', context)
+        
+    except Usuario.DoesNotExist:
+        messages.error(request, 'No se encontró tu perfil de usuario.')
+        return redirect('dashboard')
+
+
+@login_required
+def cambiar_contrasena(request):
+    """Vista para cambiar la contraseña del usuario"""
+    try:
+        usuario = Usuario.objects.get(persona__dni=request.user.username)
+        persona = usuario.persona
+        
+        # Verificar roles para el template
+        es_estudiante = Estudiante.objects.filter(usuario=usuario).exists()
+        es_docente = Docente.objects.filter(id_persona=persona).exists()
+        roles = UsuarioRol.objects.filter(usuario_id=usuario).values_list('rol_id__nombre', flat=True)
+        es_admin = 'Administrador' in roles or request.user.is_staff
+        es_mesa_entrada = 'Mesa de Entrada' in roles
+        
+        # Determinar tipo de usuario
+        if es_estudiante:
+            tipo_usuario = 'Estudiante'
+        elif es_docente:
+            tipo_usuario = 'Docente'
+        elif es_admin:
+            tipo_usuario = 'Administrador'
+        elif es_mesa_entrada:
+            tipo_usuario = 'Mesa de Entrada'
+        else:
+            tipo_usuario = 'Usuario'
+        
+        if request.method == 'POST':
+            contrasena_actual = request.POST.get('contrasena_actual')
+            contrasena_nueva = request.POST.get('contrasena_nueva')
+            contrasena_confirmar = request.POST.get('contrasena_confirmar')
+            
+            # Validar contraseña actual
+            if usuario.contrasena != contrasena_actual:
+                messages.error(request, '❌ La contraseña actual es incorrecta.')
+                context = {
+                    'tipo_usuario': tipo_usuario,
+                    'es_admin': es_admin,
+                    'es_mesa_entrada': es_mesa_entrada,
+                    'es_docente': es_docente,
+                    'es_estudiante': es_estudiante,
+                }
+                return render(request, 'usuario/cambiar_contrasena.html', context)
+            
+            # Validar que las contraseñas nuevas coincidan
+            if contrasena_nueva != contrasena_confirmar:
+                messages.error(request, '❌ Las contraseñas nuevas no coinciden.')
+                context = {
+                    'tipo_usuario': tipo_usuario,
+                    'es_admin': es_admin,
+                    'es_mesa_entrada': es_mesa_entrada,
+                    'es_docente': es_docente,
+                    'es_estudiante': es_estudiante,
+                }
+                return render(request, 'usuario/cambiar_contrasena.html', context)
+            
+            # Validar longitud mínima
+            if len(contrasena_nueva) < 6:
+                messages.error(request, '❌ La contraseña debe tener al menos 6 caracteres.')
+                context = {
+                    'tipo_usuario': tipo_usuario,
+                    'es_admin': es_admin,
+                    'es_mesa_entrada': es_mesa_entrada,
+                    'es_docente': es_docente,
+                    'es_estudiante': es_estudiante,
+                }
+                return render(request, 'usuario/cambiar_contrasena.html', context)
+            
+            # Actualizar contraseña
+            usuario.contrasena = contrasena_nueva
+            usuario.save()
+            
+            messages.success(request, '✅ ¡Contraseña actualizada exitosamente!')
+            return redirect('usuario:mi_perfil')
+        
+        context = {
+            'tipo_usuario': tipo_usuario,
+            'es_admin': es_admin,
+            'es_mesa_entrada': es_mesa_entrada,
+            'es_docente': es_docente,
+            'es_estudiante': es_estudiante,
+        }
+        return render(request, 'usuario/cambiar_contrasena.html', context)
+        
+    except Usuario.DoesNotExist:
+        messages.error(request, 'No se encontró tu perfil de usuario.')
+        return redirect('dashboard')
+

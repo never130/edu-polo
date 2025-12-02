@@ -1,0 +1,203 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Gestión de Cursos - Panel Administrador{% endblock %}
+
+{% block user_role %}Administrador{% endblock %}
+
+{% block sidebar_menu %}
+<li><a href="{% url 'dashboard_admin' %}"><span class="icon">🏠</span> Inicio</a></li>
+<li><a href="{% url 'administracion:panel_cursos' %}" class="active"><span class="icon">📚</span> Gestión Cursos</a></li>
+<li><a href="{% url 'administracion:panel_comisiones' %}"><span class="icon">📋</span> Gestión Comisiones</a></li>
+<li><a href="{% url 'administracion:panel_inscripciones' %}"><span class="icon">✅</span> Inscripciones</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:gestion_usuarios' %}"><span class="icon">👥</span> Gestión Usuarios</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:buscador_estudiantes' %}"><span class="icon">🔍</span> Buscar Estudiantes</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:panel_polos' %}"><span class="icon">🏢</span> Polos</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:estadisticas' %}"><span class="icon">📊</span> Estadísticas</a></li>
+<li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
+<li><a href="{% url 'administracion:docentes_cursos' %}"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'admin:index' %}"><span class="icon">⚙️</span> Django Admin</a></li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+        padding: 2.5rem;
+        border-radius: 20px;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .btn-crear {
+        background: white;
+        color: #1e40af;
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 700;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-crear:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(255,255,255,0.4);
+    }
+    
+    .cursos-table {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+    
+    .cursos-table table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .cursos-table th {
+        background: #f8fafc;
+        padding: 1.2rem;
+        text-align: left;
+        font-weight: 700;
+        color: #334155;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .cursos-table td {
+        padding: 1.2rem;
+        border-bottom: 1px solid #e2e8f0;
+        color: #64748b;
+    }
+    
+    .cursos-table tr:hover {
+        background: #f8fafc;
+    }
+    
+    .badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 16px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    
+    .badge-abierto {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+    }
+    
+    .badge-cerrado {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+    }
+    
+    .btn-action {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        display: inline-block;
+        margin-right: 0.5rem;
+    }
+    
+    .btn-edit {
+        background: #3b82f6;
+        color: white;
+    }
+    
+    .btn-edit:hover {
+        background: #1e40af;
+    }
+</style>
+
+<div class="page-header">
+    <div>
+        <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem;">📚 Gestión de Cursos</h2>
+        <p style="opacity: 0.95;">Administra todos los cursos del sistema</p>
+    </div>
+    <a href="{% url 'administracion:crear_curso' %}" class="btn-crear">
+        ➕ Crear Nuevo Curso
+    </a>
+</div>
+
+{% if cursos %}
+<div class="cursos-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Orden</th>
+                <th>ID</th>
+                <th>Nombre del Curso</th>
+                <th>Edad Mínima</th>
+                <th>Comisiones</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for curso in cursos %}
+            <tr>
+                <td>
+                    <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 0.4rem 0.8rem; border-radius: 8px; font-weight: 700; font-size: 1rem;">
+                        {{ curso.orden|default:0 }}
+                    </span>
+                </td>
+                <td><strong>#{{ curso.id_curso }}</strong></td>
+                <td>
+                    <strong style="color: #1e40af;">{{ curso.nombre }}</strong>
+                    <br>
+                    <small style="color: #94a3b8;">{{ curso.descripcion|truncatewords:10 }}</small>
+                </td>
+                <td>
+                    {% if curso.edad_minima %}
+                        {{ curso.edad_minima }} años
+                    {% else %}
+                        <span style="color: #94a3b8;">Sin restricción</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <span style="background: #e0e7ff; color: #3730a3; padding: 0.3rem 0.8rem; border-radius: 12px; font-weight: 600;">
+                        {{ curso.total_comisiones }} comisión{{ curso.total_comisiones|pluralize:"es" }}
+                    </span>
+                </td>
+                <td>
+                    {% if curso.estado == 'Abierto' %}
+                        <span class="badge badge-abierto">✅ {{ curso.estado }}</span>
+                    {% else %}
+                        <span class="badge badge-cerrado">🚫 {{ curso.estado }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'administracion:editar_curso' curso.id_curso %}" class="btn-action btn-edit">
+                        ✏️ Editar
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div style="background: white; padding: 4rem; border-radius: 20px; text-align: center;">
+    <span style="font-size: 4rem;">📭</span>
+    <h3 style="color: #3b82f6; margin: 1rem 0;">No hay cursos creados</h3>
+    <p style="color: #64748b;">Crea tu primer curso para comenzar</p>
+</div>
+{% endif %}
+
+{% endblock %}
+
+

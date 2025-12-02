@@ -1,0 +1,442 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Editar Perfil - Edu-Polo{% endblock %}
+
+{% block user_role %}{{ tipo_usuario|default:"Usuario" }}{% endblock %}
+
+{% block sidebar_menu %}
+{% if es_admin or es_mesa_entrada %}
+    {# Menú para Administrador y Mesa de Entrada #}
+    <li><a href="{% url 'dashboard_admin' %}"><span class="icon">🏠</span> Inicio</a></li>
+    <li><a href="{% url 'administracion:panel_cursos' %}"><span class="icon">📚</span> Gestión Cursos</a></li>
+    <li><a href="{% url 'administracion:panel_comisiones' %}"><span class="icon">📋</span> Gestión Comisiones</a></li>
+    <li><a href="{% url 'administracion:panel_inscripciones' %}"><span class="icon">✅</span> Inscripciones</a></li>
+    {% if es_admin_completo %}
+    <li><a href="{% url 'administracion:gestion_usuarios' %}"><span class="icon">👥</span> Gestión Usuarios</a></li>
+    {% endif %}
+    <li><a href="{% url 'administracion:buscador_estudiantes' %}"><span class="icon">🔍</span> Buscar Estudiantes</a></li>
+    {% if es_admin_completo %}
+    <li><a href="{% url 'administracion:panel_polos' %}"><span class="icon">🏢</span> Polos</a></li>
+    {% endif %}
+    <li><a href="{% url 'administracion:estadisticas' %}"><span class="icon">📊</span> Estadísticas</a></li>
+    <li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
+    <li><a href="{% url 'administracion:docentes_cursos' %}"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}" class="active"><span class="icon">👤</span> Mi Perfil</a></li>
+    {% if es_admin_completo %}
+    <li><a href="{% url 'admin:index' %}"><span class="icon">⚙️</span> Django Admin</a></li>
+    {% endif %}
+{% elif es_docente %}
+    {# Menú para Docentes #}
+    <li><a href="{% url 'dashboard_docente' %}"><span class="icon">🏠</span> Inicio</a></li>
+    <li><a href="{% url 'administracion:mis_cursos_docente' %}"><span class="icon">📚</span> Mis Cursos</a></li>
+    <li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
+    <li><a href="{% url 'administracion:materiales_docente' %}"><span class="icon">📁</span> Materiales</a></li>
+    <li><a href="{% url 'administracion:estudiantes_docente' %}"><span class="icon">👥</span> Estudiantes</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}" class="active"><span class="icon">👤</span> Mi Perfil</a></li>
+{% else %}
+    {# Menú para Estudiantes y otros usuarios #}
+    <li><a href="{% url 'dashboard_estudiante' %}"><span class="icon">🏠</span> Inicio</a></li>
+    <li><a href="{% url 'cursos:ver_disponibles' %}"><span class="icon">📚</span> Cursos Disponibles</a></li>
+    <li><a href="{% url 'cursos:mis_inscripciones' %}"><span class="icon">✅</span> Mis Inscripciones</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}" class="active"><span class="icon">👤</span> Mi Perfil</a></li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>✏️ Editar Perfil</h2>
+    <p>Actualiza tu información personal</p>
+</div>
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<div class="form-card">
+    <form method="post">
+        {% csrf_token %}
+        
+        <!-- Información Personal -->
+        <div class="form-section">
+            <h3 class="section-title">
+                <span>👤</span>
+                Información Personal
+            </h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="nombre" class="required">Nombre</label>
+                    <input type="text" name="nombre" id="nombre" value="{{ persona.nombre }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="apellido" class="required">Apellido</label>
+                    <input type="text" name="apellido" id="apellido" value="{{ persona.apellido }}" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="dni">DNI (No editable)</label>
+                    <input type="text" value="{{ persona.dni }}" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="correo" class="required">Correo Electrónico</label>
+                    <input type="email" name="correo" id="correo" value="{{ persona.correo }}" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="telefono">Teléfono</label>
+                    <input type="tel" name="telefono" id="telefono" value="{{ persona.telefono|default:'' }}" placeholder="+54 2901 123456">
+                </div>
+                <div class="form-group">
+                    <label for="fecha_nacimiento">Fecha de Nacimiento</label>
+                    <input type="date" name="fecha_nacimiento" id="fecha_nacimiento" value="{{ persona.fecha_nacimiento|date:'Y-m-d'|default:'' }}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="genero">Género</label>
+                <select name="genero" id="genero">
+                    <option value="">Selecciona una opción</option>
+                    <option value="M" {% if persona.genero == 'M' %}selected{% endif %}>Masculino</option>
+                    <option value="F" {% if persona.genero == 'F' %}selected{% endif %}>Femenino</option>
+                    <option value="O" {% if persona.genero == 'O' %}selected{% endif %}>Otro</option>
+                    <option value="P" {% if persona.genero == 'P' %}selected{% endif %}>Prefiero no decirlo</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Residencia -->
+        <div class="form-section">
+            <h3 class="section-title">
+                <span>🏠</span>
+                Información de Residencia
+            </h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="ciudad_residencia">Ciudad</label>
+                    <select name="ciudad_residencia" id="ciudad_residencia">
+                        <option value="">Selecciona una ciudad</option>
+                        <option value="Ushuaia" {% if persona.ciudad_residencia == 'Ushuaia' %}selected{% endif %}>Ushuaia</option>
+                        <option value="Rio Grande" {% if persona.ciudad_residencia == 'Rio Grande' %}selected{% endif %}>Río Grande</option>
+                        <option value="Tolhuin" {% if persona.ciudad_residencia == 'Tolhuin' %}selected{% endif %}>Tolhuin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="zona_residencia">Zona/Barrio</label>
+                    <input type="text" name="zona_residencia" id="zona_residencia" value="{{ persona.zona_residencia|default:'' }}" placeholder="Ej: Centro, Andorra">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="domicilio">Domicilio Completo</label>
+                <input type="text" name="domicilio" id="domicilio" value="{{ persona.domicilio|default:'' }}" placeholder="Ej: Av. Maipú 1234">
+            </div>
+        </div>
+
+        <!-- Información Académica/Profesional -->
+        {% if es_estudiante %}
+        <div class="form-section">
+            <h3 class="section-title">
+                <span>🎓</span>
+                Información Académica
+            </h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="nivel_estudios">Nivel de Estudios</label>
+                    <select name="nivel_estudios" id="nivel_estudios">
+                        <option value="">Selecciona un nivel</option>
+                        <option value="PS" {% if perfil_adicional.nivel_estudios == 'PS' %}selected{% endif %}>Primario Sin Completar</option>
+                        <option value="PC" {% if perfil_adicional.nivel_estudios == 'PC' %}selected{% endif %}>Primario Completo</option>
+                        <option value="SS" {% if perfil_adicional.nivel_estudios == 'SS' %}selected{% endif %}>Secundario Sin Completar</option>
+                        <option value="SC" {% if perfil_adicional.nivel_estudios == 'SC' %}selected{% endif %}>Secundario Completo</option>
+                        <option value="TS" {% if perfil_adicional.nivel_estudios == 'TS' %}selected{% endif %}>Terciario/Universitario Sin Completar</option>
+                        <option value="TC" {% if perfil_adicional.nivel_estudios == 'TC' %}selected{% endif %}>Terciario/Universitario Completo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="institucion_educativa">Institución Educativa</label>
+                    <input type="text" name="institucion_educativa" id="institucion_educativa" value="{{ perfil_adicional.institucion_educativa|default:'' }}" placeholder="Nombre de tu institución">
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if es_docente %}
+        <div class="form-section">
+            <h3 class="section-title">
+                <span>👨‍🏫</span>
+                Información Profesional
+            </h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="especialidad">Especialidad</label>
+                    <input type="text" name="especialidad" id="especialidad" value="{{ perfil_adicional.especialidad|default:'' }}" placeholder="Ej: Matemáticas, Programación">
+                </div>
+                <div class="form-group">
+                    <label for="experiencia_anios">Años de Experiencia</label>
+                    <input type="number" name="experiencia_anios" id="experiencia_anios" value="{{ perfil_adicional.experiencia_anios|default:'' }}" min="0" placeholder="Ej: 5">
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Salud y Autorizaciones -->
+        <div class="form-section">
+            <h3 class="section-title">
+                <span>🏥</span>
+                Salud y Autorizaciones
+            </h3>
+            <div class="form-group">
+                <label for="condiciones_medicas">Condiciones Médicas/Alergias</label>
+                <textarea name="condiciones_medicas" id="condiciones_medicas" rows="3" placeholder="Especifica alergias, condiciones médicas...">{{ persona.condiciones_medicas|default:'' }}</textarea>
+            </div>
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="autorizacion_imagen" name="autorizacion_imagen" {% if persona.autorizacion_imagen %}checked{% endif %}>
+                <label for="autorizacion_imagen">Autorizo el uso de mi imagen en fotografías y videos con fines educativos.</label>
+            </div>
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="autorizacion_voz" name="autorizacion_voz" {% if persona.autorizacion_voz %}checked{% endif %}>
+                <label for="autorizacion_voz">Autorizo el uso de mi voz en grabaciones con fines educativos.</label>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                💾 Guardar Cambios
+            </button>
+            <a href="{% url 'usuario:mi_perfil' %}" class="btn btn-secondary">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .page-header {
+        margin-bottom: 2rem;
+    }
+    .page-header h2 {
+        font-size: 2.2rem;
+        color: #334155;
+        margin-bottom: 0.5rem;
+    }
+    .page-header p {
+        color: #64748b;
+        font-size: 1.05rem;
+    }
+    
+    .messages {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 1.5rem;
+    }
+    .messages li {
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+    .messages li.success {
+        background: #d1fae5;
+        color: #065f46;
+    }
+    .messages li.error {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+    
+    .form-card {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .form-section {
+        margin-bottom: 2.5rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .form-section:last-of-type {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+        color: #3b82f6;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        font-weight: 700;
+    }
+    
+    .form-row {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-row .form-group {
+        flex: 1;
+        margin-bottom: 0;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.6rem;
+        color: #334155;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+    
+    .form-group label.required::after {
+        content: ' *';
+        color: #ef4444;
+        margin-left: 4px;
+    }
+    
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="tel"],
+    .form-group input[type="date"],
+    .form-group input[type="number"],
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 1rem 1.2rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f8fafc;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .form-group input:disabled {
+        background: #e2e8f0;
+        cursor: not-allowed;
+        color: #64748b;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #3b82f6;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+    
+    .form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+    
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .checkbox-group input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+    
+    .checkbox-group label {
+        margin-bottom: 0;
+        cursor: pointer;
+    }
+    
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2.5rem;
+    }
+    
+    .btn {
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: none;
+        font-size: 1rem;
+        display: inline-block;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+    
+    .btn-secondary {
+        background: #e2e8f0;
+        color: #334155;
+    }
+    
+    .btn-secondary:hover {
+        background: #cbd5e1;
+    }
+    
+    @media (max-width: 768px) {
+        .form-row {
+            flex-direction: column;
+            gap: 0;
+        }
+        
+        .form-card {
+            padding: 1.5rem;
+            margin: 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 0.8rem 1rem;
+        }
+        
+        .btn {
+            padding: 0.8rem 1.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        
+        .form-actions .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+

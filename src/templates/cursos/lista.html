@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Cursos Disponibles - Edu-Polo{% endblock %}
+
+{% block content %}
+<style>
+    .hero {
+        background: linear-gradient(rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9)), 
+                    url('{% static "img/banner forms_agencia_polo_-02.jpg" %}');
+        background-size: cover;
+        background-position: center;
+        padding: 4rem 2rem;
+        border-radius: 20px;
+        text-align: center;
+        color: white;
+        margin-bottom: 3rem;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    
+    .hero h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .hero p {
+        font-size: 1.3rem;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .cursos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+    
+    .curso-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .curso-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+    }
+    
+    .curso-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 3px solid #667eea;
+    }
+    
+    .curso-icon {
+        font-size: 3rem;
+    }
+    
+    .curso-title {
+        flex: 1;
+    }
+    
+    .curso-title h2 {
+        color: #667eea;
+        font-size: 1.5rem;
+        margin-bottom: 0.3rem;
+    }
+    
+    .curso-estado {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        color: white;
+    }
+    
+    .curso-descripcion {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        min-height: 60px;
+    }
+    
+    .curso-info {
+        display: grid;
+        gap: 0.8rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #555;
+        font-size: 0.95rem;
+    }
+    
+    .info-item strong {
+        color: #333;
+    }
+    
+    .comisiones {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid #f0f0f0;
+    }
+    
+    .comisiones h3 {
+        color: #667eea;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+    
+    .comision-item {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+    }
+    
+    .comision-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .comision-detalles {
+        flex: 1;
+    }
+    
+    .comision-detalles p {
+        margin: 0.3rem 0;
+        color: #555;
+        font-size: 0.9rem;
+    }
+    
+    .btn-inscribir {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-inscribir:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+    
+    .no-cursos {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .no-cursos h2 {
+        color: #667eea;
+        margin-bottom: 1rem;
+    }
+    
+    .badge {
+        display: inline-block;
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    
+    .badge-cupos {
+        background: #3498db;
+        color: white;
+    }
+</style>
+
+<div class="hero">
+    <h1>🎓 Cursos Disponibles</h1>
+    <p>Descubre nuestra amplia oferta educativa y comienza tu camino hacia el éxito profesional</p>
+</div>
+
+{% if cursos %}
+    <div class="cursos-grid">
+        {% for curso in cursos %}
+        <div class="curso-card">
+            <div class="curso-header">
+                <div class="curso-icon">📚</div>
+                <div class="curso-title">
+                    <h2>{{ curso.nombre }}</h2>
+                    <span class="curso-estado">{{ curso.get_estado_display }}</span>
+                </div>
+            </div>
+            
+            <p class="curso-descripcion">
+                {{ curso.descripcion|default:"Curso de formación profesional." }}
+            </p>
+            
+            <div class="curso-info">
+                {% if curso.edad_minima %}
+                <div class="info-item">
+                    <span>👤</span>
+                    <span><strong>Edad mínima:</strong> {{ curso.edad_minima }} años</span>
+                </div>
+                {% endif %}
+                
+                {% if curso.requisitos %}
+                <div class="info-item">
+                    <span>📋</span>
+                    <span><strong>Requisitos:</strong> {{ curso.requisitos|truncatewords:10 }}</span>
+                </div>
+                {% endif %}
+            </div>
+            
+            {% if curso.comisiones_abiertas %}
+            <div class="comisiones">
+                <h3>🗓️ Comisiones Disponibles</h3>
+                {% for comision in curso.comisiones_abiertas %}
+                <div class="comision-item">
+                    <div class="comision-info">
+                        <div class="comision-detalles">
+                            <p><strong>📍 Lugar:</strong> {{ comision.lugar|default:"Por definir" }}</p>
+                            <p><strong>📅 Inicio:</strong> {{ comision.fecha_inicio|date:"d/m/Y"|default:"Por definir" }}</p>
+                            <p><strong>⏰ Horario:</strong> {{ comision.dias_horarios|default:"Por definir" }}</p>
+                            <p>
+                                <span class="badge badge-cupos">
+                                    👥 Cupo: {{ comision.cupo_maximo }} personas
+                                </span>
+                            </p>
+                        </div>
+                        <a href="{% url 'inscripciones:formulario' comision.id_comision %}" class="btn-inscribir">
+                            ✅ Inscribirme
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="comisiones">
+                <p style="color: #999; text-align: center;">
+                    No hay comisiones abiertas en este momento
+                </p>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="no-cursos">
+        <h2>📭 No hay cursos disponibles en este momento</h2>
+        <p>Vuelve pronto para ver nuestra nueva oferta educativa.</p>
+    </div>
+{% endif %}
+
+{% if user.is_staff %}
+<div style="text-align: center; margin-top: 3rem;">
+    <a href="{% url 'admin:index' %}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem 2rem; border-radius: 10px; text-decoration: none; display: inline-block; font-weight: 600; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);">
+        ⚙️ Administrar Cursos
+    </a>
+</div>
+{% endif %}
+
+{% endblock %}
+

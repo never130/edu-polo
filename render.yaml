@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: edu-polo-app
+    env: python
+    buildCommand: pip install -r requirements.txt && cd src && python manage.py collectstatic --noinput
+    startCommand: cd src && gunicorn core.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.4
+      - key: DEBUG
+        value: 0
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: edu-polo-db
+          property: connectionString
+    healthCheckPath: /
+
+databases:
+  - name: edu-polo-db
+    databaseName: edu_polo
+    user: edu_polo_user
+    plan: free
+
+
+
