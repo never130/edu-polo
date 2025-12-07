@@ -44,4 +44,3 @@ RUN chmod +x /app/docker-entrypoint.sh
 # En producción, usar gunicorn si PORT está definido, sino runserver
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
 CMD sh -c "if [ -n \"\$PORT\" ]; then gunicorn core.wsgi:application --bind 0.0.0.0:\$PORT --workers 3 --timeout 120; else python manage.py runserver 0.0.0.0:8000; fi"
-

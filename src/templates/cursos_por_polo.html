@@ -10,14 +10,17 @@
     <link rel="shortcut icon" type="image/png" href="{% static 'img/aif-logo.png' %}">
     <link rel="apple-touch-icon" href="{% static 'img/aif-logo.png' %}">
     <link rel="stylesheet" href="{% static 'colores.css' %}">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <!-- Reuse existing styles from landing -->
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Roboto:wght@300;400;500;700;900&display=swap');
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: 'Poppins', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'Be Vietnam Pro', sans-serif;
             min-height: 100vh;
             position: relative;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
@@ -25,6 +28,11 @@
             animation: gradientShift 15s ease infinite;
             background-attachment: fixed;
             overflow-x: hidden;
+        }
+        
+        /* Ensure all form elements inherit the font */
+        input, button, select, textarea, optgroup, option {
+            font-family: 'Be Vietnam Pro', sans-serif;
         }
         
         @keyframes gradientShift {
@@ -45,14 +53,13 @@
         
         /* Navbar */
         .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px) saturate(180%);
+            background: linear-gradient(90deg, #FF512F 0%, #F09819 100%);
             padding: 1.2rem 2.5rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 8px 32px rgba(240, 152, 25, 0.3);
             position: sticky;
             top: 0;
             z-index: 1000;
-            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            border-bottom: none;
         }
         
         .navbar-content {
@@ -64,19 +71,31 @@
         }
         
         .navbar-logo { display: flex; align-items: center; gap: 1.2rem; text-decoration: none; }
-        .navbar-logo img { height: 55px; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.08)); }
+        .navbar-logo img { height: 55px; filter: brightness(0) invert(1); }
         .navbar-logo h1 {
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: white;
+            background: none;
+            -webkit-text-fill-color: white;
             font-size: 1.6rem;
             font-weight: 800;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Be Vietnam Pro', sans-serif;
             letter-spacing: -0.02em;
         }
         
         .navbar-actions { display: flex; gap: 1rem; align-items: center; }
+        
+        .navbar-actions .btn {
+            background: white;
+            color: #FF512F;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-actions .btn:hover {
+            background: #f8fafc;
+            color: #F09819;
+            transform: translateY(-2px);
+        }
         
         .btn {
             padding: 0.85rem 1.8rem;

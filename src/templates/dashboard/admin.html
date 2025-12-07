@@ -18,7 +18,7 @@
 {% endif %}
 <li><a href="{% url 'administracion:estadisticas' %}"><span class="icon">📊</span> Estadísticas</a></li>
 <li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
-<li><a href="{% url 'administracion:docentes_cursos' %}"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li>
+<!-- <li><a href="{% url 'administracion:docentes_cursos' %}"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li> -->
 <li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
 {% if es_admin_completo %}
 <li><a href="{% url 'admin:index' %}"><span class="icon">⚙️</span> Django Admin</a></li>
@@ -44,11 +44,13 @@
         <div class="card-value">{{ total_estudiantes }}</div>
     </div>
     
+    <!-- DOCENTE CARD OCULTO TEMPORALMENTE
     <div class="dashboard-card">
         <div class="card-icon">👨‍🏫</div>
         <div class="card-title">Total Docentes</div>
         <div class="card-value">{{ total_docentes }}</div>
     </div>
+    -->
     
     <div class="dashboard-card">
         <div class="card-icon">✅</div>
@@ -209,7 +211,7 @@
         </div>
     </div>
     
-    <!-- Docentes y Cursos Asignados -->
+    <!-- Docentes y Cursos Asignados (OCULTO TEMPORALMENTE)
     <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
         <h3 style="color: #f59e0b; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 1.3rem;">
             👨‍🏫 Docentes y Cursos
@@ -220,6 +222,7 @@
             </a>
         </div>
     </div>
+    -->
 </div>
 
 {% if es_admin_completo %}

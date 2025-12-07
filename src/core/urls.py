@@ -27,6 +27,7 @@ from apps.modulo_6.seguridad.views_password_reset import password_reset_request,
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', core_views.landing, name='landing'),
+    path('polos/', core_views.lista_polos, name='lista_polos'),
     path('dashboard/', core_views.dashboard, name='dashboard'),
     path('dashboard/estudiante/', core_views.dashboard_estudiante, name='dashboard_estudiante'),
     path('dashboard/docente/', core_views.dashboard_docente, name='dashboard_docente'),
@@ -44,6 +45,7 @@ urlpatterns = [
     path('api/buscar-estudiante/<str:dni>/', buscar_estudiante_por_dni, name='api_buscar_estudiante'),
 ]
 
-# Servir archivos media en desarrollo
+# Servir archivos media y estáticos en desarrollo
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

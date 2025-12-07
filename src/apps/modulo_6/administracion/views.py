@@ -269,6 +269,11 @@ def crear_comision(request):
 @user_passes_test(es_admin)
 def asignar_docente_comision(request, comision_id):
     """Asignar un docente a una comisión"""
+    # DESHABILITADO TEMPORALMENTE
+    messages.warning(request, 'La asignación de docentes no está habilitada por el momento.')
+    return redirect('administracion:panel_comisiones')
+
+    """
     from apps.modulo_3.cursos.models import ComisionDocente
     
     comision = get_object_or_404(Comision, id_comision=comision_id)
@@ -294,6 +299,7 @@ def asignar_docente_comision(request, comision_id):
             messages.error(request, f'❌ Por favor, selecciona un docente.')
     
     return redirect('administracion:panel_comisiones')
+    """
 
 
 @login_required
@@ -1487,6 +1493,10 @@ def exportar_asistencias_por_comision(request):
 @user_passes_test(es_admin)
 def mis_cursos_docente(request):
     """Vista para que el docente vea sus cursos asignados"""
+    # DESHABILITADO TEMPORALMENTE
+    messages.warning(request, 'La gestión de cursos para docentes no está habilitada por el momento.')
+    return redirect('dashboard')
+
     try:
         usuario = Usuario.objects.get(persona__dni=request.user.username)
         
@@ -1537,6 +1547,10 @@ def mis_cursos_docente(request):
 @user_passes_test(es_admin)
 def estudiantes_comision(request, comision_id):
     """Vista para que el docente vea los estudiantes de una comisión específica"""
+    # DESHABILITADO TEMPORALMENTE
+    messages.warning(request, 'La gestión de estudiantes para docentes no está habilitada por el momento.')
+    return redirect('dashboard')
+
     try:
         usuario = Usuario.objects.get(persona__dni=request.user.username)
         comision = get_object_or_404(Comision, id_comision=comision_id)
@@ -1586,6 +1600,10 @@ def estudiantes_comision(request, comision_id):
 @user_passes_test(es_admin)
 def materiales_comision(request, comision_id):
     """Vista para que el docente vea y gestione materiales de una comisión"""
+    # DESHABILITADO TEMPORALMENTE
+    messages.warning(request, 'La gestión de materiales para docentes no está habilitada por el momento.')
+    return redirect('dashboard')
+
     try:
         usuario = Usuario.objects.get(persona__dni=request.user.username)
         comision = get_object_or_404(Comision, id_comision=comision_id)
@@ -1620,6 +1638,10 @@ def materiales_comision(request, comision_id):
 @user_passes_test(es_admin)
 def subir_material(request, comision_id):
     """Vista para que el docente suba un material a una comisión"""
+    # DESHABILITADO TEMPORALMENTE
+    messages.warning(request, 'La subida de materiales no está habilitada por el momento.')
+    return redirect('dashboard')
+
     try:
         usuario = Usuario.objects.get(persona__dni=request.user.username)
         comision = get_object_or_404(Comision, id_comision=comision_id)
@@ -1661,6 +1683,10 @@ def subir_material(request, comision_id):
 @user_passes_test(es_admin)
 def eliminar_material(request, material_id):
     """Vista para que el docente elimine un material"""
+    # DESHABILITADO TEMPORALMENTE
+    messages.warning(request, 'La eliminación de materiales no está habilitada por el momento.')
+    return redirect('dashboard')
+
     try:
         usuario = Usuario.objects.get(persona__dni=request.user.username)
         material = get_object_or_404(Material, id_material=material_id)
@@ -1696,6 +1722,10 @@ def eliminar_material(request, material_id):
 @user_passes_test(es_admin)
 def estudiantes_docente(request):
     """Vista para que el docente vea todas sus comisiones y pueda seleccionar una para ver estudiantes"""
+    # DESHABILITADO TEMPORALMENTE
+    messages.warning(request, 'La gestión de estudiantes para docentes no está habilitada por el momento.')
+    return redirect('dashboard')
+
     try:
         usuario = Usuario.objects.get(persona__dni=request.user.username)
         
@@ -1747,6 +1777,10 @@ def estudiantes_docente(request):
 @user_passes_test(es_admin)
 def materiales_docente(request):
     """Vista para que el docente vea todas sus comisiones y pueda seleccionar una para ver materiales"""
+    # DESHABILITADO TEMPORALMENTE
+    messages.warning(request, 'La gestión de materiales para docentes no está habilitada por el momento.')
+    return redirect('dashboard')
+
     try:
         usuario = Usuario.objects.get(persona__dni=request.user.username)
         
@@ -1797,6 +1831,10 @@ def materiales_docente(request):
 @user_passes_test(es_admin)
 def docentes_cursos(request):
     """Vista para ver todos los docentes con sus cursos asignados (para Admin y Mesa de Entrada)"""
+    # DESHABILITADO TEMPORALMENTE
+    messages.warning(request, 'La visualización de docentes y cursos no está habilitada por el momento.')
+    return redirect('dashboard_admin')
+
     try:
         # Obtener todos los docentes
         docentes = Docente.objects.all().select_related('id_persona')

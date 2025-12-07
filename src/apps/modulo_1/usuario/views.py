@@ -73,7 +73,7 @@ class RegistroView(View):
                 nombre = request.POST.get('nombre')
                 apellido = request.POST.get('apellido')
                 correo = request.POST.get('correo')
-                telefono = request.POST.get('telefono', '')
+                telefono = request.POST.get('telefono', '').strip()
                 fecha_nacimiento = request.POST.get('fecha_nacimiento')
                 genero = request.POST.get('genero', '')
                 domicilio = request.POST.get('domicilio', '')
@@ -93,6 +93,10 @@ class RegistroView(View):
                 
                 if Persona.objects.filter(correo=correo).exists():
                     messages.error(request, 'Ya existe una persona con ese correo.')
+                    return render(request, 'usuario/registro.html')
+
+                if not telefono:
+                    messages.error(request, 'El teléfono es obligatorio.')
                     return render(request, 'usuario/registro.html')
                 
                 if User.objects.filter(username=dni).exists():

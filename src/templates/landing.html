@@ -9,6 +9,10 @@
     <link rel="icon" type="image/png" href="{% static 'img/aif-logo.png' %}">
     <link rel="shortcut icon" type="image/png" href="{% static 'img/aif-logo.png' %}">
     <link rel="apple-touch-icon" href="{% static 'img/aif-logo.png' %}">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'colores.css' %}">
     <style>
         * {
@@ -18,264 +22,262 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Be Vietnam Pro', sans-serif;
             height: 100vh;
-            overflow: hidden;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .container {
-            display: grid;
-            grid-template-columns: 1fr 450px;
-            height: 100vh;
-            max-width: 1600px;
-            margin: 0 auto;
-            gap: 0;
-        }
-        
-        /* Sección izquierda - Branding */
-        .branding-section {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 4rem;
-            background: url('{% static "img/background__-11.jpg" %}') center/cover;
+            overflow-x: hidden;
+            background: url('{% static "img/Container@2x.png" %}') center/cover no-repeat fixed;
             position: relative;
         }
-        
-        .branding-section::before {
+
+        body::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
+            background: rgba(0, 0, 0, 0.4); /* Overlay oscuro para legibilidad */
+            z-index: 0;
+        }
+
+        /* Ensure all form elements inherit the font */
+        input, button, select, textarea, optgroup, option {
+            font-family: 'Be Vietnam Pro', sans-serif;
+        }
+
+        /* Navbar - Latest Implementation */
+        .navbar {
+            background: linear-gradient(90deg, #FF512F 0%, #F09819 100%);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(240, 152, 25, 0.25);
+            backdrop-filter: blur(10px);
         }
         
-        .branding-content {
+        .navbar-content {
+            max-width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             position: relative;
-            z-index: 1;
-            text-align: center;
-            color: white;
         }
         
-        .logo-principal {
-            margin-bottom: 3rem;
-            animation: fadeInDown 1s ease;
-        }
-        
-        .logo-principal img {
-            max-width: 350px;
-            height: auto;
-            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3));
-        }
-        
-        .branding-content h1 {
-            font-size: 3.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            animation: fadeInUp 1s ease 0.2s both;
-        }
-        
-        .branding-content .subtitle {
-            font-size: 1.5rem;
-            margin-bottom: 2rem;
-            opacity: 0.95;
-            animation: fadeInUp 1s ease 0.4s both;
-        }
-        
-        .features {
-            display: grid;
-            gap: 1.5rem;
-            margin-top: 3rem;
-            animation: fadeInUp 1s ease 0.6s both;
-        }
-        
-        .feature-item {
+        .navbar-logo {
             display: flex;
             align-items: center;
             gap: 1rem;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            padding: 1.2rem 1.5rem;
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
+            text-decoration: none;
+            z-index: 10;
         }
         
-        .feature-item:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateX(10px);
+        .navbar-logo img {
+            height: 50px;
+            /* filter: brightness(0) invert(1); Elimino filtro para mantener colores originales del nuevo logo si es necesario, o lo mantengo si es blanco puro */
+            transition: transform 0.3s ease;
         }
         
-        .feature-icon {
-            font-size: 2rem;
+        .navbar-logo:hover img {
+            transform: scale(1.1) rotate(-5deg);
         }
         
-        .feature-text {
-            font-size: 1.1rem;
-            font-weight: 500;
-        }
-        
-        /* Sección derecha - Login */
-        .login-section {
-            background: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 3rem;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
-        }
-        
-        .login-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        
-        .login-header img {
-            height: 80px;
-            margin-bottom: 1.5rem;
-        }
-        
-        .login-header h2 {
-            color: #667eea;
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .login-header p {
-            color: #666;
-            font-size: 1rem;
-        }
-        
-        .login-form {
-            margin-bottom: 2rem;
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #333;
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 1rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-        
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        .btn-login {
-            width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .navbar-logo h1 {
             color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: -0.02em;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Center Links */
+        .navbar-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .navbar-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.05rem;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-        
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-        
-        .btn-login:active {
-            transform: translateY(0);
-        }
-        
-        .divider {
-            text-align: center;
-            margin: 2rem 0;
             position: relative;
+            padding: 0.5rem 0;
+            opacity: 0.9;
+        }
+
+        .navbar-link:hover {
+            opacity: 1;
+            transform: translateY(-2px);
+        }
+
+        .navbar-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: white;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar-link:hover::after {
+            width: 100%;
+        }
+
+        .navbar-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            z-index: 10;
         }
         
-        .divider::before {
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            letter-spacing: 0.01em;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
             content: '';
             position: absolute;
             top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.5);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #FF512F;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .btn-secondary:hover {
+            background: #f8fafc;
+            transform: translateY(-2px);
+            color: #F09819;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
             left: 0;
             right: 0;
-            height: 1px;
-            background: #e0e0e0;
-        }
-        
-        .divider span {
-            background: white;
-            padding: 0 1rem;
-            position: relative;
-            color: #999;
-            font-size: 0.9rem;
-        }
-        
-        .btn-register {
-            width: 100%;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
             padding: 1rem;
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: block;
-            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
-        
-        .btn-register:hover {
-            background: #667eea;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-        
-        .user-types {
+
+        .modal-overlay.show {
             display: flex;
-            justify-content: space-around;
-            margin-top: 2rem;
-            padding: 1.5rem;
-            background: #f8f9fa;
-            border-radius: 15px;
+            opacity: 1;
         }
-        
-        .user-type {
-            text-align: center;
+
+        .modal-container {
+            background: white;
+            border-radius: 24px;
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
         }
-        
-        .user-type .icon {
-            font-size: 2.5rem;
+
+        .modal-overlay.show .modal-container {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            padding: 2rem;
+            color: white;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: 700;
             margin-bottom: 0.5rem;
         }
-        
-        .user-type .label {
-            font-size: 0.85rem;
-            color: #666;
-            font-weight: 600;
+
+        .modal-body {
+            padding: 2rem;
+            max-height: 70vh;
+            overflow-y: auto;
         }
-        
+
         .error-message {
             background: #ffe6e6;
             color: #c0392b;
@@ -284,301 +286,213 @@
             margin-bottom: 1.5rem;
             border-left: 4px solid #e74c3c;
         }
-        
-        .footer-info {
+
+        @media (max-width: 900px) {
+            .navbar-links {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar-actions {
+                flex-direction: column;
+                gap: 0.5rem;
+                width: 100%;
+            }
+            
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        /* Hero Section */
+        .hero-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 100px);
+            position: relative;
+            z-index: 1;
             text-align: center;
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #e0e0e0;
-            color: #999;
-            font-size: 0.85rem;
+            padding: 2rem;
         }
-        
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+
+        .hero-content {
+            max-width: 1000px;
+            animation: fadeInUp 1s ease-out;
         }
-        
+
+        .hero-title {
+            font-size: 5rem;
+            font-weight: 700;
+            color: white;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .text-orange {
+            color: #FF9F00;
+        }
+
+        .hero-subtitle {
+            font-size: 1.8rem;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 4rem;
+            font-weight: 300;
+            letter-spacing: 0.02em;
+        }
+
+        .btn-hero {
+            background: #FF9F00;
+            color: white;
+            font-size: 1.2rem;
+            padding: 1rem 3rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(255, 159, 0, 0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .btn-hero:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(255, 159, 0, 0.5);
+            background: #ffb340;
+        }
+
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-        
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .container {
-                grid-template-columns: 1fr;
-                height: auto;
-                min-height: 100vh;
-            }
-            
-            .branding-section {
-                min-height: 50vh;
-                padding: 3rem 2rem;
-            }
-            
-            .branding-content h1 {
-                font-size: 2.5rem;
-            }
-            
-            .logo-principal img {
-                max-width: 250px;
-            }
-            
-            .features {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-            
-            .feature-item {
-                padding: 1rem;
-            }
-            
-            .login-section {
-                padding: 2rem;
-                min-height: auto;
-            }
-        }
-        
+
         @media (max-width: 768px) {
-            body {
-                overflow: auto;
+            .hero-title {
+                font-size: 3rem;
             }
-            
-            .branding-section {
-                min-height: 40vh;
-                padding: 2rem 1.5rem;
-            }
-            
-            .branding-content h1 {
-                font-size: 2rem;
-            }
-            
-            .branding-content .subtitle {
+            .hero-subtitle {
                 font-size: 1.2rem;
-            }
-            
-            .logo-principal {
                 margin-bottom: 2rem;
-            }
-            
-            .logo-principal img {
-                max-width: 200px;
-            }
-            
-            .features {
-                margin-top: 2rem;
-            }
-            
-            .feature-item {
-                padding: 0.8rem 1rem;
-            }
-            
-            .feature-icon {
-                font-size: 1.5rem;
-            }
-            
-            .feature-text {
-                font-size: 1rem;
-            }
-            
-            .login-section {
-                padding: 2rem 1.5rem;
-            }
-            
-            .login-header h2 {
-                font-size: 1.8rem;
-            }
-            
-            .login-header img {
-                height: 60px;
-            }
-            
-            .form-group input {
-                padding: 0.9rem;
-                font-size: 16px; /* Evita zoom en iOS */
-            }
-            
-            .btn-login,
-            .btn-register {
-                padding: 0.9rem;
-                font-size: 1rem;
-            }
-            
-            .user-types {
-                flex-direction: row;
-                padding: 1rem;
-            }
-            
-            .user-type .icon {
-                font-size: 2rem;
-            }
-            
-            .user-type .label {
-                font-size: 0.75rem;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .branding-section {
-                padding: 1.5rem 1rem;
-            }
-            
-            .branding-content h1 {
-                font-size: 1.8rem;
-            }
-            
-            .branding-content .subtitle {
-                font-size: 1.1rem;
-            }
-            
-            .logo-principal img {
-                max-width: 180px;
-            }
-            
-            .feature-item {
-                flex-direction: column;
-                text-align: center;
-                padding: 1rem;
-            }
-            
-            .login-section {
-                padding: 1.5rem 1rem;
-            }
-            
-            .login-header h2 {
-                font-size: 1.5rem;
-            }
-            
-            .user-types {
-                gap: 0.5rem;
-            }
-            
-            .footer-info {
-                font-size: 0.75rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Sección Izquierda - Branding -->
-        <div class="branding-section">
-            <div class="branding-content">
-                <div class="logo-principal">
-                    <img src="{% static 'img/LOGO BLANCO .png' %}" alt="Logo Polo">
-                </div>
-                
-                <h1>Edu-Polo</h1>
-                <p class="subtitle">Plataforma integral de gestión educativa</p>
-                
-                <div class="features">
-                    <div class="feature-item">
-                        <div class="feature-icon">🎓</div>
-                        <div class="feature-text">Inscripción simplificada</div>
-                    </div>
-                    <div class="feature-item">
-                        <div class="feature-icon">📚</div>
-                        <div class="feature-text">Gestión centralizada de cursos</div>
-                    </div>
-                    <div class="feature-item">
-                        <div class="feature-icon">📊</div>
-                        <div class="feature-text">Seguimiento y certificados</div>
-                    </div>
-                    <div class="feature-item">
-                        <div class="feature-icon">🔒</div>
-                        <div class="feature-text">Seguro y accesible</div>
-                    </div>
-                </div>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="{% url 'landing' %}" class="navbar-logo">
+                <img src="{% static 'img/polocreativoblanco.png' %}" alt="Logo Polo">
+            </a>
+
+            <div class="navbar-links">
+                <a href="{% url 'landing' %}" class="navbar-link">Inicio</a>
+                <a href="{% url 'lista_polos' %}" class="navbar-link">Cursos</a>
+                <a href="#" class="navbar-link">Contacto</a>
+                <a href="#" class="navbar-link">Acerca de</a>
+            </div>
+
+            <div class="navbar-actions">
+                {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="btn btn-primary">Ir al Panel 🚀</a>
+                <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-secondary">Cerrar Sesión</button>
+                </form>
+                {% else %}
+                <a href="{% url 'usuario:registro' %}" class="btn btn-secondary">Registrarse</a>
+                <a href="#" class="btn btn-primary" onclick="openLoginModal(); return false;">Iniciar Sesión</a>
+                {% endif %}
             </div>
         </div>
-        
-        <!-- Sección Derecha - Login -->
-        <div class="login-section">
-            <div class="login-header">
-                <img src="{% static 'img/LOGO COLOR.png' %}" alt="Logo Polo">
-                <h2>Iniciar Sesión</h2>
-                <p>Accede a tu cuenta</p>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-container">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="text-orange">Formate</span> y crece con nosotros
+            </h1>
+            <p class="hero-subtitle">Inscribite a Cursos Presenciales y Virtuales</p>
+            <a href="{% url 'lista_polos' %}" class="btn btn-hero">Ver ciudades</a>
+        </div>
+    </div>
+
+    <!-- Modal Login -->
+    <div id="loginModal" class="modal-overlay">
+        <div class="modal-container" style="max-width: 400px;">
+            <div class="modal-header" style="padding: 1.5rem; text-align: center;">
+                <button class="modal-close" onclick="closeLoginModal()">×</button>
+                <img src="{% static 'img/LOGO COLOR.png' %}" alt="Logo Polo" style="height: 60px; margin-bottom: 1rem; filter: brightness(0) invert(1);">
+                <h3 class="modal-title" style="font-size: 1.5rem;">Iniciar Sesión</h3>
+                <p style="opacity: 0.9; font-size: 0.9rem; font-weight: 400;">Accede a tu cuenta Edu-Polo</p>
             </div>
-            
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="error-message">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-            
-            <form method="post" action="{% url 'login' %}" class="login-form">
-                {% csrf_token %}
+            <div class="modal-body">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="error-message" style="margin-bottom: 1rem; padding: 0.8rem; font-size: 0.9rem;">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    
+                    <div class="form-group" style="margin-bottom: 1.2rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; color: #475569; font-weight: 600;">👤 Usuario (DNI)</label>
+                        <input type="text" name="username" required placeholder="Ingresa tu DNI" style="width: 100%; padding: 0.8rem; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 1rem; outline: none; transition: border-color 0.3s;">
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; color: #475569; font-weight: 600;">🔒 Contraseña</label>
+                        <input type="password" name="password" required placeholder="Ingresa tu contraseña" style="width: 100%; padding: 0.8rem; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 1rem; outline: none; transition: border-color 0.3s;">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="width: 100%; display: block; padding: 1rem; font-size: 1.1rem;">
+                        🚀 Iniciar Sesión
+                    </button>
+                </form>
                 
-                <div class="form-group">
-                    <label for="username">👤 Usuario (DNI)</label>
-                    <input 
-                        type="text" 
-                        id="username" 
-                        name="username" 
-                        required
-                        placeholder="Ingresa tu DNI"
-                        autofocus
-                    >
+                <div style="margin-top: 1.5rem; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
+                    <p style="color: #64748b; margin-bottom: 0.5rem;">¿No tienes cuenta?</p>
+                    <a href="{% url 'usuario:registro' %}" class="btn btn-secondary" style="width: 100%; display: block; text-align: center; background: white; color: #3b82f6; border: 2px solid #e2e8f0;">Crear Cuenta Nueva</a>
                 </div>
-                
-                <div class="form-group">
-                    <label for="password">🔒 Contraseña</label>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        name="password" 
-                        required
-                        placeholder="Ingresa tu contraseña"
-                    >
-                </div>
-                
-                <button type="submit" class="btn-login">
-                    🚀 Iniciar Sesión
-                </button>
-            </form>
-            
-            <div class="divider">
-                <span>¿No tienes cuenta?</span>
-            </div>
-            
-            <a href="{% url 'usuario:registro' %}" class="btn-register">
-                ✨ Crear Cuenta Nueva
-            </a>
-            
-            <div class="user-types">
-                <div class="user-type">
-                    <div class="icon">🎓</div>
-                    <div class="label">Estudiante</div>
-                </div>
-                <div class="user-type">
-                    <div class="icon">👨‍🏫</div>
-                    <div class="label">Docente</div>
-                </div>
-                <div class="user-type">
-                    <div class="icon">⚙️</div>
-                    <div class="label">Administrador</div>
-                </div>
-            </div>
-            
-            <div class="footer-info">
-                <p>© 2025 Edu-Polo</p>
-                <p>Agencia de Innovación - Tierra del Fuego</p>
             </div>
         </div>
     </div>
+
+    <script>
+        function openLoginModal() {
+            const modal = document.getElementById('loginModal');
+            modal.style.display = 'flex';
+            // Force reflow
+            modal.offsetHeight;
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLoginModal() {
+            const modal = document.getElementById('loginModal');
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        // Show modal if there are messages (e.g. login errors)
+        {% if messages %}
+            document.addEventListener('DOMContentLoaded', function() {
+                openLoginModal();
+            });
+        {% endif %}
+    </script>
 </body>
 </html>
-

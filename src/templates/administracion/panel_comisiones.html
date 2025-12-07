@@ -142,6 +142,7 @@
                 <span><strong>Polo:</strong> {{ comision.fk_id_polo.nombre }}</span>
             </div>
             {% endif %}
+            <!-- DOCENTE DISPLAY OCULTO TEMPORALMENTE
             <div style="display: flex; align-items: center; gap: 0.5rem;">
                 <span>👨‍🏫</span>
                 <span><strong>Docente:</strong> 
@@ -154,8 +155,10 @@
                     {% endif %}
                 </span>
             </div>
+            -->
         </div>
         
+        <!-- ASIGNACION DOCENTE OCULTA TEMPORALMENTE
         {% if not docentes %}
         <div style="background: #fef3c7; padding: 1rem; border-radius: 10px; border-left: 4px solid #f59e0b; margin-bottom: 1rem;">
             <form method="post" action="{% url 'administracion:asignar_docente_comision' comision.id_comision %}" style="display: flex; gap: 0.8rem; align-items: center;">
@@ -176,6 +179,7 @@
             </form>
         </div>
         {% endif %}
+        -->
         
         <div style="background: #f8fafc; padding: 1rem; border-radius: 10px; border-left: 4px solid #8b5cf6;">
             <strong style="color: #7c3aed;">📊 Estadísticas:</strong><br>

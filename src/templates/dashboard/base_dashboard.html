@@ -9,6 +9,10 @@
     <link rel="icon" type="image/png" href="{% static 'img/aif-logo.png' %}">
     <link rel="shortcut icon" type="image/png" href="{% static 'img/aif-logo.png' %}">
     <link rel="apple-touch-icon" href="{% static 'img/aif-logo.png' %}">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'colores.css' %}">
     <style>
         * {
@@ -18,15 +22,20 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Be Vietnam Pro', sans-serif;
             background: #f5f7fa;
             min-height: 100vh;
+        }
+
+        /* Ensure all form elements inherit the font */
+        input, button, select, textarea, optgroup, option {
+            font-family: 'Be Vietnam Pro', sans-serif;
         }
         
         /* Navbar */
         .navbar {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: linear-gradient(90deg, #FF512F 0%, #F09819 100%);
+            box-shadow: 0 4px 20px rgba(240, 152, 25, 0.3);
             padding: 1rem 2rem;
             position: sticky;
             top: 0;
@@ -49,10 +58,11 @@
         
         .navbar-logo img {
             height: 40px;
+            filter: brightness(0) invert(1);
         }
         
         .navbar-logo h1 {
-            color: #667eea;
+            color: white;
             font-size: 1.3rem;
         }
         

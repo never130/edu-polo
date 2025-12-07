@@ -166,7 +166,7 @@
 
 {% if es_menor and not relaciones_tutores %}
 <div class="alert-menor">
-    <strong>⚠️ Atención:</strong> Como eres menor de 16 años, debes tener al menos un tutor registrado para poder inscribirte a cursos.
+    <strong>⚠️ Atención:</strong> Como sos menor de 16 años, tenés que tener al menos un tutor registrado para poder inscribirte a cursos.
 </div>
 {% endif %}
 
@@ -179,10 +179,12 @@
                     <h3>{{ relacion.tutor.usuario.persona.nombre_completo }}</h3>
                     <span class="parentesco-badge">{{ relacion.get_parentesco_display }}</span>
                 </div>
+                {% if es_admin_completo or tipo_usuario == 'Mesa de Entrada' %}
                 <form method="post" action="{% url 'usuario:eliminar_tutor' relacion.id %}" style="display: inline;" onsubmit="return confirm('¿Estás seguro de eliminar este tutor?');">
                     {% csrf_token %}
                     <button type="submit" class="btn-eliminar">🗑️ Eliminar</button>
                 </form>
+                {% endif %}
             </div>
             
             <div class="tutor-detalles">
@@ -218,19 +220,21 @@
         <h3 style="color: #3b82f6; margin-bottom: 1rem;">No tienes tutores registrados</h3>
         <p style="color: #64748b; font-size: 1.1rem;">
             {% if es_menor %}
-            Como eres menor de 16 años, debes agregar al menos un tutor responsable.
+            Como sos menor de 16 años, tenés que agregar al menos un tutor responsable.
             {% else %}
-            Aunque no es obligatorio para mayores de edad, puedes agregar tutores si lo deseas.
+            Aunque no es obligatorio para mayores de edad, podes agregar tutores si lo deseas.
             {% endif %}
         </p>
     </div>
 {% endif %}
 
+{% if es_admin_completo or tipo_usuario == 'Mesa de Entrada' %}
 <div style="text-align: center; margin-top: 2rem;">
     <a href="{% url 'usuario:agregar_tutor' %}" class="btn-agregar">
         ➕ Agregar Nuevo Tutor
     </a>
 </div>
+{% endif %}
 
 {% endblock %}
 

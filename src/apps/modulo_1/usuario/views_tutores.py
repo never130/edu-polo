@@ -1,10 +1,22 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.db import transaction
 
 from apps.modulo_1.usuario.models import Persona, Usuario
-from apps.modulo_1.roles.models import Estudiante, Tutor, TutorEstudiante
+from apps.modulo_1.roles.models import Estudiante, Tutor, TutorEstudiante, UsuarioRol
+
+def es_admin_o_mesa_entrada(user):
+    if not user.is_authenticated:
+        return False
+    if user.is_staff or user.is_superuser:
+        return True
+    try:
+        usuario = Usuario.objects.get(persona__dni=user.username)
+        roles = UsuarioRol.objects.filter(usuario_id=usuario).values_list('rol_id__nombre', flat=True)
+        return 'Mesa de Entrada' in roles or 'Administrador' in roles
+    except Usuario.DoesNotExist:
+        return False
 
 
 @login_required
@@ -30,6 +42,7 @@ def gestionar_tutores(request):
 
 
 @login_required
+@user_passes_test(es_admin_o_mesa_entrada)
 def agregar_tutor(request):
     """Vista para agregar un nuevo tutor"""
     try:
@@ -114,6 +127,9 @@ def agregar_tutor(request):
 @login_required
 def eliminar_tutor(request, relacion_id):
     """Vista para eliminar un tutor"""
+    if not es_admin_o_mesa_entrada(request.user):
+        messages.error(request, 'No tienes permisos para eliminar tutores.')
+        return redirect('usuario:gestionar_tutores')
     try:
         estudiante = Estudiante.objects.get(usuario__persona__dni=request.user.username)
         relacion = get_object_or_404(TutorEstudiante, id=relacion_id, estudiante=estudiante)

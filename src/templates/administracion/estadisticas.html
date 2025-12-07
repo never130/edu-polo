@@ -279,6 +279,9 @@
     // Datos desde Django
     const datosGrafico = {{ datos_grafico_json|safe }};
     
+    // Configuración global de fuentes para Chart.js
+    Chart.defaults.font.family = "'Be Vietnam Pro', sans-serif";
+    
     // Preparar datos para los gráficos
     const labels = datosGrafico.map(d => d.nombre);
     const valores = datosGrafico.map(d => d.cantidad);

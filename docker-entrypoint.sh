@@ -44,4 +44,3 @@ python manage.py check --deploy || {
 log "Iniciando aplicación..."
 # Ejecutar el comando proporcionado
 exec "$@"
-

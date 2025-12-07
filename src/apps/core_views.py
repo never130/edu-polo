@@ -7,11 +7,25 @@ from apps.modulo_2.inscripciones.models import Inscripcion
 def landing(request):
     """
     Vista de la landing page
-    - Muestra mosaicos de Polos Creativos
+    - Muestra la página de inicio con login integrado
     """
     from apps.modulo_3.cursos.models import PoloCreativo
     
-    # Obtener todos los polos para los mosaicos
+    # Obtener todos los polos (por si se necesitan en el futuro)
+    polos = PoloCreativo.objects.filter(activo=True)
+    
+    context = {
+        'polos': polos,
+    }
+    return render(request, 'landing.html', context)
+
+
+def lista_polos(request):
+    """
+    Vista para mostrar el listado de Polos Creativos y sus cursos
+    """
+    from apps.modulo_3.cursos.models import PoloCreativo
+    
     polos = PoloCreativo.objects.filter(activo=True)
     
     context = {
@@ -74,12 +88,12 @@ def dashboard(request):
     except Estudiante.DoesNotExist:
         pass
     
-    # Verificar si es docente
-    try:
-        docente = Docente.objects.get(id_persona__dni=request.user.username)
-        return redirect('dashboard_docente')
-    except Docente.DoesNotExist:
-        pass
+    # Verificar si es docente (DESHABILITADO TEMPORALMENTE)
+    # try:
+    #     docente = Docente.objects.get(id_persona__dni=request.user.username)
+    #     return redirect('dashboard_docente')
+    # except Docente.DoesNotExist:
+    #     pass
     
     # Si no tiene rol específico, ir a admin
     return redirect('admin:index')
@@ -116,8 +130,14 @@ def dashboard_estudiante(request):
 @login_required
 def dashboard_docente(request):
     """Dashboard específico para docentes"""
-    try:
-        from apps.modulo_1.usuario.models import Usuario
+    # DESHABILITADO TEMPORALMENTE
+    from django.contrib import messages
+    messages.warning(request, 'El panel de docentes no está habilitado por el momento.')
+    return redirect('dashboard')
+
+    # try:
+    #     from apps.modulo_1.usuario.models import Usuario
+    """
         from apps.modulo_3.cursos.models import ComisionDocente
         
         docente = Docente.objects.get(id_persona__dni=request.user.username)
@@ -139,6 +159,7 @@ def dashboard_docente(request):
         return render(request, 'dashboard/docente.html', context)
     except Docente.DoesNotExist:
         return redirect('admin:index')
+    """
 
 
 @login_required
