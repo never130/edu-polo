@@ -1,438 +1,267 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro - Edu-Polo</title>
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{% static 'img/aif-logo.png' %}">
-    <link rel="shortcut icon" type="image/png" href="{% static 'img/aif-logo.png' %}">
-    <link rel="apple-touch-icon" href="{% static 'img/aif-logo.png' %}">
-    <link rel="stylesheet" href="{% static 'colores.css' %}">
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    <style>
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Be Vietnam Pro', sans-serif;
-            background: linear-gradient(165deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-            background-attachment: fixed;
-            min-height: 100vh;
-            position: relative;
-        }
 
-        /* Ensure all form elements inherit the font */
-        input, button, select, textarea, optgroup, option {
-            font-family: 'Be Vietnam Pro', sans-serif;
-        }
-        
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(147, 51, 234, 0.15) 0%, transparent 50%);
-            pointer-events: none;
-        }
-        
-        /* Navbar */
-        .navbar {
-            background: linear-gradient(90deg, #FF512F 0%, #F09819 100%);
-            padding: 1rem 2rem;
-            box-shadow: 0 4px 20px rgba(240, 152, 25, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: none;
-        }
-        
-        .navbar-content {
-            max-width: 1600px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .navbar-logo {
-            display: flex;
-            align-items: center;
-            gap: 1.2rem;
-        }
-        
-        .navbar-logo img {
-            height: 40px;
-            filter: brightness(0) invert(1);
-        }
-        
-        .navbar-logo h1 {
-            color: white;
-            font-size: 1.6rem;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-        }
-        
-        .navbar-actions {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
+{% block title %}Registro - Edu-Polo{% endblock %}
 
-        .navbar-actions .btn {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(5px);
-            box-shadow: none;
-        }
+{% block extra_css %}
+<style>
+    /* Override body background */
+    body {
+        background: linear-gradient(165deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+        background-attachment: fixed;
+    }
+    
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+            radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(147, 51, 234, 0.15) 0%, transparent 50%);
+        pointer-events: none;
+    }
 
-        .navbar-actions .btn:hover {
-            background: white;
-            color: #FF512F;
-            transform: translateY(-2px);
-        }
-        
-        .btn {
-            padding: 0.85rem 1.8rem;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: none;
-            cursor: pointer;
-            font-size: 0.95rem;
-            letter-spacing: 0.01em;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-        
-        .btn:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
-            color: white;
-            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.5);
-        }
-        
-        /* Container Principal */
+    /* Container Principal */
+    .main-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 3rem 2rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* Card de Registro */
+    .registro-card {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        padding: 3.5rem;
+        border-radius: 24px;
+        box-shadow: 
+            0 20px 60px rgba(0, 0, 0, 0.2),
+            0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+    }
+    
+    .registro-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .registro-header img {
+        height: 80px;
+        margin-bottom: 1.5rem;
+        filter: drop-shadow(0 4px 16px rgba(59, 130, 246, 0.3));
+    }
+    
+    .registro-header h2 {
+        background: linear-gradient(135deg, #1e40af 0%, #7c3aed 50%, #db2777 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 0.8rem;
+        letter-spacing: -0.03em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    .registro-header h2::before {
+        content: '✨';
+        font-size: 3.5rem;
+        display: inline-block;
+        filter: drop-shadow(0 4px 16px rgba(59, 130, 246, 0.3));
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    .registro-header p {
+        color: #64748b;
+        font-size: 1.25rem;
+        font-weight: 500;
+    }
+    
+    /* Formulario */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.6rem;
+        color: #1e293b;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.9rem 1.2rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #ffffff;
+        color: #1e293b;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+    
+    .campos-condicionales {
+        display: none;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    .campos-condicionales.active {
+        display: block;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .btn-submit {
+        width: 100%;
+        padding: 1.2rem 2rem;
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.15rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 6px 24px rgba(59, 130, 246, 0.5);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+        letter-spacing: 0.02em;
+        margin-top: 2rem;
+    }
+    
+    .btn-submit::before {
+        content: '🚀';
+        font-size: 1.5rem;
+        display: inline-block;
+        transition: transform 0.3s ease;
+    }
+    
+    .btn-submit:hover::before {
+        transform: translateX(5px) scale(1.1);
+    }
+    
+    .btn-submit::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn-submit:hover::after {
+        width: 400px;
+        height: 400px;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 35px rgba(59, 130, 246, 0.6);
+    }
+    
+    .btn-submit:active {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    }
+    
+    /* Mensajes */
+    .messages {
+        margin-bottom: 2rem;
+    }
+    
+    .messages li {
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        list-style: none;
+        font-weight: 500;
+    }
+    
+    .messages .error {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+    
+    .messages .success {
+        background: #d1fae5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
         .main-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 3rem 2rem;
-            position: relative;
-            z-index: 1;
+            padding: 1.5rem 1rem;
         }
         
-        /* Card de Registro */
         .registro-card {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
-            padding: 3.5rem;
-            border-radius: 24px;
-            box-shadow: 
-                0 20px 60px rgba(0, 0, 0, 0.2),
-                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
-        }
-        
-        .registro-header {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-        
-        .registro-header img {
-            height: 80px;
-            margin-bottom: 1.5rem;
-            filter: drop-shadow(0 4px 16px rgba(59, 130, 246, 0.3));
+            padding: 2rem 1.5rem;
         }
         
         .registro-header h2 {
-            background: linear-gradient(135deg, #1e40af 0%, #7c3aed 50%, #db2777 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 3rem;
-            font-weight: 800;
-            margin-bottom: 0.8rem;
-            letter-spacing: -0.03em;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
+            font-size: 2rem;
+            flex-direction: column;
+            gap: 0.5rem;
         }
         
         .registro-header h2::before {
-            content: '✨';
-            font-size: 3.5rem;
-            display: inline-block;
-            filter: drop-shadow(0 4px 16px rgba(59, 130, 246, 0.3));
-            animation: float 3s ease-in-out infinite;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        .registro-header p {
-            color: #64748b;
-            font-size: 1.25rem;
-            font-weight: 500;
-        }
-        
-        /* Formulario */
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 0.6rem;
-            color: #1e293b;
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-        
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.9rem 1.2rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: #ffffff;
-            color: #1e293b;
-        }
-        
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            font-size: 2.5rem;
         }
         
         .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-        }
-        
-        .campos-condicionales {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        .campos-condicionales.active {
-            display: block;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+            grid-template-columns: 1fr;
         }
         
         .btn-submit {
-            width: 100%;
-            padding: 1.2rem 2rem;
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.15rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 6px 24px rgba(59, 130, 246, 0.5);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.8rem;
-            letter-spacing: 0.02em;
-            margin-top: 2rem;
+            padding: 1rem;
+            font-size: 1rem;
         }
-        
-        .btn-submit::before {
-            content: '🚀';
-            font-size: 1.5rem;
-            display: inline-block;
-            transition: transform 0.3s ease;
-        }
-        
-        .btn-submit:hover::before {
-            transform: translateX(5px) scale(1.1);
-        }
-        
-        .btn-submit::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-        
-        .btn-submit:hover::after {
-            width: 400px;
-            height: 400px;
-        }
-        
-        .btn-submit:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 35px rgba(59, 130, 246, 0.6);
-        }
-        
-        .btn-submit:active {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
-        }
-        
-        /* Mensajes */
-        .messages {
-            margin-bottom: 2rem;
-        }
-        
-        .messages li {
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            margin-bottom: 1rem;
-            list-style: none;
-            font-weight: 500;
-        }
-        
-        .messages .error {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
-        }
-        
-        .messages .success {
-            background: #d1fae5;
-            color: #065f46;
-            border: 1px solid #a7f3d0;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 1rem;
-            }
-            
-            .navbar-logo h1 {
-                font-size: 1.2rem;
-            }
-            
-            .navbar-logo img {
-                height: 40px;
-            }
-            
-            .main-container {
-                padding: 1.5rem 1rem;
-            }
-            
-            .registro-card {
-                padding: 2rem 1.5rem;
-            }
-            
-            .registro-header h2 {
-                font-size: 2rem;
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-            
-            .registro-header h2::before {
-                font-size: 2.5rem;
-            }
-            
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .btn-submit {
-                padding: 1rem;
-                font-size: 1rem;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .navbar-actions {
-                flex-direction: column;
-                gap: 0.5rem;
-                width: 100%;
-            }
-            
-            .btn {
-                width: 100%;
-                text-align: center;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="navbar-content">
-            <div class="navbar-logo">
-                <img src="{% static 'img/LOGO COLOR.png' %}" alt="Logo Polo">
-                <h1>Edu-Polo</h1>
-            </div>
-            <div class="navbar-actions">
-                {% if user.is_authenticated %}
-                    <span style="color: #667eea; font-weight: 600;">👤 {{ user.first_name }} {{ user.last_name }}</span>
-                    <a href="{% url 'dashboard' %}" class="btn btn-primary">Mi Dashboard</a>
-                    <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">Cerrar Sesión</button>
-                    </form>
-                {% else %}
-                    <a href="{% url 'login' %}" class="btn btn-primary">Iniciar Sesión</a>
-                    <a href="{% url 'usuario:registro' %}" class="btn btn-primary">Registrarse</a>
-                {% endif %}
-            </div>
-        </div>
-    </nav>
+    }
+</style>
+{% endblock %}
 
+{% block content %}
     <!-- Container Principal -->
     <div class="main-container">
         <div class="registro-card">
@@ -526,20 +355,6 @@
                     </div>
                 </div>
                 
-                <!-- Campos específicos para docente (ocultos - solo estudiantes pueden registrarse) -->
-                <!-- OCULTO TEMPORALMENTE
-                <div id="campos_docente" class="campos-condicionales" style="display: none;">
-                    <div class="form-group">
-                        <label for="especialidad">Especialidad</label>
-                        <input type="text" id="especialidad" name="especialidad" placeholder="Ej: Matemáticas, Programación, etc.">
-                    </div>
-                    <div class="form-group">
-                        <label for="experiencia">Experiencia</label>
-                        <textarea id="experiencia" name="experiencia" rows="3" placeholder="Describe tu experiencia profesional..."></textarea>
-                    </div>
-                </div>
-                -->
-                
                 <div class="form-row">
                     <div class="form-group">
                         <label for="password">Contraseña *</label>
@@ -575,5 +390,4 @@
             }
         });
     </script>
-</body>
-</html>
+{% endblock %}

@@ -402,7 +402,7 @@
 
             <div class="navbar-actions">
                 {% if user.is_authenticated %}
-                <a href="{% url 'dashboard' %}" class="btn btn-primary">Ir al Panel 🚀</a>
+                <a href="{% url 'dashboard' %}" class="btn btn-primary">Ir al Panel</a>
                 <form action="{% url 'logout' %}" method="post" style="display: inline;">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-secondary">Cerrar Sesión</button>
