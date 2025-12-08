@@ -5,7 +5,7 @@ from apps.modulo_1.usuario.models import Usuario
 
 class DNIAuthenticationBackend(BaseBackend):
     """
-    Backend de autenticación personalizado que usa DNI y contraseña
+    Backend de autenticación personalizado que usa solo DNI y contraseña
     """
     def authenticate(self, request, username=None, password=None, **kwargs):
         try:
