@@ -276,6 +276,153 @@
                 font-size: 1.2rem;
             }
         }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px);
+            z-index: 10000; display: none; align-items: center; justify-content: center; padding: 1rem;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.show { display: flex; opacity: 1; }
+        .modal-container {
+            background: white; border-radius: 24px; max-width: 600px; width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
+            position: relative;
+        }
+        .modal-overlay.show .modal-container { transform: scale(1); }
+        .modal-close {
+            position: absolute; top: 1rem; right: 1rem; background: rgba(255, 255, 255, 0.2);
+            border: none; width: 40px; height: 40px; border-radius: 50%; color: white; font-size: 1.5rem;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s;
+            z-index: 50;
+        }
+        .modal-close:hover { background: rgba(255, 255, 255, 0.3); }
+
+        /* Split Login Modal Styles */
+        .modal-container.split-design {
+            max-width: 900px;
+            width: 90%;
+            display: flex;
+            overflow: hidden;
+            padding: 0;
+            border-radius: 20px;
+            background: white;
+            position: relative;
+        }
+
+        .login-left {
+            flex: 1;
+            padding: 3rem;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-right {
+            flex: 0.8;
+            background: linear-gradient(135deg, #FF512F 0%, #F09819 100%);
+            color: white;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+        
+        .login-right::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at top right, rgba(255,255,255,0.2), transparent 40%);
+        }
+
+        .login-title { font-size: 2rem; font-weight: 800; color: #1e293b; margin-bottom: 0.5rem; }
+        .login-subtitle { color: #64748b; margin-bottom: 2rem; }
+
+        .input-group { margin-bottom: 1.5rem; position: relative; }
+        .input-group .input-icon {
+            position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+            font-size: 1.2rem; pointer-events: none; z-index: 10;
+        }
+        .input-group input {
+            width: 100%; padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid #e2e8f0; border-radius: 12px;
+            font-size: 1rem; transition: all 0.3s ease;
+            background: #f8fafc; box-sizing: border-box;
+        }
+        .input-group input:focus {
+            border-color: #F09819; background: white;
+            box-shadow: 0 0 0 4px rgba(240, 152, 25, 0.1); outline: none;
+        }
+
+        .forgot-password {
+            display: block; text-align: right; color: #F09819;
+            font-weight: 600; font-size: 0.9rem; margin-top: -1rem;
+            margin-bottom: 1.5rem; text-decoration: none;
+        }
+
+        .btn-login {
+            width: 100%; padding: 1rem;
+            background: linear-gradient(90deg, #FF512F 0%, #F09819 100%);
+            color: white; border: none; border-radius: 12px;
+            font-size: 1.1rem; font-weight: 700; cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(240, 152, 25, 0.3); }
+
+        .btn-register-outline {
+            margin-top: 1.5rem; padding: 0.8rem 2rem;
+            border: 2px solid white; color: white;
+            position: relative; z-index: 20;
+            background: transparent; border-radius: 50px;
+            font-weight: 700; cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-register-outline:hover {
+            background: white; color: #F09819; transform: translateY(-2px);
+        }
+
+        /* Registro Form Styles */
+        .form-input {
+            width: 100%; padding: 0.6rem;
+            border: 1px solid #e2e8f0; border-radius: 8px;
+            font-size: 0.95rem; color: #4a5568; box-sizing: border-box;
+        }
+        .form-input:focus {
+            border-color: #F09819; outline: none;
+            box-shadow: 0 0 0 3px rgba(240, 152, 25, 0.1);
+        }
+        .form-group label {
+            display: block; margin-bottom: 0.5rem;
+            color: #4a5568; font-weight: 600; font-size: 0.9rem;
+        }
+        .btn-guardar {
+            background: #F09819; color: white; border: none;
+            padding: 0.8rem 3rem; border-radius: 50px;
+            font-weight: 700; font-size: 1rem; cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn-guardar:hover { transform: translateY(-2px); background: #e68a00; }
+        
+        .form-grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(3, 1fr);
+        }
+        @media (max-width: 900px) {
+            .form-grid { grid-template-columns: repeat(2, 1fr); }
+            .modal-container.split-design { flex-direction: column; overflow-y: auto; max-height: 90vh; }
+            .login-right { padding: 2rem; }
+        }
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr !important; }
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -302,8 +449,8 @@
                     <button type="submit" class="btn btn-secondary">Cerrar Sesión</button>
                 </form>
                 {% else %}
-                <a href="{% url 'usuario:registro' %}" class="btn btn-secondary">Registrarse</a>
-                <a href="{% url 'login' %}" class="btn btn-primary">Iniciar Sesión</a>
+                <a href="#" class="btn btn-secondary" onclick="openRegistroModal(); return false;">Registrarse</a>
+                <a href="#" class="btn btn-primary" onclick="openLoginModal(); return false;">Iniciar Sesión</a>
                 {% endif %}
             </div>
         </div>
@@ -326,5 +473,233 @@
         <img src="{% static 'img/polo_logo.png' %}" alt="Polo Logo" style="height: 40px; margin-bottom: 1rem;">
         <p>&copy; 2025 Edu-Polo. Todos los derechos reservados.</p>
     </div>
+
+<!-- Modal Login -->
+<div id="loginModal" class="modal-overlay">
+    <div class="modal-container split-design">
+        <!-- Close Button -->
+        <button class="modal-close" onclick="closeLoginModal()">×</button>
+
+        <!-- Left Side: Form -->
+        <div class="login-left">
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <img src="{% static 'img/logosesion.png' %}" alt="Logo Sesión" style="height: 80px; width: auto;">
+            </div>
+            <h2 class="login-title">Iniciar Sesión</h2>
+            <p class="login-subtitle">Accede a tu cuenta utilizando tu DNI</p>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="error-message" style="margin-bottom: 1rem; padding: 0.8rem; background: #fee2e2; color: #ef4444; border-radius: 8px; font-size: 0.9rem;">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post" action="{% url 'login' %}?next={{ request.path }}">
+                {% csrf_token %}
+                
+                <div class="input-group">
+                    <span class="input-icon">👤</span>
+                    <input type="text" name="username" required placeholder="Ingrese su DNI">
+                </div>
+                
+                <div class="form-group input-group">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" name="password" required placeholder="Contraseña">
+                </div>
+                
+                <a href="{% url 'password_reset_request' %}" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                
+                <button type="submit" class="btn-login">
+                    INGRESAR
+                </button>
+            </form>
+        </div>
+
+        <!-- Right Side: Welcome -->
+        <div class="login-right">
+            <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">¡Bienvenido!</h2>
+            <p style="font-size: 1.1rem; margin-bottom: 2rem; opacity: 0.9;">
+                Ingresa tus datos personales para acceder a todas las funcionalidades de Edu-Polo.
+            </p>
+            <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 1rem;">¿Aún no tienes una cuenta?</p>
+            <button type="button" class="btn-register-outline" onclick="openRegistroModal()">REGISTRARSE</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Registro -->
+<div id="registroModal" class="modal-overlay" style="z-index: 10001;">
+    <div class="modal-container" style="max-width: 950px; padding: 1.5rem; max-height: 85vh; overflow-y: auto;">
+        <button class="modal-close" onclick="closeRegistroModal()">×</button>
+        
+        <div style="text-align: center; margin-bottom: 0.5rem;">
+            <div style="text-align: center; margin-bottom: 0.5rem;">
+                <img src="{% static 'img/logosregister.png' %}" alt="Logo Registro" style="height: 50px; width: auto;">
+            </div>
+            
+            <h2 style="color: #4a5568; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.1rem;">Crear cuenta</h2>
+            <p style="color: #718096; font-size: 0.85rem; margin-bottom: 0.5rem;">Ingrese sus datos personales para inscribirse</p>
+        </div>
+
+        <form method="post" action="{% url 'usuario:registro' %}" class="registro-form">
+            {% csrf_token %}
+            
+            <div class="form-grid">
+                
+                <!-- DNI -->
+                <div class="form-group">
+                    <label>DNI</label>
+                    <input type="text" name="dni" required placeholder="Número de documento" class="form-input">
+                </div>
+                
+                <!-- Correo -->
+                <div class="form-group">
+                    <label>Correo Electrónico *</label>
+                    <input type="email" name="correo" required placeholder="Correo electrónico" class="form-input">
+                </div>
+
+                <!-- Nombres -->
+                <div class="form-group">
+                    <label>Nombres *</label>
+                    <input type="text" name="nombre" required placeholder="Nombres" class="form-input">
+                </div>
+
+                <!-- Apellidos -->
+                <div class="form-group">
+                    <label>Apellidos *</label>
+                    <input type="text" name="apellido" required placeholder="Apellidos" class="form-input">
+                </div>
+
+                <!-- Teléfono -->
+                <div class="form-group">
+                    <label>Teléfono de contacto *</label>
+                    <input type="text" name="telefono" required placeholder="+ 54 2964 999999" class="form-input">
+                </div>
+
+                <!-- Fecha Nacimiento -->
+                <div class="form-group">
+                    <label>Fecha de Nacimiento</label>
+                    <input type="date" name="fecha_nacimiento" class="form-input">
+                </div>
+
+                <!-- Género -->
+                <div class="form-group">
+                    <label>Género</label>
+                    <select name="genero" class="form-input">
+                        <option value="">Seleccione...</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                        <option value="O">Otro</option>
+                        <option value="P">Prefiero no decirlo</option>
+                    </select>
+                </div>
+
+                <!-- Domicilio -->
+                <div class="form-group">
+                    <label>Domicilio</label>
+                    <input type="text" name="domicilio" placeholder="Calle 123, Ciudad" class="form-input">
+                </div>
+
+                <!-- Nivel Estudios -->
+                <div class="form-group">
+                    <label>Nivel de estudios</label>
+                    <select name="nivel_estudios" class="form-input">
+                        <option value="">Seleccione...</option>
+                        <option value="PR">Primaria</option>
+                        <option value="SE">Secundaria</option>
+                        <option value="UN">Universidad</option>
+                        <option value="OT">Otro</option>
+                    </select>
+                </div>
+
+                <!-- Institución Actual -->
+                <div class="form-group">
+                    <label>Institución Actual</label>
+                    <input type="text" name="institucion_actual" placeholder="Nombre de la institución" class="form-input">
+                </div>
+
+                <!-- Contraseña -->
+                <div class="form-group">
+                    <label>Contraseña *</label>
+                    <input type="password" name="password" required placeholder="Mínimo 6 caracteres" class="form-input">
+                </div>
+
+                <!-- Confirmar Contraseña -->
+                <div class="form-group">
+                    <label>Confirmar Contraseña *</label>
+                    <input type="password" name="password_confirm" required placeholder="Repite la contraseña" class="form-input">
+                </div>
+
+            </div>
+
+            <div style="text-align: center; margin-top: 1.5rem;">
+                <button type="submit" class="btn-guardar">Guardar y Continuar</button>
+            </div>
+            
+            <div style="text-align: right; margin-top: 1rem;">
+                 <p style="font-size: 0.9rem;">¿Ya sos miembro? <a href="#" onclick="closeRegistroModal(); openLoginModal(); return false;" style="color: #F09819; font-weight: bold;">Ingresar</a></p>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Login Modal
+    function openLoginModal() {
+        const modal = document.getElementById('loginModal');
+        modal.style.display = 'flex';
+        modal.offsetHeight; // Force reflow
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLoginModal() {
+        const modal = document.getElementById('loginModal');
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }, 300);
+    }
+
+    // Registro Modal
+    function openRegistroModal() {
+        closeLoginModal();
+        const modal = document.getElementById('registroModal');
+        modal.style.display = 'flex';
+        modal.offsetHeight;
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        // Ensure overflow stays hidden after closeLoginModal timeout
+        setTimeout(() => {
+            document.body.style.overflow = 'hidden';
+        }, 350);
+    }
+
+    function closeRegistroModal() {
+        const modal = document.getElementById('registroModal');
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }, 300);
+    }
+
+    // Close on outside click
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal-overlay')) {
+            event.target.classList.remove('show');
+            setTimeout(() => {
+                event.target.style.display = 'none';
+                document.body.style.overflow = '';
+            }, 300);
+        }
+    }
+
+    // Auto open login if errors
+    {% if messages %}
+        openLoginModal();
+    {% endif %}
+</script>
 </body>
 </html>
