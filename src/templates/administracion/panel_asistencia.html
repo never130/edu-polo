@@ -102,6 +102,9 @@
             <p style="color: #64748b; margin: 0.5rem 0 0 0;">Total de estudiantes: {{ item.total_estudiantes }}</p>
         </div>
         <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
+            <a href="{% url 'administracion:tomar_asistencia_masiva' item.comision.id_comision %}" style="padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;">
+                📝 Tomar Asistencia
+            </a>
             <a href="{% url 'administracion:panel_asistencia' %}?comision_id={{ item.comision.id_comision }}" style="padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;">
                 🔍 Ver Detalle
             </a>
@@ -167,14 +170,21 @@
 {% endfor %}
 {% endif %}
 
-{% if comision and inscripciones %}
+{% if comision %}
 <!-- Vista detallada de una comisión específica -->
 <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-top: 2rem;">
-    <div style="padding: 1.5rem 2rem; background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-        <h3 style="color: #334155; margin: 0; font-size: 1.3rem;">
-            {{ comision.fk_id_curso.nombre }} - Comisión #{{ comision.id_comision }}
-        </h3>
-        <p style="color: #64748b; margin: 0.5rem 0 0 0;">Total de estudiantes: {{ inscripciones.count }}</p>
+    <div style="padding: 1.5rem 2rem; background: #f8fafc; border-bottom: 2px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h3 style="color: #334155; margin: 0; font-size: 1.3rem;">
+                {{ comision.fk_id_curso.nombre }} - Comisión #{{ comision.id_comision }}
+            </h3>
+            <p style="color: #64748b; margin: 0.5rem 0 0 0;">Total de estudiantes: {{ inscripciones.count }}</p>
+        </div>
+        <div>
+            <a href="{% url 'administracion:tomar_asistencia_masiva' comision.id_comision %}" style="padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;">
+                📝 Tomar Asistencia
+            </a>
+        </div>
     </div>
     
     <div style="padding: 2rem;">

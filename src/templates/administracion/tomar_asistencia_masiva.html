@@ -1,0 +1,170 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+{% load admin_extras %}
+
+
+{% block title %}Tomar Asistencia{% endblock %}
+
+{% block user_role %}{% if es_docente %}Docente{% else %}{{ tipo_usuario|default:"Administrador" }}{% endif %}{% endblock %}
+
+{% block sidebar_menu %}
+{% if es_docente %}
+    {# Menú para Docentes #}
+    <li><a href="{% url 'dashboard_docente' %}"><span class="icon">🏠</span> Inicio</a></li>
+    <li><a href="{% url 'administracion:mis_cursos_docente' %}"><span class="icon">📚</span> Mis Cursos</a></li>
+    <li><a href="{% url 'administracion:panel_asistencia' %}" class="active"><span class="icon">📝</span> Asistencias</a></li>
+    <li><a href="{% url 'administracion:materiales_docente' %}"><span class="icon">📁</span> Materiales</a></li>
+    <li><a href="{% url 'administracion:estudiantes_docente' %}"><span class="icon">👥</span> Estudiantes</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+{% else %}
+    {# Menú para Administradores y Mesa de Entrada #}
+    <li><a href="{% url 'dashboard_admin' %}"><span class="icon">🏠</span> Inicio</a></li>
+    <li><a href="{% url 'administracion:panel_cursos' %}"><span class="icon">📚</span> Gestión Cursos</a></li>
+    <li><a href="{% url 'administracion:panel_comisiones' %}"><span class="icon">📋</span> Gestión Comisiones</a></li>
+    <li><a href="{% url 'administracion:panel_inscripciones' %}"><span class="icon">✅</span> Inscripciones</a></li>
+    {% if es_admin_completo %}
+    <li><a href="{% url 'administracion:gestion_usuarios' %}"><span class="icon">👥</span> Gestión Usuarios</a></li>
+    {% endif %}
+    <li><a href="{% url 'administracion:buscador_estudiantes' %}"><span class="icon">🔍</span> Buscar Estudiantes</a></li>
+    {% if es_admin_completo %}
+    <li><a href="{% url 'administracion:panel_polos' %}"><span class="icon">🏢</span> Polos</a></li>
+    {% endif %}
+    <li><a href="{% url 'administracion:estadisticas' %}"><span class="icon">📊</span> Estadísticas</a></li>
+    <li><a href="{% url 'administracion:panel_asistencia' %}" class="active"><span class="icon">📝</span> Asistencias</a></li>
+    <li><a href="{% url 'administracion:docentes_cursos' %}"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+    {% if es_admin_completo %}
+    <li><a href="{% url 'admin:index' %}"><span class="icon">⚙️</span> Django Admin</a></li>
+    {% endif %}
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); padding: 2.5rem; border-radius: 20px; color: white; margin-bottom: 2rem;">
+    <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">📝 Tomar Asistencia</h2>
+    <p style="opacity: 0.9;">{{ comision.fk_id_curso.nombre }} - Comisión #{{ comision.id_comision }}</p>
+    {% if comision.fk_id_polo %}
+    <p style="opacity: 0.8; font-size: 0.9rem;">📍 {{ comision.fk_id_polo.nombre }}</p>
+    {% endif %}
+</div>
+
+{% if messages %}
+    <div style="margin-bottom: 1.5rem;">
+        {% for message in messages %}
+            <div style="padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 0.5rem; font-weight: 600; {% if message.tags == 'error' %}background: #fee2e2; color: #991b1b;{% elif message.tags == 'success' %}background: #d1fae5; color: #065f46;{% elif message.tags == 'warning' %}background: #fef3c7; color: #92400e;{% else %}background: #dbeafe; color: #1e40af;{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div style="background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+    <form method="get" id="form-fecha" style="margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+        <div>
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #334155;">📅 Fecha de la Clase</label>
+            <input type="date" name="fecha" value="{{ fecha_seleccionada }}" 
+                   onchange="document.getElementById('form-fecha').submit()"
+                   style="padding: 0.8rem; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 1rem; outline: none; transition: all 0.3s;">
+        </div>
+        <div style="flex: 1; padding-left: 1rem; border-left: 2px solid #e2e8f0;">
+            <p style="color: #64748b; margin: 0; font-size: 0.9rem;">
+                ℹ️ Selecciona la fecha para cargar o registrar asistencias. <br>
+                Si ya existen registros para esa fecha, se mostrarán para editar.
+            </p>
+        </div>
+    </form>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="fecha_clase" value="{{ fecha_seleccionada }}">
+        
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 2rem;">
+                <thead>
+                    <tr style="background: #f1f5f9; text-align: left;">
+                        <th style="padding: 1rem; border-radius: 8px 0 0 8px; color: #475569;">Estudiante</th>
+                        <th style="padding: 1rem; color: #475569;">DNI</th>
+                        <th style="padding: 1rem; text-align: center; color: #475569;">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 0.3rem;">
+                                <span>Presente</span>
+                            </div>
+                        </th>
+                        <th style="padding: 1rem; border-radius: 0 8px 8px 0; color: #475569;">Observaciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inscripcion in inscripciones %}
+                        {% with asistencia=asistencias_existentes|get_item:inscripcion.id %}
+                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                            <td style="padding: 1rem;">
+                                <div style="font-weight: 600; color: #334155;">{{ inscripcion.estudiante.usuario.persona.nombre_completo }}</div>
+                            </td>
+                            <td style="padding: 1rem; color: #64748b;">{{ inscripcion.estudiante.usuario.persona.dni }}</td>
+                            <td style="padding: 1rem; text-align: center;">
+                                <label class="switch" style="position: relative; display: inline-block; width: 60px; height: 34px;">
+                                    <input type="checkbox" name="presente_{{ inscripcion.id }}" class="asistencia-checkbox"
+                                           {% if asistencia and asistencia.presente %}checked{% endif %}
+                                           style="opacity: 0; width: 0; height: 0;">
+                                    <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px;"></span>
+                                </label>
+                            </td>
+                            <td style="padding: 1rem;">
+                                <input type="text" name="observacion_{{ inscripcion.id }}" 
+                                       value="{% if asistencia %}{{ asistencia.observaciones }}{% endif %}"
+                                       placeholder="Observación opcional..."
+                                       style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+                            </td>
+                        </tr>
+                        {% endwith %}
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" style="padding: 2rem; text-align: center; color: #64748b;">
+                                No hay estudiantes confirmados en esta comisión.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div style="display: flex; gap: 1rem; justify-content: flex-end; padding-top: 1rem; border-top: 2px solid #f1f5f9;">
+            <a href="{% url 'administracion:panel_asistencia' %}?comision_id={{ comision.id_comision }}" style="padding: 0.9rem 2rem; background: #e2e8f0; color: #334155; text-decoration: none; border-radius: 12px; font-weight: 600;">
+                Cancelar
+            </a>
+            <button type="submit" style="padding: 0.9rem 2rem; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4);">
+                💾 Guardar Asistencias
+            </button>
+        </div>
+    </form>
+</div>
+
+<style>
+    /* Estilos para el switch toggle */
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    input:checked + .slider {
+        background-color: #10b981;
+    }
+
+    input:focus + .slider {
+        box-shadow: 0 0 1px #10b981;
+    }
+
+    input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+</style>
+
+<script>
+</script>
+{% endblock %}

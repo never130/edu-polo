@@ -55,6 +55,64 @@
             box-shadow: 0 4px 20px rgba(240, 152, 25, 0.25);
             backdrop-filter: blur(10px);
         }
+
+        /* Global Messages Toast */
+        .global-messages {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 10002;
+            max-width: 400px;
+            width: 100%;
+            pointer-events: none;
+        }
+
+        .toast-message {
+            background: white;
+            border-left: 4px solid;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            pointer-events: auto;
+            animation: slideInRight 0.3s ease-out forwards;
+            opacity: 0;
+            transform: translateX(20px);
+        }
+
+        .toast-message.success { border-color: #10b981; }
+        .toast-message.error { border-color: #ef4444; }
+        .toast-message.warning { border-color: #f59e0b; }
+        .toast-message.info { border-color: #3b82f6; }
+
+        .toast-content {
+            color: #1e293b;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .toast-close {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 0.2rem;
+            margin-left: 0.5rem;
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        .toast-close:hover { color: #475569; }
+
+        @keyframes slideInRight {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
         
         .navbar-content {
             max-width: 100%;
@@ -596,6 +654,29 @@
         </div>
     </nav>
 
+    <!-- Global Messages Container (Authenticated Users or Non-Login Messages) -->
+    {% if messages and user.is_authenticated %}
+    <div class="global-messages">
+        {% for message in messages %}
+        <div class="toast-message {{ message.tags }}">
+            <div class="toast-content">{{ message }}</div>
+            <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+        </div>
+        {% endfor %}
+    </div>
+    <script>
+        // Auto-hide toasts
+        setTimeout(() => {
+            const toasts = document.querySelectorAll('.toast-message');
+            toasts.forEach(t => {
+                t.style.opacity = '0';
+                t.style.transform = 'translateX(20px)';
+                setTimeout(() => t.remove(), 300);
+            });
+        }, 5000);
+    </script>
+    {% endif %}
+
     <!-- Hero Section -->
     <div class="hero-container">
         <div class="hero-content">
@@ -677,8 +758,8 @@
             }, 300);
         }
 
-        // Show modal if there are messages (e.g. login errors)
-        {% if messages %}
+        // Show modal if there are messages AND user is not authenticated
+        {% if messages and not user.is_authenticated %}
             document.addEventListener('DOMContentLoaded', function() {
                 openLoginModal();
             });

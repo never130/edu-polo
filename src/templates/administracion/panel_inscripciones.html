@@ -82,8 +82,14 @@
                 <td style="padding: 1.2rem;">
                     {% if inscripcion.estado == 'confirmado' %}
                         <span style="background: #10b981; color: white; padding: 0.4rem 0.8rem; border-radius: 16px; font-size: 0.85rem; font-weight: 600;">✅ Confirmado</span>
+                    {% elif inscripcion.estado == 'lista_espera' %}
+                        <span style="background: #f59e0b; color: white; padding: 0.4rem 0.8rem; border-radius: 16px; font-size: 0.85rem; font-weight: 600;">
+                            ⏳ Lista de Espera {% if inscripcion.orden_lista_espera %}(#{{ inscripcion.orden_lista_espera }}){% endif %}
+                        </span>
+                    {% elif inscripcion.estado == 'cancelada' %}
+                        <span style="background: #ef4444; color: white; padding: 0.4rem 0.8rem; border-radius: 16px; font-size: 0.85rem; font-weight: 600;">❌ Cancelada</span>
                     {% else %}
-                        <span style="background: #f59e0b; color: white; padding: 0.4rem 0.8rem; border-radius: 16px; font-size: 0.85rem; font-weight: 600;">{{ inscripcion.get_estado_display }}</span>
+                        <span style="background: #64748b; color: white; padding: 0.4rem 0.8rem; border-radius: 16px; font-size: 0.85rem; font-weight: 600;">{{ inscripcion.get_estado_display }}</span>
                     {% endif %}
                 </td>
             </tr>

@@ -42,6 +42,7 @@ urlpatterns = [
     
     # Gestión de Asistencias
     path('asistencias/', views.panel_asistencia, name='panel_asistencia'),
+    path('asistencias/tomar/<int:comision_id>/', views.tomar_asistencia_masiva, name='tomar_asistencia_masiva'),
     path('asistencias/crear-editar/<int:inscripcion_id>/', views.crear_editar_asistencia, name='crear_editar_asistencia'),
     path('asistencias/eliminar/<int:asistencia_id>/', views.eliminar_asistencia, name='eliminar_asistencia'),
     path('asistencias/exportar-por-curso/', views.exportar_asistencias_por_curso, name='exportar_asistencias_curso'),

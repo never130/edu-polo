@@ -1000,17 +1000,14 @@ def panel_asistencia(request):
     except Usuario.DoesNotExist:
         pass
     
-    # Obtener todas las comisiones con inscripciones
+    # Obtener todas las comisiones
     # Si es docente, solo mostrar sus comisiones asignadas
     if es_docente and comisiones_docente:
         comisiones = Comision.objects.filter(
-            id_comision__in=comisiones_docente,
-            inscripciones__estado='confirmado'
+            id_comision__in=comisiones_docente
         ).distinct().select_related('fk_id_curso', 'fk_id_polo').order_by('fk_id_curso__nombre', 'id_comision')
     else:
-        comisiones = Comision.objects.filter(
-            inscripciones__estado='confirmado'
-        ).distinct().select_related('fk_id_curso', 'fk_id_polo').order_by('fk_id_curso__nombre', 'id_comision')
+        comisiones = Comision.objects.all().distinct().select_related('fk_id_curso', 'fk_id_polo').order_by('fk_id_curso__nombre', 'id_comision')
     
     # Obtener todas las comisiones con sus inscripciones para mostrar siempre
     todas_comisiones_con_datos = []
@@ -1066,6 +1063,101 @@ def panel_asistencia(request):
         'es_docente': es_docente,
     }
     return render(request, 'administracion/panel_asistencia.html', context)
+
+
+@login_required
+@user_passes_test(es_admin)
+def tomar_asistencia_masiva(request, comision_id):
+    """Tomar asistencia masiva para una comisión"""
+    from django.urls import reverse
+    
+    comision = get_object_or_404(Comision, id_comision=comision_id)
+    
+    # Verificar permisos (si es docente)
+    es_docente = False
+    try:
+        usuario_actual = Usuario.objects.get(persona__dni=request.user.username)
+        if Docente.objects.filter(id_persona=usuario_actual.persona).exists():
+            es_docente = True
+            from apps.modulo_3.cursos.models import ComisionDocente
+            tiene_acceso = ComisionDocente.objects.filter(
+                fk_id_docente=usuario_actual,
+                fk_id_comision=comision
+            ).exists()
+            if not tiene_acceso:
+                messages.error(request, '❌ No tienes permiso para gestionar asistencias de esta comisión.')
+                return redirect('administracion:panel_asistencia')
+    except Usuario.DoesNotExist:
+        pass
+
+    inscripciones = Inscripcion.objects.filter(
+        comision=comision,
+        estado='confirmado'
+    ).select_related('estudiante__usuario__persona').order_by('estudiante__usuario__persona__apellido')
+
+    if request.method == 'POST':
+        fecha_clase = request.POST.get('fecha_clase')
+        if not fecha_clase:
+             messages.error(request, '❌ Debe seleccionar una fecha.')
+             return redirect(reverse('administracion:tomar_asistencia_masiva', args=[comision_id]))
+        
+        # Obtener nombre del usuario que registra
+        usuario_actual = request.user
+        nombre_registrador = f"{usuario_actual.first_name} {usuario_actual.last_name}".strip()
+        if not nombre_registrador:
+            nombre_registrador = usuario_actual.username
+
+        count_created = 0
+        count_updated = 0
+
+        try:
+            with transaction.atomic():
+                for inscripcion in inscripciones:
+                    presente = request.POST.get(f'presente_{inscripcion.id}') == 'on'
+                    observacion = request.POST.get(f'observacion_{inscripcion.id}', '').strip()
+                    
+                    asistencia, created = Asistencia.objects.update_or_create(
+                        inscripcion=inscripcion,
+                        fecha_clase=fecha_clase,
+                        defaults={
+                            'presente': presente,
+                            'observaciones': observacion,
+                            'registrado_por': nombre_registrador
+                        }
+                    )
+                    
+                    if created:
+                        count_created += 1
+                    else:
+                        count_updated += 1
+            
+            messages.success(request, f'✅ Asistencia guardada para el {fecha_clase}. Registros procesados: {count_created + count_updated}.')
+            return redirect(reverse('administracion:panel_asistencia') + f'?comision_id={comision.id_comision}')
+            
+        except Exception as e:
+            messages.error(request, f'❌ Error al guardar asistencia: {str(e)}')
+            return redirect(reverse('administracion:tomar_asistencia_masiva', args=[comision_id]) + f'?fecha={fecha_clase}')
+
+    # GET
+    fecha_param = request.GET.get('fecha', date.today().isoformat())
+    
+    # Obtener asistencias existentes para la fecha seleccionada
+    asistencias_existentes = {}
+    asistencias_query = Asistencia.objects.filter(
+        inscripcion__in=inscripciones, 
+        fecha_clase=fecha_param
+    )
+    for a in asistencias_query:
+        asistencias_existentes[a.inscripcion_id] = a
+    
+    context = {
+        'comision': comision,
+        'inscripciones': inscripciones,
+        'fecha_seleccionada': fecha_param,
+        'asistencias_existentes': asistencias_existentes,
+        'es_docente': es_docente,
+    }
+    return render(request, 'administracion/tomar_asistencia_masiva.html', context)
 
 
 @login_required

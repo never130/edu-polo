@@ -38,8 +38,13 @@
                 {% for estudiante_data in estudiantes %}
                 <div style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                     <div style="flex: 1;">
-                        <h4 style="color: #1e293b; margin: 0 0 0.5rem 0; font-size: 1.1rem;">
+                        <h4 style="color: #1e293b; margin: 0 0 0.5rem 0; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
                             {{ estudiante_data.inscripcion.estudiante.usuario.persona.nombre_completo }}
+                            {% if estudiante_data.inscripcion.estado == 'lista_espera' %}
+                                <span style="background: #f59e0b; color: white; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">
+                                    ⏳ En Espera {% if estudiante_data.inscripcion.orden_lista_espera %}(#{{ estudiante_data.inscripcion.orden_lista_espera }}){% endif %}
+                                </span>
+                            {% endif %}
                         </h4>
                         <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; color: #64748b; font-size: 0.9rem;">
                             <span>🆔 DNI: {{ estudiante_data.inscripcion.estudiante.usuario.persona.dni }}</span>

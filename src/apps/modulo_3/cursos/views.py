@@ -3,6 +3,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.urls import reverse_lazy
+from django.db.models import Max
 from .models import Curso, Comision
 from apps.modulo_1.roles.models import Estudiante
 from apps.modulo_2.inscripciones.models import Inscripcion
@@ -86,34 +87,45 @@ def inscribirse_comision(request, comision_id):
             messages.warning(request, f'⚠️ Ya estás inscrito en el curso "{curso.nombre}" (en esta u otra comisión). No se permiten inscripciones múltiples al mismo curso.')
             return redirect('landing')
         
+        # Determinar estado y orden
+        estado_inscripcion = 'confirmado'
+        orden = None
+        
         # Verificar cupo disponible usando la propiedad del modelo
         if comision.cupo_lleno:
-            messages.error(request, f'🚫 Lo sentimos, esta comisión ya no tiene cupos disponibles. ¡CUPO LLENO!')
-            return redirect('landing')
+            estado_inscripcion = 'lista_espera'
+            ultimo_orden = Inscripcion.objects.filter(comision=comision, estado='lista_espera').aggregate(Max('orden_lista_espera'))['orden_lista_espera__max']
+            orden = (ultimo_orden or 0) + 1
         
-        # Obtener cupos antes de inscribir
+        # Obtener cupos antes de inscribir (solo relevante si es confirmado)
         cupos_antes = comision.cupos_disponibles
         
-        # Crear inscripción - El cupo se descuenta automáticamente
+        # Crear inscripción
         Inscripcion.objects.create(
             estudiante=estudiante,
             comision=comision,
-            estado='confirmado'  # Confirmación automática
+            estado=estado_inscripcion,
+            orden_lista_espera=orden
         )
         
-        # Calcular cupos restantes después de la inscripción
-        cupos_restantes = cupos_antes - 1
-        
-        # Mensaje personalizado según cupos restantes
         curso_nombre = comision.fk_id_curso.nombre
-        if cupos_restantes == 0:
-            messages.success(request, f'🎉 ¡Felicitaciones! Te has inscrito al curso "{curso_nombre}". ¡Has tomado el ÚLTIMO CUPO disponible!')
-        elif cupos_restantes <= 3:
-            messages.success(request, f'✅ ¡Inscripción exitosa al curso "{curso_nombre}"! ⚠️ Solo quedan {cupos_restantes} cupos disponibles.')
-        elif cupos_restantes <= 10:
-            messages.success(request, f'✅ ¡Inscripción exitosa al curso "{curso_nombre}"! Quedan {cupos_restantes} cupos.')
+        
+        if estado_inscripcion == 'lista_espera':
+             mensaje = f'📝 Te has inscrito en LISTA DE ESPERA para el curso "{curso_nombre}". Tu posición es: {orden}.'
+             messages.warning(request, mensaje)
         else:
-            messages.success(request, f'✅ ¡Inscripción exitosa al curso "{curso_nombre}"!')
+            # Calcular cupos restantes después de la inscripción
+            cupos_restantes = cupos_antes - 1
+            
+            # Mensaje personalizado según cupos restantes
+            if cupos_restantes == 0:
+                messages.success(request, f'🎉 ¡Felicitaciones! Te has inscrito al curso "{curso_nombre}". ¡Has tomado el ÚLTIMO CUPO disponible!')
+            elif cupos_restantes <= 3:
+                messages.success(request, f'✅ ¡Inscripción exitosa al curso "{curso_nombre}"! ⚠️ Solo quedan {cupos_restantes} cupos disponibles.')
+            elif cupos_restantes <= 10:
+                messages.success(request, f'✅ ¡Inscripción exitosa al curso "{curso_nombre}"! Quedan {cupos_restantes} cupos.')
+            else:
+                messages.success(request, f'✅ ¡Inscripción exitosa al curso "{curso_nombre}"!')
         
     except Estudiante.DoesNotExist:
         messages.error(request, '❌ Debes ser un estudiante para inscribirte a cursos. Por favor, regístrate como estudiante.')

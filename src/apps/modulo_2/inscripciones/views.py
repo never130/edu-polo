@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db import transaction
+from django.db.models import Max
 from datetime import date
 
 from .models import Inscripcion
@@ -24,8 +25,26 @@ def formulario_inscripcion(request, comision_id):
     
     # Verificar cupo disponible
     if comision.cupo_lleno:
-        messages.error(request, f'🚫 Lo sentimos, esta comisión ya no tiene cupos disponibles. CUPO LLENO!')
-        return redirect('landing')
+        messages.warning(request, f'⚠️ Esta comisión tiene el cupo lleno. Si completas la inscripción, quedarás en LISTA DE ESPERA.')
+        # No redirigimos, permitimos continuar para inscribirse en lista de espera
+    
+    # Verificar si ya está inscrito (para evitar mostrar el formulario si ya lo está)
+    try:
+        # Asumiendo que el username es el DNI
+        estudiante_check = Estudiante.objects.filter(usuario__persona__dni=request.user.username).first()
+        if estudiante_check:
+            # Verificar inscripción en la misma comisión
+            if Inscripcion.objects.filter(estudiante=estudiante_check, comision=comision).exists():
+                messages.warning(request, '⚠️ Ya estás inscrito en esta comisión.')
+                return redirect('landing')
+            
+            # Verificar inscripción en otra comisión del mismo curso
+            curso = comision.fk_id_curso
+            if Inscripcion.objects.filter(estudiante=estudiante_check, comision__fk_id_curso=curso).exists():
+                messages.warning(request, f'⚠️ Ya estás inscrito en el curso "{curso.nombre}" (en esta u otra comisión). No se permiten inscripciones múltiples al mismo curso.')
+                return redirect('landing')
+    except Exception:
+        pass # Si hay error al verificar, dejamos que continúe (el POST manejará validaciones estrictas)
     
     if request.method == 'POST':
         try:
@@ -123,27 +142,45 @@ def formulario_inscripcion(request, comision_id):
                     return redirect('landing')
                 
                 # 8. Crear inscripción con observaciones
+                # Determinar estado y orden
+                estado_inscripcion = 'confirmado'
+                orden = None
+                
+                # Re-verificar cupo en el momento de guardar (dentro de transacción)
+                comision.refresh_from_db()
+                
+                if comision.cupo_lleno:
+                    estado_inscripcion = 'lista_espera'
+                    ultimo_orden = Inscripcion.objects.filter(comision=comision, estado='lista_espera').aggregate(Max('orden_lista_espera'))['orden_lista_espera__max']
+                    orden = (ultimo_orden or 0) + 1
+                
                 Inscripcion.objects.create(
                     estudiante=estudiante,
                     comision=comision,
-                    estado='confirmado',
+                    estado=estado_inscripcion,
+                    orden_lista_espera=orden,
                     observaciones_discapacidad=request.POST.get('observaciones_discapacidad', ''),
                     observaciones_salud=request.POST.get('observaciones_salud', ''),
                     observaciones_generales=request.POST.get('observaciones_generales', ''),
                 )
                 
                 # 7. Mensaje de éxito personalizado
-                cupos_restantes = comision.cupos_disponibles - 1
                 curso_nombre = comision.fk_id_curso.nombre
                 
-                if cupos_restantes == 0:
-                    mensaje = f'🎉 ¡INSCRIPCIÓN EXITOSA! Te has inscrito al curso "{curso_nombre}". ¡Has tomado el ÚLTIMO CUPO disponible!'
-                elif cupos_restantes <= 3:
-                    mensaje = f'✅ ¡INSCRIPCIÓN EXITOSA! Te has inscrito al curso "{curso_nombre}". ⚠️ Solo quedan {cupos_restantes} cupos.'
+                if estado_inscripcion == 'lista_espera':
+                    mensaje = f'📝 Te has inscrito en LISTA DE ESPERA para el curso "{curso_nombre}". Tu posición es: {orden}.'
+                    messages.warning(request, mensaje)
                 else:
-                    mensaje = f'✅ ¡INSCRIPCIÓN EXITOSA! Te has inscrito al curso "{curso_nombre}".'
-                
-                messages.success(request, mensaje)
+                    cupos_restantes = comision.cupos_disponibles - 1
+                    
+                    if cupos_restantes == 0:
+                        mensaje = f'🎉 ¡INSCRIPCIÓN EXITOSA! Te has inscrito al curso "{curso_nombre}". ¡Has tomado el ÚLTIMO CUPO disponible!'
+                    elif cupos_restantes <= 3:
+                        mensaje = f'✅ ¡INSCRIPCIÓN EXITOSA! Te has inscrito al curso "{curso_nombre}". ⚠️ Solo quedan {cupos_restantes} cupos.'
+                    else:
+                        mensaje = f'✅ ¡INSCRIPCIÓN EXITOSA! Te has inscrito al curso "{curso_nombre}".'
+                    
+                    messages.success(request, mensaje)
                 
                 # Redirección inteligente: Si está logueado va a mis inscripciones, sino al landing
                 if request.user.is_authenticated:
