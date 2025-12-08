@@ -75,9 +75,15 @@ def inscribirse_comision(request, comision_id):
         # Buscar si el usuario tiene perfil de estudiante
         estudiante = Estudiante.objects.get(usuario__persona__dni=request.user.username)
         
-        # Verificar si ya está inscrito
+        # Verificar si ya está inscrito en la comisión
         if Inscripcion.objects.filter(estudiante=estudiante, comision=comision).exists():
             messages.warning(request, '⚠️ Ya estás inscrito en esta comisión.')
+            return redirect('landing')
+
+        # Verificar inscripción en otra comisión del mismo curso
+        curso = comision.fk_id_curso
+        if Inscripcion.objects.filter(estudiante=estudiante, comision__fk_id_curso=curso).exists():
+            messages.warning(request, f'⚠️ Ya estás inscrito en el curso "{curso.nombre}" (en esta u otra comisión). No se permiten inscripciones múltiples al mismo curso.')
             return redirect('landing')
         
         # Verificar cupo disponible usando la propiedad del modelo

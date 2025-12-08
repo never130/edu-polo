@@ -11,6 +11,7 @@ from apps.modulo_1.usuario.models import Persona, Usuario
 from apps.modulo_1.roles.models import Estudiante, Tutor, TutorEstudiante
 
 
+@login_required
 def formulario_inscripcion(request, comision_id):
     """
     Formulario completo de inscripción con:
@@ -29,8 +30,9 @@ def formulario_inscripcion(request, comision_id):
     if request.method == 'POST':
         try:
             with transaction.atomic():
-                # 1. Obtener DNI
-                dni = request.POST.get('dni')
+                # 1. Obtener DNI (usar el del usuario logueado para seguridad)
+                # Aunque el form envíe DNI, priorizamos el del usuario autenticado
+                dni = request.user.username  # Asumiendo que username es DNI
                 
                 # 2. Buscar persona existente (debe estar registrada)
                 try:
@@ -108,9 +110,16 @@ def formulario_inscripcion(request, comision_id):
                     messages.error(request, '🚫 Lo sentimos, el cupo se completó mientras completabas el formulario.')
                     return redirect('landing')
                 
-                # 7. Verificar si ya está inscrito
+                # 7. Verificar si ya está inscrito en la comisión o en otra comisión del mismo curso
+                # Verificar inscripción en la misma comisión
                 if Inscripcion.objects.filter(estudiante=estudiante, comision=comision).exists():
                     messages.warning(request, '⚠️ Ya estás inscrito en esta comisión.')
+                    return redirect('landing')
+
+                # Verificar inscripción en otra comisión del mismo curso
+                curso = comision.fk_id_curso
+                if Inscripcion.objects.filter(estudiante=estudiante, comision__fk_id_curso=curso).exists():
+                    messages.warning(request, f'⚠️ Ya estás inscrito en el curso "{curso.nombre}" (en esta u otra comisión). No se permiten inscripciones múltiples al mismo curso.')
                     return redirect('landing')
                 
                 # 8. Crear inscripción con observaciones
@@ -135,7 +144,12 @@ def formulario_inscripcion(request, comision_id):
                     mensaje = f'✅ ¡INSCRIPCIÓN EXITOSA! Te has inscrito al curso "{curso_nombre}".'
                 
                 messages.success(request, mensaje)
-                return redirect('cursos:mis_inscripciones')
+                
+                # Redirección inteligente: Si está logueado va a mis inscripciones, sino al landing
+                if request.user.is_authenticated:
+                    return redirect('cursos:mis_inscripciones')
+                else:
+                    return redirect('landing')
                 
         except Exception as e:
             messages.error(request, f'❌ Error al procesar la inscripción: {str(e)}')
@@ -145,4 +159,13 @@ def formulario_inscripcion(request, comision_id):
     context = {
         'comision': comision
     }
+    
+    # Pre-cargar datos de persona si existe
+    try:
+        if request.user.is_authenticated:
+            persona = Persona.objects.get(dni=request.user.username)
+            context['persona'] = persona
+    except Persona.DoesNotExist:
+        pass
+        
     return render(request, 'inscripciones/formulario_inscripcion.html', context)

@@ -249,63 +249,54 @@
     <form method="post" class="form-container" id="formInscripcion">
         {% csrf_token %}
         
-        <!-- Sección 1: Verificación de DNI -->
-        <div class="form-section">
-            <h3 class="section-title">
-                <span>👤</span>
-                Verificación de Estudiante
-            </h3>
-            
-            <div class="form-group">
-                <label class="required">Ingresa tu DNI</label>
-                <input type="text" name="dni" id="dni" required maxlength="12" placeholder="12345678" value="{% if user.is_authenticated %}{{ user.username }}{% endif %}">
-                <small style="color: #64748b;">Ingresa tu DNI y tus datos se completarán automáticamente si ya estás registrado</small>
-            </div>
-            
-            <button type="button" id="btnBuscarDNI" style="padding: 1rem; background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 1rem;">
-                🔍 Buscar Datos por DNI
-            </button>
-        </div>
-        
-        <!-- Sección 2: Datos Personales (readonly si existe) -->
-        <div class="form-section" id="seccionDatosPersonales" style="display: none;">
+        <!-- Sección 1: Datos Personales -->
+        <div class="form-section" id="seccionDatosPersonales">
             <h3 class="section-title">
                 <span>👤</span>
                 Datos Personales
-                <span id="estadoUsuario" style="font-size: 0.9rem; font-weight: 500;"></span>
+                <span id="estadoUsuario" style="font-size: 0.9rem; font-weight: 500;">
+                    <span style="color: #10b981;">✅ Usuario autenticado</span>
+                </span>
             </h3>
             
             <div class="form-row">
                 <div class="form-group">
-                    <label class="required">Correo Electrónico (Gmail)</label>
-                    <input type="email" name="correo" id="correo" required placeholder="ejemplo@gmail.com" readonly>
+                    <label class="required">DNI</label>
+                    <input type="text" name="dni" id="dni" required readonly value="{{ user.username }}" style="background-color: #f1f5f9; color: #64748b;">
                 </div>
                 <div class="form-group">
-                    <label class="required">Fecha de Nacimiento</label>
-                    <input type="date" name="fecha_nacimiento" id="fecha_nacimiento" required readonly>
-                    <small id="edadInfo" style="color: #3b82f6; font-weight: 600;"></small>
+                    <label class="required">Correo Electrónico (Gmail)</label>
+                    <input type="email" name="correo" id="correo" required readonly value="{{ persona.correo|default:'' }}" style="background-color: #f1f5f9; color: #64748b;">
                 </div>
             </div>
             
             <div class="form-row">
                 <div class="form-group">
                     <label class="required">Nombre</label>
-                    <input type="text" name="nombre" id="nombre" required readonly>
+                    <input type="text" name="nombre" id="nombre" required readonly value="{{ persona.nombre|default:'' }}" style="background-color: #f1f5f9; color: #64748b;">
                 </div>
                 <div class="form-group">
                     <label class="required">Apellido</label>
-                    <input type="text" name="apellido" id="apellido" required readonly>
+                    <input type="text" name="apellido" id="apellido" required readonly value="{{ persona.apellido|default:'' }}" style="background-color: #f1f5f9; color: #64748b;">
                 </div>
             </div>
             
             <div class="form-row">
                 <div class="form-group">
-                    <label>Teléfono</label>
-                    <input type="tel" name="telefono" id="telefono" readonly>
+                    <label class="required">Fecha de Nacimiento</label>
+                    <input type="date" name="fecha_nacimiento" id="fecha_nacimiento" required readonly value="{{ persona.fecha_nacimiento|date:'Y-m-d'|default:'' }}" style="background-color: #f1f5f9; color: #64748b;">
+                    <small id="edadInfo" style="color: #3b82f6; font-weight: 600;"></small>
                 </div>
                 <div class="form-group">
+                    <label>Teléfono</label>
+                    <input type="tel" name="telefono" id="telefono" readonly value="{{ persona.telefono|default:'' }}" style="background-color: #f1f5f9; color: #64748b;">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
                     <label>Ciudad</label>
-                    <input type="text" name="ciudad_residencia" id="ciudad_residencia" readonly>
+                    <input type="text" name="ciudad_residencia" id="ciudad_residencia" readonly value="{{ persona.ciudad_residencia|default:'' }}" style="background-color: #f1f5f9; color: #64748b;">
                 </div>
             </div>
         </div>
@@ -397,65 +388,13 @@
 
 <script>
     let tutorCount = 0;
-    let usuarioExiste = false;
     let esMenor = false;
     
-    // Buscar datos por DNI
-    document.getElementById('btnBuscarDNI').addEventListener('click', async function() {
-        const dni = document.getElementById('dni').value;
-        
-        if (!dni || dni.length < 7) {
-            alert('❌ Por favor ingresa un DNI válido (mínimo 7 dígitos)');
-            return;
-        }
-        
-        // Mostrar loading
-        this.innerHTML = '⏳ Buscando...';
-        this.disabled = true;
-        
-        try {
-            // Buscar datos del usuario por DNI
-            const response = await fetch(`/api/buscar-estudiante/${dni}/`);
-            const data = await response.json();
-            
-            if (data.existe) {
-                // Usuario existe - Autocompletar datos
-                usuarioExiste = true;
-                document.getElementById('nombre').value = data.nombre;
-                document.getElementById('apellido').value = data.apellido;
-                document.getElementById('correo').value = data.correo;
-                document.getElementById('telefono').value = data.telefono || '';
-                document.getElementById('fecha_nacimiento').value = data.fecha_nacimiento || '';
-                document.getElementById('ciudad_residencia').value = data.ciudad || '';
-                
-                // Calcular edad
-                if (data.fecha_nacimiento) {
-                    calcularEdad(data.fecha_nacimiento);
-                }
-                
-                document.getElementById('estadoUsuario').innerHTML = '<span style="color: #10b981;">✅ Usuario encontrado - Datos cargados</span>';
-                document.getElementById('estadoUsuario').style.display = 'inline';
-                
-            } else {
-                // Usuario nuevo
-                usuarioExiste = false;
-                alert('ℹ️ DNI no encontrado en el sistema. Debes registrarte primero.\n\nSerás redirigido a la página de registro.');
-                window.location.href = '{% url "usuario:registro" %}';
-                return;
-            }
-            
-            // Mostrar sección de datos personales
-            document.getElementById('seccionDatosPersonales').style.display = 'block';
-            
-            // Scroll a la siguiente sección
-            document.getElementById('seccionDatosPersonales').scrollIntoView({ behavior: 'smooth', block: 'start' });
-            
-        } catch (error) {
-            console.error('Error:', error);
-            alert('❌ Error al buscar datos. Por favor intenta de nuevo.');
-        } finally {
-            this.innerHTML = '🔍 Buscar Datos por DNI';
-            this.disabled = false;
+    // Auto-calcular edad al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        const fechaNacInput = document.getElementById('fecha_nacimiento');
+        if (fechaNacInput && fechaNacInput.value) {
+            calcularEdad(fechaNacInput.value);
         }
     });
     
