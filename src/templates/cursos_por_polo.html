@@ -51,64 +51,132 @@
             z-index: 0;
         }
         
-        /* Navbar */
+        /* Navbar - Latest Implementation */
         .navbar {
             background: linear-gradient(90deg, #FF512F 0%, #F09819 100%);
-            padding: 1.2rem 2.5rem;
-            box-shadow: 0 8px 32px rgba(240, 152, 25, 0.3);
+            padding: 1rem 2rem;
             position: sticky;
             top: 0;
             z-index: 1000;
-            border-bottom: none;
+            box-shadow: 0 4px 20px rgba(240, 152, 25, 0.25);
+            backdrop-filter: blur(10px);
         }
         
         .navbar-content {
-            max-width: 1600px;
+            max-width: 100%;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
         }
         
-        .navbar-logo { display: flex; align-items: center; gap: 1.2rem; text-decoration: none; }
-        .navbar-logo img { height: 55px; filter: brightness(0) invert(1); }
+        .navbar-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            z-index: 10;
+        }
+        
+        .navbar-logo img {
+            height: 50px;
+            transition: transform 0.3s ease;
+        }
+        
+        .navbar-logo:hover img {
+            transform: scale(1.1) rotate(-5deg);
+        }
+        
         .navbar-logo h1 {
             color: white;
-            background: none;
-            -webkit-text-fill-color: white;
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             font-weight: 800;
-            font-family: 'Be Vietnam Pro', sans-serif;
+            margin: 0;
             letter-spacing: -0.02em;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        
-        .navbar-actions { display: flex; gap: 1rem; align-items: center; }
-        
-        .navbar-actions .btn {
-            background: white;
-            color: #FF512F;
-            border: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+
+        /* Center Links */
+        .navbar-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
         }
-        
-        .navbar-actions .btn:hover {
-            background: #f8fafc;
-            color: #F09819;
+
+        .navbar-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.05rem;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 0;
+            opacity: 0.9;
+        }
+
+        .navbar-link:hover {
+            opacity: 1;
             transform: translateY(-2px);
+        }
+
+        .navbar-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: white;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar-link:hover::after {
+            width: 100%;
+        }
+
+        .navbar-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            z-index: 10;
         }
         
         .btn {
-            padding: 0.85rem 1.8rem;
-            border-radius: 12px;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
             text-decoration: none;
             font-weight: 600;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: none;
             cursor: pointer;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             letter-spacing: 0.01em;
             position: relative;
             overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
         }
         
         .btn-primary {
@@ -116,21 +184,43 @@
             color: white;
             box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
         }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(59, 130, 246, 0.5); }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.5);
+        }
         
         .btn-secondary {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: white;
-            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+            background: white;
+            color: #FF512F;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-        .btn-secondary:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(59, 130, 246, 0.5); }
         
-        .btn-outline {
-            background: transparent;
-            border: 2px solid #3b82f6;
-            color: #3b82f6;
+        .btn-secondary:hover {
+            background: #f8fafc;
+            transform: translateY(-2px);
+            color: #F09819;
         }
-        .btn-outline:hover { background: rgba(59, 130, 246, 0.1); }
+
+        @media (max-width: 900px) {
+            .navbar-links {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .navbar-actions {
+                flex-direction: column;
+                gap: 0.5rem;
+                width: 100%;
+            }
+            
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
         
         /* Container */
         .main-container {
@@ -483,9 +573,15 @@
     <nav class="navbar">
         <div class="navbar-content">
             <a href="{% url 'landing' %}" class="navbar-logo">
-                <img src="{% static 'img/LOGO COLOR.png' %}" alt="Logo Polo">
+                <img src="{% static 'img/polocreativoblanco.png' %}" alt="Logo Polo">
                 <h1>Edu-Polo</h1>
             </a>
+            <div class="navbar-links">
+                <a href="{% url 'landing' %}" class="navbar-link">Inicio</a>
+                <a href="{% url 'lista_polos' %}" class="navbar-link">Cursos</a>
+                <a href="#" class="navbar-link">Contacto</a>
+                <a href="#" class="navbar-link">Acerca de</a>
+            </div>
             <div class="navbar-actions">
                 <a href="{% url 'landing' %}" class="btn btn-outline">← Volver a Sedes</a>
                 {% if user_authenticated %}
