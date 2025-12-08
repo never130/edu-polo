@@ -968,19 +968,9 @@
             position: relative;
         }
 
-        .input-group .input-icon {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.2rem;
-            pointer-events: none;
-            z-index: 10;
-        }
-
         .input-group input {
             width: 100%;
-            padding: 1rem 1rem 1rem 3rem;
+            padding: 1rem;
             border: 2px solid #e2e8f0;
             border-radius: 12px;
             font-size: 1rem;
@@ -1158,8 +1148,6 @@
                                 <img src="{% static 'img/polotol.png' %}" alt="{{ polo.nombre }}" class="polo-img">
                             {% elif polo.id_polo == 4 %}
                                 <img src="{% static 'img/fabrica.png' %}" alt="{{ polo.nombre }}" class="polo-img">
-                            {% else %}
-                                <div class="icon">🏢</div>
                             {% endif %}
                             <h3>{{ polo.nombre }}</h3>
                             <p>{{ polo.ciudad }}</p>
@@ -1203,12 +1191,10 @@
                 {% csrf_token %}
                 
                 <div class="input-group">
-                    <span class="input-icon">👤</span>
                     <input type="text" name="username" required placeholder="Ingrese su DNI">
                 </div>
                 
                 <div class="form-group input-group">
-                    <span class="input-icon">🔒</span>
                     <input type="password" name="password" required placeholder="Contraseña">
                 </div>
                 

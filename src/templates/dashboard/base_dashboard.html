@@ -59,12 +59,8 @@
         .login-title { font-size: 2rem; font-weight: 800; color: #1e293b; margin-bottom: 0.5rem; }
         .login-subtitle { color: #64748b; margin-bottom: 2rem; }
         .input-group { margin-bottom: 1.5rem; position: relative; }
-        .input-group .input-icon {
-            position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
-            font-size: 1.2rem; pointer-events: none; z-index: 10;
-        }
         .input-group input {
-            width: 100%; padding: 1rem 1rem 1rem 3rem; border: 2px solid #e2e8f0;
+            width: 100%; padding: 1rem; border: 2px solid #e2e8f0;
             border-radius: 12px; font-size: 1rem; transition: all 0.3s ease;
             background: #f8fafc; box-sizing: border-box;
         }
@@ -332,10 +328,6 @@
             border-left: 4px solid #667eea;
         }
         
-        .sidebar-menu .icon {
-            font-size: 1.3rem;
-        }
-        
         /* Contenido Principal */
         .main-content {
             padding: 2rem;
@@ -375,11 +367,6 @@
         .dashboard-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-        }
-        
-        .card-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
         }
         
         .card-title {
@@ -560,10 +547,6 @@
             
             .dashboard-card {
                 padding: 1.5rem;
-            }
-            
-            .card-icon {
-                font-size: 2.5rem;
             }
             
             .card-title {
@@ -838,12 +821,10 @@
                 {% csrf_token %}
                 
                 <div class="input-group">
-                    <span class="input-icon">👤</span>
                     <input type="text" name="username" required placeholder="Ingrese su DNI">
                 </div>
                 
                 <div class="form-group input-group">
-                    <span class="input-icon">🔒</span>
                     <input type="password" name="password" required placeholder="Contraseña">
                 </div>
                 

@@ -5,14 +5,14 @@
 {% block user_role %}Estudiante{% endblock %}
 
 {% block sidebar_menu %}
-<li><a href="{% url 'dashboard_estudiante' %}" class="active"><span class="icon">🏠</span> Inicio</a></li>
-<li><a href="{% url 'cursos:ver_disponibles' %}"><span class="icon">📚</span> Cursos Disponibles</a></li>
-<li><a href="{% url 'cursos:mis_inscripciones' %}"><span class="icon">✅</span> Mis Inscripciones</a></li>
-<li><a href="{% url 'usuario:gestionar_tutores' %}"><span class="icon">👨‍👩‍👧</span> Mis Tutores</a></li>
-<li><a href="{% url 'usuario:mi_progreso' %}"><span class="icon">📊</span> Mi Progreso</a></li>
-<li><a href="{% url 'usuario:mis_certificados' %}"><span class="icon">🎓</span> Certificados</a></li>
-<li><a href="{% url 'usuario:materiales_estudiante' %}"><span class="icon">📁</span> Materiales</a></li>
-<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+<li><a href="{% url 'dashboard_estudiante' %}" class="active">Inicio</a></li>
+<li><a href="{% url 'cursos:ver_disponibles' %}">Cursos Disponibles</a></li>
+<li><a href="{% url 'cursos:mis_inscripciones' %}">Mis Inscripciones</a></li>
+<li><a href="{% url 'usuario:gestionar_tutores' %}">Mis Tutores</a></li>
+<li><a href="{% url 'usuario:mi_progreso' %}">Mi Progreso</a></li>
+<li><a href="{% url 'usuario:mis_certificados' %}">Certificados</a></li>
+<li><a href="{% url 'usuario:materiales_estudiante' %}">Materiales</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}">Mi Perfil</a></li>
 {% endblock %}
 
 {% block content %}
@@ -23,25 +23,21 @@
 
 <div class="dashboard-cards">
     <div class="dashboard-card">
-        <div class="card-icon">📚</div>
         <div class="card-title">Cursos Disponibles</div>
         <div class="card-value">{{ cursos_disponibles }}</div>
     </div>
     
     <div class="dashboard-card">
-        <div class="card-icon">✅</div>
         <div class="card-title">Mis Inscripciones</div>
         <div class="card-value">{{ inscripciones_activas }}</div>
     </div>
     
     <div class="dashboard-card">
-        <div class="card-icon">⏳</div>
         <div class="card-title">En Proceso</div>
         <div class="card-value">{{ inscripciones_activas }}</div>
     </div>
     
     <div class="dashboard-card">
-        <div class="card-icon">🎓</div>
         <div class="card-title">Certificados</div>
         <div class="card-value">0</div>
     </div>
@@ -50,13 +46,12 @@
 <!-- Sección de Cursos Disponibles -->
 {% if cursos %}
 <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-top: 2rem;">
-    <h3 style="color: #667eea; margin-bottom: 1.5rem;">📚 Cursos Disponibles</h3>
+    <h3 style="color: #667eea; margin-bottom: 1.5rem;">Cursos Disponibles</h3>
     
     <div class="cursos-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
         {% for curso in cursos %}
         <div class="curso-card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 1.5rem; border-radius: 12px; transition: all 0.3s ease;">
             <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                <span style="font-size: 2.5rem;">📖</span>
                 <h4 style="color: #667eea; font-size: 1.2rem; margin: 0;">{{ curso.nombre }}</h4>
             </div>
             
@@ -87,23 +82,22 @@
 </div>
 {% else %}
 <div style="background: white; padding: 3rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-top: 2rem; text-align: center;">
-    <span style="font-size: 4rem;">📭</span>
     <h3 style="color: #667eea; margin: 1rem 0;">No hay cursos disponibles en este momento</h3>
     <p style="color: #666;">Vuelve pronto para ver nuestra nueva oferta educativa</p>
 </div>
 {% endif %}
 
 <div class="acciones-rapidas">
-    <h3 style="color: #667eea; margin-bottom: 1.5rem;">🎯 Acciones Rápidas</h3>
+    <h3 style="color: #667eea; margin-bottom: 1.5rem;">Acciones Rápidas</h3>
     <div class="acciones-grid">
         <a href="{% url 'cursos:ver_disponibles' %}" class="accion-btn accion-primary">
-            📚 Ver Cursos Disponibles
+            Ver Cursos Disponibles
         </a>
         <a href="{% url 'cursos:mis_inscripciones' %}" class="accion-btn accion-secondary">
-            ✅ Mis Inscripciones
+            Mis Inscripciones
         </a>
         <a href="#" class="accion-btn accion-tertiary">
-            🎓 Mis Certificados
+            Mis Certificados
         </a>
     </div>
 </div>

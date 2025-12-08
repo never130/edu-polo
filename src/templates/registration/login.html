@@ -153,7 +153,7 @@
 
         {% if form.errors %}
             <div class="error-message">
-                <strong>❌ Error:</strong> Usuario o contraseña incorrectos. Por favor, intenta de nuevo.
+                <strong>Error:</strong> Usuario o contraseña incorrectos. Por favor, intenta de nuevo.
             </div>
         {% endif %}
 
@@ -162,7 +162,7 @@
             
             <div class="form-group">
                 <label for="{{ form.username.id_for_label }}">
-                    👤 Usuario (DNI):
+                    Usuario (DNI):
                 </label>
                 <input 
                     type="text" 
@@ -176,7 +176,7 @@
 
             <div class="form-group">
                 <label for="{{ form.password.id_for_label }}">
-                    🔒 Contraseña:
+                    Contraseña:
                 </label>
                 <input 
                     type="password" 
@@ -188,7 +188,7 @@
             </div>
 
             <button type="submit" class="btn-login">
-                🚀 Iniciar Sesión
+                Iniciar Sesión
             </button>
 
             <input type="hidden" name="next" value="{{ next }}">
@@ -196,15 +196,12 @@
 
         <div class="tipos-usuario">
             <div class="tipo-item">
-                <div class="icon">🎓</div>
                 <div class="label">Estudiante</div>
             </div>
             <div class="tipo-item">
-                <div class="icon">👨‍🏫</div>
                 <div class="label">Docente</div>
             </div>
             <div class="tipo-item">
-                <div class="icon">⚙️</div>
                 <div class="label">Admin</div>
             </div>
         </div>

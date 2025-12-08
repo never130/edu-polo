@@ -346,12 +346,8 @@
         .login-subtitle { color: #64748b; margin-bottom: 2rem; }
 
         .input-group { margin-bottom: 1.5rem; position: relative; }
-        .input-group .input-icon {
-            position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
-            font-size: 1.2rem; pointer-events: none; z-index: 10;
-        }
         .input-group input {
-            width: 100%; padding: 1rem 1rem 1rem 3rem;
+            width: 100%; padding: 1rem;
             border: 2px solid #e2e8f0; border-radius: 12px;
             font-size: 1rem; transition: all 0.3s ease;
             background: #f8fafc; box-sizing: border-box;
@@ -498,12 +494,10 @@
                 {% csrf_token %}
                 
                 <div class="input-group">
-                    <span class="input-icon">👤</span>
                     <input type="text" name="username" required placeholder="Ingrese su DNI">
                 </div>
                 
                 <div class="form-group input-group">
-                    <span class="input-icon">🔒</span>
                     <input type="password" name="password" required placeholder="Contraseña">
                 </div>
                 

@@ -8,42 +8,42 @@
 {% block sidebar_menu %}
 {% if es_admin or es_mesa_entrada %}
     {# Menú para Administrador y Mesa de Entrada #}
-    <li><a href="{% url 'dashboard_admin' %}"><span class="icon">🏠</span> Inicio</a></li>
-    <li><a href="{% url 'administracion:panel_cursos' %}"><span class="icon">📚</span> Gestión Cursos</a></li>
-    <li><a href="{% url 'administracion:panel_comisiones' %}"><span class="icon">📋</span> Gestión Comisiones</a></li>
-    <li><a href="{% url 'administracion:panel_inscripciones' %}"><span class="icon">✅</span> Inscripciones</a></li>
+    <li><a href="{% url 'dashboard_admin' %}">Inicio</a></li>
+    <li><a href="{% url 'administracion:panel_cursos' %}">Gestión Cursos</a></li>
+    <li><a href="{% url 'administracion:panel_comisiones' %}">Gestión Comisiones</a></li>
+    <li><a href="{% url 'administracion:panel_inscripciones' %}">Inscripciones</a></li>
     {% if es_admin_completo %}
-    <li><a href="{% url 'administracion:gestion_usuarios' %}"><span class="icon">👥</span> Gestión Usuarios</a></li>
+    <li><a href="{% url 'administracion:gestion_usuarios' %}">Gestión Usuarios</a></li>
     {% endif %}
-    <li><a href="{% url 'administracion:buscador_estudiantes' %}"><span class="icon">🔍</span> Buscar Estudiantes</a></li>
+    <li><a href="{% url 'administracion:buscador_estudiantes' %}">Buscar Estudiantes</a></li>
     {% if es_admin_completo %}
-    <li><a href="{% url 'administracion:panel_polos' %}"><span class="icon">🏢</span> Polos</a></li>
+    <li><a href="{% url 'administracion:panel_polos' %}">Polos</a></li>
     {% endif %}
-    <li><a href="{% url 'administracion:estadisticas' %}"><span class="icon">📊</span> Estadísticas</a></li>
-    <li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
-    <li><a href="{% url 'administracion:docentes_cursos' %}"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li>
-    <li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+    <li><a href="{% url 'administracion:estadisticas' %}">Estadísticas</a></li>
+    <li><a href="{% url 'administracion:panel_asistencia' %}">Asistencias</a></li>
+    <li><a href="{% url 'administracion:docentes_cursos' %}">Docentes y Cursos</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}">Mi Perfil</a></li>
     {% if es_admin_completo %}
-    <li><a href="{% url 'admin:index' %}"><span class="icon">⚙️</span> Django Admin</a></li>
+    <li><a href="{% url 'admin:index' %}">Django Admin</a></li>
     {% endif %}
 {% elif es_docente %}
     {# Menú para Docentes #}
-    <li><a href="{% url 'dashboard_docente' %}"><span class="icon">🏠</span> Inicio</a></li>
-    <li><a href="{% url 'administracion:mis_cursos_docente' %}"><span class="icon">📚</span> Mis Cursos</a></li>
-    <li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
-    <li><a href="{% url 'administracion:materiales_docente' %}"><span class="icon">📁</span> Materiales</a></li>
-    <li><a href="{% url 'administracion:estudiantes_docente' %}"><span class="icon">👥</span> Estudiantes</a></li>
-    <li><a href="{% url 'usuario:mi_perfil' %}" class="active"><span class="icon">👤</span> Mi Perfil</a></li>
+    <li><a href="{% url 'dashboard_docente' %}">Inicio</a></li>
+    <li><a href="{% url 'administracion:mis_cursos_docente' %}">Mis Cursos</a></li>
+    <li><a href="{% url 'administracion:panel_asistencia' %}">Asistencias</a></li>
+    <li><a href="{% url 'administracion:materiales_docente' %}">Materiales</a></li>
+    <li><a href="{% url 'administracion:estudiantes_docente' %}">Estudiantes</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}" class="active">Mi Perfil</a></li>
 {% else %}
     {# Menú para Estudiantes y otros usuarios #}
-    <li><a href="{% url 'dashboard_estudiante' %}"><span class="icon">🏠</span> Inicio</a></li>
-    <li><a href="{% url 'usuario:mi_perfil' %}" class="active"><span class="icon">👤</span> Mi Perfil</a></li>
+    <li><a href="{% url 'dashboard_estudiante' %}">Inicio</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}" class="active">Mi Perfil</a></li>
 {% endif %}
 {% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h2>🔒 Cambiar Contraseña</h2>
+    <h2>Cambiar Contraseña</h2>
     <p>Actualiza tu contraseña de acceso</p>
 </div>
 
@@ -57,13 +57,13 @@
 
 <div class="form-card">
     <div class="security-info">
-        <span class="security-icon">🛡️</span>
+        <span class="security-icon"></span>
         <div>
             <h3>Seguridad de tu Contraseña</h3>
             <ul>
-                <li>✓ Debe tener al menos 6 caracteres</li>
-                <li>✓ Usa una combinación de letras y números</li>
-                <li>✓ No compartas tu contraseña con nadie</li>
+                <li>Debe tener al menos 6 caracteres</li>
+                <li>Usa una combinación de letras y números</li>
+                <li>No compartas tu contraseña con nadie</li>
             </ul>
         </div>
     </div>
@@ -77,7 +77,7 @@
                 <div class="password-input-wrapper">
                     <input type="password" name="contrasena_actual" id="contrasena_actual" required placeholder="Ingresa tu contraseña actual">
                     <button type="button" class="toggle-password" onclick="togglePassword('contrasena_actual')">
-                        👁️
+                        Ver
                     </button>
                 </div>
             </div>
@@ -87,7 +87,7 @@
                 <div class="password-input-wrapper">
                     <input type="password" name="contrasena_nueva" id="contrasena_nueva" required placeholder="Mínimo 6 caracteres" minlength="6">
                     <button type="button" class="toggle-password" onclick="togglePassword('contrasena_nueva')">
-                        👁️
+                        Ver
                     </button>
                 </div>
                 <small class="password-strength" id="passwordStrength"></small>
@@ -98,7 +98,7 @@
                 <div class="password-input-wrapper">
                     <input type="password" name="contrasena_confirmar" id="contrasena_confirmar" required placeholder="Repite la nueva contraseña" minlength="6">
                     <button type="button" class="toggle-password" onclick="togglePassword('contrasena_confirmar')">
-                        👁️
+                        Ver
                     </button>
                 </div>
                 <small class="password-match" id="passwordMatch"></small>
@@ -107,7 +107,7 @@
 
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">
-                🔒 Cambiar Contraseña
+                Cambiar Contraseña
             </button>
             <a href="{% url 'usuario:mi_perfil' %}" class="btn btn-secondary">
                 Cancelar

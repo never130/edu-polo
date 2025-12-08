@@ -8,52 +8,52 @@
 {% block sidebar_menu %}
 {% if es_admin or es_mesa_entrada %}
     {# Menú para Administrador y Mesa de Entrada #}
-    <li><a href="{% url 'dashboard_admin' %}"><span class="icon">🏠</span> Inicio</a></li>
-    <li><a href="{% url 'administracion:panel_cursos' %}"><span class="icon">📚</span> Gestión Cursos</a></li>
-    <li><a href="{% url 'administracion:panel_comisiones' %}"><span class="icon">📋</span> Gestión Comisiones</a></li>
-    <li><a href="{% url 'administracion:panel_inscripciones' %}"><span class="icon">✅</span> Inscripciones</a></li>
+    <li><a href="{% url 'dashboard_admin' %}">Inicio</a></li>
+    <li><a href="{% url 'administracion:panel_cursos' %}">Gestión Cursos</a></li>
+    <li><a href="{% url 'administracion:panel_comisiones' %}">Gestión Comisiones</a></li>
+    <li><a href="{% url 'administracion:panel_inscripciones' %}">Inscripciones</a></li>
     {% if es_admin_completo %}
-    <li><a href="{% url 'administracion:gestion_usuarios' %}"><span class="icon">👥</span> Gestión Usuarios</a></li>
+    <li><a href="{% url 'administracion:gestion_usuarios' %}">Gestión Usuarios</a></li>
     {% endif %}
-    <li><a href="{% url 'administracion:buscador_estudiantes' %}"><span class="icon">🔍</span> Buscar Estudiantes</a></li>
+    <li><a href="{% url 'administracion:buscador_estudiantes' %}">Buscar Estudiantes</a></li>
     {% if es_admin_completo %}
-    <li><a href="{% url 'administracion:panel_polos' %}"><span class="icon">🏢</span> Polos</a></li>
+    <li><a href="{% url 'administracion:panel_polos' %}">Polos</a></li>
     {% endif %}
-    <li><a href="{% url 'administracion:estadisticas' %}"><span class="icon">📊</span> Estadísticas</a></li>
-    <li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
-    <li><a href="{% url 'administracion:docentes_cursos' %}"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li>
-    <li><a href="{% url 'usuario:mi_perfil' %}" class="active"><span class="icon">👤</span> Mi Perfil</a></li>
+    <li><a href="{% url 'administracion:estadisticas' %}">Estadísticas</a></li>
+    <li><a href="{% url 'administracion:panel_asistencia' %}">Asistencias</a></li>
+    <li><a href="{% url 'administracion:docentes_cursos' %}">Docentes y Cursos</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}" class="active">Mi Perfil</a></li>
     {% if es_admin_completo %}
-    <li><a href="{% url 'admin:index' %}"><span class="icon">⚙️</span> Django Admin</a></li>
+    <li><a href="{% url 'admin:index' %}">Django Admin</a></li>
     {% endif %}
 {% elif es_docente %}
     {# Menú para Docentes #}
-    <li><a href="{% url 'dashboard_docente' %}"><span class="icon">🏠</span> Inicio</a></li>
-    <li><a href="{% url 'administracion:mis_cursos_docente' %}"><span class="icon">📚</span> Mis Cursos</a></li>
-    <li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
-    <li><a href="{% url 'administracion:materiales_docente' %}"><span class="icon">📁</span> Materiales</a></li>
-    <li><a href="{% url 'administracion:estudiantes_docente' %}"><span class="icon">👥</span> Estudiantes</a></li>
-    <li><a href="{% url 'usuario:mi_perfil' %}" class="active"><span class="icon">👤</span> Mi Perfil</a></li>
+    <li><a href="{% url 'dashboard_docente' %}">Inicio</a></li>
+    <li><a href="{% url 'administracion:mis_cursos_docente' %}">Mis Cursos</a></li>
+    <li><a href="{% url 'administracion:panel_asistencia' %}">Asistencias</a></li>
+    <li><a href="{% url 'administracion:materiales_docente' %}">Materiales</a></li>
+    <li><a href="{% url 'administracion:estudiantes_docente' %}">Estudiantes</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}" class="active">Mi Perfil</a></li>
 {% else %}
     {# Menú para Estudiantes y otros usuarios #}
-    <li><a href="{% url 'dashboard_estudiante' %}"><span class="icon">🏠</span> Inicio</a></li>
-    <li><a href="{% url 'cursos:ver_disponibles' %}"><span class="icon">📚</span> Cursos Disponibles</a></li>
-    <li><a href="{% url 'cursos:mis_inscripciones' %}"><span class="icon">✅</span> Mis Inscripciones</a></li>
+    <li><a href="{% url 'dashboard_estudiante' %}">Inicio</a></li>
+    <li><a href="{% url 'cursos:ver_disponibles' %}">Cursos Disponibles</a></li>
+    <li><a href="{% url 'cursos:mis_inscripciones' %}">Mis Inscripciones</a></li>
     {% if es_estudiante %}
-    <li><a href="{% url 'usuario:gestionar_tutores' %}"><span class="icon">👨‍👩‍👧</span> Mis Tutores</a></li>
+    <li><a href="{% url 'usuario:gestionar_tutores' %}">Mis Tutores</a></li>
     {% endif %}
-    <li><a href="{% url 'usuario:mi_progreso' %}"><span class="icon">📊</span> Mi Progreso</a></li>
-    <li><a href="{% url 'usuario:mis_certificados' %}"><span class="icon">🎓</span> Certificados</a></li>
+    <li><a href="{% url 'usuario:mi_progreso' %}">Mi Progreso</a></li>
+    <li><a href="{% url 'usuario:mis_certificados' %}">Certificados</a></li>
     {% if es_estudiante %}
-    <li><a href="{% url 'usuario:materiales_estudiante' %}"><span class="icon">📁</span> Materiales</a></li>
+    <li><a href="{% url 'usuario:materiales_estudiante' %}">Materiales</a></li>
     {% endif %}
-    <li><a href="{% url 'usuario:mi_perfil' %}" class="active"><span class="icon">👤</span> Mi Perfil</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}" class="active">Mi Perfil</a></li>
 {% endif %}
 {% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h2>👤 Mi Perfil</h2>
+    <h2>Mi Perfil</h2>
     <p>Visualiza y edita tu información personal</p>
 </div>
 
@@ -80,10 +80,10 @@
             </div>
             <div class="perfil-actions">
                 <a href="{% url 'usuario:editar_perfil' %}" class="btn btn-primary">
-                    ✏️ Editar Perfil
+                    Editar Perfil
                 </a>
                 <a href="{% url 'usuario:cambiar_contrasena' %}" class="btn btn-secondary">
-                    🔒 Cambiar Contraseña
+                    Cambiar Contraseña
                 </a>
             </div>
         </div>
@@ -92,7 +92,6 @@
     <!-- Información Personal -->
     <div class="perfil-card">
         <div class="card-title">
-            <span class="icon">📋</span>
             <h3>Información Personal</h3>
         </div>
         <div class="info-grid">
@@ -126,7 +125,6 @@
     <!-- Información de Residencia -->
     <div class="perfil-card">
         <div class="card-title">
-            <span class="icon">🏠</span>
             <h3>Residencia</h3>
         </div>
         <div class="info-grid">
@@ -149,7 +147,6 @@
     {% if es_estudiante %}
     <div class="perfil-card">
         <div class="card-title">
-            <span class="icon">🎓</span>
             <h3>Información Académica</h3>
         </div>
         <div class="info-grid">
@@ -168,7 +165,6 @@
     {% if es_docente %}
     <div class="perfil-card">
         <div class="card-title">
-            <span class="icon">👨‍🏫</span>
             <h3>Información Profesional</h3>
         </div>
         <div class="info-grid">
@@ -187,7 +183,6 @@
     <!-- Información Médica y Autorizaciones -->
     <div class="perfil-card">
         <div class="card-title">
-            <span class="icon">🏥</span>
             <h3>Salud y Autorizaciones</h3>
         </div>
         <div class="info-grid">
@@ -199,9 +194,9 @@
                 <span class="info-label">Autorización de Imagen</span>
                 <span class="info-value">
                     {% if persona.autorizacion_imagen %}
-                        <span class="badge badge-success">✅ Autorizado</span>
+                        <span class="badge badge-success">Autorizado</span>
                     {% else %}
-                        <span class="badge badge-danger">❌ No autorizado</span>
+                        <span class="badge badge-danger">No autorizado</span>
                     {% endif %}
                 </span>
             </div>
@@ -209,9 +204,9 @@
                 <span class="info-label">Autorización de Voz</span>
                 <span class="info-value">
                     {% if persona.autorizacion_voz %}
-                        <span class="badge badge-success">✅ Autorizado</span>
+                        <span class="badge badge-success">Autorizado</span>
                     {% else %}
-                        <span class="badge badge-danger">❌ No autorizado</span>
+                        <span class="badge badge-danger">No autorizado</span>
                     {% endif %}
                 </span>
             </div>

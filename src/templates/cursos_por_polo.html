@@ -264,54 +264,184 @@
         }
         .section-header p { color: #64748b; font-size: 1.2rem; }
         
-        /* Cursos Grid */
-        .cursos-grid { display: grid; gap: 2rem; }
+        /* Cursos Grid - Redesigned */
+        .cursos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2.5rem;
+            margin-top: 1rem;
+        }
+
         .curso-card {
-            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
-            padding: 2.5rem;
-            border-radius: 20px;
-            transition: all 0.4s;
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid rgba(226, 232, 240, 0.8);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
             position: relative;
+        }
+
+        .curso-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
+        }
+
+        .card-image-container {
+            height: 200px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             overflow: hidden;
         }
-        .curso-card::before {
+        
+        .card-image-container::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; height: 4px;
-            background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
-            transform: scaleX(0);
-            transition: transform 0.4s ease;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            top: -50px;
+            right: -50px;
+            transition: transform 0.5s ease;
         }
-        .curso-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15); }
-        .curso-card:hover::before { transform: scaleX(1); }
         
-        .curso-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem; }
-        .curso-icon { font-size: 3.5rem; }
-        .curso-title h3 {
-            background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 1.8rem;
-            font-weight: 700;
+        .card-image-container::after {
+            content: '';
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            bottom: -30px;
+            left: -30px;
+            transition: transform 0.5s ease;
         }
-        .curso-estado {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            padding: 0.4rem 1rem;
+
+        .curso-card:hover .card-image-container::before { transform: scale(1.1); }
+        .curso-card:hover .card-image-container::after { transform: scale(1.1); }
+
+        .card-icon-large {
+            font-size: 5rem;
+            color: rgba(255, 255, 255, 0.95);
+            z-index: 1;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .curso-card:hover .card-icon-large {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        .card-tags {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            z-index: 2;
+        }
+
+        .tag {
+            padding: 0.35rem 0.8rem;
             border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            backdrop-filter: blur(8px);
+        }
+
+        .tag-age {
+            background: rgba(255, 255, 255, 0.95);
+            color: #1e293b;
+        }
+
+        .tag-status {
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
         }
         
-        .curso-descripcion { color: #475569; line-height: 1.8; margin-bottom: 2rem; font-size: 1.05rem; }
+        .tag-status.closed {
+            background: rgba(239, 68, 68, 0.9);
+        }
+
+        .card-content {
+            padding: 1.8rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.8rem;
+            line-height: 1.3;
+        }
+
+        .card-desc {
+            font-size: 0.95rem;
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-meta {
+            margin-bottom: 1.5rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .meta-row {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 0.6rem;
+            color: #475569;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
         
-        .curso-info { display: grid; gap: 1rem; margin-bottom: 2rem; }
-        .info-item {
-            display: flex; gap: 0.8rem; color: #64748b; padding: 0.8rem;
-            background: rgba(248, 250, 252, 0.8);
-            border-radius: 10px; border-left: 3px solid #3b82f6;
+        .meta-row:last-child { margin-bottom: 0; }
+        .meta-icon { font-size: 1.1rem; color: #3b82f6; }
+
+        .btn-more {
+            width: 100%;
+            padding: 1rem;
+            background: white;
+            color: #3b82f6;
+            border: 2px solid #3b82f6;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-more:hover {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.25);
+            transform: translateY(-2px);
         }
         
         .comisiones { margin-top: 2rem; padding-top: 2rem; border-top: 2px solid #e2e8f0; }
@@ -436,19 +566,9 @@
             position: relative;
         }
 
-        .input-group .input-icon {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.2rem;
-            pointer-events: none;
-            z-index: 10;
-        }
-
         .input-group input {
             width: 100%;
-            padding: 1rem 1rem 1rem 3rem;
+            padding: 1rem;
             border: 2px solid #e2e8f0;
             border-radius: 12px;
             font-size: 1rem;
@@ -587,7 +707,7 @@
             <div class="navbar-actions">
                 <a href="{% url 'landing' %}" class="btn btn-outline">← Volver a Sedes</a>
                 {% if user_authenticated %}
-                <a href="{% url 'dashboard' %}" class="btn btn-primary">Ir al Panel 🚀</a>
+                <a href="{% url 'dashboard' %}" class="btn btn-primary">Ir al Panel</a>
                 {% else %}
                 <a href="#" class="btn btn-secondary" onclick="openRegistroModal(); return false;">Registrarse</a>
                 <a href="#" class="btn btn-primary" onclick="openLoginModal(); return false;">Ingresar</a>
@@ -610,81 +730,128 @@
             <div class="cursos-grid">
                 {% for curso in cursos %}
                 <div class="curso-card">
-                    <div class="curso-header">
-                        <span class="curso-icon">📖</span>
-                        <div class="curso-title">
-                            <h3>{{ curso.nombre }}</h3>
-                            <span class="curso-estado">{{ curso.get_estado_display }}</span>
-                        </div>
-                    </div>
-                    
-                    <p class="curso-descripcion">
-                        {{ curso.descripcion|default:"Curso de formación profesional de alta calidad." }}
-                    </p>
-                    
-                    <div class="curso-info">
-                        {% if curso.edad_minima %}
-                        <div class="info-item">
-                            <span>👤</span>
-                            <span><strong>Edad mínima:</strong> {{ curso.edad_minima }} años</span>
-                        </div>
-                        {% endif %}
-                        {% if curso.requisitos %}
-                        <div class="info-item">
-                            <span>📋</span>
-                            <span><strong>Requisitos:</strong> {{ curso.requisitos|truncatechars:100 }}</span>
-                        </div>
-                        {% endif %}
-                    </div>
+                    <div class="card-image-container">
+                        <div class="card-tags">
+                            {% if curso.edad_minima %}
+                            <span class="tag tag-age">+{{ curso.edad_minima }} Años</span>
+                            {% endif %}
+                            
+                            {% if "program" in curso.nombre|lower or "desarrollo" in curso.nombre|lower %}
+                                <span class="tag tag-category" style="background: rgba(59, 130, 246, 0.9); color: white;">Programación</span>
+                            {% elif "diseño" in curso.nombre|lower or "arte" in curso.nombre|lower %}
+                                <span class="tag tag-category" style="background: rgba(236, 72, 153, 0.9); color: white;">Diseño</span>
+                            {% elif "robot" in curso.nombre|lower or "arduino" in curso.nombre|lower %}
+                                <span class="tag tag-category" style="background: rgba(168, 85, 247, 0.9); color: white;">Robótica</span>
+                            {% elif "ingles" in curso.nombre|lower or "idioma" in curso.nombre|lower %}
+                                <span class="tag tag-category" style="background: rgba(245, 158, 11, 0.9); color: white;">Idiomas</span>
+                            {% endif %}
 
-                    <button class="btn btn-secondary" style="width: 100%; margin-bottom: 1.5rem; background: white; color: #4f46e5; border: 2px solid #e0e7ff;" 
-                        onclick="openModal('{{ curso.nombre|escapejs }}', '{{ curso.descripcion|escapejs }}', '{{ curso.requisitos|escapejs }}', '{{ curso.edad_minima|default_if_none:'' }}')">
-                        ℹ️ Ver Detalle Completo
-                    </button>
+                            <span class="tag tag-status {% if curso.estado == 'Cerrado' %}closed{% endif %}">{{ curso.estado }}</span>
+                        </div>
+                    </div>
                     
-                    {% if curso.comisiones_abiertas %}
-                    <div class="comisiones">
-                        <h4>🗓️ Comisiones Disponibles</h4>
-                        {% for comision in curso.comisiones_abiertas %}
-                        <div class="comision-item">
-                            <div class="comision-header">
-                                <strong style="color: #667eea;">Comisión #{{ comision.id_comision }}</strong>
-                                {% if comision.cupo_lleno %}
-                                    <span class="comision-cupos cupo-lleno">🚫 Cupo Lleno</span>
-                                {% elif comision.cupos_disponibles <= 5 %}
-                                    <span class="comision-cupos cupos-limitados">⚠️ {{ comision.cupos_disponibles }} cupos</span>
-                                {% else %}
-                                    <span class="comision-cupos cupos-disponibles">✅ {{ comision.cupos_disponibles }} cupos</span>
-                                {% endif %}
-                            </div>
-                            
-                            <div class="comision-detalles" style="margin-bottom: 1rem; font-size: 0.9rem; color: #666;">
-                                <p><strong>📍 Lugar:</strong> {{ comision.lugar|default:"Por definir" }}</p>
-                                <p><strong>📅 Inicio:</strong> {{ comision.fecha_inicio|date:"d/m/Y"|default:"Por definir" }}</p>
-                                <p><strong>⏰ Horario:</strong> {{ comision.dias_horarios|default:"Por definir" }}</p>
-                            </div>
-                            
-                            {% if not comision.cupo_lleno %}
-                                {% if user_authenticated %}
-                                    <a href="{% url 'inscripciones:formulario' comision.id_comision %}" class="btn btn-primary btn-inscribir">✅ Inscribirme</a>
-                                {% else %}
-                                    <a href="#" class="btn btn-primary btn-inscribir" onclick="openLoginModal(); return false;">🔒 Iniciar Sesión</a>
-                                {% endif %}
+                    <div class="card-content">
+                        <h3 class="card-title">{{ curso.nombre }}</h3>
+                        <p class="card-desc">{{ curso.descripcion|default:"Sin descripción disponible." }}</p>
+                        
+                        <div class="card-meta">
+                            {% if curso.comisiones_abiertas %}
+                                {% with comision=curso.comisiones_abiertas.0 %}
+                                <div class="meta-row">
+                                    <span style="font-weight: 600;">Fecha:</span>
+                                    <span>{{ comision.dias_horarios|default:"A confirmar"|truncatechars:30 }}</span>
+                                </div>
+                                <div class="meta-row">
+                                    <span style="font-weight: 600;">Lugar:</span>
+                                    <span>{{ comision.lugar|default:"Polo Creativo"|truncatechars:25 }}</span>
+                                </div>
+                                {% endwith %}
                             {% else %}
-                                <button disabled class="btn btn-inscribir" style="background: #ccc; cursor: not-allowed;">🚫 Cupo Completo</button>
+                                <div class="meta-row">
+                                    <span>Próximamente más información</span>
+                                </div>
                             {% endif %}
                         </div>
-                        {% endfor %}
+
+                        <button class="btn-more" onclick="openCourseModal('{{ curso.id_curso }}')">
+                            Más información ➝
+                        </button>
                     </div>
-                    {% else %}
-                    <p style="color: #999; text-align: center; padding: 1rem;">No hay comisiones abiertas en este momento</p>
-                    {% endif %}
+                </div>
+
+                <!-- Modal Specific for this Course -->
+                <div id="modal-curso-{{ curso.id_curso }}" class="modal-overlay course-modal-trigger">
+                    <div class="modal-container">
+                        <div class="modal-header">
+                            <button class="modal-close" onclick="closeCourseModal('{{ curso.id_curso }}')">×</button>
+                            <h3 style="font-size: 1.5rem; font-weight: 700;">{{ curso.nombre }}</h3>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label style="font-weight: 600; color: #64748b; display: block; margin-bottom: 0.5rem;">DESCRIPCIÓN</label>
+                                <p style="line-height: 1.6; color: #334155;">{{ curso.descripcion|default:"Sin descripción disponible." }}</p>
+                            </div>
+                            {% if curso.requisitos %}
+                            <div class="form-group">
+                                <label style="font-weight: 600; color: #64748b; display: block; margin-bottom: 0.5rem;">REQUISITOS</label>
+                                <p style="line-height: 1.6; color: #334155;">{{ curso.requisitos }}</p>
+                            </div>
+                            {% endif %}
+                            {% if curso.edad_minima %}
+                            <div class="form-group">
+                                <label style="font-weight: 600; color: #64748b; display: block; margin-bottom: 0.5rem;">EDAD MÍNIMA</label>
+                                <p><span style="font-weight: 700; color: #334155;">{{ curso.edad_minima }}</span> años</p>
+                            </div>
+                            {% endif %}
+                            
+                            <hr style="margin: 2rem 0; border: 0; border-top: 1px solid #e2e8f0;">
+                            
+                            <h4 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1.5rem; color: #1e293b;">Comisiones Disponibles</h4>
+                            
+                            {% if curso.comisiones_abiertas %}
+                                {% for comision in curso.comisiones_abiertas %}
+                                <div class="comision-item" style="background: #f8fafc; padding: 1.5rem; border-radius: 16px; margin-bottom: 1rem; border: 1px solid #e2e8f0;">
+                                    <div class="comision-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+                                        <strong style="color: #667eea;">Comisión #{{ comision.id_comision }}</strong>
+                                        {% if comision.cupo_lleno %}
+                                            <span class="comision-cupos cupo-lleno" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 700; font-size: 0.9rem;">Cupo Lleno</span>
+                                        {% elif comision.cupos_disponibles <= 5 %}
+                                            <span class="comision-cupos cupos-limitados" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 700; font-size: 0.9rem;">{{ comision.cupos_disponibles }} cupos</span>
+                                        {% else %}
+                                            <span class="comision-cupos cupos-disponibles" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 700; font-size: 0.9rem;">{{ comision.cupos_disponibles }} cupos</span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="comision-detalles" style="margin-bottom: 1rem; font-size: 0.9rem; color: #666;">
+                                        <p><strong>Lugar:</strong> {{ comision.lugar|default:"Por definir" }}</p>
+                                        <p><strong>Inicio:</strong> {{ comision.fecha_inicio|date:"d/m/Y"|default:"Por definir" }}</p>
+                                        <p><strong>Horario:</strong> {{ comision.dias_horarios|default:"Por definir" }}</p>
+                                    </div>
+                                    
+                                    {% if not comision.cupo_lleno %}
+                                        {% if user_authenticated %}
+                                            <a href="{% url 'inscripciones:formulario' comision.id_comision %}" class="btn btn-primary btn-inscribir" style="width: 100%; text-align: center; display: block;">Inscribirme</a>
+                                        {% else %}
+                                            <a href="#" class="btn btn-primary btn-inscribir" onclick="openLoginModal(); return false;" style="width: 100%; text-align: center; display: block;">Iniciar Sesión</a>
+                                        {% endif %}
+                                    {% else %}
+                                        <button disabled class="btn btn-inscribir" style="background: #ccc; cursor: not-allowed; width: 100%;">Cupo Completo</button>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <p style="color: #64748b; text-align: center; padding: 1rem; background: #f8fafc; border-radius: 12px;">No hay comisiones abiertas en este momento.</p>
+                            {% endif %}
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" onclick="closeCourseModal('{{ curso.id_curso }}')">Cerrar</button>
+                        </div>
+                    </div>
                 </div>
                 {% endfor %}
             </div>
             {% else %}
             <div class="no-cursos">
-                <div class="icon">📭</div>
                 <h3>No hay cursos disponibles</h3>
                 <p>Actualmente no hay cursos abiertos en esta sede.</p>
                 <a href="{% url 'landing' %}" class="btn btn-secondary" style="margin-top: 1.5rem;">Ver otras sedes</a>
@@ -717,12 +884,10 @@
                     {% csrf_token %}
                     
                     <div class="input-group">
-                        <span class="input-icon">👤</span>
                         <input type="text" name="username" required placeholder="Ingrese su DNI">
                     </div>
                     
                     <div class="form-group input-group">
-                        <span class="input-icon">🔒</span>
                         <input type="password" name="password" required placeholder="Contraseña">
                     </div>
                     
@@ -746,32 +911,7 @@
         </div>
     </div>
 
-    <!-- Modal Curso Detalle -->
-    <div id="cursoModal" class="modal-overlay">
-        <div class="modal-container">
-            <div class="modal-header">
-                <button class="modal-close" onclick="closeModal()">×</button>
-                <h3 id="modalTitle" style="font-size: 1.5rem; font-weight: 700;">Título del Curso</h3>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label style="font-weight: 600; color: #64748b; display: block; margin-bottom: 0.5rem;">DESCRIPCIÓN</label>
-                    <p id="modalDesc" style="line-height: 1.6; color: #334155;"></p>
-                </div>
-                <div class="form-group">
-                    <label style="font-weight: 600; color: #64748b; display: block; margin-bottom: 0.5rem;">REQUISITOS</label>
-                    <p id="modalReq" style="line-height: 1.6; color: #334155;"></p>
-                </div>
-                <div class="form-group">
-                    <label style="font-weight: 600; color: #64748b; display: block; margin-bottom: 0.5rem;">EDAD MÍNIMA</label>
-                    <p><span id="modalEdad" style="font-weight: 700; color: #334155;"></span> años</p>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal()">Cerrar</button>
-            </div>
-        </div>
-    </div>
+    <!-- Old Modal Curso Detalle removed -->
 
     <script>
         // Login Modal
@@ -792,27 +932,26 @@
             }, 300);
         }
 
-        // Curso Detail Modal
-        function openModal(title, desc, req, edad) {
-            document.getElementById('modalTitle').textContent = title;
-            document.getElementById('modalDesc').textContent = desc || 'Sin descripción disponible.';
-            document.getElementById('modalReq').textContent = (req && req !== 'None') ? req : 'Ninguno';
-            document.getElementById('modalEdad').textContent = edad || 'No especificada';
-            
-            const modal = document.getElementById('cursoModal');
-            modal.style.display = 'flex';
-            modal.offsetHeight;
-            modal.classList.add('show');
-            document.body.style.overflow = 'hidden';
+        // Course Detail Modal (Per Course)
+        function openCourseModal(cursoId) {
+            const modal = document.getElementById(`modal-curso-${cursoId}`);
+            if (modal) {
+                modal.style.display = 'flex';
+                modal.offsetHeight; // Force reflow
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
         }
 
-        function closeModal() {
-            const modal = document.getElementById('cursoModal');
-            modal.classList.remove('show');
-            setTimeout(() => {
-                modal.style.display = 'none';
-                document.body.style.overflow = '';
-            }, 300);
+        function closeCourseModal(cursoId) {
+            const modal = document.getElementById(`modal-curso-${cursoId}`);
+            if (modal) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = '';
+                }, 300);
+            }
         }
 
         // Close on outside click
