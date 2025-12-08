@@ -1,5 +1,6 @@
 {% extends 'dashboard/base_dashboard.html' %}
 {% load static %}
+{% load admin_extras %}
 
 {% block title %}Panel de Asistencias{% if es_docente %} - Docente{% else %} - Admin{% endif %}{% endblock %}
 
@@ -89,8 +90,8 @@
     </form>
 </div>
 
-<!-- Mostrar todas las comisiones con asistencias -->
-{% if todas_comisiones_con_datos %}
+<!-- Mostrar todas las comisiones con asistencias (Solo si no hay una seleccionada) -->
+{% if todas_comisiones_con_datos and not comision %}
 {% for item in todas_comisiones_con_datos %}
 <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 2rem;">
     <div style="padding: 1.5rem 2rem; background: #f8fafc; border-bottom: 2px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
@@ -181,13 +182,94 @@
             <p style="color: #64748b; margin: 0.5rem 0 0 0;">Total de estudiantes: {{ inscripciones.count }}</p>
         </div>
         <div>
-            <a href="{% url 'administracion:tomar_asistencia_masiva' comision.id_comision %}" style="padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;">
-                📝 Tomar Asistencia
-            </a>
+            <!-- Botón removido ya que el formulario está integrado abajo -->
         </div>
     </div>
     
+    <!-- Formulario de Asistencia Integrado -->
+    <div style="padding: 2rem; border-bottom: 2px solid #e2e8f0;">
+        <h4 style="margin-bottom: 1rem; color: #334155;">📝 Registrar Asistencia del Día</h4>
+        
+        <form method="get" id="form-fecha" style="margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+            <input type="hidden" name="comision_id" value="{{ comision.id_comision }}">
+            <div>
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #334155;">📅 Fecha de la Clase</label>
+                <input type="date" name="fecha" value="{{ fecha_seleccionada }}" 
+                       onchange="document.getElementById('form-fecha').submit()"
+                       style="padding: 0.8rem; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 1rem; outline: none; transition: all 0.3s;">
+            </div>
+            <div style="flex: 1; padding-left: 1rem; border-left: 2px solid #e2e8f0;">
+                <p style="color: #64748b; margin: 0; font-size: 0.9rem;">
+                    ℹ️ Selecciona la fecha para cargar o registrar asistencias. <br>
+                    Si ya existen registros para esa fecha, se mostrarán para editar.
+                </p>
+            </div>
+        </form>
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="guardar_asistencia" value="true">
+            <input type="hidden" name="fecha_clase" value="{{ fecha_seleccionada }}">
+            
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 2rem;">
+                    <thead>
+                        <tr style="background: #f1f5f9; text-align: left;">
+                            <th style="padding: 1rem; border-radius: 8px 0 0 8px; color: #475569;">Estudiante</th>
+                            <th style="padding: 1rem; color: #475569;">DNI</th>
+                            <th style="padding: 1rem; text-align: center; color: #475569;">
+                                <div style="display: flex; flex-direction: column; align-items: center; gap: 0.3rem;">
+                                    <span>Presente</span>
+                                </div>
+                            </th>
+                            <th style="padding: 1rem; border-radius: 0 8px 8px 0; color: #475569;">Observaciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inscripcion in inscripciones %}
+                            {% with asistencia=asistencias_existentes|get_item:inscripcion.id %}
+                            <tr style="border-bottom: 1px solid #e2e8f0;">
+                                <td style="padding: 1rem;">
+                                    <div style="font-weight: 600; color: #334155;">{{ inscripcion.estudiante.usuario.persona.nombre_completo }}</div>
+                                </td>
+                                <td style="padding: 1rem; color: #64748b;">{{ inscripcion.estudiante.usuario.persona.dni }}</td>
+                                <td style="padding: 1rem; text-align: center;">
+                                    <label class="switch" style="position: relative; display: inline-block; width: 60px; height: 34px;">
+                                        <input type="checkbox" name="presente_{{ inscripcion.id }}" class="asistencia-checkbox"
+                                               {% if asistencia and asistencia.presente %}checked{% endif %}
+                                               style="opacity: 0; width: 0; height: 0;">
+                                        <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px;"></span>
+                                    </label>
+                                </td>
+                                <td style="padding: 1rem;">
+                                    <input type="text" name="observacion_{{ inscripcion.id }}" 
+                                           value="{% if asistencia %}{{ asistencia.observaciones }}{% endif %}"
+                                           placeholder="Observación opcional..."
+                                           style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+                                </td>
+                            </tr>
+                            {% endwith %}
+                        {% empty %}
+                            <tr>
+                                <td colspan="4" style="padding: 2rem; text-align: center; color: #64748b;">
+                                    No hay estudiantes confirmados en esta comisión.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button type="submit" style="padding: 0.9rem 2rem; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4);">
+                    💾 Guardar Asistencias
+                </button>
+            </div>
+        </form>
+    </div>
+
     <div style="padding: 2rem;">
+        <h4 style="margin-bottom: 1rem; color: #334155;">📋 Historial Individual</h4>
         {% for inscripcion in inscripciones %}
         <div style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid #e2e8f0;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
@@ -245,6 +327,31 @@
         .table-container {
             overflow-x: scroll;
         }
+    }
+
+    /* Estilos para el switch toggle */
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    input:checked + .slider {
+        background-color: #10b981;
+    }
+
+    input:focus + .slider {
+        box-shadow: 0 0 1px #10b981;
+    }
+
+    input:checked + .slider:before {
+        transform: translateX(26px);
     }
 </style>
 {% endblock %}

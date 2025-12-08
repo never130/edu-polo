@@ -475,7 +475,7 @@ def exportar_estudiantes(request):
 
 
 @login_required
-@user_passes_test(es_admin)
+@user_passes_test(es_admin_completo)
 def panel_polos(request):
     """Panel de gestión de Polos Creativos"""
     polos = PoloCreativo.objects.all().annotate(
@@ -489,7 +489,7 @@ def panel_polos(request):
 
 
 @login_required
-@user_passes_test(es_admin)
+@user_passes_test(es_admin_completo)
 def crear_polo(request):
     """Crear un nuevo Polo Creativo"""
     if request.method == 'POST':
@@ -600,7 +600,7 @@ def api_buscar_estudiantes(request):
 
 
 @login_required
-@user_passes_test(es_admin)
+@user_passes_test(es_admin_completo)
 def gestion_usuarios(request):
     """Panel de gestión completa de usuarios con buscador"""
     from django.http import JsonResponse
@@ -1024,26 +1024,93 @@ def panel_asistencia(request):
                 'total_estudiantes': inscripciones_com.count(),
             })
     
-    # Si se selecciona una comisión específica, mostrar sus asistencias detalladas
-    comision_id = request.GET.get('comision_id')
+    # Si se selecciona una comisión específica, mostrar sus asistencias detalladas y formulario de toma
+    comision_id = request.GET.get('comision_id') or request.POST.get('comision_id')
     comision = None
     inscripciones = None
     asistencias_dict = {}
     fechas_clases = []
+    fecha_seleccionada = request.GET.get('fecha', date.today().isoformat())
+    asistencias_existentes = {}
     
     if comision_id:
         comision = get_object_or_404(Comision, id_comision=comision_id)
+        
+        # Verificar permisos si es docente
+        if es_docente:
+             # Verificar que el docente tenga acceso a esta comisión
+            from apps.modulo_3.cursos.models import ComisionDocente
+            tiene_acceso = ComisionDocente.objects.filter(
+                fk_id_docente=usuario_actual,
+                fk_id_comision=comision
+            ).exists()
+            if not tiene_acceso:
+                messages.error(request, '❌ No tienes permiso para ver esta comisión.')
+                return redirect('administracion:panel_asistencia')
+
         inscripciones = Inscripcion.objects.filter(
             comision=comision,
             estado='confirmado'
         ).select_related('estudiante__usuario__persona').order_by('estudiante__usuario__persona__apellido')
         
-        # Obtener todas las fechas de clases únicas para esta comisión
+        # PROCESAR POST (Guardar asistencia)
+        if request.method == 'POST' and 'guardar_asistencia' in request.POST:
+            fecha_clase = request.POST.get('fecha_clase')
+            if not fecha_clase:
+                 messages.error(request, '❌ Debe seleccionar una fecha.')
+            else:
+                # Obtener nombre del usuario que registra
+                usuario_registro = request.user
+                nombre_registrador = f"{usuario_registro.first_name} {usuario_registro.last_name}".strip()
+                if not nombre_registrador:
+                    nombre_registrador = usuario_registro.username
+        
+                count_created = 0
+                count_updated = 0
+        
+                try:
+                    with transaction.atomic():
+                        for inscripcion in inscripciones:
+                            presente = request.POST.get(f'presente_{inscripcion.id}') == 'on'
+                            observacion = request.POST.get(f'observacion_{inscripcion.id}', '').strip()
+                            
+                            asistencia, created = Asistencia.objects.update_or_create(
+                                inscripcion=inscripcion,
+                                fecha_clase=fecha_clase,
+                                defaults={
+                                    'presente': presente,
+                                    'observaciones': observacion,
+                                    'registrado_por': nombre_registrador
+                                }
+                            )
+                            
+                            if created:
+                                count_created += 1
+                            else:
+                                count_updated += 1
+                    
+                    messages.success(request, f'✅ Asistencia guardada para el {fecha_clase}. Registros procesados: {count_created + count_updated}.')
+                    # Redirigir para limpiar POST
+                    from django.urls import reverse
+                    return redirect(reverse('administracion:panel_asistencia') + f'?comision_id={comision.id_comision}&fecha={fecha_clase}')
+                    
+                except Exception as e:
+                    messages.error(request, f'❌ Error al guardar asistencia: {str(e)}')
+        
+        # Obtener asistencias existentes para la fecha seleccionada (para el formulario)
+        asistencias_query_fecha = Asistencia.objects.filter(
+            inscripcion__in=inscripciones, 
+            fecha_clase=fecha_seleccionada
+        )
+        for a in asistencias_query_fecha:
+            asistencias_existentes[a.inscripcion_id] = a
+
+        # Obtener todas las fechas de clases únicas para esta comisión (para el historial)
         fechas_clases = list(Asistencia.objects.filter(
             inscripcion__comision=comision
         ).values_list('fecha_clase', flat=True).distinct().order_by('-fecha_clase'))
         
-        # Organizar asistencias por estudiante y fecha
+        # Organizar asistencias por estudiante y fecha (para el historial)
         for inscripcion in inscripciones:
             for fecha in fechas_clases:
                 asistencia = Asistencia.objects.filter(
@@ -1061,6 +1128,8 @@ def panel_asistencia(request):
         'asistencias_dict': asistencias_dict,
         'fechas_clases': fechas_clases,
         'es_docente': es_docente,
+        'fecha_seleccionada': fecha_seleccionada,
+        'asistencias_existentes': asistencias_existentes,
     }
     return render(request, 'administracion/panel_asistencia.html', context)
 
