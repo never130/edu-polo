@@ -9,8 +9,10 @@
 {% if es_admin or es_mesa_entrada %}
     {# Menú para Administrador y Mesa de Entrada #}
     <li><a href="{% url 'dashboard_admin' %}"><span class="icon">🏠</span> Inicio</a></li>
+    {% if es_admin_completo %}
     <li><a href="{% url 'administracion:panel_cursos' %}"><span class="icon">📚</span> Gestión Cursos</a></li>
     <li><a href="{% url 'administracion:panel_comisiones' %}"><span class="icon">📋</span> Gestión Comisiones</a></li>
+    {% endif %}
     <li><a href="{% url 'administracion:panel_inscripciones' %}"><span class="icon">✅</span> Inscripciones</a></li>
     {% if es_admin_completo %}
     <li><a href="{% url 'administracion:gestion_usuarios' %}"><span class="icon">👥</span> Gestión Usuarios</a></li>
@@ -21,7 +23,9 @@
     {% endif %}
     <li><a href="{% url 'administracion:estadisticas' %}"><span class="icon">📊</span> Estadísticas</a></li>
     <li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
+    {% if es_admin_completo %}
     <li><a href="{% url 'administracion:docentes_cursos' %}"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li>
+    {% endif %}
     <li><a href="{% url 'usuario:mi_perfil' %}" class="active"><span class="icon">👤</span> Mi Perfil</a></li>
     {% if es_admin_completo %}
     <li><a href="{% url 'admin:index' %}"><span class="icon">⚙️</span> Django Admin</a></li>

@@ -7,8 +7,10 @@
 
 {% block sidebar_menu %}
 <li><a href="{% url 'dashboard_admin' %}">Inicio</a></li>
+{% if es_admin_completo %}
 <li><a href="{% url 'administracion:panel_cursos' %}">Gestión Cursos</a></li>
 <li><a href="{% url 'administracion:panel_comisiones' %}">Gestión Comisiones</a></li>
+{% endif %}
 <li><a href="{% url 'administracion:panel_inscripciones' %}">Inscripciones</a></li>
 {% if es_admin_completo %}
 <li><a href="{% url 'administracion:gestion_usuarios' %}">Gestión Usuarios</a></li>
@@ -19,7 +21,9 @@
 {% endif %}
 <li><a href="{% url 'administracion:estadisticas' %}">Estadísticas</a></li>
 <li><a href="{% url 'administracion:panel_asistencia' %}">Asistencias</a></li>
+{% if es_admin_completo %}
 <li><a href="{% url 'administracion:docentes_cursos' %}">Docentes y Cursos</a></li>
+{% endif %}
 <li><a href="{% url 'usuario:mi_perfil' %}">Mi Perfil</a></li>
 {% if es_admin_completo %}
 <li><a href="{% url 'admin:index' %}">Django Admin</a></li>

@@ -6,8 +6,10 @@
 
 {% block sidebar_menu %}
 <li><a href="{% url 'dashboard_admin' %}" class="active">Inicio</a></li>
+{% if es_admin_completo %}
 <li><a href="{% url 'administracion:panel_cursos' %}">Gestión Cursos</a></li>
 <li><a href="{% url 'administracion:panel_comisiones' %}">Gestión Comisiones</a></li>
+{% endif %}
 <li><a href="{% url 'administracion:panel_inscripciones' %}">Inscripciones</a></li>
 {% if es_admin_completo %}
 <li><a href="{% url 'administracion:gestion_usuarios' %}">Gestión Usuarios</a></li>
