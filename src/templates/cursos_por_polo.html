@@ -8,1168 +8,518 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{% static 'img/aif-logo.png' %}">
     <link rel="shortcut icon" type="image/png" href="{% static 'img/aif-logo.png' %}">
-    <link rel="apple-touch-icon" href="{% static 'img/aif-logo.png' %}">
     <link rel="stylesheet" href="{% static 'colores.css' %}">
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    <!-- Reuse existing styles from landing -->
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        
+        :root {
+            --primary-orange: #F97316;
+            --primary-orange-hover: #ea580c;
+            --text-dark: #1e293b;
+            --text-gray: #64748b;
+            --bg-light: #f8fafc;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
             min-height: 100vh;
-            position: relative;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-            background-attachment: fixed;
-            overflow-x: hidden;
         }
         
-        /* Ensure all form elements inherit the font */
-        input, button, select, textarea, optgroup, option {
-            font-family: 'Be Vietnam Pro', sans-serif;
-        }
-        
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
-        }
-        
-        /* Navbar - Latest Implementation */
+        /* Navbar Minimalista */
         .navbar {
-            background: linear-gradient(90deg, #FF512F 0%, #F09819 100%);
+            background: white;
             padding: 1rem 2rem;
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 4px 20px rgba(240, 152, 25, 0.25);
-            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #e2e8f0;
         }
         
         .navbar-content {
-            max-width: 100%;
+            max-width: 1200px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: relative;
         }
         
-        .navbar-logo {
+        .logo-container {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.8rem;
             text-decoration: none;
-            z-index: 10;
         }
         
-        .navbar-logo img {
-            height: 50px;
-            transition: transform 0.3s ease;
-        }
-        
-        .navbar-logo:hover img {
-            transform: scale(1.1) rotate(-5deg);
-        }
-        
-        .navbar-logo h1 {
-            color: white;
-            font-size: 1.8rem;
-            font-weight: 800;
-            margin: 0;
-            letter-spacing: -0.02em;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+        .logo-container img { height: 32px; }
+        .logo-container h1 { font-size: 1.25rem; font-weight: 800; color: var(--text-dark); }
 
-        /* Center Links */
-        .navbar-links {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .navbar-link {
-            color: white;
-            text-decoration: none;
+        .nav-btn {
+            padding: 0.5rem 1.2rem;
+            border-radius: 99px;
             font-weight: 600;
-            font-size: 1.05rem;
-            transition: all 0.3s ease;
-            position: relative;
-            padding: 0.5rem 0;
-            opacity: 0.9;
-        }
-
-        .navbar-link:hover {
-            opacity: 1;
-            transform: translateY(-2px);
-        }
-
-        .navbar-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
-            left: 50%;
-            background-color: white;
-            transition: all 0.3s ease;
-            transform: translateX(-50%);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .navbar-link:hover::after {
-            width: 100%;
-        }
-
-        .navbar-actions {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-            z-index: 10;
-        }
-        
-        .btn {
-            padding: 0.6rem 1.2rem;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: none;
-            cursor: pointer;
             font-size: 0.9rem;
-            letter-spacing: 0.01em;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-        
-        .btn:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
-            color: white;
-            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.5);
-        }
-        
-        .btn-secondary {
-            background: white;
-            color: #FF512F;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        
-        .btn-secondary:hover {
-            background: #f8fafc;
-            transform: translateY(-2px);
-            color: #F09819;
-        }
-
-        @media (max-width: 900px) {
-            .navbar-links {
-                display: none;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .navbar-actions {
-                flex-direction: column;
-                gap: 0.5rem;
-                width: 100%;
-            }
-            
-            .btn {
-                width: 100%;
-                text-align: center;
-            }
-        }
-
-        
-        /* Container */
-        .main-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .cursos-section {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
-            padding: 3rem;
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
-            position: relative;
-        }
-        
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #64748b;
             text-decoration: none;
-            font-weight: 600;
-            margin-bottom: 2rem;
-            transition: color 0.2s;
+            transition: all 0.2s;
+            cursor: pointer;
         }
-        .back-link:hover { color: #3b82f6; }
         
-        .section-header { text-align: center; margin-bottom: 3rem; }
-        .section-header h2 {
-            background: linear-gradient(135deg, #1e40af 0%, #7c3aed 50%, #db2777 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .btn-login {
+            background: var(--primary-orange);
+            color: white;
+            border: none;
+        }
+        .btn-login:hover { background: var(--primary-orange-hover); transform: translateY(-1px); }
+        
+        .btn-back {
+            color: var(--text-gray);
+            background: transparent;
+            margin-right: 1rem;
+        }
+        .btn-back:hover { color: var(--text-dark); }
+
+        /* Main Layout */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+        
+        .page-title {
             font-size: 2.5rem;
             font-weight: 800;
-            margin-bottom: 0.8rem;
-        }
-        .section-header p { color: #64748b; font-size: 1.2rem; }
-        
-        /* Cursos Grid - Redesigned */
-        .cursos-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 2.5rem;
-            margin-top: 1rem;
+            color: var(--text-dark);
+            margin-bottom: 2.5rem;
+            letter-spacing: -0.02em;
         }
 
-        .curso-card {
+        /* Tabs Clean Design */
+        .tabs-wrapper {
+            margin-bottom: 2.5rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+            /* Hide scrollbar */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .tabs-wrapper::-webkit-scrollbar { display: none; }
+
+        .tabs-list {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tab-item {
+            padding: 0.6rem 1.2rem;
+            border-radius: 99px;
+            border: none;
+            background: transparent;
+            color: var(--text-gray);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .tab-item:hover {
+            color: var(--primary-orange);
+            background: #fff7ed;
+        }
+
+        .tab-item.active {
+            background: var(--primary-orange);
+            color: white;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
+        }
+
+        /* Grid Layout */
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Card Design Simplified */
+        .course-card {
             background: white;
             border-radius: 24px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid rgba(226, 232, 240, 0.8);
+            border: 1px solid #f1f5f9;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             display: flex;
             flex-direction: column;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-img-container {
+            height: 220px;
+            background: #f1f5f9;
+            position: relative;
+        }
+
+        .card-img {
+            width: 100%;
             height: 100%;
-            position: relative;
+            object-fit: cover;
         }
 
-        .curso-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
-        }
-
-        .card-image-container {
-            height: 200px;
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-        
-        .card-image-container::before {
-            content: '';
-            position: absolute;
-            width: 200px;
-            height: 200px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-            top: -50px;
-            right: -50px;
-            transition: transform 0.5s ease;
-        }
-        
-        .card-image-container::after {
-            content: '';
-            position: absolute;
-            width: 120px;
-            height: 120px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-            bottom: -30px;
-            left: -30px;
-            transition: transform 0.5s ease;
-        }
-
-        .curso-card:hover .card-image-container::before { transform: scale(1.1); }
-        .curso-card:hover .card-image-container::after { transform: scale(1.1); }
-
-        .card-icon-large {
-            font-size: 5rem;
-            color: rgba(255, 255, 255, 0.95);
-            z-index: 1;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        .curso-card:hover .card-icon-large {
-            transform: scale(1.2) rotate(5deg);
-        }
-
-        .card-tags {
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            z-index: 2;
-        }
-
-        .tag {
-            padding: 0.35rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            backdrop-filter: blur(8px);
-        }
-
-        .tag-age {
-            background: rgba(255, 255, 255, 0.95);
-            color: #1e293b;
-        }
-
-        .tag-status {
-            background: rgba(16, 185, 129, 0.9);
-            color: white;
-        }
-        
-        .tag-status.closed {
-            background: rgba(239, 68, 68, 0.9);
-        }
-
-        .card-content {
-            padding: 1.8rem;
+        .card-body {
+            padding: 1.5rem;
             flex: 1;
             display: flex;
             flex-direction: column;
         }
 
+        .card-header {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .tag.age { background: #f3e8ff; color: #7e22ce; }
+        .tag.category { background: #dcfce7; color: #15803d; }
+
         .card-title {
-            font-size: 1.4rem;
+            font-size: 1.25rem;
             font-weight: 800;
-            color: #1e293b;
-            margin-bottom: 0.8rem;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
             line-height: 1.3;
         }
 
         .card-desc {
             font-size: 0.95rem;
-            color: #64748b;
+            color: var(--text-gray);
             line-height: 1.6;
             margin-bottom: 1.5rem;
-            flex-grow: 1;
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
-        .card-meta {
+        .card-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: auto;
             margin-bottom: 1.5rem;
-            padding-top: 1.2rem;
+            padding-top: 1rem;
             border-top: 1px solid #f1f5f9;
         }
 
-        .meta-row {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            margin-bottom: 0.6rem;
-            color: #475569;
-            font-size: 0.9rem;
-            font-weight: 500;
+        .info-block label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 0.2rem;
         }
-        
-        .meta-row:last-child { margin-bottom: 0; }
-        .meta-icon { font-size: 1.1rem; color: #3b82f6; }
+
+        .info-block span {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
 
         .btn-more {
             width: 100%;
-            padding: 1rem;
-            background: white;
-            color: #3b82f6;
-            border: 2px solid #3b82f6;
-            border-radius: 14px;
+            padding: 0.9rem;
+            background: var(--primary-orange);
+            color: white;
+            border: none;
+            border-radius: 12px;
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 1rem;
             cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
+            transition: background 0.2s;
         }
 
         .btn-more:hover {
-            background: #3b82f6;
-            color: white;
-            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.25);
-            transform: translateY(-2px);
-        }
-        
-        .comisiones { margin-top: 2rem; padding-top: 2rem; border-top: 2px solid #e2e8f0; }
-        .comisiones h4 { margin-bottom: 1.5rem; font-size: 1.3rem; font-weight: 700; color: #334155; }
-        
-        .comision-item {
-            background: #f8fafc; padding: 1.5rem; border-radius: 16px; margin-bottom: 1rem;
-            border: 1px solid #e2e8f0; transition: all 0.3s;
-        }
-        .comision-item:hover { border-color: #3b82f6; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1); }
-        
-        .comision-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem; }
-        .comision-cupos { padding: 0.5rem 1rem; border-radius: 20px; font-weight: 700; font-size: 0.9rem; color: white; }
-        .cupos-disponibles { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
-        .cupos-limitados { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
-        .cupo-lleno { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
-        
-        .btn-inscribir { width: auto; margin-top: 1rem; display: inline-block; }
-        
-        /* Modal */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px);
-            z-index: 10000; display: none; align-items: center; justify-content: center; padding: 1rem;
-            opacity: 0; transition: opacity 0.3s ease;
-        }
-        .modal-overlay.show { display: flex; opacity: 1; }
-        .modal-container {
-            background: white; border-radius: 24px; max-width: 600px; width: 100%;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            overflow: hidden;
-        }
-        .modal-overlay.show .modal-container { transform: scale(1); }
-        .modal-header { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); padding: 2rem; color: white; position: relative; }
-        .modal-close {
-            position: absolute; top: 1rem; right: 1rem; background: rgba(255, 255, 255, 0.2);
-            border: none; width: 40px; height: 40px; border-radius: 50%; color: white; font-size: 1.5rem;
-            cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s;
-        }
-        .modal-close:hover { background: rgba(255, 255, 255, 0.3); }
-        .modal-body { padding: 2rem; max-height: 70vh; overflow-y: auto; }
-        .modal-footer { padding: 1.5rem 2rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; }
-        
-        /* Form Styles */
-        .form-group { margin-bottom: 1.5rem; }
-        .error-message {
-            background: #fee2e2; color: #991b1b; padding: 1rem;
-            border-radius: 12px; margin-bottom: 1.5rem; border-left: 4px solid #ef4444;
-        }
-        
-        /* No courses */
-        .no-cursos { text-align: center; padding: 4rem 2rem; }
-        .no-cursos .icon { font-size: 5rem; margin-bottom: 1rem; }
-        .no-cursos h3 { font-size: 1.8rem; color: #64748b; margin-bottom: 0.5rem; }
-        
-        @media (max-width: 768px) {
-            .navbar { padding: 1rem; }
-            .navbar-actions { display: none; } /* Simplify mobile nav for now */
-            .section-header h2 { font-size: 2rem; }
-        }
-    </style>
-    <style>
-        /* Split Login Modal Styles */
-        .modal-container.split-design {
-            max-width: 900px;
-            width: 90%;
-            display: flex;
-            overflow: hidden;
-            padding: 0;
-            border-radius: 20px;
-            background: white;
-            position: relative;
+            background: var(--primary-orange-hover);
         }
 
-        .login-left {
-            flex: 1;
-            padding: 3rem;
-            background: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .login-right {
-            flex: 0.8;
-            background: linear-gradient(135deg, #FF512F 0%, #F09819 100%);
-            color: white;
-            padding: 3rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            position: relative;
-        }
-
-        .login-right::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at top right, rgba(255,255,255,0.2), transparent 40%);
-        }
-
-        .login-title {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #1e293b;
-            margin-bottom: 0.5rem;
-        }
-
-        .login-subtitle {
-            color: #64748b;
-            margin-bottom: 2rem;
-        }
-
-        .input-group {
-            margin-bottom: 1.5rem;
-            position: relative;
-        }
-
-        .input-group input {
-            width: 100%;
+        /* Modal Styles */
+        .modal-backdrop {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
+            z-index: 2000; display: none; align-items: center; justify-content: center;
             padding: 1rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: #f8fafc;
-            box-sizing: border-box;
         }
-
-        .input-group input:focus {
-            border-color: #F09819;
-            background: white;
-            box-shadow: 0 0 0 4px rgba(240, 152, 25, 0.1);
-            outline: none;
-        }
-
-        .forgot-password {
-            display: block;
-            text-align: right;
-            color: #F09819;
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-top: -1rem;
-            margin-bottom: 1.5rem;
-            text-decoration: none;
-        }
-
-        .btn-login {
-            width: 100%;
-            padding: 1rem;
-            background: linear-gradient(90deg, #FF512F 0%, #F09819 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(240, 152, 25, 0.3);
-        }
-
-        .btn-register-outline {
-            margin-top: 1.5rem;
-            padding: 0.8rem 2rem;
-            border: 2px solid white;
-            color: white;
+        
+        .modal-content {
+            background: white; width: 100%; max-width: 500px;
+            border-radius: 20px; padding: 2rem;
             position: relative;
-            z-index: 20;
-            background: transparent;
-            border-radius: 50px;
-            font-weight: 700;
-            text-decoration: none;
-            transition: all 0.3s;
-            display: inline-block;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 0.95rem;
-            position: relative;
-            z-index: 20;
-        }
-
-        .btn-register-outline:hover {
-            background: white;
-            color: #F09819;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            max-height: 85vh; overflow-y: auto;
         }
 
         .modal-close {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            z-index: 100;
-            color: #64748b;
-            background: white;
-            border: none;
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            cursor: pointer;
-            font-size: 1.5rem;
-            line-height: 1;
+            position: absolute; top: 1rem; right: 1rem;
+            background: #f1f5f9; border: none;
+            width: 32px; height: 32px; border-radius: 50%;
+            cursor: pointer; color: #64748b;
+            font-size: 1.2rem; display: flex; align-items: center; justify-content: center;
         }
+
+        /* Login Modal Split */
+        .login-modal-wrapper { max-width: 850px; display: flex; padding: 0; overflow: hidden; }
+        .login-side { flex: 1; padding: 3rem; }
+        .promo-side { flex: 0.8; background: linear-gradient(135deg, #F97316 0%, #FB923C 100%); color: white; padding: 3rem; display: flex; flex-direction: column; justify-content: center; text-align: center; }
 
         @media (max-width: 768px) {
-            .modal-container.split-design {
-                flex-direction: column-reverse;
-                max-height: 90vh;
-                overflow-y: auto;
-            }
-            .login-right {
-                padding: 2rem;
-            }
-            .login-left {
-                padding: 2rem;
-            }
-        }
-
-        /* Responsive Form Grid */
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.8rem;
-        }
-        @media (max-width: 900px) {
-            .form-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        @media (max-width: 600px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
+            .page-title { font-size: 2rem; }
+            .courses-grid { grid-template-columns: 1fr; }
+            .login-modal-wrapper { flex-direction: column-reverse; }
         }
     </style>
 </head>
 <body>
+
     <!-- Navbar -->
     <nav class="navbar">
         <div class="navbar-content">
-            <a href="{% url 'landing' %}" class="navbar-logo">
-                <img src="{% static 'img/polocreativoblanco.png' %}" alt="Logo Polo">
+            <a href="{% url 'landing' %}" class="logo-container">
+                <img src="{% static 'img/polocreativoblanco.png' %}" alt="Edu-Polo" style="filter: invert(1);">
                 <h1>Edu-Polo</h1>
             </a>
-            <div class="navbar-links">
-                <a href="{% url 'landing' %}" class="navbar-link">Inicio</a>
-                <a href="{% url 'lista_polos' %}" class="navbar-link">Cursos</a>
-                <a href="#" class="navbar-link">Contacto</a>
-                <a href="#" class="navbar-link">Acerca de</a>
-            </div>
-            <div class="navbar-actions">
-                <a href="{% url 'landing' %}" class="btn btn-outline">← Volver a Sedes</a>
+            <div>
+                <a href="{% url 'landing' %}" class="nav-btn btn-back">Volver</a>
                 {% if user_authenticated %}
-                <a href="{% url 'dashboard' %}" class="btn btn-primary">Ir al Panel</a>
+                <a href="{% url 'dashboard' %}" class="nav-btn btn-login">Mi Panel</a>
                 {% else %}
-                <a href="#" class="btn btn-secondary" onclick="openRegistroModal(); return false;">Registrarse</a>
-                <a href="#" class="btn btn-primary" onclick="openLoginModal(); return false;">Ingresar</a>
+                <button onclick="openLoginModal()" class="nav-btn btn-login">Ingresar</button>
                 {% endif %}
             </div>
         </div>
     </nav>
 
+    <!-- Main Content -->
     <div class="main-container">
-        <div class="cursos-section">
-            <a href="{% url 'landing' %}" class="back-link">← Volver a Selección de Sedes</a>
-            
-            <div class="section-header">
-                <p style="margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.9rem;">Cursos Disponibles en</p>
-                <h2>{{ polo_seleccionado.nombre }}</h2>
-                <p>Explora nuestra oferta educativa y comienza tu aprendizaje</p>
+        
+        <h2 class="page-title">Cursos disponibles</h2>
+
+        <!-- Tabs -->
+        <div class="tabs-wrapper">
+            <div class="tabs-list">
+                <button class="tab-item active" onclick="filterCursos('all', this)">Más populares</button>
+                <button class="tab-item" onclick="filterCursos('programacion', this)">Grupo 1</button>
+                <button class="tab-item" onclick="filterCursos('diseno', this)">Grupo 2</button>
+                <button class="tab-item" onclick="filterCursos('robotica', this)">Grupo 3</button>
+                <button class="tab-item" onclick="filterCursos('idiomas', this)">Grupo 4</button>
+                <button class="tab-item" onclick="filterCursos('taller', this)">Grupo 5</button>
+                <button class="tab-item" onclick="filterCursos('otros', this)">Grupo 6</button>
             </div>
-
-            {% if cursos %}
-            <div class="cursos-grid">
-                {% for curso in cursos %}
-                <div class="curso-card">
-                    <div class="card-image-container">
-                        <div class="card-tags">
-                            {% if curso.edad_minima %}
-                            <span class="tag tag-age">+{{ curso.edad_minima }} Años</span>
-                            {% endif %}
-                            
-                            {% if "program" in curso.nombre|lower or "desarrollo" in curso.nombre|lower %}
-                                <span class="tag tag-category" style="background: rgba(59, 130, 246, 0.9); color: white;">Programación</span>
-                            {% elif "diseño" in curso.nombre|lower or "arte" in curso.nombre|lower %}
-                                <span class="tag tag-category" style="background: rgba(236, 72, 153, 0.9); color: white;">Diseño</span>
-                            {% elif "robot" in curso.nombre|lower or "arduino" in curso.nombre|lower %}
-                                <span class="tag tag-category" style="background: rgba(168, 85, 247, 0.9); color: white;">Robótica</span>
-                            {% elif "ingles" in curso.nombre|lower or "idioma" in curso.nombre|lower %}
-                                <span class="tag tag-category" style="background: rgba(245, 158, 11, 0.9); color: white;">Idiomas</span>
-                            {% endif %}
-
-                            <span class="tag tag-status {% if curso.estado == 'Cerrado' %}closed{% endif %}">{{ curso.estado }}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="card-content">
-                        <h3 class="card-title">{{ curso.nombre }}</h3>
-                        <p class="card-desc">{{ curso.descripcion|default:"Sin descripción disponible." }}</p>
-                        
-                        <div class="card-meta">
-                            {% if curso.comisiones_abiertas %}
-                                {% with comision=curso.comisiones_abiertas.0 %}
-                                <div class="meta-row">
-                                    <span style="font-weight: 600;">Fecha:</span>
-                                    <span>{{ comision.dias_horarios|default:"A confirmar"|truncatechars:30 }}</span>
-                                </div>
-                                <div class="meta-row">
-                                    <span style="font-weight: 600;">Lugar:</span>
-                                    <span>{{ comision.lugar|default:"Polo Creativo"|truncatechars:25 }}</span>
-                                </div>
-                                {% endwith %}
-                            {% else %}
-                                <div class="meta-row">
-                                    <span>Próximamente más información</span>
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <button class="btn-more" onclick="openCourseModal('{{ curso.id_curso }}')">
-                            Más información ➝
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Modal Specific for this Course -->
-                <div id="modal-curso-{{ curso.id_curso }}" class="modal-overlay course-modal-trigger">
-                    <div class="modal-container">
-                        <div class="modal-header">
-                            <button class="modal-close" onclick="closeCourseModal('{{ curso.id_curso }}')">×</button>
-                            <h3 style="font-size: 1.5rem; font-weight: 700;">{{ curso.nombre }}</h3>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label style="font-weight: 600; color: #64748b; display: block; margin-bottom: 0.5rem;">DESCRIPCIÓN</label>
-                                <p style="line-height: 1.6; color: #334155;">{{ curso.descripcion|default:"Sin descripción disponible." }}</p>
-                            </div>
-                            {% if curso.requisitos %}
-                            <div class="form-group">
-                                <label style="font-weight: 600; color: #64748b; display: block; margin-bottom: 0.5rem;">REQUISITOS</label>
-                                <p style="line-height: 1.6; color: #334155;">{{ curso.requisitos }}</p>
-                            </div>
-                            {% endif %}
-                            {% if curso.edad_minima %}
-                            <div class="form-group">
-                                <label style="font-weight: 600; color: #64748b; display: block; margin-bottom: 0.5rem;">EDAD MÍNIMA</label>
-                                <p><span style="font-weight: 700; color: #334155;">{{ curso.edad_minima }}</span> años</p>
-                            </div>
-                            {% endif %}
-                            
-                            <hr style="margin: 2rem 0; border: 0; border-top: 1px solid #e2e8f0;">
-                            
-                            <h4 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1.5rem; color: #1e293b;">Comisiones Disponibles</h4>
-                            
-                            {% if curso.comisiones_abiertas %}
-                                {% for comision in curso.comisiones_abiertas %}
-                                <div class="comision-item" style="background: #f8fafc; padding: 1.5rem; border-radius: 16px; margin-bottom: 1rem; border: 1px solid #e2e8f0;">
-                                    <div class="comision-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
-                                        <strong style="color: #667eea;">Comisión #{{ comision.id_comision }}</strong>
-                                        {% if comision.cupo_lleno %}
-                                            <span class="comision-cupos cupo-lleno" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 700; font-size: 0.9rem;">Cupo Lleno</span>
-                                        {% elif comision.cupos_disponibles <= 5 %}
-                                            <span class="comision-cupos cupos-limitados" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 700; font-size: 0.9rem;">{{ comision.cupos_disponibles }} cupos</span>
-                                        {% else %}
-                                            <span class="comision-cupos cupos-disponibles" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 700; font-size: 0.9rem;">{{ comision.cupos_disponibles }} cupos</span>
-                                        {% endif %}
-                                    </div>
-                                    
-                                    <div class="comision-detalles" style="margin-bottom: 1rem; font-size: 0.9rem; color: #666;">
-                                        <p><strong>Lugar:</strong> {{ comision.lugar|default:"Por definir" }}</p>
-                                        <p><strong>Inicio:</strong> {{ comision.fecha_inicio|date:"d/m/Y"|default:"Por definir" }}</p>
-                                        <p><strong>Horario:</strong> {{ comision.dias_horarios|default:"Por definir" }}</p>
-                                    </div>
-                                    
-                                    {% if not comision.cupo_lleno %}
-                                        {% if user_authenticated %}
-                                            <a href="{% url 'inscripciones:formulario' comision.id_comision %}" class="btn btn-primary btn-inscribir" style="width: 100%; text-align: center; display: block;">Inscribirme</a>
-                                        {% else %}
-                                            <a href="#" class="btn btn-primary btn-inscribir" onclick="openLoginModal(); return false;" style="width: 100%; text-align: center; display: block;">Iniciar Sesión</a>
-                                        {% endif %}
-                                    {% else %}
-                                        <button disabled class="btn btn-inscribir" style="background: #ccc; cursor: not-allowed; width: 100%;">Cupo Completo</button>
-                                    {% endif %}
-                                </div>
-                                {% endfor %}
-                            {% else %}
-                                <p style="color: #64748b; text-align: center; padding: 1rem; background: #f8fafc; border-radius: 12px;">No hay comisiones abiertas en este momento.</p>
-                            {% endif %}
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" onclick="closeCourseModal('{{ curso.id_curso }}')">Cerrar</button>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="no-cursos">
-                <h3>No hay cursos disponibles</h3>
-                <p>Actualmente no hay cursos abiertos en esta sede.</p>
-                <a href="{% url 'landing' %}" class="btn btn-secondary" style="margin-top: 1.5rem;">Ver otras sedes</a>
-            </div>
-            {% endif %}
         </div>
+
+        {% if cursos %}
+        <div class="courses-grid">
+            {% for curso in cursos %}
+            {% with lower_name=curso.nombre|lower %}
+            <div class="course-card" data-category="{% if 'program' in lower_name or 'desarrollo' in lower_name %}programacion{% elif 'diseño' in lower_name or 'arte' in lower_name %}diseno{% elif 'robot' in lower_name or 'arduino' in lower_name %}robotica{% elif 'ingles' in lower_name or 'idioma' in lower_name %}idiomas{% elif 'taller' in lower_name %}taller{% else %}otros{% endif %}">
+                
+                <div class="card-img-container">
+                    <img src="https://img.freepik.com/free-photo/3d-rendering-cartoon-character-working_23-2151306637.jpg" 
+                         onerror="this.src='https://placehold.co/600x400/f1f5f9/94a3b8?text=EduPolo';"
+                         alt="{{ curso.nombre }}" class="card-img">
+                </div>
+                
+                <div class="card-body">
+                    <div class="card-header">
+                        <span class="tag age">
+                            {% if curso.edad_minima %}{{ curso.edad_minima }} - {{ curso.edad_minima|add:"2" }} AÑOS{% else %}ATP{% endif %}
+                        </span>
+                        <span class="tag category">
+                            {% if 'program' in lower_name %}CIENCIA
+                            {% elif 'diseño' in lower_name %}ARTE
+                            {% elif 'robot' in lower_name %}TECNOLOGÍA
+                            {% else %}GENERAL{% endif %}
+                        </span>
+                    </div>
+
+                    <h3 class="card-title">{{ curso.nombre }}</h3>
+                    <p class="card-desc">{{ curso.descripcion|default:"Explora, crea y aprende en nuestros talleres diseñados para potenciar tu creatividad." }}</p>
+
+                    <div class="card-info-grid">
+                        <div class="info-block">
+                            <label>DÍAS</label>
+                            <span>Martes y Jueves</span>
+                        </div>
+                        <div class="info-block">
+                            <label>HORARIO</label>
+                            <span>16:30 - 18:30 hs</span>
+                        </div>
+                    </div>
+
+                    <button class="btn-more" onclick="openCourseModal('{{ curso.id_curso }}')">Más información</button>
+                </div>
+            </div>
+
+            <!-- Course Detail Modal -->
+            <div id="modal-curso-{{ curso.id_curso }}" class="modal-backdrop" onclick="if(event.target === this) closeCourseModal('{{ curso.id_curso }}')">
+                <div class="modal-content">
+                    <button class="modal-close" onclick="closeCourseModal('{{ curso.id_curso }}')">×</button>
+                    <h3 style="font-size: 1.5rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1rem;">{{ curso.nombre }}</h3>
+                    <p style="color: var(--text-gray); line-height: 1.6; margin-bottom: 2rem;">{{ curso.descripcion }}</p>
+                    
+                    <h4 style="font-weight: 700; margin-bottom: 1rem;">Comisiones</h4>
+                    {% if curso.comisiones_abiertas %}
+                        {% for comision in curso.comisiones_abiertas %}
+                        <div style="background: #f8fafc; padding: 1rem; border-radius: 12px; margin-bottom: 1rem; border: 1px solid #e2e8f0;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <strong>Comisión {{ comision.id_comision }}</strong>
+                                <span style="color: #15803d; font-weight: 700; font-size: 0.9rem;">{{ comision.cupos_disponibles }} lugares</span>
+                            </div>
+                            <div style="font-size: 0.9rem; color: #64748b; margin-bottom: 1rem;">
+                                {{ comision.dias_horarios|default:"Martes y Jueves 16:30hs" }}
+                            </div>
+                            {% if user_authenticated %}
+                            <a href="{% url 'inscripciones:formulario' comision.id_comision %}" class="btn-more" style="display: block; text-align: center; text-decoration: none;">Inscribirme</a>
+                            {% else %}
+                            <button onclick="closeCourseModal('{{ curso.id_curso }}'); openLoginModal();" class="btn-more">Iniciar Sesión para Inscribirme</button>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p style="color: #94a3b8; text-align: center;">No hay cupos disponibles por el momento.</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endwith %}
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 4rem;">
+            <h3 style="color: var(--text-dark);">No hay cursos disponibles</h3>
+            <p style="color: var(--text-gray);">Selecciona otra sede o intenta más tarde.</p>
+        </div>
+        {% endif %}
     </div>
 
-    <!-- Modal Login -->
-    <div id="loginModal" class="modal-overlay">
-        <div class="modal-container split-design">
-            <!-- Close Button -->
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal-backdrop">
+        <div class="modal-content login-modal-wrapper">
             <button class="modal-close" onclick="closeLoginModal()">×</button>
-    
-            <!-- Left Side: Form -->
-            <div class="login-left">
-                <div style="text-align: center; margin-bottom: 1.5rem;">
-                    <img src="{% static 'img/logosesion.png' %}" alt="Logo Sesión" style="height: 80px; width: auto;">
-                </div>
-                <h2 class="login-title">Iniciar Sesión</h2>
-                <p class="login-subtitle">Accede a tu cuenta utilizando tu DNI</p>
-    
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="error-message" style="margin-bottom: 1rem; padding: 0.8rem; background: #fee2e2; color: #ef4444; border-radius: 8px; font-size: 0.9rem;">{{ message }}</div>
-                    {% endfor %}
-                {% endif %}
-    
+            <div class="login-side">
+                <h2 style="font-size: 1.8rem; font-weight: 800; color: var(--text-dark); margin-bottom: 0.5rem;">Hola de nuevo</h2>
+                <p style="color: var(--text-gray); margin-bottom: 2rem;">Ingresa tus datos para continuar</p>
                 <form method="post" action="{% url 'login' %}?next={{ request.path }}">
                     {% csrf_token %}
-                    
-                    <div class="input-group">
-                        <input type="text" name="username" required placeholder="Ingrese su DNI">
+                    <div style="margin-bottom: 1rem;">
+                        <input type="text" name="username" placeholder="DNI" style="width: 100%; padding: 0.9rem; border: 2px solid #e2e8f0; border-radius: 12px; outline: none;">
                     </div>
-                    
-                    <div class="form-group input-group">
-                        <input type="password" name="password" required placeholder="Contraseña">
+                    <div style="margin-bottom: 1.5rem;">
+                        <input type="password" name="password" placeholder="Contraseña" style="width: 100%; padding: 0.9rem; border: 2px solid #e2e8f0; border-radius: 12px; outline: none;">
                     </div>
-                    
-                    <a href="{% url 'password_reset_request' %}" class="forgot-password">¿Olvidaste tu contraseña?</a>
-                    
-                    <button type="submit" class="btn-login">
-                        INGRESAR
-                    </button>
+                    <button type="submit" class="btn-more">INGRESAR</button>
                 </form>
             </div>
-    
-            <!-- Right Side: Welcome -->
-            <div class="login-right">
-                <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">¡Bienvenido!</h2>
-                <p style="font-size: 1.1rem; margin-bottom: 2rem; opacity: 0.9;">
-                    Ingresa tus datos personales para acceder a todas las funcionalidades de Edu-Polo.
-                </p>
-                <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 1rem;">¿Aún no tienes una cuenta?</p>
-                <button type="button" class="btn-register-outline" onclick="openRegistroModal()">REGISTRARSE</button>
+            <div class="promo-side">
+                <h2 style="font-size: 1.8rem; margin-bottom: 1rem;">¿Nuevo aquí?</h2>
+                <p style="margin-bottom: 2rem; opacity: 0.9;">Crea tu cuenta para inscribirte a los cursos.</p>
+                <button onclick="openRegistroModal()" style="padding: 0.8rem 2rem; background: rgba(255,255,255,0.2); border: 2px solid white; color: white; border-radius: 99px; font-weight: 700; cursor: pointer;">CREAR CUENTA</button>
             </div>
         </div>
     </div>
 
-    <!-- Old Modal Curso Detalle removed -->
+    <!-- Registro Modal Placeholder (Simplified logic for view) -->
+    <div id="registroModal" class="modal-backdrop" style="z-index: 2001;">
+        <div class="modal-content" style="max-width: 600px;">
+            <button class="modal-close" onclick="closeRegistroModal()">×</button>
+            <h2 style="text-align: center; margin-bottom: 2rem; font-weight: 800;">Crear Cuenta</h2>
+            <form method="post" action="{% url 'usuario:registro' %}">
+                {% csrf_token %}
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <input type="text" name="nombre" placeholder="Nombre" required style="padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px;">
+                    <input type="text" name="apellido" placeholder="Apellido" required style="padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px;">
+                </div>
+                <input type="email" name="correo" placeholder="Email" required style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 1rem;">
+                <input type="text" name="dni" placeholder="DNI" required style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 1rem;">
+                <input type="password" name="password" placeholder="Contraseña" required style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 1.5rem;">
+                <button type="submit" class="btn-more">REGISTRARSE</button>
+            </form>
+        </div>
+    </div>
 
     <script>
-        // Login Modal
+        function filterCursos(category, btn) {
+            // Update tabs
+            document.querySelectorAll('.tab-item').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            
+            // Filter cards
+            const cards = document.querySelectorAll('.course-card');
+            cards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Modal Logic
+        function openCourseModal(id) {
+            document.getElementById('modal-curso-' + id).style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCourseModal(id) {
+            document.getElementById('modal-curso-' + id).style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
         function openLoginModal() {
-            const modal = document.getElementById('loginModal');
-            modal.style.display = 'flex';
-            modal.offsetHeight; // Force reflow
-            modal.classList.add('show');
+            document.getElementById('loginModal').style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
 
         function closeLoginModal() {
-            const modal = document.getElementById('loginModal');
-            modal.classList.remove('show');
-            setTimeout(() => {
-                modal.style.display = 'none';
-                document.body.style.overflow = '';
-            }, 300);
-        }
-
-        // Course Detail Modal (Per Course)
-        function openCourseModal(cursoId) {
-            const modal = document.getElementById(`modal-curso-${cursoId}`);
-            if (modal) {
-                modal.style.display = 'flex';
-                modal.offsetHeight; // Force reflow
-                modal.classList.add('show');
-                document.body.style.overflow = 'hidden';
-            }
-        }
-
-        function closeCourseModal(cursoId) {
-            const modal = document.getElementById(`modal-curso-${cursoId}`);
-            if (modal) {
-                modal.classList.remove('show');
-                setTimeout(() => {
-                    modal.style.display = 'none';
-                    document.body.style.overflow = '';
-                }, 300);
-            }
-        }
-
-        // Close on outside click
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal-overlay')) {
-                event.target.classList.remove('show');
-                setTimeout(() => {
-                    event.target.style.display = 'none';
-                    document.body.style.overflow = '';
-                }, 300);
-            }
-        }
-
-        // Auto open login if errors
-        {% if messages %}
-            openLoginModal();
-        {% endif %}
-    </script>
-<!-- Modal Registro -->
-<div id="registroModal" class="modal-overlay" style="z-index: 10001;">
-    <div class="modal-container" style="max-width: 950px; padding: 1.5rem; max-height: 85vh; overflow-y: auto;">
-        <button class="modal-close" onclick="closeRegistroModal()">×</button>
-        
-        <div style="text-align: center; margin-bottom: 0.5rem;">
-            <div style="text-align: center; margin-bottom: 0.5rem;">
-                <img src="{% static 'img/logosregister.png' %}" alt="Logo Registro" style="height: 50px; width: auto;">
-            </div>
-            
-            <h2 style="color: #4a5568; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.1rem;">Crear cuenta</h2>
-            <p style="color: #718096; font-size: 0.85rem; margin-bottom: 0.5rem;">Ingrese sus datos personales para inscribirse</p>
-        </div>
-
-        <form method="post" action="{% url 'usuario:registro' %}" class="registro-form">
-            {% csrf_token %}
-            
-            <div class="form-grid">
-                
-                <!-- DNI -->
-                <div class="form-group">
-                    <label>DNI</label>
-                    <input type="text" name="dni" required placeholder="Número de documento" class="form-input">
-                </div>
-                
-                <!-- Correo -->
-                <div class="form-group">
-                    <label>Correo Electrónico *</label>
-                    <input type="email" name="correo" required placeholder="Correo electrónico" class="form-input">
-                </div>
-
-                <!-- Nombres -->
-                <div class="form-group">
-                    <label>Nombres *</label>
-                    <input type="text" name="nombre" required placeholder="Nombres" class="form-input">
-                </div>
-
-                <!-- Apellidos -->
-                <div class="form-group">
-                    <label>Apellidos *</label>
-                    <input type="text" name="apellido" required placeholder="Apellidos" class="form-input">
-                </div>
-
-                <!-- Teléfono -->
-                <div class="form-group">
-                    <label>Teléfono de contacto *</label>
-                    <input type="text" name="telefono" required placeholder="+ 54 2964 999999" class="form-input">
-                </div>
-
-                <!-- Fecha Nacimiento -->
-                <div class="form-group">
-                    <label>Fecha de Nacimiento</label>
-                    <input type="date" name="fecha_nacimiento" class="form-input">
-                </div>
-
-                <!-- Género -->
-                <div class="form-group">
-                    <label>Género</label>
-                    <select name="genero" class="form-input">
-                        <option value="">Seleccione...</option>
-                        <option value="M">Masculino</option>
-                        <option value="F">Femenino</option>
-                        <option value="O">Otro</option>
-                        <option value="P">Prefiero no decirlo</option>
-                    </select>
-                </div>
-
-                <!-- Domicilio -->
-                <div class="form-group">
-                    <label>Domicilio</label>
-                    <input type="text" name="domicilio" placeholder="Calle 123, Ciudad" class="form-input">
-                </div>
-
-                <!-- Nivel Estudios -->
-                <div class="form-group">
-                    <label>Nivel de estudios</label>
-                    <select name="nivel_estudios" class="form-input">
-                        <option value="">Seleccione...</option>
-                        <option value="PR">Primaria</option>
-                        <option value="SE">Secundaria</option>
-                        <option value="UN">Universidad</option>
-                        <option value="OT">Otro</option>
-                    </select>
-                </div>
-
-                <!-- Institución Actual -->
-                <div class="form-group">
-                    <label>Institución Actual</label>
-                    <input type="text" name="institucion_actual" placeholder="Nombre de la institución" class="form-input">
-                </div>
-
-                <!-- Contraseña -->
-                <div class="form-group">
-                    <label>Contraseña *</label>
-                    <input type="password" name="password" required placeholder="Mínimo 6 caracteres" class="form-input">
-                </div>
-
-                <!-- Confirmar Contraseña -->
-                <div class="form-group">
-                    <label>Confirmar Contraseña *</label>
-                    <input type="password" name="password_confirm" required placeholder="Repite la contraseña" class="form-input">
-                </div>
-
-            </div>
-
-            <div style="text-align: center; margin-top: 1.5rem;">
-                <button type="submit" class="btn-guardar">Guardar y Continuar</button>
-            </div>
-            
-            <div style="text-align: right; margin-top: 1rem;">
-                 <p style="font-size: 0.9rem;">¿Ya sos miembro? <a href="#" onclick="closeRegistroModal(); openLoginModal(); return false;" style="color: #F09819; font-weight: bold;">Ingresar</a></p>
-            </div>
-        </form>
-    </div>
-</div>
-
-<style>
-    .form-input {
-        width: 100%;
-        padding: 0.6rem;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        font-size: 0.95rem;
-        color: #4a5568;
-        box-sizing: border-box;
-    }
-    .form-input:focus {
-        border-color: #F09819;
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(240, 152, 25, 0.1);
-    }
-    .form-group label {
-        display: block;
-        margin-bottom: 0.5rem;
-        color: #4a5568;
-        font-weight: 600;
-        font-size: 0.9rem;
-    }
-    .btn-guardar {
-        background: #F09819;
-        color: white;
-        border: none;
-        padding: 0.8rem 3rem;
-        border-radius: 50px;
-        font-weight: 700;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: transform 0.2s;
-    }
-    .btn-guardar:hover {
-        transform: translateY(-2px);
-        background: #e68a00;
-    }
-    #registroModal {
-        z-index: 10001;
-    }
-    .form-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    @media (max-width: 900px) {
-        .form-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-    @media (max-width: 768px) {
-        .form-grid {
-            grid-template-columns: 1fr !important;
-        }
-    }
-</style>
-
-<script>
-    function openRegistroModal() {
-        closeLoginModal();
-        const modal = document.getElementById('registroModal');
-        modal.style.display = 'flex';
-        modal.offsetHeight;
-        modal.classList.add('show');
-        document.body.style.overflow = 'hidden';
-        // Ensure overflow stays hidden after closeLoginModal timeout
-        setTimeout(() => {
-            document.body.style.overflow = 'hidden';
-        }, 350);
-    }
-
-    function closeRegistroModal() {
-        const modal = document.getElementById('registroModal');
-        modal.classList.remove('show');
-        setTimeout(() => {
-            modal.style.display = 'none';
+            document.getElementById('loginModal').style.display = 'none';
             document.body.style.overflow = '';
-        }, 300);
-    }
-    
-    // Close on outside click
-    document.getElementById('registroModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeRegistroModal();
         }
-    });
-</script>
+
+        function openRegistroModal() {
+            closeLoginModal();
+            document.getElementById('registroModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeRegistroModal() {
+            document.getElementById('registroModal').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+        
+        // Close modals on escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") {
+                document.querySelectorAll('.modal-backdrop').forEach(modal => {
+                    modal.style.display = 'none';
+                });
+                document.body.style.overflow = '';
+            }
+        });
+    </script>
 </body>
 </html>
