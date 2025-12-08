@@ -6,29 +6,29 @@
 {% block user_role %}Administrador{% endblock %}
 
 {% block sidebar_menu %}
-<li><a href="{% url 'dashboard_admin' %}"><span class="icon">🏠</span> Inicio</a></li>
-<li><a href="{% url 'administracion:panel_cursos' %}"><span class="icon">📚</span> Gestión Cursos</a></li>
-<li><a href="{% url 'administracion:panel_comisiones' %}"><span class="icon">📋</span> Gestión Comisiones</a></li>
-<li><a href="{% url 'administracion:panel_inscripciones' %}"><span class="icon">✅</span> Inscripciones</a></li>
+<li><a href="{% url 'dashboard_admin' %}">Inicio</a></li>
+<li><a href="{% url 'administracion:panel_cursos' %}">Gestión Cursos</a></li>
+<li><a href="{% url 'administracion:panel_comisiones' %}">Gestión Comisiones</a></li>
+<li><a href="{% url 'administracion:panel_inscripciones' %}">Inscripciones</a></li>
 {% if es_admin_completo %}
-<li><a href="{% url 'administracion:gestion_usuarios' %}" class="active"><span class="icon">👥</span> Gestión Usuarios</a></li>
+<li><a href="{% url 'administracion:gestion_usuarios' %}" class="active">Gestión Usuarios</a></li>
 {% endif %}
-<li><a href="{% url 'administracion:buscador_estudiantes' %}"><span class="icon">🔍</span> Buscar Estudiantes</a></li>
+<li><a href="{% url 'administracion:buscador_estudiantes' %}">Buscar Estudiantes</a></li>
 {% if es_admin_completo %}
-<li><a href="{% url 'administracion:panel_polos' %}"><span class="icon">🏢</span> Polos</a></li>
+<li><a href="{% url 'administracion:panel_polos' %}">Polos</a></li>
 {% endif %}
-<li><a href="{% url 'administracion:estadisticas' %}"><span class="icon">📊</span> Estadísticas</a></li>
-<li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
-<li><a href="{% url 'administracion:docentes_cursos' %}"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li>
-<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+<li><a href="{% url 'administracion:estadisticas' %}">Estadísticas</a></li>
+<li><a href="{% url 'administracion:panel_asistencia' %}">Asistencias</a></li>
+<li><a href="{% url 'administracion:docentes_cursos' %}">Docentes y Cursos</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}">Mi Perfil</a></li>
 {% if es_admin_completo %}
-<li><a href="{% url 'admin:index' %}"><span class="icon">⚙️</span> Django Admin</a></li>
+<li><a href="{% url 'admin:index' %}">Django Admin</a></li>
 {% endif %}
 {% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h2>➕ Crear Nuevo Usuario</h2>
+    <h2>Crear Nuevo Usuario</h2>
     <p>Completa los datos del nuevo usuario del sistema</p>
 </div>
 
@@ -47,14 +47,12 @@
         <!-- Tipo de Usuario -->
         <div class="form-section">
             <h3 class="section-title">
-                <span>👤</span>
                 Tipo de Usuario
             </h3>
             <div class="tipo-usuario-selector">
                 <div class="tipo-usuario-option">
                     <input type="radio" name="tipo_usuario" value="estudiante" id="tipo_estudiante" checked>
                     <label for="tipo_estudiante" class="tipo-usuario-label">
-                        <div class="icon">🎓</div>
                         <div class="title">Estudiante</div>
                     </label>
                 </div>
@@ -62,7 +60,6 @@
                 <div class="tipo-usuario-option">
                     <input type="radio" name="tipo_usuario" value="docente" id="tipo_docente">
                     <label for="tipo_docente" class="tipo-usuario-label">
-                        <div class="icon">👨‍🏫</div>
                         <div class="title">Docente</div>
                     </label>
                 </div>
@@ -70,14 +67,12 @@
                 <div class="tipo-usuario-option">
                     <input type="radio" name="tipo_usuario" value="admin" id="tipo_admin">
                     <label for="tipo_admin" class="tipo-usuario-label">
-                        <div class="icon">👑</div>
                         <div class="title">Administrador</div>
                     </label>
                 </div>
                 <div class="tipo-usuario-option">
                     <input type="radio" name="tipo_usuario" value="mesa_entrada" id="tipo_mesa_entrada">
                     <label for="tipo_mesa_entrada" class="tipo-usuario-label">
-                        <div class="icon">📋</div>
                         <div class="title">Mesa de Entrada</div>
                     </label>
                 </div>
@@ -87,7 +82,6 @@
         <!-- Información Personal -->
         <div class="form-section">
             <h3 class="section-title">
-                <span>📋</span>
                 Información Personal
             </h3>
             <div class="form-row">
@@ -141,7 +135,6 @@
         <!-- Residencia -->
         <div class="form-section">
             <h3 class="section-title">
-                <span>🏠</span>
                 Información de Residencia
             </h3>
             <div class="form-group">
@@ -157,7 +150,7 @@
         
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">
-                ➕ Crear Usuario
+                Crear Usuario
             </button>
             <a href="{% url 'administracion:gestion_usuarios' %}" class="btn btn-secondary">
                 Cancelar

@@ -6,29 +6,29 @@
 {% block user_role %}Administrador{% endblock %}
 
 {% block sidebar_menu %}
-<li><a href="{% url 'dashboard_admin' %}"><span class="icon">🏠</span> Inicio</a></li>
-<li><a href="{% url 'administracion:panel_cursos' %}"><span class="icon">📚</span> Gestión Cursos</a></li>
-<li><a href="{% url 'administracion:panel_comisiones' %}"><span class="icon">📋</span> Gestión Comisiones</a></li>
-<li><a href="{% url 'administracion:panel_inscripciones' %}"><span class="icon">✅</span> Inscripciones</a></li>
+<li><a href="{% url 'dashboard_admin' %}">Inicio</a></li>
+<li><a href="{% url 'administracion:panel_cursos' %}">Gestión Cursos</a></li>
+<li><a href="{% url 'administracion:panel_comisiones' %}">Gestión Comisiones</a></li>
+<li><a href="{% url 'administracion:panel_inscripciones' %}">Inscripciones</a></li>
 {% if es_admin_completo %}
-<li><a href="{% url 'administracion:gestion_usuarios' %}" class="active"><span class="icon">👥</span> Gestión Usuarios</a></li>
+<li><a href="{% url 'administracion:gestion_usuarios' %}" class="active">Gestión Usuarios</a></li>
 {% endif %}
-<li><a href="{% url 'administracion:buscador_estudiantes' %}"><span class="icon">🔍</span> Buscar Estudiantes</a></li>
+<li><a href="{% url 'administracion:buscador_estudiantes' %}">Buscar Estudiantes</a></li>
 {% if es_admin_completo %}
-<li><a href="{% url 'administracion:panel_polos' %}"><span class="icon">🏢</span> Polos</a></li>
+<li><a href="{% url 'administracion:panel_polos' %}">Polos</a></li>
 {% endif %}
-<li><a href="{% url 'administracion:estadisticas' %}"><span class="icon">📊</span> Estadísticas</a></li>
-<li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
-<li><a href="{% url 'administracion:docentes_cursos' %}"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li>
-<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+<li><a href="{% url 'administracion:estadisticas' %}">Estadísticas</a></li>
+<li><a href="{% url 'administracion:panel_asistencia' %}">Asistencias</a></li>
+<li><a href="{% url 'administracion:docentes_cursos' %}">Docentes y Cursos</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}">Mi Perfil</a></li>
 {% if es_admin_completo %}
-<li><a href="{% url 'admin:index' %}"><span class="icon">⚙️</span> Django Admin</a></li>
+<li><a href="{% url 'admin:index' %}">Django Admin</a></li>
 {% endif %}
 {% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h2>✏️ Editar Usuario</h2>
+    <h2>Editar Usuario</h2>
     <p>Modifica los datos de: <strong>{{ persona.nombre_completo }}</strong></p>
 </div>
 
@@ -51,7 +51,6 @@
         <!-- Información Personal -->
         <div class="form-section">
             <h3 class="section-title">
-                <span>📋</span>
                 Información Personal
             </h3>
             <div class="form-row">
@@ -105,7 +104,6 @@
         <!-- Residencia -->
         <div class="form-section">
             <h3 class="section-title">
-                <span>🏠</span>
                 Información de Residencia
             </h3>
             <div class="form-group">
@@ -122,27 +120,26 @@
         <!-- Gestión de Roles -->
         <div class="form-section">
             <h3 class="section-title">
-                <span>👤</span>
                 Cambiar Rol del Usuario
             </h3>
             <div class="form-group">
                 <label for="nuevo_rol">Nuevo Rol (Opcional - Dejar vacío para mantener el actual)</label>
                 <select name="nuevo_rol" id="nuevo_rol">
                     <option value="">Mantener rol actual</option>
-                    <option value="estudiante">🎓 Estudiante</option>
-                    <!-- <option value="docente">👨‍🏫 Docente</option> OCULTO TEMPORALMENTE -->
-                    <option value="admin">👑 Administrador</option>
-                    <option value="mesa_entrada">📋 Mesa de Entrada</option>
+                    <option value="estudiante">Estudiante</option>
+                    <!-- <option value="docente">Docente</option> OCULTO TEMPORALMENTE -->
+                    <option value="admin">Administrador</option>
+                    <option value="mesa_entrada">Mesa de Entrada</option>
                 </select>
                 <small style="color: #64748b; display: block; margin-top: 0.5rem;">
-                    ⚠️ Al cambiar el rol, se eliminarán los roles y perfiles anteriores del usuario.
+                    Al cambiar el rol, se eliminarán los roles y perfiles anteriores del usuario.
                 </small>
             </div>
         </div>
         
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">
-                💾 Guardar Cambios
+                Guardar Cambios
             </button>
             <a href="{% url 'administracion:gestion_usuarios' %}" class="btn btn-secondary">
                 Cancelar

@@ -258,7 +258,7 @@
             
             <div class="form-group">
                 <label class="required">Ingresa tu DNI</label>
-                <input type="text" name="dni" id="dni" required maxlength="12" placeholder="12345678">
+                <input type="text" name="dni" id="dni" required maxlength="12" placeholder="12345678" value="{% if user.is_authenticated %}{{ user.username }}{% endif %}">
                 <small style="color: #64748b;">Ingresa tu DNI y tus datos se completarán automáticamente si ya estás registrado</small>
             </div>
             
@@ -643,6 +643,15 @@
             return false;
         }
     });
+
+    // Auto-search if DNI is pre-filled (Authenticated User)
+    const dniInput = document.getElementById('dni');
+    if (dniInput.value && dniInput.value.length >= 7) {
+        // Small delay to ensure UI renders
+        setTimeout(() => {
+            document.getElementById('btnBuscarDNI').click();
+        }, 500);
+    }
 </script>
 
 {% endblock %}
