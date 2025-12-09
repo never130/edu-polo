@@ -193,8 +193,28 @@ def formulario_inscripcion(request, comision_id):
             return render(request, 'inscripciones/formulario_inscripcion.html', {'comision': comision})
     
     # GET - Mostrar formulario
+    tutores_existentes = []
+    if request.user.is_authenticated:
+        try:
+            estudiante = Estudiante.objects.get(usuario__persona__dni=request.user.username)
+            # Obtener relaciones de tutor
+            relaciones = TutorEstudiante.objects.filter(estudiante=estudiante).select_related('tutor__usuario__persona')
+            for rel in relaciones:
+                tutor_persona = rel.tutor.usuario.persona
+                tutores_existentes.append({
+                    'dni': tutor_persona.dni,
+                    'nombre': tutor_persona.nombre,
+                    'apellido': tutor_persona.apellido,
+                    'telefono': tutor_persona.telefono,
+                    'email': tutor_persona.correo,
+                    'parentesco': rel.parentesco
+                })
+        except Estudiante.DoesNotExist:
+            pass
+
     context = {
-        'comision': comision
+        'comision': comision,
+        'tutores_existentes': tutores_existentes
     }
     
     # Pre-cargar datos de persona si existe
