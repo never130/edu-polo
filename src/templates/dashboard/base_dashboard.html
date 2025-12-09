@@ -297,36 +297,50 @@
         
         /* Sidebar */
         .sidebar {
-            background: white;
-            padding: 2rem 0;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            background: #f9fafb; /* Gray 50 */
+            padding: 1.5rem 1rem;
+            border-right: 1px solid #e5e7eb;
+            height: 100%;
         }
         
         .sidebar-menu {
             list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
         }
         
         .sidebar-menu li {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0;
         }
         
         .sidebar-menu a {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            padding: 1rem 2rem;
-            color: #666;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #4b5563; /* Gray 600 */
             text-decoration: none;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             font-weight: 500;
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
         }
         
-        .sidebar-menu a:hover,
-        .sidebar-menu a.active {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            color: #667eea;
-            border-left: 4px solid #667eea;
+        .sidebar-menu a:hover {
+            background-color: #f3f4f6; /* Gray 100 */
+            color: #1f2937; /* Gray 800 */
         }
+        
+        .sidebar-menu a.active {
+            background-color: #f97316; /* Orange 500 */
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.2);
+            font-weight: 600;
+            border-left: none; /* Remove old style */
+        }
+
+
         
         /* Contenido Principal */
         .main-content {

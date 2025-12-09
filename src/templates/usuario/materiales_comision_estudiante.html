@@ -6,14 +6,14 @@
 {% block user_role %}Estudiante{% endblock %}
 
 {% block sidebar_menu %}
-<li><a href="{% url 'dashboard_estudiante' %}"><span class="icon">🏠</span> Inicio</a></li>
-<li><a href="{% url 'cursos:ver_disponibles' %}"><span class="icon">📚</span> Cursos Disponibles</a></li>
-<li><a href="{% url 'cursos:mis_inscripciones' %}"><span class="icon">✅</span> Mis Inscripciones</a></li>
-<li><a href="{% url 'usuario:gestionar_tutores' %}"><span class="icon">👨‍👩‍👧</span> Mis Tutores</a></li>
-<li><a href="{% url 'usuario:mi_progreso' %}"><span class="icon">📊</span> Mi Progreso</a></li>
-<li><a href="{% url 'usuario:mis_certificados' %}"><span class="icon">🎓</span> Certificados</a></li>
-<li><a href="{% url 'usuario:materiales_estudiante' %}" class="active"><span class="icon">📁</span> Materiales</a></li>
-<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+<li><a href="{% url 'dashboard_estudiante' %}"> Inicio</a></li>
+<li><a href="{% url 'cursos:ver_disponibles' %}"> Cursos Disponibles</a></li>
+<li><a href="{% url 'cursos:mis_inscripciones' %}"> Mis Inscripciones</a></li>
+<li><a href="{% url 'usuario:gestionar_tutores' %}"> Mis Tutores</a></li>
+<li><a href="{% url 'usuario:mi_progreso' %}"> Mi Progreso</a></li>
+<li><a href="{% url 'usuario:mis_certificados' %}"> Certificados</a></li>
+<li><a href="{% url 'usuario:materiales_estudiante' %}" class="active"> Materiales</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"> Mi Perfil</a></li>
 {% endblock %}
 
 {% block content %}

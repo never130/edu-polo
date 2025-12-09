@@ -364,7 +364,7 @@ def inscribir_estudiante_admin(request):
                 messages.error(request, '❌ Por favor, selecciona un estudiante y una comisión.')
                 return redirect('administracion:panel_inscripciones')
             
-            estudiante = get_object_or_404(Estudiante, id_estudiante=estudiante_id)
+            estudiante = get_object_or_404(Estudiante, pk=estudiante_id)
             comision = get_object_or_404(Comision, id_comision=comision_id)
             
             # Verificar si ya está inscrito

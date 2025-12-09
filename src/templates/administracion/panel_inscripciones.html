@@ -1,6 +1,7 @@
 {% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
 
-{% block title %}Inscripciones - Panel Administrador{% endblock %}
+{% block title %}Inscripciones - Gestión{% endblock %}
 
 {% block user_role %}Administrador{% endblock %}
 
@@ -30,100 +31,125 @@
 {% endblock %}
 
 {% block content %}
-<div style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); padding: 2.5rem; border-radius: 20px; color: white; margin-bottom: 2rem;">
-    <h2 style="font-size: 2.2rem;">✅ Inscripciones</h2>
-    <p>Total de inscripciones: {{ inscripciones.count }}</p>
-    
-    <form method="get" style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-        <input type="text" name="q" placeholder="Buscar por estudiante, DNI o curso..." value="{{ busqueda|default:'' }}" style="flex: 1; padding: 1rem; border: none; border-radius: 12px; font-size: 1rem;">
-        <button type="submit" style="padding: 1rem 2rem; background: white; color: #db2777; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;">
-            🔍 Buscar
-        </button>
-    </form>
-</div>
+<div style="font-family: system-ui, -apple-system, sans-serif; color: #1f2937;">
+    <!-- Header -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 700; color: #1f2937; margin: 0 0 0.5rem 0;">Inscripciones</h1>
+            <p style="color: #6b7280; margin: 0; font-size: 1rem;">Gestión de inscripciones y estados</p>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+            <a href="{% url 'administracion:exportar_inscripciones' %}" style="display: inline-flex; align-items: center; justify-content: center; background-color: white; border: 1px solid #e5e7eb; color: #374151; padding: 0.75rem 1rem; border-radius: 0.5rem; font-weight: 500; text-decoration: none; cursor: pointer; transition: all 0.2s;">
+                <span style="margin-right: 0.5rem;">📥</span> Exportar
+            </a>
+            <button onclick="document.getElementById('modalInscribir').style.display='block'" style="display: inline-flex; align-items: center; justify-content: center; background-color: #f97316; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.2); transition: background-color 0.2s;">
+                Nueva Inscripción
+            </button>
+        </div>
+    </div>
 
-{% if messages %}
+    {% if messages %}
     <div style="margin-bottom: 1.5rem;">
         {% for message in messages %}
-            <div style="padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 0.5rem; font-weight: 600; {% if message.tags == 'error' %}background: #fee2e2; color: #991b1b;{% elif message.tags == 'success' %}background: #d1fae5; color: #065f46;{% elif message.tags == 'warning' %}background: #fef3c7; color: #92400e;{% else %}background: #dbeafe; color: #1e40af;{% endif %}">
+            <div style="padding: 1rem 1.5rem; border-radius: 0.5rem; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.9rem; {% if message.tags == 'error' %}background: #fee2e2; color: #991b1b;{% elif message.tags == 'success' %}background: #d1fae5; color: #065f46;{% elif message.tags == 'warning' %}background: #fef3c7; color: #92400e;{% else %}background: #dbeafe; color: #1e40af;{% endif %}">
                 {{ message }}
             </div>
         {% endfor %}
     </div>
-{% endif %}
+    {% endif %}
 
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; gap: 1rem; flex-wrap: wrap;">
-    <button onclick="document.getElementById('modalInscribir').style.display='block'" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 1rem;">
-        ➕ Inscribir Estudiante
-    </button>
-    <a href="{% url 'administracion:exportar_inscripciones' %}" style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); color: white; padding: 0.8rem 1.5rem; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block;">
-        📥 Exportar a Excel
-    </a>
-</div>
+    <!-- Filter Bar -->
+    <div style="background: white; padding: 1rem 1.5rem; border-radius: 0.75rem; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;">
+        <div style="font-weight: 600; color: #374151; font-size: 1.1rem;">Lista de Inscripciones</div>
+        <form method="get" style="display: flex; align-items: center; gap: 0.5rem; flex: 1; max-width: 500px; justify-content: flex-end;">
+            <div style="position: relative; width: 100%;">
+                <span style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #9ca3af;">🔍</span>
+                <input type="text" name="q" value="{{ busqueda|default:'' }}" placeholder="Buscar por nombre o DNI..." 
+                    style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 0.5rem; color: #1f2937; outline: none; transition: border-color 0.2s;">
+            </div>
+            <button type="submit" style="background: white; border: 1px solid #e5e7eb; padding: 0.75rem; border-radius: 0.5rem; cursor: pointer; color: #6b7280; display: flex; align-items: center; justify-content: center;">
+                <span style="font-size: 1.2rem;">⚡</span>
+            </button>
+        </form>
+    </div>
 
-{% if inscripciones %}
-<div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
-    <table style="width: 100%; border-collapse: collapse;">
-        <thead style="background: #f8fafc;">
-            <tr>
-                <th style="padding: 1.2rem; text-align: left; font-weight: 700;">Estudiante</th>
-                <th style="padding: 1.2rem; text-align: left; font-weight: 700;">Curso</th>
-                <th style="padding: 1.2rem; text-align: left; font-weight: 700;">Comisión</th>
-                <th style="padding: 1.2rem; text-align: left; font-weight: 700;">Fecha</th>
-                <th style="padding: 1.2rem; text-align: left; font-weight: 700;">Estado</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for inscripcion in inscripciones %}
-            <tr style="border-bottom: 1px solid #e2e8f0;">
-                <td style="padding: 1.2rem;">
-                    <strong>{{ inscripcion.estudiante.usuario.persona.nombre_completo }}</strong><br>
-                    <small style="color: #94a3b8;">DNI: {{ inscripcion.estudiante.usuario.persona.dni }}</small>
-                </td>
-                <td style="padding: 1.2rem;">{{ inscripcion.comision.fk_id_curso.nombre }}</td>
-                <td style="padding: 1.2rem;">#{{ inscripcion.comision.id_comision }}</td>
-                <td style="padding: 1.2rem;">{{ inscripcion.fecha_hora_inscripcion|date:"d/m/Y H:i" }}</td>
-                <td style="padding: 1.2rem;">
-                    {% if inscripcion.estado == 'confirmado' %}
-                        <span style="background: #10b981; color: white; padding: 0.4rem 0.8rem; border-radius: 16px; font-size: 0.85rem; font-weight: 600;">✅ Confirmado</span>
-                    {% elif inscripcion.estado == 'lista_espera' %}
-                        <span style="background: #f59e0b; color: white; padding: 0.4rem 0.8rem; border-radius: 16px; font-size: 0.85rem; font-weight: 600;">
-                            ⏳ Lista de Espera {% if inscripcion.orden_lista_espera %}(#{{ inscripcion.orden_lista_espera }}){% endif %}
-                        </span>
-                    {% elif inscripcion.estado == 'cancelada' %}
-                        <span style="background: #ef4444; color: white; padding: 0.4rem 0.8rem; border-radius: 16px; font-size: 0.85rem; font-weight: 600;">❌ Cancelada</span>
-                    {% else %}
-                        <span style="background: #64748b; color: white; padding: 0.4rem 0.8rem; border-radius: 16px; font-size: 0.85rem; font-weight: 600;">{{ inscripcion.get_estado_display }}</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <!-- Table -->
+    <div style="background: white; border-radius: 0.75rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); overflow: hidden;">
+        {% if inscripciones %}
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; min-width: 800px;">
+                <thead>
+                    <tr style="background-color: #f3f4f6; border-bottom: 1px solid #e5e7eb;">
+                        <th style="padding: 1rem 1.5rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #6b7280; letter-spacing: 0.05em;">Nombre</th>
+                        <th style="padding: 1rem 1.5rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #6b7280; letter-spacing: 0.05em;">DNI</th>
+                        <th style="padding: 1rem 1.5rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #6b7280; letter-spacing: 0.05em;">Curso</th>
+                        <th style="padding: 1rem 1.5rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #6b7280; letter-spacing: 0.05em;">Ciudad / Sede</th>
+                        <th style="padding: 1rem 1.5rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #6b7280; letter-spacing: 0.05em;">Estado</th>
+                        <th style="padding: 1rem 1.5rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #6b7280; letter-spacing: 0.05em; text-align: right;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody style="background-color: white;">
+                    {% for inscripcion in inscripciones %}
+                    <tr style="border-bottom: 1px solid #f3f4f6; transition: background-color 0.15s;">
+                        <td style="padding: 1rem 1.5rem; color: #111827; font-weight: 500;">
+                            {{ inscripcion.estudiante.usuario.persona.nombre_completo }}
+                        </td>
+                        <td style="padding: 1rem 1.5rem; color: #4b5563;">
+                            {{ inscripcion.estudiante.usuario.persona.dni }}
+                        </td>
+                        <td style="padding: 1rem 1.5rem; color: #4b5563;">
+                            {{ inscripcion.comision.fk_id_curso.nombre }}
+                            <div style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.1rem;">Comisión #{{ inscripcion.comision.id_comision }}</div>
+                        </td>
+                        <td style="padding: 1rem 1.5rem; color: #4b5563;">
+                            {{ inscripcion.comision.fk_id_polo.nombre|default:"-" }}
+                        </td>
+                        <td style="padding: 1rem 1.5rem;">
+                            {% if inscripcion.estado == 'confirmado' %}
+                                <span style="background-color: #dcfce7; color: #166534; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; display: inline-block;">Inscrito</span>
+                            {% elif inscripcion.estado == 'lista_espera' %}
+                                <span style="background-color: #ffedd5; color: #9a3412; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; display: inline-block;">En Espera</span>
+                            {% elif inscripcion.estado == 'cancelada' %}
+                                <span style="background-color: #fee2e2; color: #991b1b; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; display: inline-block;">Rechazado</span>
+                            {% else %}
+                                <span style="background-color: #f3f4f6; color: #374151; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; display: inline-block;">{{ inscripcion.get_estado_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 1rem 1.5rem; text-align: right;">
+                            <button title="Imprimir Comprobante" style="background: none; border: none; cursor: pointer; color: #9ca3af; padding: 0.25rem; border-radius: 0.25rem; transition: color 0.2s;">
+                                🖨️
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="padding: 3rem; text-align: center; color: #6b7280;">
+            <p>No se encontraron inscripciones que coincidan con tu búsqueda.</p>
+        </div>
+        {% endif %}
+    </div>
 </div>
-{% else %}
-<div style="background: white; padding: 3rem; border-radius: 16px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
-    <p style="color: #94a3b8; font-size: 1.1rem;">No se encontraron inscripciones.</p>
-</div>
-{% endif %}
 
 <!-- Modal para Inscribir Estudiante -->
-<div id="modalInscribir" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
-    <div style="background-color: white; margin: 5% auto; padding: 2rem; border-radius: 20px; width: 90%; max-width: 600px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-            <h2 style="color: #1e293b; font-size: 1.8rem; margin: 0;">➕ Inscribir Estudiante</h2>
-            <button onclick="document.getElementById('modalInscribir').style.display='none'" style="background: none; border: none; font-size: 2rem; cursor: pointer; color: #94a3b8;">&times;</button>
+<div id="modalInscribir" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(4px);">
+    <div style="background-color: white; margin: 5% auto; padding: 2rem; border-radius: 1rem; width: 90%; max-width: 600px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 1rem;">
+            <h2 style="color: #1f2937; font-size: 1.5rem; font-weight: 700; margin: 0;">Nueva Inscripción</h2>
+            <button onclick="document.getElementById('modalInscribir').style.display='none'" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #9ca3af; transition: color 0.2s;">&times;</button>
         </div>
         
         <form method="post" action="{% url 'administracion:inscribir_estudiante' %}">
             {% csrf_token %}
             
             <div style="margin-bottom: 1.5rem;">
-                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #334155;">Estudiante *</label>
-                <select name="estudiante_id" required style="width: 100%; padding: 0.9rem; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Estudiante *</label>
+                <select name="estudiante_id" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; outline: none; transition: border-color 0.2s;">
                     <option value="">Selecciona un estudiante...</option>
                     {% for estudiante in estudiantes %}
-                    <option value="{{ estudiante.id_estudiante }}">
+                    <option value="{{ estudiante.id }}">
                         {{ estudiante.usuario.persona.nombre_completo }} - DNI: {{ estudiante.usuario.persona.dni }}
                     </option>
                     {% endfor %}
@@ -131,8 +157,8 @@
             </div>
             
             <div style="margin-bottom: 1.5rem;">
-                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #334155;">Comisión (con cupo disponible) *</label>
-                <select name="comision_id" required style="width: 100%; padding: 0.9rem; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Comisión (con cupo disponible) *</label>
+                <select name="comision_id" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; outline: none; transition: border-color 0.2s;">
                     <option value="">Selecciona una comisión...</option>
                     {% for comision in comisiones_disponibles %}
                     <option value="{{ comision.id_comision }}">
@@ -145,17 +171,17 @@
             </div>
             
             {% if not comisiones_disponibles %}
-            <div style="background: #fef3c7; border: 1px solid #fbbf24; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem;">
-                <p style="color: #92400e; margin: 0;">⚠️ No hay comisiones disponibles con cupo en este momento.</p>
+            <div style="background: #fffbeb; border: 1px solid #fcd34d; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+                <p style="color: #92400e; margin: 0; font-size: 0.9rem;">⚠️ No hay comisiones disponibles con cupo en este momento.</p>
             </div>
             {% endif %}
             
-            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
-                <button type="button" onclick="document.getElementById('modalInscribir').style.display='none'" style="padding: 0.9rem 2rem; background: #e2e8f0; color: #334155; border: none; border-radius: 12px; font-weight: 600; cursor: pointer;">
+            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                <button type="button" onclick="document.getElementById('modalInscribir').style.display='none'" style="padding: 0.75rem 1.5rem; background: white; color: #374151; border: 1px solid #d1d5db; border-radius: 0.5rem; font-weight: 500; cursor: pointer; transition: all 0.2s;">
                     Cancelar
                 </button>
-                <button type="submit" {% if not comisiones_disponibles %}disabled{% endif %} style="padding: 0.9rem 2rem; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;">
-                    ✅ Inscribir
+                <button type="submit" {% if not comisiones_disponibles %}disabled{% endif %} style="padding: 0.75rem 1.5rem; background-color: #f97316; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.2); transition: background-color 0.2s;">
+                    Confirmar Inscripción
                 </button>
             </div>
         </form>
@@ -163,15 +189,20 @@
 </div>
 
 <style>
-    #modalInscribir select:focus {
-        outline: none;
-        border-color: #10b981;
-        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+    select:focus, input:focus {
+        border-color: #f97316 !important;
+        box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.1);
     }
     
-    #modalInscribir button[disabled] {
+    button[disabled] {
         opacity: 0.5;
         cursor: not-allowed;
+        background-color: #9ca3af !important;
+        box-shadow: none !important;
+    }
+
+    tbody tr:hover {
+        background-color: #f9fafb !important;
     }
 </style>
 
@@ -196,5 +227,3 @@
 </script>
 
 {% endblock %}
-
-

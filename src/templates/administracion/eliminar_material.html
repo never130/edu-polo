@@ -6,12 +6,12 @@
 {% block user_role %}Docente{% endblock %}
 
 {% block sidebar_menu %}
-<li><a href="{% url 'dashboard_docente' %}"><span class="icon">🏠</span> Inicio</a></li>
-<li><a href="{% url 'administracion:mis_cursos_docente' %}"><span class="icon">📚</span> Mis Cursos</a></li>
-<li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
-<li><a href="{% url 'administracion:materiales_comision' material.fk_id_comision.id_comision %}"><span class="icon">📁</span> Materiales</a></li>
-<li><a href="{% url 'administracion:estudiantes_comision' material.fk_id_comision.id_comision %}"><span class="icon">👥</span> Estudiantes</a></li>
-<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+<li><a href="{% url 'dashboard_docente' %}"> Inicio</a></li>
+<li><a href="{% url 'administracion:mis_cursos_docente' %}"> Mis Cursos</a></li>
+<li><a href="{% url 'administracion:panel_asistencia' %}"> Asistencias</a></li>
+<li><a href="{% url 'administracion:materiales_comision' material.fk_id_comision.id_comision %}"> Materiales</a></li>
+<li><a href="{% url 'administracion:estudiantes_comision' material.fk_id_comision.id_comision %}"> Estudiantes</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"> Mi Perfil</a></li>
 {% endblock %}
 
 {% block content %}
