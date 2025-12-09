@@ -112,7 +112,7 @@ def editar_perfil(request):
                     # Actualizar datos adicionales según el tipo de usuario
                     if es_estudiante and perfil_adicional:
                         perfil_adicional.nivel_estudios = request.POST.get('nivel_estudios', perfil_adicional.nivel_estudios)
-                        perfil_adicional.institucion_educativa = request.POST.get('institucion_educativa', perfil_adicional.institucion_educativa)
+                        perfil_adicional.institucion_actual = request.POST.get('institucion_actual', perfil_adicional.institucion_actual)
                         perfil_adicional.save()
                     
                     elif es_docente and perfil_adicional:
