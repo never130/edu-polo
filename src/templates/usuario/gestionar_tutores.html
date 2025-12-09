@@ -179,12 +179,10 @@
                     <h3>{{ relacion.tutor.usuario.persona.nombre_completo }}</h3>
                     <span class="parentesco-badge">{{ relacion.get_parentesco_display }}</span>
                 </div>
-                {% if es_admin_completo or tipo_usuario == 'Mesa de Entrada' %}
                 <form method="post" action="{% url 'usuario:eliminar_tutor' relacion.id %}" style="display: inline;" onsubmit="return confirm('¿Estás seguro de eliminar este tutor?');">
                     {% csrf_token %}
                     <button type="submit" class="btn-eliminar">🗑️ Eliminar</button>
                 </form>
-                {% endif %}
             </div>
             
             <div class="tutor-detalles">
@@ -228,13 +226,11 @@
     </div>
 {% endif %}
 
-{% if es_admin_completo or tipo_usuario == 'Mesa de Entrada' %}
 <div style="text-align: center; margin-top: 2rem;">
     <a href="{% url 'usuario:agregar_tutor' %}" class="btn-agregar">
         ➕ Agregar Nuevo Tutor
     </a>
 </div>
-{% endif %}
 
 {% endblock %}
 

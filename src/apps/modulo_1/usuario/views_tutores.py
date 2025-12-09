@@ -42,7 +42,6 @@ def gestionar_tutores(request):
 
 
 @login_required
-@user_passes_test(es_admin_o_mesa_entrada)
 def agregar_tutor(request):
     """Vista para agregar un nuevo tutor"""
     try:
@@ -127,9 +126,6 @@ def agregar_tutor(request):
 @login_required
 def eliminar_tutor(request, relacion_id):
     """Vista para eliminar un tutor"""
-    if not es_admin_o_mesa_entrada(request.user):
-        messages.error(request, 'No tienes permisos para eliminar tutores.')
-        return redirect('usuario:gestionar_tutores')
     try:
         estudiante = Estudiante.objects.get(usuario__persona__dni=request.user.username)
         relacion = get_object_or_404(TutorEstudiante, id=relacion_id, estudiante=estudiante)
