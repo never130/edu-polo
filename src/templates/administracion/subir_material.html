@@ -6,12 +6,12 @@
 {% block user_role %}Docente{% endblock %}
 
 {% block sidebar_menu %}
-<li><a href="{% url 'dashboard_docente' %}"> Inicio</a></li>
-<li><a href="{% url 'administracion:mis_cursos_docente' %}"> Mis Cursos</a></li>
-<li><a href="{% url 'administracion:panel_asistencia' %}"> Asistencias</a></li>
-<li><a href="{% url 'administracion:materiales_comision' comision.id_comision %}" class="active"> Materiales</a></li>
-<li><a href="{% url 'administracion:estudiantes_comision' comision.id_comision %}"> Estudiantes</a></li>
-<li><a href="{% url 'usuario:mi_perfil' %}"> Mi Perfil</a></li>
+<li><a href="{% url 'dashboard_docente' %}">Inicio</a></li>
+<li><a href="{% url 'administracion:mis_cursos_docente' %}">Mis Cursos</a></li>
+<li><a href="{% url 'administracion:panel_asistencia' %}">Asistencias</a></li>
+<li><a href="{% url 'administracion:materiales_comision' comision.id_comision %}" class="active">Materiales</a></li>
+<li><a href="{% url 'administracion:estudiantes_comision' comision.id_comision %}">Estudiantes</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}">Mi Perfil</a></li>
 {% endblock %}
 
 {% block content %}
@@ -85,8 +85,7 @@
         </div>
         
         <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2.5rem;">
-            <a href="{% url 'administracion:materiales_comision' comision.id_comision %}" style="padding: 1rem 2rem; background: #e2e8f0; color: #334155; text-decoration: none; border-radius: 12px; font-weight: 600; transition: all 0.3s ease;">
-                Cancelar
+            <a href="{% url 'administracion:materiales_comision' comision.id_comision %}" style="padding: 1rem 2rem; background: #e2e8f0; color: #334155; text-decoration: none; border-radius: 12px; font-weight: 600; transition: all 0.3s ease;">Cancelar
             </a>
             <button type="submit" style="padding: 1rem 2rem; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.3s ease;">
                 ✅ Subir Material

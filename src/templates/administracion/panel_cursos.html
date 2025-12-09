@@ -5,27 +5,29 @@
 {% block user_role %}Administrador{% endblock %}
 
 {% block sidebar_menu %}
-<li><a href="{% url 'dashboard_admin' %}"><span class="icon">🏠</span> Inicio</a></li>
+<li><a href="{% url 'dashboard_admin' %}">Inicio</a></li>
 {% if es_admin_completo %}
-<li><a href="{% url 'administracion:panel_cursos' %}" class="active"><span class="icon">📚</span> Gestión Cursos</a></li>
-<li><a href="{% url 'administracion:panel_comisiones' %}"><span class="icon">📋</span> Gestión Comisiones</a></li>
+<li><a href="{% url 'administracion:panel_cursos' %}" class="active">Gestión Cursos</a></li>
+<li><a href="{% url 'administracion:panel_comisiones' %}">Gestión Comisiones</a></li>
 {% endif %}
-<li><a href="{% url 'administracion:panel_inscripciones' %}"><span class="icon">✅</span> Inscripciones</a></li>
+<li><a href="{% url 'administracion:panel_inscripciones' %}">Inscripciones</a></li>
 {% if es_admin_completo %}
-<li><a href="{% url 'administracion:gestion_usuarios' %}"><span class="icon">👥</span> Gestión Usuarios</a></li>
+<li><a href="{% url 'administracion:gestion_usuarios' %}">Gestión Usuarios</a></li>
 {% endif %}
-<li><a href="{% url 'administracion:buscador_estudiantes' %}"><span class="icon">🔍</span> Buscar Estudiantes</a></li>
+<li><a href="{% url 'administracion:buscador_estudiantes' %}">Buscar Estudiantes</a></li>
 {% if es_admin_completo %}
-<li><a href="{% url 'administracion:panel_polos' %}"><span class="icon">🏢</span> Polos</a></li>
+<li><a href="{% url 'administracion:panel_polos' %}">Polos</a></li>
 {% endif %}
-<li><a href="{% url 'administracion:estadisticas' %}"><span class="icon">📊</span> Estadísticas</a></li>
-<li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
 {% if es_admin_completo %}
-<li><a href="{% url 'administracion:docentes_cursos' %}"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li>
+<li><a href="{% url 'administracion:estadisticas' %}">Estadísticas</a></li>
 {% endif %}
-<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+<li><a href="{% url 'administracion:panel_asistencia' %}">Asistencias</a></li>
 {% if es_admin_completo %}
-<li><a href="{% url 'admin:index' %}"><span class="icon">⚙️</span> Django Admin</a></li>
+<li><a href="{% url 'administracion:docentes_cursos' %}">Docentes y Cursos</a></li>
+{% endif %}
+<li><a href="{% url 'usuario:mi_perfil' %}">Mi Perfil</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'admin:index' %}">Django Admin</a></li>
 {% endif %}
 {% endblock %}
 
@@ -132,8 +134,7 @@
         <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem;">📚 Gestión de Cursos</h2>
         <p style="opacity: 0.95;">Administra todos los cursos del sistema</p>
     </div>
-    <a href="{% url 'administracion:crear_curso' %}" class="btn-crear">
-        ➕ Crear Nuevo Curso
+    <a href="{% url 'administracion:crear_curso' %}" class="btn-crear">➕ Crear Nuevo Curso
     </a>
 </div>
 
@@ -185,8 +186,7 @@
                     {% endif %}
                 </td>
                 <td>
-                    <a href="{% url 'administracion:editar_curso' curso.id_curso %}" class="btn-action btn-edit">
-                        ✏️ Editar
+                    <a href="{% url 'administracion:editar_curso' curso.id_curso %}" class="btn-action btn-edit">✏️ Editar
                     </a>
                 </td>
             </tr>

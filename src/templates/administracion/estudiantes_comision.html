@@ -6,12 +6,12 @@
 {% block user_role %}Docente{% endblock %}
 
 {% block sidebar_menu %}
-<li><a href="{% url 'dashboard_docente' %}"><span class="icon">🏠</span> Inicio</a></li>
-<li><a href="{% url 'administracion:mis_cursos_docente' %}"><span class="icon">📚</span> Mis Cursos</a></li>
-<li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
-<li><a href="#"><span class="icon">📁</span> Materiales</a></li>
-<li><a href="{% url 'administracion:estudiantes_comision' comision.id_comision %}" class="active"><span class="icon">👥</span> Estudiantes</a></li>
-<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+<li><a href="{% url 'dashboard_docente' %}">Inicio</a></li>
+<li><a href="{% url 'administracion:mis_cursos_docente' %}">Mis Cursos</a></li>
+<li><a href="{% url 'administracion:panel_asistencia' %}">Asistencias</a></li>
+<li><a href="#">Materiales</a></li>
+<li><a href="{% url 'administracion:estudiantes_comision' comision.id_comision %}" class="active">Estudiantes</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}">Mi Perfil</a></li>
 {% endblock %}
 
 {% block content %}
@@ -21,8 +21,7 @@
             <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem;">👥 Estudiantes</h2>
             <p style="opacity: 0.9;">{{ comision.fk_id_curso.nombre }} - Comisión #{{ comision.id_comision }}</p>
         </div>
-        <a href="{% url 'administracion:mis_cursos_docente' %}" style="padding: 0.8rem 1.5rem; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; border: 2px solid rgba(255,255,255,0.3);">
-            ← Volver a Mis Cursos
+        <a href="{% url 'administracion:mis_cursos_docente' %}" style="padding: 0.8rem 1.5rem; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; border: 2px solid rgba(255,255,255,0.3);">← Volver a Mis Cursos
         </a>
     </div>
 </div>
@@ -54,8 +53,7 @@
                             </span>
                         </div>
                     </div>
-                    <a href="{% url 'administracion:panel_asistencia' %}?comision_id={{ comision.id_comision }}" style="padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;">
-                        📝 Ver Asistencias
+                    <a href="{% url 'administracion:panel_asistencia' %}?comision_id={{ comision.id_comision }}" style="padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;">📝 Ver Asistencias
                     </a>
                 </div>
                 {% endfor %}

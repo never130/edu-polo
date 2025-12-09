@@ -6,27 +6,29 @@
 {% block user_role %}Administrador{% endblock %}
 
 {% block sidebar_menu %}
-<li><a href="{% url 'dashboard_admin' %}"><span class="icon">🏠</span> Inicio</a></li>
+<li><a href="{% url 'dashboard_admin' %}">Inicio</a></li>
 {% if es_admin_completo %}
-<li><a href="{% url 'administracion:panel_cursos' %}"><span class="icon">📚</span> Gestión Cursos</a></li>
-<li><a href="{% url 'administracion:panel_comisiones' %}"><span class="icon">📋</span> Gestión Comisiones</a></li>
+<li><a href="{% url 'administracion:panel_cursos' %}">Gestión Cursos</a></li>
+<li><a href="{% url 'administracion:panel_comisiones' %}">Gestión Comisiones</a></li>
 {% endif %}
-<li><a href="{% url 'administracion:panel_inscripciones' %}"><span class="icon">✅</span> Inscripciones</a></li>
+<li><a href="{% url 'administracion:panel_inscripciones' %}">Inscripciones</a></li>
 {% if es_admin_completo %}
-<li><a href="{% url 'administracion:gestion_usuarios' %}" class="active"><span class="icon">👥</span> Gestión Usuarios</a></li>
+<li><a href="{% url 'administracion:gestion_usuarios' %}" class="active">Gestión Usuarios</a></li>
 {% endif %}
-<li><a href="{% url 'administracion:buscador_estudiantes' %}"><span class="icon">🔍</span> Buscar Estudiantes</a></li>
+<li><a href="{% url 'administracion:buscador_estudiantes' %}">Buscar Estudiantes</a></li>
 {% if es_admin_completo %}
-<li><a href="{% url 'administracion:panel_polos' %}"><span class="icon">🏢</span> Polos</a></li>
+<li><a href="{% url 'administracion:panel_polos' %}">Polos</a></li>
 {% endif %}
-<li><a href="{% url 'administracion:estadisticas' %}"><span class="icon">📊</span> Estadísticas</a></li>
-<li><a href="{% url 'administracion:panel_asistencia' %}"><span class="icon">📝</span> Asistencias</a></li>
 {% if es_admin_completo %}
-<li><a href="{% url 'administracion:docentes_cursos' %}"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li>
+<li><a href="{% url 'administracion:estadisticas' %}">Estadísticas</a></li>
 {% endif %}
-<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+<li><a href="{% url 'administracion:panel_asistencia' %}">Asistencias</a></li>
 {% if es_admin_completo %}
-<li><a href="{% url 'admin:index' %}"><span class="icon">⚙️</span> Django Admin</a></li>
+<li><a href="{% url 'administracion:docentes_cursos' %}">Docentes y Cursos</a></li>
+{% endif %}
+<li><a href="{% url 'usuario:mi_perfil' %}">Mi Perfil</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'admin:index' %}">Django Admin</a></li>
 {% endif %}
 {% endblock %}
 
@@ -47,12 +49,10 @@
             Buscando...
         </div>
         {% if puede_crear_usuarios %}
-        <a href="{% url 'administracion:crear_usuario' %}" style="background: white; color: #6366f1; padding: 1rem 1.5rem; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block; margin-right: 0.5rem;">
-            Crear Nuevo Usuario
+        <a href="{% url 'administracion:crear_usuario' %}" style="background: white; color: #6366f1; padding: 1rem 1.5rem; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block; margin-right: 0.5rem;">Crear Nuevo Usuario
         </a>
         {% endif %}
-        <a href="{% url 'administracion:exportar_usuarios_excel' %}" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 1rem 1.5rem; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">
-            Exportar a Excel
+        <a href="{% url 'administracion:exportar_usuarios_excel' %}" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 1rem 1.5rem; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">Exportar a Excel
         </a>
     </div>
     <div style="margin-top: 1rem; color: rgba(255,255,255,0.9); font-size: 0.9rem;">
@@ -100,8 +100,7 @@
                 <td style="padding: 1rem 1.5rem; color: #334155;">{{ user_data.persona.ciudad_residencia|default:"N/A" }}</td>
                 <td style="padding: 1rem 1.5rem;">
                     <div style="display: flex; gap: 0.5rem;">
-                        <a href="{% url 'administracion:editar_usuario' user_data.persona.id %}" class="btn btn-editar">
-                            Editar
+                        <a href="{% url 'administracion:editar_usuario' user_data.persona.id %}" class="btn btn-editar">Editar
                         </a>
                         <button onclick="abrirModalEliminar({{ user_data.persona.id }}, '{{ user_data.persona.nombre_completo }}')" class="btn btn-eliminar">
                             Eliminar
@@ -404,8 +403,7 @@
                     <td>${usuario.ciudad}</td>
                     <td>
                         <div style="display: flex; gap: 0.5rem;">
-                            <a href="/panel/usuarios/editar/${usuario.id}/" class="btn btn-editar">
-                                Editar
+                            <a href="/panel/usuarios/editar/${usuario.id}/" class="btn btn-editar">Editar
                             </a>
                             <button onclick="abrirModalEliminar(${usuario.id}, '${usuario.nombre_completo}')" class="btn btn-eliminar">
                                 Eliminar

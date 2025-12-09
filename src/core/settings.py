@@ -37,7 +37,8 @@ IS_PRODUCTION = not DEBUG
 if IS_PRODUCTION:
     ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 else:
-    ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0']
+    # Permitir localhost y dominios de tunelización (ngrok, etc.) para demos
+    ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0', '*']
 
 # CSRF Settings
 if IS_PRODUCTION:

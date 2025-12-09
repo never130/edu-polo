@@ -21,7 +21,9 @@
     {% if es_admin_completo %}
     <li><a href="{% url 'administracion:panel_polos' %}">Polos</a></li>
     {% endif %}
+    {% if es_admin_completo %}
     <li><a href="{% url 'administracion:estadisticas' %}">Estadísticas</a></li>
+    {% endif %}
     <li><a href="{% url 'administracion:panel_asistencia' %}">Asistencias</a></li>
     {% if es_admin_completo %}
     <li><a href="{% url 'administracion:docentes_cursos' %}">Docentes y Cursos</a></li>

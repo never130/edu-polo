@@ -29,6 +29,12 @@ python manage.py migrate --noinput || {
     # No salir con error aquí, puede ser que las tablas ya existan
 }
 
+# Crear superusuario si las variables de entorno están definidas
+log "Verificando creación de superusuario..."
+python create_superuser.py || {
+    log "ADVERTENCIA: Fallo al intentar crear superusuario, continuando..."
+}
+
 # Recopilar archivos estáticos
 log "Recopilando archivos estáticos..."
 python manage.py collectstatic --noinput || {

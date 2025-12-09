@@ -8,35 +8,37 @@
 {% block sidebar_menu %}
 {% if es_docente %}
     {# Menú para Docentes #}
-    <li><a href="{% url 'dashboard_docente' %}"><span class="icon">🏠</span> Inicio</a></li>
-    <li><a href="{% url 'administracion:mis_cursos_docente' %}"><span class="icon">📚</span> Mis Cursos</a></li>
-    <li><a href="{% url 'administracion:panel_asistencia' %}" class="active"><span class="icon">📝</span> Asistencias</a></li>
-    <li><a href="{% url 'administracion:materiales_docente' %}"><span class="icon">📁</span> Materiales</a></li>
-    <li><a href="{% url 'administracion:estudiantes_docente' %}"><span class="icon">👥</span> Estudiantes</a></li>
-    <li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+    <li><a href="{% url 'dashboard_docente' %}">Inicio</a></li>
+    <li><a href="{% url 'administracion:mis_cursos_docente' %}">Mis Cursos</a></li>
+    <li><a href="{% url 'administracion:panel_asistencia' %}" class="active">Asistencias</a></li>
+    <li><a href="{% url 'administracion:materiales_docente' %}">Materiales</a></li>
+    <li><a href="{% url 'administracion:estudiantes_docente' %}">Estudiantes</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}">Mi Perfil</a></li>
 {% else %}
     {# Menú para Administradores y Mesa de Entrada #}
-    <li><a href="{% url 'dashboard_admin' %}"><span class="icon">🏠</span> Inicio</a></li>
+    <li><a href="{% url 'dashboard_admin' %}">Inicio</a></li>
     {% if es_admin_completo %}
-    <li><a href="{% url 'administracion:panel_cursos' %}"><span class="icon">📚</span> Gestión Cursos</a></li>
-    <li><a href="{% url 'administracion:panel_comisiones' %}"><span class="icon">📋</span> Gestión Comisiones</a></li>
+    <li><a href="{% url 'administracion:panel_cursos' %}">Gestión Cursos</a></li>
+    <li><a href="{% url 'administracion:panel_comisiones' %}">Gestión Comisiones</a></li>
     {% endif %}
-    <li><a href="{% url 'administracion:panel_inscripciones' %}"><span class="icon">✅</span> Inscripciones</a></li>
+    <li><a href="{% url 'administracion:panel_inscripciones' %}">Inscripciones</a></li>
     {% if es_admin_completo %}
-    <li><a href="{% url 'administracion:gestion_usuarios' %}"><span class="icon">👥</span> Gestión Usuarios</a></li>
+    <li><a href="{% url 'administracion:gestion_usuarios' %}">Gestión Usuarios</a></li>
     {% endif %}
-    <li><a href="{% url 'administracion:buscador_estudiantes' %}"><span class="icon">🔍</span> Buscar Estudiantes</a></li>
+    <li><a href="{% url 'administracion:buscador_estudiantes' %}">Buscar Estudiantes</a></li>
     {% if es_admin_completo %}
-    <li><a href="{% url 'administracion:panel_polos' %}"><span class="icon">🏢</span> Polos</a></li>
+    <li><a href="{% url 'administracion:panel_polos' %}">Polos</a></li>
     {% endif %}
-    <li><a href="{% url 'administracion:estadisticas' %}"><span class="icon">📊</span> Estadísticas</a></li>
-    <li><a href="{% url 'administracion:panel_asistencia' %}" class="active"><span class="icon">📝</span> Asistencias</a></li>
     {% if es_admin_completo %}
-    <li><a href="{% url 'administracion:docentes_cursos' %}"><span class="icon">👨‍🏫</span> Docentes y Cursos</a></li>
+    <li><a href="{% url 'administracion:estadisticas' %}">Estadísticas</a></li>
     {% endif %}
-    <li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+    <li><a href="{% url 'administracion:panel_asistencia' %}" class="active">Asistencias</a></li>
     {% if es_admin_completo %}
-    <li><a href="{% url 'admin:index' %}"><span class="icon">⚙️</span> Django Admin</a></li>
+    <li><a href="{% url 'administracion:docentes_cursos' %}">Docentes y Cursos</a></li>
+    {% endif %}
+    <li><a href="{% url 'usuario:mi_perfil' %}">Mi Perfil</a></li>
+    {% if es_admin_completo %}
+    <li><a href="{% url 'admin:index' %}">Django Admin</a></li>
     {% endif %}
 {% endif %}
 {% endblock %}
@@ -84,8 +86,7 @@
     <form method="post">
         {% csrf_token %}
         <div style="display: flex; gap: 1rem; justify-content: flex-end;">
-            <a href="{% url 'administracion:panel_asistencia' %}?comision_id={{ asistencia.inscripcion.comision.id_comision }}" style="padding: 0.9rem 2rem; background: #e2e8f0; color: #334155; text-decoration: none; border-radius: 12px; font-weight: 600;">
-                Cancelar
+            <a href="{% url 'administracion:panel_asistencia' %}?comision_id={{ asistencia.inscripcion.comision.id_comision }}" style="padding: 0.9rem 2rem; background: #e2e8f0; color: #334155; text-decoration: none; border-radius: 12px; font-weight: 600;">Cancelar
             </a>
             <button type="submit" style="padding: 0.9rem 2rem; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;">
                 🗑️ Eliminar Asistencia

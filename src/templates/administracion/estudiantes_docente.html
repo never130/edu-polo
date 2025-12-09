@@ -6,12 +6,12 @@
 {% block user_role %}Docente{% endblock %}
 
 {% block sidebar_menu %}
-<li><a href="{% url 'dashboard_docente' %}"> Inicio</a></li>
-<li><a href="{% url 'administracion:mis_cursos_docente' %}"> Mis Cursos</a></li>
-<li><a href="{% url 'administracion:panel_asistencia' %}"> Asistencias</a></li>
-<li><a href="{% url 'administracion:materiales_docente' %}"> Materiales</a></li>
-<li><a href="{% url 'administracion:estudiantes_docente' %}" class="active"> Estudiantes</a></li>
-<li><a href="{% url 'usuario:mi_perfil' %}"> Mi Perfil</a></li>
+<li><a href="{% url 'dashboard_docente' %}">Inicio</a></li>
+<li><a href="{% url 'administracion:mis_cursos_docente' %}">Mis Cursos</a></li>
+<li><a href="{% url 'administracion:panel_asistencia' %}">Asistencias</a></li>
+<li><a href="{% url 'administracion:materiales_docente' %}">Materiales</a></li>
+<li><a href="{% url 'administracion:estudiantes_docente' %}" class="active">Estudiantes</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}">Mi Perfil</a></li>
 {% endblock %}
 
 {% block content %}
@@ -57,8 +57,7 @@
                         </div>
                     </div>
                     <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
-                        <a href="{% url 'administracion:estudiantes_comision' comision_data.comision.id_comision %}" style="padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;">
-                            👥 Ver Estudiantes
+                        <a href="{% url 'administracion:estudiantes_comision' comision_data.comision.id_comision %}" style="padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;">👥 Ver Estudiantes
                         </a>
                     </div>
                 </div>
