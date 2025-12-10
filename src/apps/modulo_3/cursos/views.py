@@ -143,7 +143,13 @@ def mis_inscripciones(request):
     
     try:
         estudiante = Estudiante.objects.get(usuario__persona__dni=request.user.username)
-        inscripciones = Inscripcion.objects.filter(estudiante=estudiante)
+        # Mostrar solo inscripciones activas (confirmadas o pendientes)
+        inscripciones = Inscripcion.objects.filter(
+            estudiante=estudiante
+        ).exclude(
+            estado__in=['cancelada', 'rechazada']
+        ).select_related('comision__fk_id_curso').order_by('-fecha_hora_inscripcion')
+        
         return render(request, 'cursos/mis_inscripciones.html', {'inscripciones': inscripciones})
     except Estudiante.DoesNotExist:
         messages.error(request, 'No tienes perfil de estudiante.')

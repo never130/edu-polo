@@ -124,54 +124,7 @@
     </div>
     
     <div style="padding: 2rem;">
-        {% for inscripcion in item.inscripciones %}
-        <div style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid #e2e8f0;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <div>
-                    <h4 style="color: #1e293b; margin: 0 0 0.3rem 0; font-size: 1.1rem;">
-                        {{ inscripcion.estudiante.usuario.persona.nombre_completo }}
-                    </h4>
-                    <p style="color: #64748b; margin: 0; font-size: 0.9rem;">DNI: {{ inscripcion.estudiante.usuario.persona.dni }}</p>
-                </div>
-                <a href="{% url 'administracion:crear_editar_asistencia' inscripcion.id %}" style="display: inline-block; padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;">
-                    ➕ Registrar Asistencia
-                </a>
-            </div>
-            
-            <!-- Lista de asistencias del estudiante -->
-            <div>
-                {% with asistencias_estudiante=inscripcion.asistencias.all|dictsortreversed:"fecha_clase" %}
-                {% if asistencias_estudiante %}
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.8rem;">
-                    {% for asistencia in asistencias_estudiante %}
-                    <div style="background: white; padding: 1rem; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div style="font-weight: 600; color: #334155; margin-bottom: 0.3rem;">{{ asistencia.fecha_clase|date:"d/m/Y" }}</div>
-                            <div style="display: flex; gap: 0.5rem; align-items: center;">
-                                {% if asistencia.presente %}
-                                    <span style="color: #10b981; font-weight: 600;">✅ Presente</span>
-                                {% else %}
-                                    <span style="color: #ef4444; font-weight: 600;">❌ Ausente</span>
-                                {% endif %}
-                            </div>
-                            {% if asistencia.observaciones %}
-                            <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.3rem;">{{ asistencia.observaciones|truncatewords:5 }}</div>
-                            {% endif %}
-                        </div>
-                        <div style="display: flex; gap: 0.5rem; flex-direction: column;">
-                            <a href="{% url 'administracion:crear_editar_asistencia' inscripcion.id %}?fecha_clase={{ asistencia.fecha_clase|date:'Y-m-d' }}" style="padding: 0.4rem 0.8rem; background: #6366f1; color: white; text-decoration: none; border-radius: 6px; font-size: 0.8rem; text-align: center;">✏️ Editar</a>
-                            <a href="{% url 'administracion:eliminar_asistencia' asistencia.id_asistencia %}" style="padding: 0.4rem 0.8rem; background: #ef4444; color: white; text-decoration: none; border-radius: 6px; font-size: 0.8rem; text-align: center;" onclick="return confirm('¿Estás seguro de eliminar esta asistencia?')">🗑️ Eliminar</a>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% else %}
-                <p style="color: #94a3b8; text-align: center; padding: 1rem;">No hay asistencias registradas para este estudiante.</p>
-                {% endif %}
-                {% endwith %}
-            </div>
-        </div>
-        {% endfor %}
+        <p style="text-align: center; color: #64748b;">Selecciona "Ver Detalle" o "Tomar Asistencia" para gestionar los estudiantes.</p>
     </div>
 </div>
 {% endfor %}
@@ -272,58 +225,6 @@
                 </button>
             </div>
         </form>
-    </div>
-
-    <div style="padding: 2rem;">
-        <h4 style="margin-bottom: 1rem; color: #334155;">📋 Historial Individual</h4>
-        {% for inscripcion in inscripciones %}
-        <div style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid #e2e8f0;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <div>
-                    <h4 style="color: #1e293b; margin: 0 0 0.3rem 0; font-size: 1.1rem;">
-                        {{ inscripcion.estudiante.usuario.persona.nombre_completo }}
-                    </h4>
-                    <p style="color: #64748b; margin: 0; font-size: 0.9rem;">DNI: {{ inscripcion.estudiante.usuario.persona.dni }}</p>
-                </div>
-                <a href="{% url 'administracion:crear_editar_asistencia' inscripcion.id %}" style="display: inline-block; padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;">
-                    ➕ Registrar Asistencia
-                </a>
-            </div>
-            
-            <!-- Lista de asistencias del estudiante -->
-            <div>
-                {% with asistencias_estudiante=inscripcion.asistencias.all|dictsortreversed:"fecha_clase" %}
-                {% if asistencias_estudiante %}
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.8rem;">
-                    {% for asistencia in asistencias_estudiante %}
-                    <div style="background: white; padding: 1rem; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div style="font-weight: 600; color: #334155; margin-bottom: 0.3rem;">{{ asistencia.fecha_clase|date:"d/m/Y" }}</div>
-                            <div style="display: flex; gap: 0.5rem; align-items: center;">
-                                {% if asistencia.presente %}
-                                    <span style="color: #10b981; font-weight: 600;">✅ Presente</span>
-                                {% else %}
-                                    <span style="color: #ef4444; font-weight: 600;">❌ Ausente</span>
-                                {% endif %}
-                            </div>
-                            {% if asistencia.observaciones %}
-                            <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.3rem;">{{ asistencia.observaciones|truncatewords:5 }}</div>
-                            {% endif %}
-                        </div>
-                        <div style="display: flex; gap: 0.5rem; flex-direction: column;">
-                            <a href="{% url 'administracion:crear_editar_asistencia' inscripcion.id %}?fecha_clase={{ asistencia.fecha_clase|date:'Y-m-d' }}" style="padding: 0.4rem 0.8rem; background: #6366f1; color: white; text-decoration: none; border-radius: 6px; font-size: 0.8rem; text-align: center;">✏️ Editar</a>
-                            <a href="{% url 'administracion:eliminar_asistencia' asistencia.id_asistencia %}" style="padding: 0.4rem 0.8rem; background: #ef4444; color: white; text-decoration: none; border-radius: 6px; font-size: 0.8rem; text-align: center;" onclick="return confirm('¿Estás seguro de eliminar esta asistencia?')">🗑️ Eliminar</a>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% else %}
-                <p style="color: #94a3b8; text-align: center; padding: 1rem;">No hay asistencias registradas para este estudiante.</p>
-                {% endif %}
-                {% endwith %}
-            </div>
-        </div>
-        {% endfor %}
     </div>
 </div>
 {% endif %}

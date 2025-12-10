@@ -6,7 +6,7 @@
 
 {% block sidebar_menu %}
 <li><a href="{% url 'dashboard_estudiante' %}" class="active"><span class="icon">🏠</span> Inicio</a></li>
-<li><a href="{% url 'cursos:ver_disponibles' %}"><span class="icon">🔍</span> Cursos Disponibles</a></li>
+<li><a href="{% url 'lista_polos' %}"><span class="icon">🔍</span> Cursos Disponibles</a></li>
 <li><a href="{% url 'cursos:mis_inscripciones' %}"><span class="icon">✅</span> Mis Inscripciones</a></li>
 <li><a href="{% url 'usuario:gestionar_tutores' %}"><span class="icon">👨‍👩‍👧‍👦</span> Mis Tutores</a></li>
 <li><a href="{% url 'usuario:mi_progreso' %}"><span class="icon">📈</span> Mi Progreso</a></li>
@@ -23,11 +23,6 @@
 
 <div class="dashboard-cards">
     <div class="dashboard-card">
-        <div class="card-title">Cursos Disponibles</div>
-        <div class="card-value">{{ cursos_disponibles }}</div>
-    </div>
-    
-    <div class="dashboard-card">
         <div class="card-title">Mis Inscripciones</div>
         <div class="card-value">{{ inscripciones_activas }}</div>
     </div>
@@ -43,63 +38,27 @@
     </div>
 </div>
 
-<!-- Sección de Cursos Disponibles -->
-{% if cursos %}
-<div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-top: 2rem;">
-    <h3 style="color: #667eea; margin-bottom: 1.5rem;">Cursos Disponibles</h3>
-    
-    <div class="cursos-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
-        {% for curso in cursos %}
-        <div class="curso-card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 1.5rem; border-radius: 12px; transition: all 0.3s ease;">
-            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                <h4 style="color: #667eea; font-size: 1.2rem; margin: 0;">{{ curso.nombre }}</h4>
-            </div>
-            
-            <p style="color: #666; font-size: 0.95rem; margin-bottom: 1rem; min-height: 60px;">
-                {{ curso.descripcion|truncatewords:15|default:"Curso de formación profesional." }}
-            </p>
-            
-            {% if curso.comisiones_abiertas %}
-            <div style="margin-bottom: 1rem;">
-                <span style="background: #2ecc71; color: white; padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.85rem; font-weight: 600;">
-                    {{ curso.comisiones_abiertas|length }} Comisión{{ curso.comisiones_abiertas|length|pluralize:"es" }} disponible{{ curso.comisiones_abiertas|length|pluralize }}
-                </span>
-            </div>
-            {% endif %}
-            
-            <a href="{% url 'cursos:ver_disponibles' %}" style="display: block; padding: 0.8rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 8px; text-align: center; font-weight: 600; transition: all 0.3s ease;">
-                Ver Detalles e Inscribirme
-            </a>
-        </div>
-        {% endfor %}
-    </div>
-    
-    <div style="text-align: center; margin-top: 2rem;">
-        <a href="{% url 'cursos:ver_disponibles' %}" style="display: inline-block; padding: 1rem 2rem; background: white; color: #667eea; border: 2px solid #667eea; text-decoration: none; border-radius: 10px; font-weight: 600; transition: all 0.3s ease;">
-            Ver Todos los Cursos →
-        </a>
-    </div>
-</div>
-{% else %}
+<!-- Sección de Cursos Disponibles - REMOVIDA -->
+{% if not cursos %}
 <div style="background: white; padding: 3rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-top: 2rem; text-align: center;">
-    <h3 style="color: #667eea; margin: 1rem 0;">No hay cursos disponibles en este momento</h3>
-    <p style="color: #666;">Vuelve pronto para ver nuestra nueva oferta educativa</p>
+    <h3 style="color: #667eea; margin: 1rem 0;">Bienvenido al panel de estudiante</h3>
+    <p style="color: #666;">Selecciona una opción del menú para comenzar.</p>
 </div>
 {% endif %}
 
 <div class="acciones-rapidas">
     <h3 style="color: #667eea; margin-bottom: 1.5rem;">Acciones Rápidas</h3>
     <div class="acciones-grid">
-        <a href="{% url 'cursos:ver_disponibles' %}" class="accion-btn accion-primary">
-            Ver Cursos Disponibles
-        </a>
-        <a href="{% url 'cursos:mis_inscripciones' %}" class="accion-btn accion-secondary">
-            Mis Inscripciones
-        </a>
-        <a href="#" class="accion-btn accion-tertiary">
-            Mis Certificados
-        </a>
-    </div>
+    <a href="{% url 'lista_polos' %}" class="accion-btn accion-primary">
+        Ver Cursos Disponibles
+    </a>
+    <a href="{% url 'cursos:mis_inscripciones' %}" class="accion-btn accion-secondary">
+        Mis Inscripciones
+    </a>
+    <a href="#" class="accion-btn accion-tertiary">
+        Mis Certificados
+    </a>
+</div>
 </div>
 
 <style>

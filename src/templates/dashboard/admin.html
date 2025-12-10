@@ -118,6 +118,7 @@
     </div>
 </div>
 
+{% if es_admin_completo %}
 <!-- Panel de Gestión Completo -->
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
     
@@ -166,7 +167,6 @@
         </div>
     </div>
     
-    {% if es_admin_completo %}
     <!-- Gestión de Usuarios -->
     <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
         <h3 style="color: #10b981; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 1.3rem;">
@@ -196,7 +196,6 @@
             </a>
         </div>
     </div>
-    {% endif %}
     
     <!-- Asistencias y Certificados -->
     <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
@@ -212,20 +211,8 @@
             </a>
         </div>
     </div>
-    
-    <!-- Docentes y Cursos Asignados (OCULTO TEMPORALMENTE)
-    <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
-        <h3 style="color: #f59e0b; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 1.3rem;">
-            👨‍🏫 Docentes y Cursos
-        </h3>
-        <div style="display: flex; flex-direction: column; gap: 0.8rem;">
-            <a href="{% url 'administracion:docentes_cursos' %}" style="padding: 1rem; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; text-decoration: none; border-radius: 10px; text-align: center; font-weight: 600; transition: all 0.3s ease;">
-                👨‍🏫 Ver Docentes y Cursos Asignados
-            </a>
-        </div>
-    </div>
-    -->
 </div>
+{% endif %}
 
 {% if es_admin_completo %}
 <!-- Acceso al Panel Django Completo -->

@@ -74,7 +74,7 @@ class Comision(models.Model):
     lugar = models.CharField(max_length=100, blank=True, null=True, verbose_name="Lugar") 
     fecha_inicio = models.DateField(blank=True, null=True, verbose_name="Fecha de Inicio") 
     fecha_fin = models.DateField(blank=True, null=True, verbose_name="Fecha de Fin") 
-    cupo_maximo = models.IntegerField(default=20, verbose_name="Cupo Máximo") 
+    cupo_maximo = models.IntegerField(default=25, verbose_name="Cupo Máximo") 
     estado = models.CharField(max_length=15, choices=OPCIONES_ESTADO_COMISION, default='Abierta', verbose_name="Estado") 
 
     docentes = models.ManyToManyField(

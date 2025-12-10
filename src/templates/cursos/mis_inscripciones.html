@@ -245,12 +245,12 @@
         <div class="icon">📭</div>
         <h2>No tienes inscripciones activas</h2>
         <p style="color: #666; font-size: 1.1rem;">¡Explora nuestros cursos y comienza tu aprendizaje hoy!</p>
-        <a href="/" class="btn-explorar">🔍 Explorar Cursos</a>
+        <a href="{% url 'lista_polos' %}" class="btn-explorar">🔍 Explorar Cursos</a>
     </div>
 {% endif %}
 
 <div style="text-align: center; margin-top: 3rem;">
-    <a href="/" class="btn-explorar">← Volver a Cursos</a>
+    <a href="{% url 'lista_polos' %}" class="btn-explorar">← Volver a Cursos</a>
 </div>
 
 {% endblock %}
