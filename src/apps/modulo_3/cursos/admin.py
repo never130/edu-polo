@@ -37,7 +37,7 @@ class ComisionAdmin(admin.ModelAdmin):
         return f"{obj.porcentaje_ocupacion}%"
 
 class CursoAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'estado', 'edad_minima')
+    list_display = ('nombre', 'estado', 'edad_minima', 'edad_maxima')
     search_fields = ('nombre',)
     list_filter = ('estado',)
 

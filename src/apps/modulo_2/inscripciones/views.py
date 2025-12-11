@@ -43,6 +43,17 @@ def formulario_inscripcion(request, comision_id):
             if Inscripcion.objects.filter(estudiante=estudiante_check, comision__fk_id_curso=curso).exists():
                 messages.warning(request, f'⚠️ Ya estás inscrito en el curso "{curso.nombre}" (en esta u otra comisión). No se permiten inscripciones múltiples al mismo curso.')
                 return redirect('landing')
+            
+            # Verificar rango etario (validación previa)
+            persona = estudiante_check.usuario.persona
+            edad_check = persona.edad
+            if edad_check is not None:
+                if curso.edad_minima and edad_check < curso.edad_minima:
+                     messages.error(request, f'⛔ No cumples con la edad mínima requerida ({curso.edad_minima} años). Tienes {edad_check} años.')
+                     return redirect('landing')
+                if curso.edad_maxima and edad_check > curso.edad_maxima:
+                     messages.error(request, f'⛔ Superas la edad máxima permitida ({curso.edad_maxima} años). Tienes {edad_check} años.')
+                     return redirect('landing')
     except Exception:
         pass # Si hay error al verificar, dejamos que continúe (el POST manejará validaciones estrictas)
     
@@ -69,10 +80,30 @@ def formulario_inscripcion(request, comision_id):
                 usuario = Usuario.objects.get(persona=persona)
                 estudiante = Estudiante.objects.get(usuario=usuario)
                 
-                # 5. Calcular edad
-                edad = persona.edad if persona.edad else 18
+                # 5. Calcular edad y Validar Rango Etario
+                edad_real = persona.edad
+                curso = comision.fk_id_curso
+
+                if edad_real is None:
+                    # Si no tiene edad registrada y el curso tiene restricciones, exigir fecha de nacimiento
+                    if curso.edad_minima or curso.edad_maxima:
+                        messages.error(request, '⚠️ Para inscribirte a este curso, necesitamos conocer tu fecha de nacimiento. Por favor actualiza tu perfil.')
+                        return redirect('landing')
+                    # Si no tiene restricciones, asumimos 18 para lógica de tutores
+                    edad = 18
+                else:
+                    # Validar límites de edad
+                    if curso.edad_minima and edad_real < curso.edad_minima:
+                        messages.error(request, f'⛔ No cumples con la edad mínima requerida para este curso ({curso.edad_minima} años). Tienes {edad_real} años.')
+                        return redirect('landing')
+                    
+                    if curso.edad_maxima and edad_real > curso.edad_maxima:
+                        messages.error(request, f'⛔ Superas la edad máxima permitida para este curso ({curso.edad_maxima} años). Tienes {edad_real} años.')
+                        return redirect('landing')
+                    
+                    edad = edad_real
                 
-                # 5. Si es menor de 16, procesar tutores
+                # 6. Si es menor de 16, procesar tutores
                 if edad < 16:
                     # Buscar cuántos tutores se enviaron
                     tutor_index = 0

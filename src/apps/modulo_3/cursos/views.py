@@ -29,7 +29,7 @@ class CursoListView(ListView):
 class CursoCreateView(LoginRequiredMixin, CreateView):
     model = Curso
     template_name = 'cursos/crear.html'
-    fields = ['nombre', 'descripcion', 'edad_minima', 'requisitos', 'contenido_multimedia']
+    fields = ['nombre', 'descripcion', 'edad_minima', 'edad_maxima', 'requisitos', 'contenido_multimedia']
     success_url = reverse_lazy('cursos:lista')
     
     def form_valid(self, form):
@@ -40,7 +40,7 @@ class CursoCreateView(LoginRequiredMixin, CreateView):
 class CursoUpdateView(LoginRequiredMixin, UpdateView):
     model = Curso
     template_name = 'cursos/actualizar.html'
-    fields = ['nombre', 'descripcion', 'edad_minima', 'requisitos', 'contenido_multimedia', 'estado']
+    fields = ['nombre', 'descripcion', 'edad_minima', 'edad_maxima', 'requisitos', 'contenido_multimedia', 'estado']
     success_url = reverse_lazy('cursos:lista')
     
     def form_valid(self, form):
@@ -86,6 +86,24 @@ def inscribirse_comision(request, comision_id):
         if Inscripcion.objects.filter(estudiante=estudiante, comision__fk_id_curso=curso).exists():
             messages.warning(request, f'⚠️ Ya estás inscrito en el curso "{curso.nombre}" (en esta u otra comisión). No se permiten inscripciones múltiples al mismo curso.')
             return redirect('landing')
+            
+        # Validar rango etario
+        persona = estudiante.usuario.persona
+        edad_alumno = persona.edad
+        
+        if edad_alumno is None:
+            # Si el curso tiene restricciones de edad, requerimos que el usuario tenga fecha de nacimiento
+            if curso.edad_minima or curso.edad_maxima:
+                messages.warning(request, '⚠️ Para inscribirte a este curso, necesitamos conocer tu edad. Por favor, actualiza tu fecha de nacimiento en tu perfil.')
+                return redirect('landing')
+        else:
+            if curso.edad_minima and edad_alumno < curso.edad_minima:
+                messages.error(request, f'⛔ No cumples con la edad mínima requerida para este curso ({curso.edad_minima} años). Tienes {edad_alumno} años.')
+                return redirect('landing')
+            
+            if curso.edad_maxima and edad_alumno > curso.edad_maxima:
+                messages.error(request, f'⛔ Superas la edad máxima permitida para este curso ({curso.edad_maxima} años). Tienes {edad_alumno} años.')
+                return redirect('landing')
         
         # Determinar estado y orden
         estado_inscripcion = 'confirmado'

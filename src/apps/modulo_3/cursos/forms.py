@@ -12,6 +12,7 @@ class CursoForm(forms.ModelForm):
             'nombre', 
             'descripcion', 
             'edad_minima', 
+            'edad_maxima',
             'requisitos', 
             'contenido_multimedia', 
             'estado'

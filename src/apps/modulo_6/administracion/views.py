@@ -88,6 +88,7 @@ def crear_curso(request):
             nombre = request.POST.get('nombre')
             descripcion = request.POST.get('descripcion', '')
             edad_minima = request.POST.get('edad_minima')
+            edad_maxima = request.POST.get('edad_maxima')
             requisitos = request.POST.get('requisitos', '')
             contenido_multimedia = request.POST.get('contenido_multimedia', '')
             
@@ -101,6 +102,7 @@ def crear_curso(request):
                 nombre=nombre,
                 descripcion=descripcion,
                 edad_minima=int(edad_minima) if edad_minima else None,
+                edad_maxima=int(edad_maxima) if edad_maxima else None,
                 requisitos=requisitos,
                 contenido_multimedia=contenido_multimedia,
                 estado='Abierto',
@@ -128,6 +130,8 @@ def editar_curso(request, curso_id):
             curso.descripcion = request.POST.get('descripcion', '')
             edad_minima = request.POST.get('edad_minima')
             curso.edad_minima = int(edad_minima) if edad_minima else None
+            edad_maxima = request.POST.get('edad_maxima')
+            curso.edad_maxima = int(edad_maxima) if edad_maxima else None
             curso.requisitos = request.POST.get('requisitos', '')
             curso.contenido_multimedia = request.POST.get('contenido_multimedia', '')
             curso.estado = request.POST.get('estado', 'Abierto')
@@ -377,6 +381,24 @@ def inscribir_estudiante_admin(request):
                 messages.error(request, f'🚫 La comisión {comision.fk_id_curso.nombre} (Comisión #{comision.id_comision}) no tiene cupos disponibles.')
                 return redirect('administracion:panel_inscripciones')
             
+            # Verificar rango etario
+            curso = comision.fk_id_curso
+            persona = estudiante.usuario.persona
+            edad_real = persona.edad
+            
+            if edad_real is None:
+                if curso.edad_minima or curso.edad_maxima:
+                    messages.error(request, f'⚠️ El estudiante {persona.nombre_completo} no tiene fecha de nacimiento registrada y el curso tiene restricciones de edad.')
+                    return redirect('administracion:panel_inscripciones')
+            else:
+                if curso.edad_minima and edad_real < curso.edad_minima:
+                    messages.error(request, f'⛔ El estudiante {persona.nombre_completo} ({edad_real} años) no cumple con la edad mínima ({curso.edad_minima} años).')
+                    return redirect('administracion:panel_inscripciones')
+                
+                if curso.edad_maxima and edad_real > curso.edad_maxima:
+                    messages.error(request, f'⛔ El estudiante {persona.nombre_completo} ({edad_real} años) supera la edad máxima ({curso.edad_maxima} años).')
+                    return redirect('administracion:panel_inscripciones')
+
             # Crear inscripción
             with transaction.atomic():
                 Inscripcion.objects.create(
@@ -1009,21 +1031,6 @@ def panel_asistencia(request):
     else:
         comisiones = Comision.objects.all().distinct().select_related('fk_id_curso', 'fk_id_polo').order_by('fk_id_curso__nombre', 'id_comision')
     
-    # Obtener todas las comisiones con sus inscripciones para mostrar siempre
-    todas_comisiones_con_datos = []
-    for com in comisiones:
-        inscripciones_com = Inscripcion.objects.filter(
-            comision=com,
-            estado='confirmado'
-        ).select_related('estudiante__usuario__persona').order_by('estudiante__usuario__persona__apellido')
-        
-        if inscripciones_com.exists():
-            todas_comisiones_con_datos.append({
-                'comision': com,
-                'inscripciones': inscripciones_com,
-                'total_estudiantes': inscripciones_com.count(),
-            })
-    
     # Si se selecciona una comisión específica, mostrar sus asistencias detalladas y formulario de toma
     comision_id = request.GET.get('comision_id') or request.POST.get('comision_id')
     comision = None
@@ -1122,7 +1129,6 @@ def panel_asistencia(request):
     
     context = {
         'comisiones': comisiones,
-        'todas_comisiones_con_datos': todas_comisiones_con_datos,
         'comision': comision,
         'inscripciones': inscripciones,
         'asistencias_dict': asistencias_dict,

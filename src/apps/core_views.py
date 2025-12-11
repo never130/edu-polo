@@ -104,23 +104,67 @@ def dashboard_estudiante(request):
     """Dashboard específico para estudiantes - Muestra cursos disponibles"""
     try:
         from apps.modulo_3.cursos.models import Curso
+        from apps.modulo_4.asistencia.models import Asistencia
+        from django.db.models import Count, Q
         
         estudiante = Estudiante.objects.get(usuario__persona__dni=request.user.username)
-        inscripciones_activas = Inscripcion.objects.filter(
+        
+        # Obtener inscripciones activas (confirmadas)
+        inscripciones = Inscripcion.objects.filter(
             estudiante=estudiante,
             estado='confirmado'
-        ).count()
+        ).select_related('comision__fk_id_curso', 'comision__fk_id_polo')
         
-        # Obtener cursos disponibles con comisiones abiertas
-        cursos = Curso.objects.filter(estado='Abierto')
-        for curso in cursos:
-            curso.comisiones_abiertas = curso.comision_set.filter(estado='Abierta')
+        inscripciones_activas_count = inscripciones.count()
+        
+        # Procesar datos para el dashboard (Asistencia y Progreso)
+        cursos_activos = []
+        asistencia_promedio_total = 0
+        cursos_con_asistencia = 0
+        
+        for inscripcion in inscripciones:
+            # Calcular asistencia
+            total_clases = Asistencia.objects.filter(inscripcion=inscripcion).count()
+            presentes = Asistencia.objects.filter(inscripcion=inscripcion, presente=True).count()
+            
+            porcentaje_asistencia = 0
+            if total_clases > 0:
+                porcentaje_asistencia = int((presentes / total_clases) * 100)
+                asistencia_promedio_total += porcentaje_asistencia
+                cursos_con_asistencia += 1
+            
+            cursos_activos.append({
+                'nombre': inscripcion.comision.fk_id_curso.nombre,
+                'comision': inscripcion.comision.id_comision,
+                'polo': inscripcion.comision.fk_id_polo.nombre if inscripcion.comision.fk_id_polo else 'Virtual',
+                'horarios': inscripcion.comision.dias_horarios,
+                'asistencia': porcentaje_asistencia,
+                'total_clases': total_clases,
+                'presentes': presentes
+            })
+            
+        # Calcular promedio general
+        promedio_general = 0
+        if cursos_con_asistencia > 0:
+            promedio_general = int(asistencia_promedio_total / cursos_con_asistencia)
+            
+        # Certificados (simulado o real si existe modelo)
+        # Por ahora 0 o lógica futura
+        certificados_count = 0 
+        
+        # Próxima clase (Simulación basada en días, requeriría lógica compleja de calendario)
+        # Por ahora mostramos un mensaje genérico o el primer curso
+        proxima_clase = None
+        if cursos_activos:
+            proxima_clase = cursos_activos[0] # Simplificación
         
         context = {
             'estudiante': estudiante,
-            'inscripciones_activas': inscripciones_activas,
-            'cursos_disponibles': cursos.count(),
-            'cursos': cursos[:6],  # Mostrar solo los primeros 6 cursos en el dashboard
+            'inscripciones_activas': inscripciones_activas_count,
+            'cursos_activos': cursos_activos,
+            'promedio_general': promedio_general,
+            'certificados': certificados_count,
+            'proxima_clase': proxima_clase
         }
         return render(request, 'dashboard/estudiante.html', context)
     except Estudiante.DoesNotExist:
@@ -167,6 +211,7 @@ def dashboard_admin(request):
     """Dashboard específico para administradores y mesa de entrada con estadísticas"""
     from apps.modulo_1.usuario.models import Usuario
     from apps.modulo_1.roles.models import UsuarioRol
+    from django.utils import timezone
     
     # Verificar si es staff o superuser (administrador Django)
     es_admin_django = request.user.is_staff or request.user.is_superuser
@@ -184,7 +229,8 @@ def dashboard_admin(request):
         return redirect('dashboard')
     
     from apps.modulo_3.cursos.models import Curso, Comision
-    from django.db.models import Count
+    from apps.modulo_4.asistencia.models import Asistencia
+    from django.db.models import Count, F
     
     # Estadísticas generales
     total_cursos = Curso.objects.count()
@@ -192,15 +238,36 @@ def dashboard_admin(request):
     total_docentes = Docente.objects.count()
     total_inscripciones = Inscripcion.objects.filter(estado='confirmado').count()
     
+    # Métricas de Hoy
+    hoy = timezone.now().date()
+    inscripciones_hoy = Inscripcion.objects.filter(fecha_hora_inscripcion__date=hoy).count()
+    asistencias_hoy = Asistencia.objects.filter(fecha_clase=hoy, presente=True).count()
+    
     # Cursos más populares (con más inscripciones)
     cursos_populares = Curso.objects.annotate(
         total_inscripciones=Count('comision__inscripciones')
     ).filter(total_inscripciones__gt=0).order_by('-total_inscripciones')[:5]
     
-    # Estado de comisiones
+    # Estado de comisiones y Alertas de Cupo
     comisiones_abiertas = Comision.objects.filter(estado='Abierta').count()
     comisiones_cerradas = Comision.objects.filter(estado='Cerrada').count()
     comisiones_finalizadas = Comision.objects.filter(estado='Finalizada').count()
+    
+    # Alertas de Cupo (Comisiones abiertas con 5 o menos lugares)
+    alertas_cupo = []
+    comisiones_activas = Comision.objects.filter(estado='Abierta').prefetch_related('inscripciones')
+    
+    for comision in comisiones_activas:
+        if comision.cupos_disponibles <= 5 and comision.cupos_disponibles > 0:
+            alertas_cupo.append({
+                'nombre': f"{comision.fk_id_curso.nombre} (Com #{comision.id_comision})",
+                'cupos_restantes': comision.cupos_disponibles,
+                'total': comision.cupo_maximo,
+                'porcentaje': comision.porcentaje_ocupacion
+            })
+    
+    # Ordenar alertas por cupos restantes (menor a mayor)
+    alertas_cupo.sort(key=lambda x: x['cupos_restantes'])
     
     # Determinar el tipo de usuario para el template
     tipo_usuario = 'Administrador'
@@ -225,10 +292,13 @@ def dashboard_admin(request):
         'total_estudiantes': total_estudiantes,
         'total_docentes': total_docentes,
         'total_inscripciones': total_inscripciones,
+        'inscripciones_hoy': inscripciones_hoy,
+        'asistencias_hoy': asistencias_hoy,
         'cursos_populares': cursos_populares,
         'comisiones_abiertas': comisiones_abiertas,
         'comisiones_cerradas': comisiones_cerradas,
         'comisiones_finalizadas': comisiones_finalizadas,
+        'alertas_cupo': alertas_cupo,
         'tipo_usuario': tipo_usuario,
         'puede_crear_usuarios': puede_crear_usuarios,
         'es_admin_completo': es_admin_completo,

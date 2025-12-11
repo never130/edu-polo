@@ -213,10 +213,18 @@
             </p>
             
             <div class="curso-info">
-                {% if curso.edad_minima %}
+                {% if curso.edad_minima or curso.edad_maxima %}
                 <div class="info-item">
                     <span>👤</span>
-                    <span><strong>Edad mínima:</strong> {{ curso.edad_minima }} años</span>
+                    <span><strong>Edad:</strong> 
+                        {% if curso.edad_minima and curso.edad_maxima %}
+                            {{ curso.edad_minima }} a {{ curso.edad_maxima }} años
+                        {% elif curso.edad_minima %}
+                            +{{ curso.edad_minima }} años
+                        {% elif curso.edad_maxima %}
+                            Hasta {{ curso.edad_maxima }} años
+                        {% endif %}
+                    </span>
                 </div>
                 {% endif %}
                 

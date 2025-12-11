@@ -478,6 +478,11 @@
                             {% elif 'robot' in lower_name %}TECNOLOGÍA
                             {% else %}GENERAL{% endif %}
                         </span>
+                        {% if curso.edad_minima and curso.edad_maxima %}
+                        <span class="tag age">{{ curso.edad_minima }} a {{ curso.edad_maxima }} AÑOS</span>
+                        {% elif curso.edad_minima %}
+                        <span class="tag age">+{{ curso.edad_minima }} AÑOS</span>
+                        {% endif %}
                     </div>
 
                     <h3 class="card-title">{{ curso.nombre }}</h3>

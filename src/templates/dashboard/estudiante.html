@@ -23,28 +23,196 @@
 
 <div class="dashboard-cards">
     <div class="dashboard-card">
-        <div class="card-title">Mis Inscripciones</div>
+        <div class="card-icon">📚</div>
+        <div class="card-title">Cursos Activos</div>
         <div class="card-value">{{ inscripciones_activas }}</div>
     </div>
     
     <div class="dashboard-card">
-        <div class="card-title">En Proceso</div>
-        <div class="card-value">{{ inscripciones_activas }}</div>
+        <div class="card-icon">📊</div>
+        <div class="card-title">Asistencia Promedio</div>
+        <div class="card-value">{{ promedio_general }}%</div>
     </div>
     
     <div class="dashboard-card">
+        <div class="card-icon">🎓</div>
         <div class="card-title">Certificados</div>
-        <div class="card-value">0</div>
+        <div class="card-value">{{ certificados }}</div>
     </div>
 </div>
 
-<!-- Sección de Cursos Disponibles - REMOVIDA -->
-{% if not cursos %}
-<div style="background: white; padding: 3rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-top: 2rem; text-align: center;">
-    <h3 style="color: #667eea; margin: 1rem 0;">Bienvenido al panel de estudiante</h3>
-    <p style="color: #666;">Selecciona una opción del menú para comenzar.</p>
+<!-- Sección de Cursos Activos -->
+<div style="margin-top: 2rem;">
+    <h3 style="color: #4a5568; margin-bottom: 1rem; font-size: 1.2rem;">Mis Cursos en Curso</h3>
+    
+    {% if cursos_activos %}
+    <div class="cursos-grid">
+        {% for curso in cursos_activos %}
+        <div class="curso-card">
+            <div class="curso-header">
+                <span class="polo-badge">{{ curso.polo }}</span>
+                <span class="comision-badge">Comisión #{{ curso.comision }}</span>
+            </div>
+            <h4 class="curso-titulo">{{ curso.nombre }}</h4>
+            <p class="curso-horario">🕒 {{ curso.horarios }}</p>
+            
+            <div class="progreso-container">
+                <div class="progreso-info">
+                    <span>Asistencia</span>
+                    <span>{{ curso.asistencia }}%</span>
+                </div>
+                <div class="progreso-bar">
+                    <div class="progreso-fill" style="width: {{ curso.asistencia }}%;"></div>
+                </div>
+                <p class="progreso-detalle">{{ curso.presentes }} de {{ curso.total_clases }} clases asistidas</p>
+            </div>
+            
+            <a href="{% url 'cursos:mis_inscripciones' %}" class="curso-btn">Ver Detalles</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">🎓</div>
+        <h4 style="color: #4a5568; margin-bottom: 0.5rem;">No tienes cursos activos</h4>
+        <p style="color: #718096; margin-bottom: 1.5rem;">Explora los cursos disponibles e inscríbete para comenzar a aprender.</p>
+        <a href="{% url 'lista_polos' %}" class="accion-btn accion-primary" style="display: inline-block; width: auto; padding: 0.8rem 2rem;">
+            Ver Cursos Disponibles
+        </a>
+    </div>
+    {% endif %}
 </div>
-{% endif %}
+
+<style>
+    .cursos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .curso-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .curso-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    }
+    
+    .curso-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+    
+    .polo-badge {
+        background-color: #ebf8ff;
+        color: #3182ce;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .comision-badge {
+        background-color: #f7fafc;
+        color: #718096;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .curso-titulo {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin: 0 0 0.5rem 0;
+    }
+    
+    .curso-horario {
+        color: #718096;
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .progreso-container {
+        margin-bottom: 1.5rem;
+    }
+    
+    .progreso-info {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #4a5568;
+        margin-bottom: 0.5rem;
+    }
+    
+    .progreso-bar {
+        height: 8px;
+        background-color: #edf2f7;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .progreso-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        border-radius: 4px;
+        transition: width 0.5s ease;
+    }
+    
+    .progreso-detalle {
+        font-size: 0.75rem;
+        color: #a0aec0;
+        margin-top: 0.5rem;
+        text-align: right;
+    }
+    
+    .curso-btn {
+        display: block;
+        width: 100%;
+        padding: 0.75rem;
+        text-align: center;
+        background-color: #f7fafc;
+        color: #4a5568;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.2s;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .curso-btn:hover {
+        background-color: #edf2f7;
+        color: #2d3748;
+        border-color: #cbd5e0;
+    }
+    
+    .empty-state {
+        background: white;
+        padding: 3rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        text-align: center;
+        border: 1px dashed #cbd5e0;
+    }
+    
+    .card-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+</style>
 
 <div class="acciones-rapidas">
     <h3 style="color: #667eea; margin-bottom: 1.5rem;">Acciones Rápidas</h3>
