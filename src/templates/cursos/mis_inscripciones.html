@@ -190,7 +190,7 @@
                     <p>Comisión #{{ inscripcion.comision.id_comision }}</p>
                 </div>
                 <span class="estado-badge estado-{{ inscripcion.estado }}">
-                    {% if inscripcion.estado == 'aprobada' %}✅{% elif inscripcion.estado == 'pendiente' %}⏳{% else %}❌{% endif %}
+                    {% if inscripcion.estado == 'confirmado' %}✅{% elif inscripcion.estado == 'pre_inscripto' %}⏳{% elif inscripcion.estado == 'lista_espera' %}📝{% else %}❌{% endif %}
                     {{ inscripcion.get_estado_display }}
                 </span>
             </div>

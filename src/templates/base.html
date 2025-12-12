@@ -427,7 +427,6 @@
         <div class="navbar-content">
             <a href="{% url 'landing' %}" class="navbar-logo">
                 <img src="{% static 'img/polocreativoblanco.png' %}" alt="Logo Polo">
-                <h1>Edu-Polo</h1>
             </a>
 
             <div class="navbar-links">
@@ -588,6 +587,17 @@
                     </select>
                 </div>
 
+                <!-- Ciudad -->
+                <div class="form-group">
+                    <label>Ciudad *</label>
+                    <select name="ciudad" class="form-input" required>
+                        <option value="">Seleccione...</option>
+                        <option value="Ushuaia">Ushuaia</option>
+                        <option value="Rio Grande">Río Grande</option>
+                        <option value="Tolhuin">Tolhuin</option>
+                    </select>
+                </div>
+
                 <!-- Domicilio -->
                 <div class="form-group">
                     <label>Domicilio</label>
@@ -599,9 +609,12 @@
                     <label>Nivel de estudios</label>
                     <select name="nivel_estudios" class="form-input">
                         <option value="">Seleccione...</option>
-                        <option value="PR">Primaria</option>
-                        <option value="SE">Secundaria</option>
-                        <option value="UN">Universidad</option>
+                        <option value="PI">Primaria Incompleto</option>
+                        <option value="PR">Primaria Completo</option>
+                        <option value="SI">Secundaria Incompleto</option>
+                        <option value="SE">Secundaria Completo</option>
+                        <option value="UI">Universidad Incompleto</option>
+                        <option value="UN">Universidad Completo</option>
                         <option value="OT">Otro</option>
                     </select>
                 </div>
@@ -680,18 +693,35 @@
     }
 
     // Close on outside click
-    window.onclick = function(event) {
-        if (event.target.classList.contains('modal-overlay')) {
-            event.target.classList.remove('show');
-            setTimeout(() => {
-                event.target.style.display = 'none';
-                document.body.style.overflow = '';
-            }, 300);
+    document.getElementById('loginModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeLoginModal();
         }
-    }
+    });
 
-    // Auto open login if errors
-    {% if messages %}
+    document.getElementById('registroModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeRegistroModal();
+        }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            const loginModal = document.getElementById('loginModal');
+            const registroModal = document.getElementById('registroModal');
+            
+            if (loginModal.classList.contains('show')) {
+                closeLoginModal();
+            }
+            if (registroModal.classList.contains('show')) {
+                closeRegistroModal();
+            }
+        }
+    });
+
+    // Auto open login if errors and user is not authenticated
+    {% if messages and not user.is_authenticated %}
         openLoginModal();
     {% endif %}
 </script>

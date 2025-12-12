@@ -174,7 +174,7 @@ def formulario_inscripcion(request, comision_id):
                 
                 # 8. Crear inscripción con observaciones
                 # Determinar estado y orden
-                estado_inscripcion = 'confirmado'
+                estado_inscripcion = 'pre_inscripto'
                 orden = None
                 
                 # Re-verificar cupo en el momento de guardar (dentro de transacción)
@@ -205,11 +205,11 @@ def formulario_inscripcion(request, comision_id):
                     cupos_restantes = comision.cupos_disponibles - 1
                     
                     if cupos_restantes == 0:
-                        mensaje = f'🎉 ¡INSCRIPCIÓN EXITOSA! Te has inscrito al curso "{curso_nombre}". ¡Has tomado el ÚLTIMO CUPO disponible!'
+                        mensaje = f'🎉 ¡PRE-INSCRIPCIÓN EXITOSA! Te has pre-inscrito al curso "{curso_nombre}". ¡Has tomado el ÚLTIMO CUPO disponible! Tu inscripción está pendiente de confirmación.'
                     elif cupos_restantes <= 3:
-                        mensaje = f'✅ ¡INSCRIPCIÓN EXITOSA! Te has inscrito al curso "{curso_nombre}". ⚠️ Solo quedan {cupos_restantes} cupos.'
+                        mensaje = f'✅ ¡PRE-INSCRIPCIÓN EXITOSA! Te has pre-inscrito al curso "{curso_nombre}". ⚠️ Solo quedan {cupos_restantes} cupos. Tu inscripción está pendiente de confirmación.'
                     else:
-                        mensaje = f'✅ ¡INSCRIPCIÓN EXITOSA! Te has inscrito al curso "{curso_nombre}".'
+                        mensaje = f'✅ ¡PRE-INSCRIPCIÓN EXITOSA! Te has pre-inscrito al curso "{curso_nombre}". Tu inscripción está pendiente de confirmación.'
                     
                     messages.success(request, mensaje)
                 

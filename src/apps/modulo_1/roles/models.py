@@ -40,9 +40,12 @@ class Docente(models.Model):
 
 class Estudiante(models.Model):
     grado = [
-        ('PR', 'Primaria'),
-        ('SE', 'Secundaria'),
-        ('UN', 'Universidad'),
+        ('PI', 'Primaria Incompleto'),
+        ('PR', 'Primaria Completo'),
+        ('SI', 'Secundaria Incompleto'),
+        ('SE', 'Secundaria Completo'),
+        ('UI', 'Universidad Incompleto'),
+        ('UN', 'Universidad Completo'),
         ('OT', 'Otro'),
     ]
 

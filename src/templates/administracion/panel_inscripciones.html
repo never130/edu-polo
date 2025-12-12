@@ -109,6 +109,8 @@
                         <td style="padding: 1rem 1.5rem;">
                             {% if inscripcion.estado == 'confirmado' %}
                                 <span style="background-color: #dcfce7; color: #166534; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; display: inline-block;">Inscrito</span>
+                            {% elif inscripcion.estado == 'pre_inscripto' %}
+                                <span style="background-color: #dbeafe; color: #1e40af; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; display: inline-block;">Pre-Inscripto</span>
                             {% elif inscripcion.estado == 'lista_espera' %}
                                 <span style="background-color: #ffedd5; color: #9a3412; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; display: inline-block;">En Espera</span>
                             {% elif inscripcion.estado == 'cancelada' %}
@@ -153,6 +155,9 @@
                     {% for estudiante in estudiantes %}
                     <option value="{{ estudiante.id }}">
                         {{ estudiante.usuario.persona.nombre_completo }} - DNI: {{ estudiante.usuario.persona.dni }}
+                        {% if estudiante.pre_inscripciones_list %}
+                            ➡️ (Pre-inscripto en: {% for insc in estudiante.pre_inscripciones_list %}{{ insc.comision.fk_id_curso.nombre }} #{{ insc.comision.id_comision }}{% if not forloop.last %}, {% endif %}{% endfor %})
+                        {% endif %}
                     </option>
                     {% endfor %}
                 </select>

@@ -9,6 +9,10 @@ def landing(request):
     Vista de la landing page
     - Muestra la página de inicio con login integrado
     """
+    # Si el usuario ya está autenticado, redirigir al dashboard
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+
     from apps.modulo_3.cursos.models import PoloCreativo
     
     # Obtener todos los polos (por si se necesitan en el futuro)

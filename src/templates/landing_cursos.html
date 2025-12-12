@@ -1244,8 +1244,8 @@
         }
     });
 
-    // Mostrar modal si hay errores de login
-    {% if messages %}
+    // Mostrar modal si hay errores de login y el usuario NO está autenticado
+    {% if messages and not user.is_authenticated %}
         openLoginModal();
     {% endif %}
 </script>
@@ -1388,6 +1388,17 @@
                     </select>
                 </div>
 
+                <!-- Ciudad -->
+                <div class="form-group">
+                    <label>Ciudad *</label>
+                    <select name="ciudad" class="form-input" required>
+                        <option value="">Seleccione...</option>
+                        <option value="Ushuaia">Ushuaia</option>
+                        <option value="Rio Grande">Río Grande</option>
+                        <option value="Tolhuin">Tolhuin</option>
+                    </select>
+                </div>
+
                 <!-- Domicilio -->
                 <div class="form-group">
                     <label>Domicilio</label>
@@ -1399,9 +1410,12 @@
                     <label>Nivel de estudios</label>
                     <select name="nivel_estudios" class="form-input">
                         <option value="">Seleccione...</option>
-                        <option value="PR">Primaria</option>
-                        <option value="SE">Secundaria</option>
-                        <option value="UN">Universidad</option>
+                        <option value="PI">Primaria Incompleto</option>
+                        <option value="PR">Primaria Completo</option>
+                        <option value="SI">Secundaria Incompleto</option>
+                        <option value="SE">Secundaria Completo</option>
+                        <option value="UI">Universidad Incompleto</option>
+                        <option value="UN">Universidad Completo</option>
                         <option value="OT">Otro</option>
                     </select>
                 </div>
@@ -1423,7 +1437,6 @@
                     <label>Confirmar Contraseña *</label>
                     <input type="password" name="password_confirm" required placeholder="Repite la contraseña" class="form-input">
                 </div>
-
             </div>
 
             <div style="text-align: center; margin-top: 1.5rem;">
@@ -1519,6 +1532,25 @@
     document.getElementById('registroModal').addEventListener('click', function(e) {
         if (e.target === this) {
             closeRegistroModal();
+        }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            const loginModal = document.getElementById('loginModal');
+            const registroModal = document.getElementById('registroModal');
+            const cursoModal = document.getElementById('cursoModal');
+            
+            if (loginModal && loginModal.classList.contains('show')) {
+                closeLoginModal();
+            }
+            if (registroModal && registroModal.classList.contains('show')) {
+                closeRegistroModal();
+            }
+            if (cursoModal && cursoModal.classList.contains('show')) {
+                closeModal();
+            }
         }
     });
 </script>

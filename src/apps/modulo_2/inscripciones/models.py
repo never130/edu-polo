@@ -8,6 +8,7 @@ class Inscripcion(models.Model):
     Gestiona cupos y lista de espera automáticamente.
     """
     ESTADOS = [
+        ('pre_inscripto', 'Pre-Inscripto'),
         ('confirmado', 'Confirmado'),
         ('lista_espera', 'En Lista de Espera'),
         ('cancelada', 'Cancelada'),

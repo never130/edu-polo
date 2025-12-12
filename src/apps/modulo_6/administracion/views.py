@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from django.db.models import Count, Q, F, Max
+from django.db.models import Count, Q, F, Max, Prefetch
 from django.db import transaction, models
 from django.http import HttpResponse
 import csv
@@ -342,8 +342,13 @@ def panel_inscripciones(request):
         cupos_disponibles_calc__gt=0
     ).select_related('fk_id_curso', 'fk_id_polo').order_by('fk_id_curso__nombre', 'id_comision')
     
-    # Obtener todos los estudiantes para el selector
-    estudiantes = Estudiante.objects.all().select_related('usuario__persona').order_by('usuario__persona__apellido', 'usuario__persona__nombre')
+    # Obtener estudiantes para el selector (SOLO PRE-INSCRIPTOS como solicitado)
+    pre_inscripciones_prefetch = Prefetch(
+        'inscripciones',
+        queryset=Inscripcion.objects.filter(estado='pre_inscripto').select_related('comision__fk_id_curso'),
+        to_attr='pre_inscripciones_list'
+    )
+    estudiantes = Estudiante.objects.filter(inscripciones__estado='pre_inscripto').distinct().select_related('usuario__persona').prefetch_related(pre_inscripciones_prefetch).order_by('usuario__persona__apellido', 'usuario__persona__nombre')
     
     context = {
         'inscripciones': inscripciones,
@@ -358,7 +363,7 @@ def panel_inscripciones(request):
 @login_required
 @user_passes_test(es_admin)
 def inscribir_estudiante_admin(request):
-    """Inscribir manualmente a un estudiante a una comisión desde el panel de administración"""
+    """Inscribir o confirmar estudiante a una comisión desde el panel de administración"""
     if request.method == 'POST':
         try:
             estudiante_id = request.POST.get('estudiante_id')
@@ -372,10 +377,25 @@ def inscribir_estudiante_admin(request):
             comision = get_object_or_404(Comision, id_comision=comision_id)
             
             # Verificar si ya está inscrito
-            if Inscripcion.objects.filter(estudiante=estudiante, comision=comision).exists():
-                messages.warning(request, f'⚠️ El estudiante {estudiante.usuario.persona.nombre_completo} ya está inscrito en esta comisión.')
-                return redirect('administracion:panel_inscripciones')
+            inscripcion_existente = Inscripcion.objects.filter(estudiante=estudiante, comision=comision).first()
             
+            if inscripcion_existente:
+                if inscripcion_existente.estado == 'pre_inscripto':
+                    # Confirmar inscripción
+                    with transaction.atomic():
+                        inscripcion_existente.estado = 'confirmado'
+                        inscripcion_existente.save()
+                    messages.success(request, f'✅ Inscripción confirmada exitosamente para {estudiante.usuario.persona.nombre_completo}.')
+                    return redirect('administracion:panel_inscripciones')
+                elif inscripcion_existente.estado == 'confirmado':
+                    messages.warning(request, f'⚠️ El estudiante {estudiante.usuario.persona.nombre_completo} ya está inscrito y confirmado en esta comisión.')
+                    return redirect('administracion:panel_inscripciones')
+                elif inscripcion_existente.estado == 'lista_espera':
+                    messages.warning(request, f'⚠️ El estudiante {estudiante.usuario.persona.nombre_completo} está en lista de espera.')
+                    # Aquí se podría agregar lógica para mover de lista de espera a confirmado si hay cupo
+                    return redirect('administracion:panel_inscripciones')
+            
+            # Si no existe inscripción previa (o se permite crear nueva para otros casos)
             # Verificar cupo disponible
             if comision.cupo_lleno:
                 messages.error(request, f'🚫 La comisión {comision.fk_id_curso.nombre} (Comisión #{comision.id_comision}) no tiene cupos disponibles.')
@@ -1532,12 +1552,12 @@ def exportar_asistencias_por_curso(request):
         inscripciones = Inscripcion.objects.filter(
             comision=comision,
             estado='confirmado'
-        ).select_related('estudiante__usuario__persona')
+        ).select_related('estudiante__usuario__persona').prefetch_related(
+            Prefetch('asistencias', queryset=Asistencia.objects.order_by('-fecha_clase'))
+        )
         
         for inscripcion in inscripciones:
-            asistencias = Asistencia.objects.filter(
-                inscripcion=inscripcion
-            ).order_by('-fecha_clase')
+            asistencias = inscripcion.asistencias.all()
             
             for asistencia in asistencias:
                 row_data = [
@@ -1616,14 +1636,14 @@ def exportar_asistencias_por_comision(request):
     inscripciones = Inscripcion.objects.filter(
         comision=comision,
         estado='confirmado'
-    ).select_related('estudiante__usuario__persona').order_by('estudiante__usuario__persona__apellido')
+    ).select_related('estudiante__usuario__persona').prefetch_related(
+        Prefetch('asistencias', queryset=Asistencia.objects.order_by('-fecha_clase'))
+    ).order_by('estudiante__usuario__persona__apellido')
     
     # Escribir datos
     row_num = 6
     for inscripcion in inscripciones:
-        asistencias = Asistencia.objects.filter(
-            inscripcion=inscripcion
-        ).order_by('-fecha_clase')
+        asistencias = inscripcion.asistencias.all()
         
         for asistencia in asistencias:
             row_data = [

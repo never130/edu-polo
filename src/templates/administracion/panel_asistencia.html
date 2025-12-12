@@ -158,11 +158,10 @@
                                 </td>
                                 <td style="padding: 1rem; color: #64748b;">{{ inscripcion.estudiante.usuario.persona.dni }}</td>
                                 <td style="padding: 1rem; text-align: center;">
-                                    <label class="switch" style="position: relative; display: inline-block; width: 60px; height: 34px;">
+                                    <label class="switch">
                                         <input type="checkbox" name="presente_{{ inscripcion.id }}" class="asistencia-checkbox"
-                                               {% if asistencia and asistencia.presente %}checked{% endif %}
-                                               style="opacity: 0; width: 0; height: 0;">
-                                        <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px;"></span>
+                                               {% if asistencia and asistencia.presente %}checked{% endif %}>
+                                        <span class="slider"></span>
                                     </label>
                                 </td>
                                 <td style="padding: 1rem;">
@@ -202,6 +201,31 @@
     }
 
     /* Estilos para el switch toggle */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc; /* Color base (gris) */
+        transition: .4s;
+        border-radius: 34px;
+    }
+
     .slider:before {
         position: absolute;
         content: "";
@@ -215,7 +239,7 @@
     }
 
     input:checked + .slider {
-        background-color: #10b981;
+        background-color: #10b981 !important; /* Verde cuando está activo */
     }
 
     input:focus + .slider {

@@ -373,39 +373,268 @@
         }
 
         /* Modal Styles */
-        .modal-backdrop {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
-            z-index: 2000; display: none; align-items: center; justify-content: center;
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
             padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
-        
-        .modal-content {
-            background: white; width: 100%; max-width: 500px;
-            border-radius: 20px; padding: 2rem;
+
+        .modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-container {
+            background: white;
+            border-radius: 24px;
+            max-width: 600px;
+            width: 100%;
             position: relative;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            max-height: 85vh; overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
+        }
+
+        .modal-overlay.show .modal-container {
+            transform: scale(1);
         }
 
         .modal-close {
-            position: absolute; top: 1rem; right: 1rem;
-            background: #f1f5f9; border: none;
-            width: 32px; height: 32px; border-radius: 50%;
-            cursor: pointer; color: #64748b;
-            font-size: 1.2rem; display: flex; align-items: center; justify-content: center;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: #64748b;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            z-index: 10;
         }
 
-        /* Login Modal Split */
-        .login-modal-wrapper { max-width: 850px; display: flex; padding: 0; overflow: hidden; }
-        .login-side { flex: 1; padding: 3rem; }
-        .promo-side { flex: 0.8; background: linear-gradient(135deg, #F97316 0%, #FB923C 100%); color: white; padding: 3rem; display: flex; flex-direction: column; justify-content: center; text-align: center; }
+        .modal-close:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        /* Split Login Modal Styles */
+        .modal-container.split-design {
+            max-width: 900px;
+            width: 90%;
+            display: flex;
+            overflow: hidden;
+            padding: 0;
+            border-radius: 20px;
+            background: white;
+            position: relative;
+        }
+
+        .login-left {
+            flex: 1;
+            padding: 3rem;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-right {
+            flex: 0.8;
+            background: linear-gradient(135deg, #FF512F 0%, #F09819 100%);
+            color: white;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .login-right::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at top right, rgba(255,255,255,0.2), transparent 40%);
+        }
+
+        .login-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-subtitle {
+            color: #64748b;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+            box-sizing: border-box;
+        }
+
+        .input-group input:focus {
+            border-color: #F09819;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(240, 152, 25, 0.1);
+            outline: none;
+        }
+
+        .forgot-password {
+            display: block;
+            text-align: right;
+            color: #F09819;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: -1rem;
+            margin-bottom: 1.5rem;
+            text-decoration: none;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(90deg, #FF512F 0%, #F09819 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(240, 152, 25, 0.3);
+        }
+
+        .btn-register-outline {
+            margin-top: 1.5rem;
+            padding: 0.8rem 2rem;
+            border: 2px solid white;
+            color: white;
+            background: transparent;
+            border-radius: 50px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-block;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 20;
+        }
+
+        .btn-register-outline:hover {
+            background: white;
+            color: #F09819;
+        }
 
         @media (max-width: 768px) {
+            .modal-container.split-design {
+                flex-direction: column-reverse;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+            .login-right {
+                padding: 2rem;
+            }
+            .login-left {
+                padding: 2rem;
+            }
             .page-title { font-size: 2rem; }
             .courses-grid { grid-template-columns: 1fr; }
-            .login-modal-wrapper { flex-direction: column-reverse; }
         }
+
+    .form-input {
+        width: 100%;
+        padding: 0.6rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        color: #4a5568;
+        box-sizing: border-box;
+    }
+    .form-input:focus {
+        border-color: #F09819;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(240, 152, 25, 0.1);
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #4a5568;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    .btn-guardar {
+        background: #F09819;
+        color: white;
+        border: none;
+        padding: 0.8rem 3rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    .btn-guardar:hover {
+        transform: translateY(-2px);
+        background: #e68a00;
+    }
+    #registroModal {
+        z-index: 10001;
+    }
+    .form-grid {
+        grid-template-columns: repeat(3, 1fr);
+        display: grid;
+        gap: 1rem;
+    }
+    @media (max-width: 900px) {
+        .form-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr !important;
+        }
+    }
     </style>
 </head>
 <body>
@@ -414,9 +643,8 @@
     <nav class="navbar">
         <div class="navbar-content">
             <a href="{% url 'landing' %}" class="navbar-logo">
-                <img src="{% static 'img/polocreativoblanco.png' %}" alt="Logo Polo">
-                <h1>Edu-Polo</h1>
-            </a>
+            <img src="{% static 'img/polocreativoblanco.png' %}" alt="Logo Polo">
+        </a>
 
             <div class="navbar-links">
                 <a href="{% url 'landing' %}" class="navbar-link">Inicio</a>
@@ -504,8 +732,8 @@
             </div>
 
             <!-- Course Detail Modal -->
-            <div id="modal-curso-{{ curso.id_curso }}" class="modal-backdrop" onclick="if(event.target === this) closeCourseModal('{{ curso.id_curso }}')">
-                <div class="modal-content">
+            <div id="modal-curso-{{ curso.id_curso }}" class="modal-overlay">
+                <div class="modal-container" style="padding: 2rem; max-height: 80vh; overflow-y: auto;">
                     <button class="modal-close" onclick="closeCourseModal('{{ curso.id_curso }}')">×</button>
                     <h3 style="font-size: 1.5rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1rem;">{{ curso.nombre }}</h3>
                     <p style="color: var(--text-gray); line-height: 1.6; margin-bottom: 2rem;">{{ curso.descripcion }}</p>
@@ -545,46 +773,182 @@
     </div>
 
     <!-- Login Modal -->
-    <div id="loginModal" class="modal-backdrop">
-        <div class="modal-content login-modal-wrapper">
+    <div id="loginModal" class="modal-overlay">
+        <div class="modal-container split-design">
+            <!-- Close Button -->
             <button class="modal-close" onclick="closeLoginModal()">×</button>
-            <div class="login-side">
-                <h2 style="font-size: 1.8rem; font-weight: 800; color: var(--text-dark); margin-bottom: 0.5rem;">Hola de nuevo</h2>
-                <p style="color: var(--text-gray); margin-bottom: 2rem;">Ingresa tus datos para continuar</p>
+
+            <!-- Left Side: Form -->
+            <div class="login-left">
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <img src="{% static 'img/logosesion.png' %}" alt="Logo Sesión" style="height: 80px; width: auto;">
+                </div>
+                <h2 class="login-title">Iniciar Sesión</h2>
+                <p class="login-subtitle">Accede a tu cuenta utilizando tu DNI</p>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="error-message" style="margin-bottom: 1rem; padding: 0.8rem; background: #fee2e2; color: #ef4444; border-radius: 8px; font-size: 0.9rem;">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
                 <form method="post" action="{% url 'login' %}?next={{ request.path }}">
                     {% csrf_token %}
-                    <div style="margin-bottom: 1rem;">
-                        <input type="text" name="username" placeholder="DNI" style="width: 100%; padding: 0.9rem; border: 2px solid #e2e8f0; border-radius: 12px; outline: none;">
+                    
+                    <div class="input-group">
+                        <input type="text" name="username" required placeholder="Ingrese su DNI">
                     </div>
-                    <div style="margin-bottom: 1.5rem;">
-                        <input type="password" name="password" placeholder="Contraseña" style="width: 100%; padding: 0.9rem; border: 2px solid #e2e8f0; border-radius: 12px; outline: none;">
+                    
+                    <div class="input-group">
+                        <input type="password" name="password" required placeholder="Contraseña">
                     </div>
-                    <button type="submit" class="btn-more">INGRESAR</button>
+                    
+                    <a href="{% url 'password_reset_request' %}" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                    
+                    <button type="submit" class="btn-login">
+                        INGRESAR
+                    </button>
                 </form>
             </div>
-            <div class="promo-side">
-                <h2 style="font-size: 1.8rem; margin-bottom: 1rem;">¿Nuevo aquí?</h2>
-                <p style="margin-bottom: 2rem; opacity: 0.9;">Crea tu cuenta para inscribirte a los cursos.</p>
-                <button onclick="openRegistroModal()" style="padding: 0.8rem 2rem; background: rgba(255,255,255,0.2); border: 2px solid white; color: white; border-radius: 99px; font-weight: 700; cursor: pointer;">CREAR CUENTA</button>
+
+            <!-- Right Side: Welcome -->
+            <div class="login-right">
+                <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">¡Bienvenido!</h2>
+                <p style="font-size: 1.1rem; margin-bottom: 2rem; opacity: 0.9;">
+                    Ingresa tus datos personales para acceder a todas las funcionalidades de Edu-Polo.
+                </p>
+                <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 1rem;">¿Aún no tienes una cuenta?</p>
+                <button type="button" class="btn-register-outline" onclick="openRegistroModal()">REGISTRARSE</button>
             </div>
         </div>
     </div>
 
-    <!-- Registro Modal Placeholder (Simplified logic for view) -->
-    <div id="registroModal" class="modal-backdrop" style="z-index: 2001;">
-        <div class="modal-content" style="max-width: 600px;">
+    <!-- Registro Modal -->
+    <div id="registroModal" class="modal-overlay" style="z-index: 10001;">
+        <div class="modal-container" style="max-width: 950px; padding: 1.5rem; max-height: 85vh; overflow-y: auto;">
             <button class="modal-close" onclick="closeRegistroModal()">×</button>
-            <h2 style="text-align: center; margin-bottom: 2rem; font-weight: 800;">Crear Cuenta</h2>
-            <form method="post" action="{% url 'usuario:registro' %}">
-                {% csrf_token %}
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                    <input type="text" name="nombre" placeholder="Nombre" required style="padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px;">
-                    <input type="text" name="apellido" placeholder="Apellido" required style="padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px;">
+            
+            <div class="registro-header" style="text-align: center; margin-bottom: 0.5rem;">
+                <div style="text-align: center; margin-bottom: 0.5rem;">
+                    <img src="{% static 'img/logosregister.png' %}" alt="Logo Registro" style="height: 50px; width: auto;">
                 </div>
-                <input type="email" name="correo" placeholder="Email" required style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 1rem;">
-                <input type="text" name="dni" placeholder="DNI" required style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 1rem;">
-                <input type="password" name="password" placeholder="Contraseña" required style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 1.5rem;">
-                <button type="submit" class="btn-more">REGISTRARSE</button>
+                
+                <h2 style="color: #4a5568; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.1rem;">Crear cuenta</h2>
+                <p style="color: #718096; font-size: 0.85rem; margin-bottom: 0.5rem;">Ingrese sus datos personales para inscribirse</p>
+            </div>
+
+            <form method="post" action="{% url 'usuario:registro' %}" class="registro-form">
+                {% csrf_token %}
+                
+                <div class="form-grid">
+                    
+                    <!-- DNI -->
+                    <div class="form-group">
+                        <label>DNI</label>
+                        <input type="text" name="dni" required placeholder="Número de documento" class="form-input">
+                    </div>
+                    
+                    <!-- Correo -->
+                    <div class="form-group">
+                        <label>Correo Electrónico *</label>
+                        <input type="email" name="correo" required placeholder="Correo electrónico" class="form-input">
+                    </div>
+
+                    <!-- Nombres -->
+                    <div class="form-group">
+                        <label>Nombres *</label>
+                        <input type="text" name="nombre" required placeholder="Nombres" class="form-input">
+                    </div>
+
+                    <!-- Apellidos -->
+                    <div class="form-group">
+                        <label>Apellidos *</label>
+                        <input type="text" name="apellido" required placeholder="Apellidos" class="form-input">
+                    </div>
+
+                    <!-- Teléfono -->
+                    <div class="form-group">
+                        <label>Teléfono de contacto *</label>
+                        <input type="text" name="telefono" required placeholder="+ 54 2964 999999" class="form-input">
+                    </div>
+
+                    <!-- Fecha Nacimiento -->
+                    <div class="form-group">
+                        <label>Fecha de Nacimiento</label>
+                        <input type="date" name="fecha_nacimiento" class="form-input">
+                    </div>
+
+                    <!-- Género -->
+                    <div class="form-group">
+                        <label>Género</label>
+                        <select name="genero" class="form-input">
+                            <option value="">Seleccione...</option>
+                            <option value="M">Masculino</option>
+                            <option value="F">Femenino</option>
+                            <option value="O">Otro</option>
+                            <option value="P">Prefiero no decirlo</option>
+                        </select>
+                    </div>
+
+                    <!-- Ciudad -->
+                    <div class="form-group">
+                        <label>Ciudad *</label>
+                        <select name="ciudad" class="form-input" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Ushuaia">Ushuaia</option>
+                            <option value="Rio Grande">Río Grande</option>
+                            <option value="Tolhuin">Tolhuin</option>
+                        </select>
+                    </div>
+
+                    <!-- Domicilio -->
+                    <div class="form-group">
+                        <label>Domicilio</label>
+                        <input type="text" name="domicilio" placeholder="Calle 123, Ciudad" class="form-input">
+                    </div>
+
+                    <!-- Nivel Estudios -->
+                    <div class="form-group">
+                        <label>Nivel de estudios</label>
+                        <select name="nivel_estudios" class="form-input">
+                            <option value="">Seleccione...</option>
+                            <option value="PI">Primaria Incompleto</option>
+                            <option value="PR">Primaria Completo</option>
+                            <option value="SI">Secundaria Incompleto</option>
+                            <option value="SE">Secundaria Completo</option>
+                            <option value="UI">Universidad Incompleto</option>
+                            <option value="UN">Universidad Completo</option>
+                            <option value="OT">Otro</option>
+                        </select>
+                    </div>
+
+                    <!-- Institución Actual -->
+                    <div class="form-group">
+                        <label>Institución Actual</label>
+                        <input type="text" name="institucion_actual" placeholder="Nombre de la institución" class="form-input">
+                    </div>
+
+                    <!-- Contraseña -->
+                    <div class="form-group">
+                        <label>Contraseña *</label>
+                        <input type="password" name="password" required placeholder="Mínimo 6 caracteres" class="form-input">
+                    </div>
+
+                    <!-- Confirmar Contraseña -->
+                    <div class="form-group">
+                        <label>Confirmar Contraseña *</label>
+                        <input type="password" name="password_confirm" required placeholder="Repite la contraseña" class="form-input">
+                    </div>
+
+                </div>
+
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <button type="submit" class="btn-guardar">Guardar y Continuar</button>
+                </div>
+                
+                <div style="text-align: right; margin-top: 1rem;">
+                     <p style="font-size: 0.9rem;">¿Ya sos miembro? <a href="#" onclick="closeRegistroModal(); openLoginModal(); return false;" style="color: #F09819; font-weight: bold;">Ingresar</a></p>
+                </div>
             </form>
         </div>
     </div>
@@ -608,45 +972,115 @@
 
         // Modal Logic
         function openCourseModal(id) {
-            document.getElementById('modal-curso-' + id).style.display = 'flex';
+            const modal = document.getElementById('modal-curso-' + id);
+            modal.style.display = 'flex';
+            // Force reflow
+            modal.offsetHeight;
+            modal.classList.add('show');
             document.body.style.overflow = 'hidden';
         }
 
         function closeCourseModal(id) {
-            document.getElementById('modal-curso-' + id).style.display = 'none';
-            document.body.style.overflow = '';
+            const modal = document.getElementById('modal-curso-' + id);
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }, 300);
         }
 
         function openLoginModal() {
-            document.getElementById('loginModal').style.display = 'flex';
+            const modal = document.getElementById('loginModal');
+            modal.style.display = 'flex';
+            // Force reflow
+            modal.offsetHeight;
+            modal.classList.add('show');
             document.body.style.overflow = 'hidden';
         }
 
         function closeLoginModal() {
-            document.getElementById('loginModal').style.display = 'none';
-            document.body.style.overflow = '';
+            const modal = document.getElementById('loginModal');
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }, 300);
         }
 
         function openRegistroModal() {
             closeLoginModal();
-            document.getElementById('registroModal').style.display = 'flex';
+            const modal = document.getElementById('registroModal');
+            modal.style.display = 'flex';
+            // Force reflow
+            modal.offsetHeight;
+            modal.classList.add('show');
             document.body.style.overflow = 'hidden';
         }
 
         function closeRegistroModal() {
-            document.getElementById('registroModal').style.display = 'none';
-            document.body.style.overflow = '';
+            const modal = document.getElementById('registroModal');
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }, 300);
         }
+        
+        // Close on outside click for Login and Register (Landing style)
+        document.getElementById('loginModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLoginModal();
+            }
+        });
+
+        document.getElementById('registroModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeRegistroModal();
+            }
+        });
+
+        // Close on outside click for generic modals (Course modals)
+        window.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal-overlay') && 
+                event.target.id !== 'loginModal' && 
+                event.target.id !== 'registroModal') {
+                event.target.classList.remove('show');
+                setTimeout(() => {
+                    event.target.style.display = 'none';
+                    document.body.style.overflow = '';
+                }, 300);
+            }
+        });
         
         // Close modals on escape key
         document.addEventListener('keydown', function(event) {
             if (event.key === "Escape") {
-                document.querySelectorAll('.modal-backdrop').forEach(modal => {
-                    modal.style.display = 'none';
-                });
-                document.body.style.overflow = '';
+                const loginModal = document.getElementById('loginModal');
+                const registroModal = document.getElementById('registroModal');
+                
+                if (loginModal.classList.contains('show')) {
+                    closeLoginModal();
+                } else if (registroModal.classList.contains('show')) {
+                    closeRegistroModal();
+                } else {
+                    // Check other modals
+                    document.querySelectorAll('.modal-overlay.show').forEach(modal => {
+                        modal.classList.remove('show');
+                        setTimeout(() => {
+                            modal.style.display = 'none';
+                            document.body.style.overflow = '';
+                        }, 300);
+                    });
+                }
             }
         });
+
+        // Show modal if there are messages AND user is not authenticated
+        {% if messages and not user.is_authenticated %}
+            document.addEventListener('DOMContentLoaded', function() {
+                openLoginModal();
+            });
+        {% endif %}
     </script>
 </body>
 </html>

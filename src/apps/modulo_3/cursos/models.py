@@ -89,8 +89,8 @@ class Comision(models.Model):
     
     @property
     def inscritos_count(self):
-        """Cuenta de estudiantes inscritos confirmados"""
-        return self.inscripciones.filter(estado='confirmado').count()
+        """Cuenta de estudiantes inscritos confirmados y pre-inscriptos"""
+        return self.inscripciones.filter(estado__in=['confirmado', 'pre_inscripto']).count()
     
     @property
     def cupos_disponibles(self):

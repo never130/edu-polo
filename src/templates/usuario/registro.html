@@ -331,8 +331,20 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label for="ciudad">Ciudad *</label>
+                        <select id="ciudad" name="ciudad" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Ushuaia">Ushuaia</option>
+                            <option value="Rio Grande">Río Grande</option>
+                            <option value="Tolhuin">Tolhuin</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="grid-column: span 2;">
                         <label for="domicilio">Domicilio</label>
-                        <input type="text" id="domicilio" name="domicilio" placeholder="Calle 123, Ciudad">
+                        <input type="text" id="domicilio" name="domicilio" placeholder="Calle 123">
                     </div>
                 </div>
                 
@@ -342,9 +354,12 @@
                         <div class="form-group">
                             <label for="nivel_estudios">Nivel de Estudios</label>
                             <select id="nivel_estudios" name="nivel_estudios">
-                                <option value="PR">Primaria</option>
-                                <option value="SE">Secundaria</option>
-                                <option value="UN" selected>Universidad</option>
+                                <option value="PI">Primaria Incompleto</option>
+                                <option value="PR">Primaria Completo</option>
+                                <option value="SI">Secundaria Incompleto</option>
+                                <option value="SE">Secundaria Completo</option>
+                                <option value="UI">Universidad Incompleto</option>
+                                <option value="UN" selected>Universidad Completo</option>
                                 <option value="OT">Otro</option>
                             </select>
                         </div>
