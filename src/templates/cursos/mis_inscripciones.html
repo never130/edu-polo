@@ -216,12 +216,22 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="detalle-item">
+                    <div class="detalle-icon">🏁</div>
+                    <div class="detalle-info">
+                        <div class="label">Fecha de Finalización</div>
+                        <div class="value">
+                            {{ inscripcion.comision.fecha_fin|date:"d/m/Y"|default:"Por definir" }}
+                        </div>
+                    </div>
+                </div>
                 
                 <div class="detalle-item">
                     <div class="detalle-icon">📍</div>
                     <div class="detalle-info">
-                        <div class="label">Lugar</div>
-                        <div class="value">{{ inscripcion.comision.lugar|default:"Por definir" }}</div>
+                        <div class="label">Polo</div>
+                        <div class="value">{{ inscripcion.comision.fk_id_polo.nombre|default:"Por definir" }}</div>
                     </div>
                 </div>
                 
@@ -237,7 +247,7 @@
                     <div class="detalle-icon">📝</div>
                     <div class="detalle-info">
                         <div class="label">Inscrito el</div>
-                        <div class="value">{{ inscripcion.fecha_inscripcion|date:"d/m/Y" }}</div>
+                        <div class="value">{{ inscripcion.fecha_hora_inscripcion|date:"d/m/Y" }}</div>
                     </div>
                 </div>
             </div>

@@ -99,7 +99,7 @@ def mis_inscripciones(request):
             estudiante=estudiante
         ).exclude(
             estado__in=['cancelada', 'rechazada']
-        ).select_related('comision__fk_id_curso').order_by('-fecha_hora_inscripcion')
+        ).select_related('comision__fk_id_curso', 'comision__fk_id_polo').order_by('-fecha_hora_inscripcion')
         
         return render(request, 'cursos/mis_inscripciones.html', {'inscripciones': inscripciones})
     except Estudiante.DoesNotExist:
