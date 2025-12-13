@@ -77,6 +77,7 @@ class RegistroView(View):
                 fecha_nacimiento = request.POST.get('fecha_nacimiento')
                 genero = request.POST.get('genero', '')
                 ciudad = request.POST.get('ciudad', '')
+                zona_residencia = request.POST.get('zona_residencia', '')
                 domicilio = request.POST.get('domicilio', '')
                 password = request.POST.get('password')
                 password_confirm = request.POST.get('password_confirm')
@@ -139,6 +140,7 @@ class RegistroView(View):
                     fecha_nacimiento=fecha_nacimiento if fecha_nacimiento else None,
                     genero=genero,
                     ciudad_residencia=ciudad if ciudad else None,
+                    zona_residencia=zona_residencia if zona_residencia else None,
                     domicilio=domicilio,
                     condiciones_medicas=condiciones_medicas,
                     autorizacion_imagen=autorizacion_imagen,

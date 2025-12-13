@@ -88,19 +88,21 @@
         }
         /* Registro Form Styles */
         .form-input {
-            width: 100%; padding: 0.6rem; border: 1px solid #e2e8f0; border-radius: 8px;
-            font-size: 0.95rem; color: #4a5568; box-sizing: border-box;
+            width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px;
+            font-size: 1rem; color: #4a5568; box-sizing: border-box;
+            height: auto; min-height: 45px;
         }
         .form-input:focus {
             border-color: #F09819; outline: none; box-shadow: 0 0 0 3px rgba(240, 152, 25, 0.1);
         }
         .form-group label {
-            display: block; margin-bottom: 0.5rem; color: #4a5568; font-weight: 600; font-size: 0.9rem;
+            display: block; margin-bottom: 0.4rem; color: #4a5568; font-weight: 600; font-size: 0.9rem;
         }
         .btn-guardar {
             background: #F09819; color: white; border: none; padding: 0.8rem 3rem;
             border-radius: 50px; font-weight: 700; font-size: 1rem; cursor: pointer;
             transition: transform 0.2s;
+            width: 100%; max-width: 300px;
         }
         .btn-guardar:hover { transform: translateY(-2px); background: #e68a00; }
         .form-grid { display: grid; gap: 1rem; grid-template-columns: repeat(3, 1fr); }
@@ -109,8 +111,10 @@
             .modal-container.split-design { flex-direction: column; overflow-y: auto; max-height: 90vh; }
             .login-right { padding: 2rem; }
         }
-        @media (max-width: 768px) {
+        @media (max-width: 600px) {
             .form-grid { grid-template-columns: 1fr !important; }
+            .modal-container { padding: 1rem; width: 95%; }
+            .form-input { font-size: 16px; }
         }
 
         /* New styles for health and policies */
@@ -1053,6 +1057,23 @@
                         <option value="O">Otro</option>
                         <option value="P">Prefiero no decirlo</option>
                     </select>
+                </div>
+
+                <!-- Ciudad -->
+                <div class="form-group">
+                    <label>Ciudad *</label>
+                    <select name="ciudad" required class="form-input">
+                        <option value="">Seleccione...</option>
+                        <option value="Ushuaia">Ushuaia</option>
+                        <option value="Rio Grande">Río Grande</option>
+                        <option value="Tolhuin">Tolhuin</option>
+                    </select>
+                </div>
+
+                <!-- Zona/Barrio -->
+                <div class="form-group">
+                    <label>Zona/Barrio</label>
+                    <input type="text" name="zona_residencia" placeholder="Ej: Centro, Chacra II" class="form-input">
                 </div>
 
                 <!-- Domicilio -->

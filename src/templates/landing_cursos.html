@@ -1567,6 +1567,12 @@
                     </select>
                 </div>
 
+                <!-- Zona/Barrio -->
+                <div class="form-group">
+                    <label>Zona/Barrio</label>
+                    <input type="text" name="zona_residencia" placeholder="Ej: Centro, Chacra II" class="form-input">
+                </div>
+
                 <!-- Domicilio -->
                 <div class="form-group">
                     <label>Domicilio</label>
@@ -1671,12 +1677,14 @@
 <style>
     .form-input {
         width: 100%;
-        padding: 0.6rem;
+        padding: 0.75rem;
         border: 1px solid #e2e8f0;
         border-radius: 8px;
-        font-size: 0.95rem;
+        font-size: 1rem;
         color: #4a5568;
         box-sizing: border-box;
+        height: auto;
+        min-height: 45px;
     }
     .form-input:focus {
         border-color: #F09819;
@@ -1685,7 +1693,7 @@
     }
     .form-group label {
         display: block;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.4rem;
         color: #4a5568;
         font-weight: 600;
         font-size: 0.9rem;
@@ -1700,6 +1708,8 @@
         font-size: 1rem;
         cursor: pointer;
         transition: transform 0.2s;
+        width: 100%;
+        max-width: 300px;
     }
     .btn-guardar:hover {
         transform: translateY(-2px);
@@ -1709,16 +1719,25 @@
         z-index: 10001;
     }
     .form-grid {
+        display: grid;
         grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
     }
     @media (max-width: 900px) {
         .form-grid {
             grid-template-columns: repeat(2, 1fr);
         }
     }
-    @media (max-width: 768px) {
+    @media (max-width: 600px) {
         .form-grid {
-            grid-template-columns: 1fr !important;
+            grid-template-columns: 1fr;
+        }
+        .modal-container {
+            padding: 1rem;
+            width: 95%;
+        }
+        .form-input {
+            font-size: 16px; /* Prevent zoom on iOS */
         }
     }
 </style>
