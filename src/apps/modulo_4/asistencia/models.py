@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from apps.modulo_2.inscripciones.models import Inscripcion
 
 
@@ -30,6 +31,23 @@ class Asistencia(models.Model):
         estado = "✅ Presente" if self.presente else "❌ Ausente"
         return f"{self.inscripcion.estudiante.usuario.persona.nombre_completo} - {self.fecha_clase} - {estado}"
 
+    def clean(self):
+        super().clean()
+        if self.inscripcion_id and self.inscripcion.comision:
+            comision = self.inscripcion.comision
+            if comision.fecha_inicio and self.fecha_clase < comision.fecha_inicio:
+                raise ValidationError({
+                    'fecha_clase': f"La fecha de asistencia no puede ser anterior al inicio del curso ({comision.fecha_inicio})"
+                })
+            if comision.fecha_fin and self.fecha_clase > comision.fecha_fin:
+                raise ValidationError({
+                    'fecha_clase': f"La fecha de asistencia no puede ser posterior al fin del curso ({comision.fecha_fin})"
+                })
+    
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
 
 class RegistroAsistencia(models.Model):
     """
@@ -52,6 +70,17 @@ class RegistroAsistencia(models.Model):
     
     def calcular_porcentaje(self):
         """Calcula el porcentaje de asistencia"""
+        # Recalcular total_clases basado en la comisión (todas las fechas únicas)
+        self.total_clases = Asistencia.objects.filter(
+            inscripcion__comision=self.inscripcion.comision
+        ).values('fecha_clase').distinct().count()
+        
+        # Recalcular clases asistidas por este alumno
+        self.clases_asistidas = Asistencia.objects.filter(
+            inscripcion=self.inscripcion,
+            presente=True
+        ).count()
+        
         if self.total_clases > 0:
             self.porcentaje_asistencia = (self.clases_asistidas / self.total_clases) * 100
             # Cumple requisito si tiene entre 60% y 100% de asistencia

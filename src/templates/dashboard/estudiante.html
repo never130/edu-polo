@@ -5,14 +5,14 @@
 {% block user_role %}Estudiante{% endblock %}
 
 {% block sidebar_menu %}
-<li><a href="{% url 'dashboard_estudiante' %}" class="active"><span class="icon">🏠</span> Inicio</a></li>
-<li><a href="{% url 'lista_polos' %}"><span class="icon">🔍</span> Cursos Disponibles</a></li>
-<li><a href="{% url 'cursos:mis_inscripciones' %}"><span class="icon">✅</span> Mis Inscripciones</a></li>
-<li><a href="{% url 'usuario:gestionar_tutores' %}"><span class="icon">👨‍👩‍👧‍👦</span> Mis Tutores</a></li>
-<li><a href="{% url 'usuario:mi_progreso' %}"><span class="icon">📈</span> Mi Progreso</a></li>
-<li><a href="{% url 'usuario:mis_certificados' %}"><span class="icon">🎓</span> Certificados</a></li>
-<li><a href="{% url 'usuario:materiales_estudiante' %}"><span class="icon">📁</span> Materiales</a></li>
-<li><a href="{% url 'usuario:mi_perfil' %}"><span class="icon">👤</span> Mi Perfil</a></li>
+<li><a href="{% url 'dashboard_estudiante' %}" class="active">Inicio</a></li>
+<li><a href="{% url 'cursos:ver_disponibles' %}">Cursos Disponibles</a></li>
+<li><a href="{% url 'cursos:mis_inscripciones' %}">Mis Inscripciones</a></li>
+<li><a href="{% url 'usuario:gestionar_tutores' %}">Mis Tutores</a></li>
+<li><a href="{% url 'usuario:mi_progreso' %}">Mi Progreso</a></li>
+{# <li><a href="{% url 'usuario:mis_certificados' %}">Certificados</a></li> #}
+{# <li><a href="{% url 'usuario:materiales_estudiante' %}">Materiales</a></li> #}
+<li><a href="{% url 'usuario:mi_perfil' %}">Mi Perfil</a></li>
 {% endblock %}
 
 {% block content %}
@@ -76,7 +76,7 @@
         <div style="font-size: 3rem; margin-bottom: 1rem;">🎓</div>
         <h4 style="color: #4a5568; margin-bottom: 0.5rem;">No tienes cursos activos</h4>
         <p style="color: #718096; margin-bottom: 1.5rem;">Explora los cursos disponibles e inscríbete para comenzar a aprender.</p>
-        <a href="{% url 'lista_polos' %}" class="accion-btn accion-primary" style="display: inline-block; width: auto; padding: 0.8rem 2rem;">
+        <a href="{% url 'cursos:ver_disponibles' %}" class="accion-btn accion-primary" style="display: inline-block; width: auto; padding: 0.8rem 2rem;">
             Ver Cursos Disponibles
         </a>
     </div>
@@ -217,7 +217,7 @@
 <div class="acciones-rapidas">
     <h3 style="color: #667eea; margin-bottom: 1.5rem;">Acciones Rápidas</h3>
     <div class="acciones-grid">
-    <a href="{% url 'lista_polos' %}" class="accion-btn accion-primary">
+    <a href="{% url 'cursos:ver_disponibles' %}" class="accion-btn accion-primary">
         Ver Cursos Disponibles
     </a>
     <a href="{% url 'cursos:mis_inscripciones' %}" class="accion-btn accion-secondary">

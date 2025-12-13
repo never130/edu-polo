@@ -49,9 +49,9 @@
     <li><a href="{% url 'usuario:gestionar_tutores' %}">Mis Tutores</a></li>
     {% endif %}
     <li><a href="{% url 'usuario:mi_progreso' %}">Mi Progreso</a></li>
-    <li><a href="{% url 'usuario:mis_certificados' %}">Certificados</a></li>
+    {# <li><a href="{% url 'usuario:mis_certificados' %}">Certificados</a></li> #}
     {% if es_estudiante %}
-    <li><a href="{% url 'usuario:materiales_estudiante' %}">Materiales</a></li>
+    {# <li><a href="{% url 'usuario:materiales_estudiante' %}">Materiales</a></li> #}
     {% endif %}
     <li><a href="{% url 'usuario:mi_perfil' %}" class="active">Mi Perfil</a></li>
 {% endif %}

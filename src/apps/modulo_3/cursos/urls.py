@@ -9,9 +9,9 @@ urlpatterns = [
     path('disponibles/', ver_cursos_disponibles, name='ver_disponibles'),
     path('mis-inscripciones/', views.mis_inscripciones, name='mis_inscripciones'),
     
-    # Vistas CRUD para admin
+    # Vistas CRUD para admin (Deprecadas - moved to administracion)
     path('', views.CursoListView.as_view(), name='lista'),
-    path('crear/', views.CursoCreateView.as_view(), name='crear'),
-    path('<int:pk>/actualizar/', views.CursoUpdateView.as_view(), name='actualizar'),
-    path('<int:pk>/eliminar/', views.CursoDeleteView.as_view(), name='eliminar'),
+    # path('crear/', views.CursoCreateView.as_view(), name='crear'),
+    # path('<int:pk>/actualizar/', views.CursoUpdateView.as_view(), name='actualizar'),
+    # path('<int:pk>/eliminar/', views.CursoDeleteView.as_view(), name='eliminar'),
 ]

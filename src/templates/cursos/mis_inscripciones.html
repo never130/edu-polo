@@ -1,7 +1,18 @@
-{% extends 'base.html' %}
+{% extends 'dashboard/base_dashboard.html' %}
 {% load static %}
 
 {% block title %}Mis Inscripciones - Edu-Polo{% endblock %}
+
+{% block sidebar_menu %}
+<li><a href="{% url 'dashboard_estudiante' %}">Inicio</a></li>
+<li><a href="{% url 'cursos:ver_disponibles' %}">Cursos Disponibles</a></li>
+<li><a href="{% url 'cursos:mis_inscripciones' %}" class="active">Mis Inscripciones</a></li>
+<li><a href="{% url 'usuario:gestionar_tutores' %}">Mis Tutores</a></li>
+<li><a href="{% url 'usuario:mi_progreso' %}">Mi Progreso</a></li>
+{# <li><a href="{% url 'usuario:mis_certificados' %}">Certificados</a></li> #}
+{# <li><a href="{% url 'usuario:materiales_estudiante' %}">Materiales</a></li> #}
+<li><a href="{% url 'usuario:mi_perfil' %}">Mi Perfil</a></li>
+{% endblock %}
 
 {% block content %}
 <style>

@@ -8,8 +8,8 @@
 <li><a href="{% url 'cursos:ver_disponibles' %}" class="active"> Cursos Disponibles</a></li>
 <li><a href="{% url 'cursos:mis_inscripciones' %}"> Mis Inscripciones</a></li>
 <li><a href="{% url 'usuario:gestionar_tutores' %}"> Mis Tutores</a></li>
-<li><a href="#"> Mi Progreso</a></li>
-<li><a href="#"> Certificados</a></li>
+<li><a href="{% url 'usuario:mi_progreso' %}"> Mi Progreso</a></li>
+{# <li><a href="{% url 'usuario:mis_certificados' %}"> Certificados</a></li> #}
 <li><a href="{% url 'usuario:mi_perfil' %}"> Mi Perfil</a></li>
 {% endblock %}
 
