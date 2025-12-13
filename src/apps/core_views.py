@@ -270,8 +270,13 @@ def dashboard_admin(request):
                 'porcentaje': comision.porcentaje_ocupacion
             })
     
-    # Ordenar alertas por cupos restantes (menor a mayor)
-    alertas_cupo.sort(key=lambda x: x['cupos_restantes'])
+    # Nuevas preinscripciones para el modal
+    nuevas_preinscripciones = Inscripcion.objects.filter(
+        estado='pre_inscripto'
+    ).select_related(
+        'estudiante__usuario__persona',
+        'comision__fk_id_curso'
+    ).order_by('-fecha_hora_inscripcion')
     
     # Determinar el tipo de usuario para el template
     tipo_usuario = 'Administrador'
@@ -306,6 +311,7 @@ def dashboard_admin(request):
         'tipo_usuario': tipo_usuario,
         'puede_crear_usuarios': puede_crear_usuarios,
         'es_admin_completo': es_admin_completo,
+        'nuevas_preinscripciones': nuevas_preinscripciones,
     }
     return render(request, 'dashboard/admin.html', context)
 

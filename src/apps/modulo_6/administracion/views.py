@@ -365,13 +365,14 @@ def panel_inscripciones(request):
 def inscribir_estudiante_admin(request):
     """Inscribir o confirmar estudiante a una comisión desde el panel de administración"""
     if request.method == 'POST':
+        redirect_url = request.POST.get('next', 'administracion:panel_inscripciones')
         try:
             estudiante_id = request.POST.get('estudiante_id')
             comision_id = request.POST.get('comision_id')
             
             if not estudiante_id or not comision_id:
                 messages.error(request, '❌ Por favor, selecciona un estudiante y una comisión.')
-                return redirect('administracion:panel_inscripciones')
+                return redirect(redirect_url)
             
             estudiante = get_object_or_404(Estudiante, pk=estudiante_id)
             comision = get_object_or_404(Comision, id_comision=comision_id)
@@ -386,20 +387,20 @@ def inscribir_estudiante_admin(request):
                         inscripcion_existente.estado = 'confirmado'
                         inscripcion_existente.save()
                     messages.success(request, f'✅ Inscripción confirmada exitosamente para {estudiante.usuario.persona.nombre_completo}.')
-                    return redirect('administracion:panel_inscripciones')
+                    return redirect(redirect_url)
                 elif inscripcion_existente.estado == 'confirmado':
                     messages.warning(request, f'⚠️ El estudiante {estudiante.usuario.persona.nombre_completo} ya está inscrito y confirmado en esta comisión.')
-                    return redirect('administracion:panel_inscripciones')
+                    return redirect(redirect_url)
                 elif inscripcion_existente.estado == 'lista_espera':
                     messages.warning(request, f'⚠️ El estudiante {estudiante.usuario.persona.nombre_completo} está en lista de espera.')
                     # Aquí se podría agregar lógica para mover de lista de espera a confirmado si hay cupo
-                    return redirect('administracion:panel_inscripciones')
+                    return redirect(redirect_url)
             
             # Si no existe inscripción previa (o se permite crear nueva para otros casos)
             # Verificar cupo disponible
             if comision.cupo_lleno:
                 messages.error(request, f'🚫 La comisión {comision.fk_id_curso.nombre} (Comisión #{comision.id_comision}) no tiene cupos disponibles.')
-                return redirect('administracion:panel_inscripciones')
+                return redirect(redirect_url)
             
             # Verificar rango etario
             curso = comision.fk_id_curso
@@ -409,15 +410,15 @@ def inscribir_estudiante_admin(request):
             if edad_real is None:
                 if curso.edad_minima or curso.edad_maxima:
                     messages.error(request, f'⚠️ El estudiante {persona.nombre_completo} no tiene fecha de nacimiento registrada y el curso tiene restricciones de edad.')
-                    return redirect('administracion:panel_inscripciones')
+                    return redirect(redirect_url)
             else:
                 if curso.edad_minima and edad_real < curso.edad_minima:
                     messages.error(request, f'⛔ El estudiante {persona.nombre_completo} ({edad_real} años) no cumple con la edad mínima ({curso.edad_minima} años).')
-                    return redirect('administracion:panel_inscripciones')
+                    return redirect(redirect_url)
                 
                 if curso.edad_maxima and edad_real > curso.edad_maxima:
                     messages.error(request, f'⛔ El estudiante {persona.nombre_completo} ({edad_real} años) supera la edad máxima ({curso.edad_maxima} años).')
-                    return redirect('administracion:panel_inscripciones')
+                    return redirect(redirect_url)
 
             # Crear inscripción
             with transaction.atomic():
@@ -428,9 +429,11 @@ def inscribir_estudiante_admin(request):
                 )
             
             messages.success(request, f'✅ Estudiante {estudiante.usuario.persona.nombre_completo} inscrito exitosamente en {comision.fk_id_curso.nombre} (Comisión #{comision.id_comision}). Cupos restantes: {comision.cupos_disponibles}')
+            return redirect(redirect_url)
             
         except Exception as e:
             messages.error(request, f'❌ Error al inscribir estudiante: {str(e)}')
+            return redirect(redirect_url)
     
     return redirect('administracion:panel_inscripciones')
 
