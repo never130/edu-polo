@@ -316,57 +316,9 @@
             </button>
         </div>
         
-        <!-- Sección 3: Información de Salud -->
-        <div class="form-section">
-            <h3 class="section-title">
-                <span>🏥</span>
-                Información de Salud y Observaciones
-            </h3>
-            
-            <div class="form-group">
-                <label>¿Tienes alguna discapacidad o necesitas adaptaciones?</label>
-                <textarea name="observaciones_discapacidad" rows="2" placeholder="Especifica si necesitas alguna adaptación o consideración especial..."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label>Alergias, Condiciones Médicas (celíaco, diabetes, etc.)</label>
-                <textarea name="observaciones_salud" rows="2" placeholder="Especifica alergias, condiciones médicas importantes..."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label>Otras Observaciones</label>
-                <textarea name="observaciones_generales" rows="2" placeholder="Cualquier otra información que consideres relevante..."></textarea>
-            </div>
-        </div>
+        <!-- Sección 3: Información de Salud (ELIMINADA - Se gestiona en Registro) -->
         
-        <!-- Sección 5: Políticas y Autorizaciones -->
-        <div class="form-section politicas-section">
-            <h3 class="section-title">
-                <span>📋</span>
-                Políticas de Uso de Datos y Autorizaciones
-            </h3>
-            
-            <div class="checkbox-group">
-                <input type="checkbox" id="politica_datos" name="politica_datos" required>
-                <label for="politica_datos" class="required">
-                    Acepto la <strong>Política de Uso de Datos Personales</strong> y autorizo el tratamiento de mi información conforme a la normativa vigente de protección de datos.
-                </label>
-            </div>
-            
-            <div class="checkbox-group" style="margin-top: 1rem;">
-                <input type="checkbox" id="autorizacion_imagen" name="autorizacion_imagen">
-                <label for="autorizacion_imagen">
-                    Autorizo el <strong>uso de mi imagen</strong> en fotografías y videos con fines educativos e institucionales.
-                </label>
-            </div>
-            
-            <div class="checkbox-group" style="margin-top: 1rem;">
-                <input type="checkbox" id="autorizacion_voz" name="autorizacion_voz">
-                <label for="autorizacion_voz">
-                    Autorizo el <strong>uso de mi voz</strong> en grabaciones con fines educativos e institucionales.
-                </label>
-            </div>
-        </div>
+        <!-- Sección 5: Políticas y Autorizaciones (ELIMINADA - Se gestiona en Registro) -->
         
         <!-- Botón de Envío -->
         <button type="submit" class="btn-submit" id="btnSubmit">
@@ -546,17 +498,8 @@
         });
     });
     
-    // Validar política de datos antes de enviar
+    // Validar antes de enviar
     document.getElementById('formInscripcion').addEventListener('submit', function(e) {
-        const politicaDatos = document.getElementById('politica_datos');
-        
-        if (!politicaDatos.checked) {
-            e.preventDefault();
-            alert('❌ Debes aceptar la Política de Uso de Datos para continuar con la inscripción.');
-            politicaDatos.focus();
-            return false;
-        }
-        
         // Validar que si es menor, tenga al menos un tutor
         const fechaNac = new Date(document.getElementById('fecha_nacimiento').value);
         const hoy = new Date();

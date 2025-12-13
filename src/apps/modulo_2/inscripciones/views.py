@@ -71,11 +71,6 @@ def formulario_inscripcion(request, comision_id):
                     messages.error(request, '❌ DNI no encontrado. Debes registrarte primero en el sistema.')
                     return redirect('usuario:registro')
                 
-                # 3. Actualizar autorizaciones
-                persona.autorizacion_imagen = request.POST.get('autorizacion_imagen') == 'on'
-                persona.autorizacion_voz = request.POST.get('autorizacion_voz') == 'on'
-                persona.save()
-                
                 # 4. Obtener usuario y estudiante
                 usuario = Usuario.objects.get(persona=persona)
                 estudiante = Estudiante.objects.get(usuario=usuario)
