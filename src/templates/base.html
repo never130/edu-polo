@@ -419,6 +419,69 @@
         @media (max-width: 768px) {
             .form-grid { grid-template-columns: 1fr !important; }
         }
+
+        /* New styles for health and policies */
+        .modal-section {
+            margin-top: 2rem;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 1.5rem;
+            grid-column: 1 / -1;
+        }
+        .modal-section-title {
+            color: #4a5568;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: #f8fafc;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #F09819;
+        }
+        .policy-item {
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            padding: 0.8rem;
+            border-radius: 8px;
+            background-color: #fff;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+        .policy-item:hover {
+            background-color: #ffffdb;
+            border-color: #F09819;
+        }
+        .policy-checkbox {
+            margin-top: 0.2rem;
+            width: 1.2rem;
+            height: 1.2rem;
+            cursor: pointer;
+            accent-color: #F09819;
+        }
+        .policy-label {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            cursor: pointer;
+            color: #4a5568;
+            flex: 1;
+        }
+        .health-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .health-full {
+            grid-column: 1 / -1;
+        }
+        @media (max-width: 768px) {
+            .health-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -638,50 +701,52 @@
                 </div>
 
                 <!-- Health Section -->
-                <div style="margin-top: 1.5rem; border-top: 1px solid #e2e8f0; padding-top: 1.5rem; grid-column: 1 / -1;">
-                    <h3 style="color: #4a5568; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                <div class="modal-section">
+                    <h3 class="modal-section-title">
                         <span>🏥</span> Información de Salud y Observaciones
                     </h3>
                     
-                    <div class="form-group" style="margin-bottom: 1rem;">
-                        <label>¿Tienes alguna discapacidad o necesitas adaptaciones?</label>
-                        <textarea name="observaciones_discapacidad" rows="2" class="form-input" placeholder="Especifica si necesitas alguna adaptación o consideración especial..."></textarea>
-                    </div>
-                    
-                    <div class="form-group" style="margin-bottom: 1rem;">
-                        <label>Alergias, Condiciones Médicas (celíaco, diabetes, etc.)</label>
-                        <textarea name="observaciones_salud" rows="2" class="form-input" placeholder="Especifica alergias, condiciones médicas importantes..."></textarea>
-                    </div>
-                    
-                    <div class="form-group" style="margin-bottom: 1rem;">
-                        <label>Otras Observaciones</label>
-                        <textarea name="observaciones_generales" rows="2" class="form-input" placeholder="Cualquier otra información que consideres relevante..."></textarea>
+                    <div class="health-grid">
+                        <div class="form-group">
+                            <label>¿Tienes alguna discapacidad o necesitas adaptaciones?</label>
+                            <textarea name="observaciones_discapacidad" rows="3" class="form-input" placeholder="Especifica si necesitas alguna adaptación..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Alergias, Condiciones Médicas</label>
+                            <textarea name="observaciones_salud" rows="3" class="form-input" placeholder="Alergias, diabetes, celiaquía, etc..."></textarea>
+                        </div>
+                        
+                        <div class="form-group health-full">
+                            <label>Otras Observaciones</label>
+                            <textarea name="observaciones_generales" rows="2" class="form-input" placeholder="Cualquier otra información relevante..."></textarea>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Policies Section -->
-                <div style="margin-top: 1.5rem; border-top: 1px solid #e2e8f0; padding-top: 1.5rem; grid-column: 1 / -1;">
-                    <h3 style="color: #4a5568; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                <div class="modal-section">
+                    <h3 class="modal-section-title">
                         <span>📋</span> Políticas de Uso de Datos y Autorizaciones
                     </h3>
                     
-                    <div style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem;">
-                        <input type="checkbox" id="politica_datos" name="politica_datos" required style="margin-top: 0.3rem;">
-                        <label for="politica_datos" style="display: inline; font-weight: 400; font-size: 0.9rem;">
+                    <div class="policy-item">
+                        <input type="checkbox" id="politica_datos" name="politica_datos" required class="policy-checkbox">
+                        <label for="politica_datos" class="policy-label">
                             Acepto la <strong>Política de Uso de Datos Personales</strong> y autorizo el tratamiento de mi información conforme a la normativa vigente de protección de datos.
                         </label>
                     </div>
                     
-                    <div style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem;">
-                        <input type="checkbox" id="autorizacion_imagen" name="autorizacion_imagen" style="margin-top: 0.3rem;">
-                        <label for="autorizacion_imagen" style="display: inline; font-weight: 400; font-size: 0.9rem;">
+                    <div class="policy-item">
+                        <input type="checkbox" id="autorizacion_imagen" name="autorizacion_imagen" class="policy-checkbox">
+                        <label for="autorizacion_imagen" class="policy-label">
                             Autorizo el <strong>uso de mi imagen</strong> en fotografías y videos con fines educativos e institucionales.
                         </label>
                     </div>
                     
-                    <div style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem;">
-                        <input type="checkbox" id="autorizacion_voz" name="autorizacion_voz" style="margin-top: 0.3rem;">
-                        <label for="autorizacion_voz" style="display: inline; font-weight: 400; font-size: 0.9rem;">
+                    <div class="policy-item">
+                        <input type="checkbox" id="autorizacion_voz" name="autorizacion_voz" class="policy-checkbox">
+                        <label for="autorizacion_voz" class="policy-label">
                             Autorizo el <strong>uso de mi voz</strong> en grabaciones con fines educativos e institucionales.
                         </label>
                     </div>
