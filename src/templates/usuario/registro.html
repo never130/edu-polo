@@ -380,6 +380,56 @@
                         <input type="password" id="password_confirm" name="password_confirm" required placeholder="Repite la contraseña">
                     </div>
                 </div>
+
+                <!-- Health Section -->
+                <div style="margin-top: 1.5rem; border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
+                    <h3 style="color: #4a5568; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <span>🏥</span> Información de Salud y Observaciones
+                    </h3>
+                    
+                    <div class="form-group" style="margin-bottom: 1rem; width: 100%;">
+                        <label>¿Tienes alguna discapacidad o necesitas adaptaciones?</label>
+                        <textarea name="observaciones_discapacidad" rows="2" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px;" placeholder="Especifica si necesitas alguna adaptación o consideración especial..."></textarea>
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 1rem; width: 100%;">
+                        <label>Alergias, Condiciones Médicas (celíaco, diabetes, etc.)</label>
+                        <textarea name="observaciones_salud" rows="2" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px;" placeholder="Especifica alergias, condiciones médicas importantes..."></textarea>
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 1rem; width: 100%;">
+                        <label>Otras Observaciones</label>
+                        <textarea name="observaciones_generales" rows="2" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px;" placeholder="Cualquier otra información que consideres relevante..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Policies Section -->
+                <div style="margin-top: 1.5rem; border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
+                    <h3 style="color: #4a5568; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <span>📋</span> Políticas de Uso de Datos y Autorizaciones
+                    </h3>
+                    
+                    <div style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem;">
+                        <input type="checkbox" id="politica_datos" name="politica_datos" required style="margin-top: 0.3rem;">
+                        <label for="politica_datos" style="display: inline; font-weight: 400; font-size: 0.9rem;">
+                            Acepto la <strong>Política de Uso de Datos Personales</strong> y autorizo el tratamiento de mi información conforme a la normativa vigente de protección de datos.
+                        </label>
+                    </div>
+                    
+                    <div style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem;">
+                        <input type="checkbox" id="autorizacion_imagen" name="autorizacion_imagen" style="margin-top: 0.3rem;">
+                        <label for="autorizacion_imagen" style="display: inline; font-weight: 400; font-size: 0.9rem;">
+                            Autorizo el <strong>uso de mi imagen</strong> en fotografías y videos con fines educativos e institucionales.
+                        </label>
+                    </div>
+                    
+                    <div style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem;">
+                        <input type="checkbox" id="autorizacion_voz" name="autorizacion_voz" style="margin-top: 0.3rem;">
+                        <label for="autorizacion_voz" style="display: inline; font-weight: 400; font-size: 0.9rem;">
+                            Autorizo el <strong>uso de mi voz</strong> en grabaciones con fines educativos e institucionales.
+                        </label>
+                    </div>
+                </div>
                 
                 <button type="submit" class="btn-submit">Crear Cuenta</button>
             </form>

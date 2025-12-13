@@ -80,10 +80,35 @@ class RegistroView(View):
                 domicilio = request.POST.get('domicilio', '')
                 password = request.POST.get('password')
                 password_confirm = request.POST.get('password_confirm')
+                
+                # Campos de salud y autorizaciones
+                observaciones_discapacidad = request.POST.get('observaciones_discapacidad', '').strip()
+                observaciones_salud = request.POST.get('observaciones_salud', '').strip()
+                observaciones_generales = request.POST.get('observaciones_generales', '').strip()
+                
+                politica_datos = request.POST.get('politica_datos')
+                autorizacion_imagen = request.POST.get('autorizacion_imagen') == 'on'
+                autorizacion_voz = request.POST.get('autorizacion_voz') == 'on'
+
+                # Combinar observaciones en condiciones_medicas
+                condiciones_medicas_list = []
+                if observaciones_discapacidad:
+                    condiciones_medicas_list.append(f"Discapacidad/Adaptaciones: {observaciones_discapacidad}")
+                if observaciones_salud:
+                    condiciones_medicas_list.append(f"Condiciones Médicas: {observaciones_salud}")
+                if observaciones_generales:
+                    condiciones_medicas_list.append(f"Otras Observaciones: {observaciones_generales}")
+                
+                condiciones_medicas = "\n".join(condiciones_medicas_list)
+
                 # Solo estudiantes pueden registrarse desde el formulario público
                 tipo_usuario = 'estudiante'
                 
                 # Validaciones
+                if not politica_datos:
+                    messages.error(request, 'Debes aceptar la política de uso de datos personales.')
+                    return render(request, 'usuario/registro.html')
+
                 if password != password_confirm:
                     messages.error(request, 'Las contraseñas no coinciden.')
                     return render(request, 'usuario/registro.html')
@@ -114,7 +139,10 @@ class RegistroView(View):
                     fecha_nacimiento=fecha_nacimiento if fecha_nacimiento else None,
                     genero=genero,
                     ciudad_residencia=ciudad if ciudad else None,
-                    domicilio=domicilio
+                    domicilio=domicilio,
+                    condiciones_medicas=condiciones_medicas,
+                    autorizacion_imagen=autorizacion_imagen,
+                    autorizacion_voz=autorizacion_voz
                 )
                 
                 # Crear Usuario del sistema Django

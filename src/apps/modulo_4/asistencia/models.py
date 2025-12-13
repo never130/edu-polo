@@ -83,8 +83,8 @@ class RegistroAsistencia(models.Model):
         
         if self.total_clases > 0:
             self.porcentaje_asistencia = (self.clases_asistidas / self.total_clases) * 100
-            # Cumple requisito si tiene entre 60% y 100% de asistencia
-            self.cumple_requisito_certificado = 60 <= self.porcentaje_asistencia <= 100
+            # Cumple requisito si tiene entre 80% y 100% de asistencia
+            self.cumple_requisito_certificado = 80 <= self.porcentaje_asistencia <= 100
         else:
             self.porcentaje_asistencia = 0
             self.cumple_requisito_certificado = False

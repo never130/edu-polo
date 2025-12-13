@@ -56,7 +56,7 @@ def mi_progreso(request):
             inscripcion.progreso = porcentaje
             inscripcion.total_clases = total_asistencias
             inscripcion.asistencias_count = asistencias_presentes
-            inscripcion.cumple_certificado = 60 <= porcentaje <= 100
+            inscripcion.cumple_certificado = 80 <= porcentaje <= 100
             
             inscripciones_con_progreso.append(inscripcion)
         

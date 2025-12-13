@@ -33,8 +33,8 @@ def actualizar_registro_asistencia(inscripcion):
     # Calcular porcentaje
     if total_clases > 0:
         registro.porcentaje_asistencia = (clases_asistidas / total_clases) * 100
-        # Cumple requisito si tiene entre 60% y 100% de asistencia
-        registro.cumple_requisito_certificado = 60 <= registro.porcentaje_asistencia <= 100
+        # Cumple requisito si tiene entre 80% y 100% de asistencia
+        registro.cumple_requisito_certificado = 80 <= registro.porcentaje_asistencia <= 100
     else:
         registro.porcentaje_asistencia = 0
         registro.cumple_requisito_certificado = False
