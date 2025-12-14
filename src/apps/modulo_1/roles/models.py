@@ -99,7 +99,7 @@ class TutorEstudiante(models.Model):
         ('tutor_legal', 'Tutor Legal'),
         ('abuelo', 'Abuelo/a'),
         ('hermano', 'Hermano/a'),
-        ('otro', 'Otro'),
+        ('vecino', 'Vecino/a'),
     ]
     
     tutor = models.ForeignKey(Tutor, on_delete=models.CASCADE, related_name='estudiantes_a_cargo', verbose_name="Tutor")
