@@ -66,7 +66,7 @@ def es_admin_completo(user):
 
 
 @login_required
-@user_passes_test(es_admin)
+@user_passes_test(es_admin_completo)
 def panel_cursos(request):
     """Panel de gestión de cursos"""
     cursos = Curso.objects.all().annotate(
@@ -80,7 +80,7 @@ def panel_cursos(request):
 
 
 @login_required
-@user_passes_test(es_admin)
+@user_passes_test(es_admin_completo)
 def crear_curso(request):
     """Crear un nuevo curso"""
     if request.method == 'POST':
@@ -119,7 +119,7 @@ def crear_curso(request):
 
 
 @login_required
-@user_passes_test(es_admin)
+@user_passes_test(es_admin_completo)
 def editar_curso(request, curso_id):
     """Editar un curso existente"""
     curso = get_object_or_404(Curso, id_curso=curso_id)
@@ -157,6 +157,11 @@ def panel_comisiones(request):
     
     comisiones = Comision.objects.all().select_related('fk_id_curso', 'fk_id_polo').prefetch_related('docentes').order_by('-id_comision')
     
+    # Filtrar por ciudad si es Mesa de Entrada
+    ciudad_mesa_entrada = get_mesa_entrada_ciudad(request.user)
+    if ciudad_mesa_entrada:
+        comisiones = comisiones.filter(fk_id_polo__ciudad=ciudad_mesa_entrada)
+    
     # Obtener docentes asignados para cada comisión
     comisiones_con_docentes = []
     for comision in comisiones:
@@ -185,14 +190,15 @@ def panel_comisiones(request):
     context = {
         'comisiones_con_docentes': comisiones_con_docentes,
         'docentes_disponibles': docentes_disponibles,
+        'es_admin_completo': es_admin_completo(request.user),
     }
     return render(request, 'administracion/panel_comisiones.html', context)
 
 
 @login_required
-@user_passes_test(es_admin)
+@user_passes_test(es_admin_completo)
 def crear_comision(request):
-    """Crear una nueva comisión"""
+    """Crear una nueva comisión (SOLO ADMIN COMPLETO)"""
     from apps.modulo_3.cursos.models import ComisionDocente
     
     if request.method == 'POST':
@@ -242,6 +248,11 @@ def crear_comision(request):
     
     cursos = Curso.objects.filter(estado='Abierto')
     polos = PoloCreativo.objects.filter(activo=True)
+    
+    # Filtrar por ciudad si es Mesa de Entrada
+    ciudad_mesa_entrada = get_mesa_entrada_ciudad(request.user)
+    if ciudad_mesa_entrada:
+        polos = polos.filter(ciudad=ciudad_mesa_entrada)
     
     # Obtener docentes disponibles (usuarios que tienen el rol de Docente)
     docentes_disponibles = []
@@ -306,6 +317,31 @@ def asignar_docente_comision(request, comision_id):
     """
 
 
+
+def get_mesa_entrada_ciudad(user):
+    """
+    Retorna la ciudad del usuario si es Mesa de Entrada y NO es Administrador/Superuser.
+    Si es Admin/Superuser o no es Mesa de Entrada, retorna None.
+    """
+    if user.is_staff or user.is_superuser:
+        return None
+        
+    try:
+        usuario = Usuario.objects.get(persona__dni=user.username)
+        roles = UsuarioRol.objects.filter(usuario_id=usuario).values_list('rol_id__nombre', flat=True)
+        
+        if 'Administrador' in roles:
+            return None
+            
+        if 'Mesa de Entrada' in roles:
+            return usuario.persona.ciudad_residencia
+            
+    except Usuario.DoesNotExist:
+        pass
+        
+    return None
+
+
 @login_required
 @user_passes_test(es_admin)
 def panel_inscripciones(request):
@@ -314,6 +350,11 @@ def panel_inscripciones(request):
         'estudiante__usuario__persona',
         'comision__fk_id_curso'
     ).order_by('-fecha_hora_inscripcion')
+    
+    # Filtrar por ciudad si es Mesa de Entrada
+    ciudad_mesa_entrada = get_mesa_entrada_ciudad(request.user)
+    if ciudad_mesa_entrada:
+        inscripciones = inscripciones.filter(comision__fk_id_polo__ciudad=ciudad_mesa_entrada)
     
     # Búsqueda
     busqueda = request.GET.get('q')
@@ -341,6 +382,9 @@ def panel_inscripciones(request):
     ).filter(
         cupos_disponibles_calc__gt=0
     ).select_related('fk_id_curso', 'fk_id_polo').order_by('fk_id_curso__nombre', 'id_comision')
+    
+    if ciudad_mesa_entrada:
+        comisiones_disponibles = comisiones_disponibles.filter(fk_id_polo__ciudad=ciudad_mesa_entrada)
     
     # Obtener estudiantes para el selector (SOLO PRE-INSCRIPTOS como solicitado)
     pre_inscripciones_prefetch = Prefetch(
@@ -376,6 +420,12 @@ def inscribir_estudiante_admin(request):
             
             estudiante = get_object_or_404(Estudiante, pk=estudiante_id)
             comision = get_object_or_404(Comision, id_comision=comision_id)
+            
+            # Validar permisos Mesa de Entrada
+            ciudad_mesa_entrada = get_mesa_entrada_ciudad(request.user)
+            if ciudad_mesa_entrada and comision.fk_id_polo and comision.fk_id_polo.ciudad != ciudad_mesa_entrada:
+                 messages.error(request, '❌ No tienes permiso para inscribir en comisiones de otra ciudad.')
+                 return redirect(redirect_url)
             
             # Verificar si ya está inscrito
             inscripcion_existente = Inscripcion.objects.filter(estudiante=estudiante, comision=comision).first()
@@ -449,6 +499,11 @@ def exportar_inscripciones(request):
     writer.writerow(['ID', 'Estudiante', 'DNI', 'Curso', 'Comisión', 'Fecha Inscripción', 'Estado', 'Observaciones Salud'])
     
     inscripciones = Inscripcion.objects.all().select_related('estudiante__usuario__persona', 'comision__fk_id_curso')
+    
+    # Filtrar por ciudad si es Mesa de Entrada
+    ciudad_mesa_entrada = get_mesa_entrada_ciudad(request.user)
+    if ciudad_mesa_entrada:
+        inscripciones = inscripciones.filter(comision__fk_id_polo__ciudad=ciudad_mesa_entrada)
     
     for insc in inscripciones:
         writer.writerow([
@@ -556,7 +611,7 @@ def crear_polo(request):
 
 
 @login_required
-@user_passes_test(es_admin)
+@user_passes_test(es_admin_completo)
 def estadisticas_detalladas(request):
     """Panel de estadísticas detalladas con gráficos"""
     from apps.modulo_4.asistencia.models import RegistroAsistencia
@@ -810,7 +865,7 @@ def crear_usuario_admin(request):
 
 
 @login_required
-@user_passes_test(es_admin)
+@user_passes_test(es_admin_completo)
 def editar_usuario_admin(request, persona_id):
     """Editar un usuario existente"""
     persona = get_object_or_404(Persona, id=persona_id)
@@ -904,7 +959,7 @@ def editar_usuario_admin(request, persona_id):
 
 
 @login_required
-@user_passes_test(es_admin)
+@user_passes_test(es_admin_completo)
 def eliminar_usuario_admin(request, persona_id):
     """Eliminar un usuario del sistema"""
     if request.method == 'POST':
@@ -937,7 +992,7 @@ def eliminar_usuario_admin(request, persona_id):
 
 
 @login_required
-@user_passes_test(es_admin)
+@user_passes_test(es_admin_completo)
 def exportar_usuarios_excel(request):
     """Exportar usuarios a Excel"""
     # Crear workbook y worksheet
@@ -1053,6 +1108,11 @@ def panel_asistencia(request):
         ).distinct().select_related('fk_id_curso', 'fk_id_polo').order_by('fk_id_curso__nombre', 'id_comision')
     else:
         comisiones = Comision.objects.all().distinct().select_related('fk_id_curso', 'fk_id_polo').order_by('fk_id_curso__nombre', 'id_comision')
+        
+        # Filtrar por ciudad si es Mesa de Entrada
+        ciudad_mesa_entrada = get_mesa_entrada_ciudad(request.user)
+        if ciudad_mesa_entrada:
+            comisiones = comisiones.filter(fk_id_polo__ciudad=ciudad_mesa_entrada)
     
     # Si se selecciona una comisión específica, mostrar sus asistencias detalladas y formulario de toma
     comision_id = request.GET.get('comision_id') or request.POST.get('comision_id')
@@ -1075,6 +1135,13 @@ def panel_asistencia(request):
                 fk_id_comision=comision
             ).exists()
             if not tiene_acceso:
+                messages.error(request, '❌ No tienes permiso para ver esta comisión.')
+                return redirect('administracion:panel_asistencia')
+        
+        # Verificar permisos si es Mesa de Entrada
+        else:
+            ciudad_mesa_entrada = get_mesa_entrada_ciudad(request.user)
+            if ciudad_mesa_entrada and comision.fk_id_polo and comision.fk_id_polo.ciudad != ciudad_mesa_entrada:
                 messages.error(request, '❌ No tienes permiso para ver esta comisión.')
                 return redirect('administracion:panel_asistencia')
 
@@ -1187,6 +1254,13 @@ def tomar_asistencia_masiva(request, comision_id):
                 return redirect('administracion:panel_asistencia')
     except Usuario.DoesNotExist:
         pass
+
+    # Validar permisos Mesa de Entrada
+    if not es_docente:
+        ciudad_mesa_entrada = get_mesa_entrada_ciudad(request.user)
+        if ciudad_mesa_entrada and comision.fk_id_polo and comision.fk_id_polo.ciudad != ciudad_mesa_entrada:
+            messages.error(request, '❌ No tienes permiso para gestionar asistencias de esta comisión.')
+            return redirect('administracion:panel_asistencia')
 
     inscripciones = Inscripcion.objects.filter(
         comision=comision,
@@ -2018,7 +2092,7 @@ def materiales_docente(request):
 
 
 @login_required
-@user_passes_test(es_admin)
+@user_passes_test(es_admin_completo)
 def docentes_cursos(request):
     """Vista para ver todos los docentes con sus cursos asignados (para Admin y Mesa de Entrada)"""
     # DESHABILITADO TEMPORALMENTE

@@ -103,8 +103,10 @@
         <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem;">📋 Gestión de Comisiones</h2>
         <p style="opacity: 0.95;">Administra comisiones y controla cupos</p>
     </div>
+    {% if es_admin_completo %}
     <a href="{% url 'administracion:crear_comision' %}" class="btn-crear">➕ Crear Nueva Comisión
     </a>
+    {% endif %}
 </div>
 
 {% if comisiones_con_docentes %}
