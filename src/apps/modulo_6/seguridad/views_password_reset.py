@@ -22,15 +22,25 @@ def password_reset_request(request):
             messages.error(request, '❌ Por favor, ingresa tu DNI.')
             return render(request, 'registration/password_reset_request.html')
         
+        email_confirm = request.POST.get('email', '').strip()
+        if not email_confirm:
+            messages.error(request, '❌ Por favor, confirma tu correo electrónico.')
+            return render(request, 'registration/password_reset_request.html')
+        
         try:
             # Buscar el usuario por DNI
             usuario = Usuario.objects.get(persona__dni=dni)
             persona = usuario.persona
             
-            # Verificar si tiene email (usar correo del modelo Persona)
+            # Verificar si tiene email registrado
             if not persona.correo:
                 messages.error(request, '❌ Tu cuenta no tiene un email registrado. Por favor, contacta al administrador.')
                 return render(request, 'registration/password_reset_request.html')
+                
+            # Verificar que el email coincida (case insensitive)
+            if persona.correo.strip().lower() != email_confirm.strip().lower():
+                 messages.error(request, '❌ El correo electrónico no coincide con el registrado para este DNI.')
+                 return render(request, 'registration/password_reset_request.html')
             
             # Generar token único
             token = get_random_string(length=32)

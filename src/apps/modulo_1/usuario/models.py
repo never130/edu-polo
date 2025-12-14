@@ -24,7 +24,7 @@ class Persona(models.Model):
     dni = models.CharField(max_length=12, unique=True, verbose_name="DNI")
     nombre = models.CharField(max_length=100, verbose_name="Nombre")
     apellido = models.CharField(max_length=100, verbose_name="Apellido")
-    correo = models.EmailField(unique=True, verbose_name="Correo Electrónico")
+    correo = models.EmailField(verbose_name="Correo Electrónico")
     telefono = models.CharField(max_length=15, blank=True, null=True, verbose_name="Teléfono")
     fecha_nacimiento = models.DateField(blank=True, null=True, verbose_name="Fecha de Nacimiento")
     genero = models.CharField(max_length=1, choices=GENEROS, blank=True, null=True, verbose_name="Género")

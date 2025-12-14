@@ -56,15 +56,29 @@ def mi_perfil(request):
         if request.user.is_superuser:
             try:
                 with transaction.atomic():
+                    # Preparar correo único
+                    base_email = request.user.email or f'admin_{request.user.username}@example.com'
+                    email = base_email
+                    
+                    # Verificar si el correo ya existe en otra persona
+                    if Persona.objects.filter(correo=email).exclude(dni=request.user.username).exists():
+                        import time
+                        email = f"{int(time.time())}_{base_email}"
+
                     # Crear o recuperar Persona (usando username como DNI si es posible)
                     persona, created = Persona.objects.get_or_create(
                         dni=request.user.username,
                         defaults={
                             'nombre': request.user.first_name or 'Administrador',
                             'apellido': request.user.last_name or 'Sistema',
-                            'correo': request.user.email or f'admin_{request.user.username}@example.com',
+                            'correo': email,
                         }
                     )
+                    
+                    # Si la persona ya existía pero no tenía correo, actualizarlo si es necesario
+                    if not created and not persona.correo:
+                         persona.correo = email
+                         persona.save()
                     
                     # Crear Usuario
                     usuario, created = Usuario.objects.get_or_create(

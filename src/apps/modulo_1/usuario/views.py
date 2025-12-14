@@ -118,10 +118,6 @@ class RegistroView(View):
                     messages.error(request, 'Ya existe una persona con ese DNI.')
                     return render(request, 'usuario/registro.html')
                 
-                if Persona.objects.filter(correo=correo).exists():
-                    messages.error(request, 'Ya existe una persona con ese correo.')
-                    return render(request, 'usuario/registro.html')
-
                 if not telefono:
                     messages.error(request, 'El teléfono es obligatorio.')
                     return render(request, 'usuario/registro.html')
