@@ -17,6 +17,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* === OFFICIAL STYLES FROM LANDING.HTML === */
         :root {
             --primary: #FF512F;
             --secondary: #F09819;
@@ -26,188 +27,23 @@
             --text-light: #64748b;
         }
 
-        /* Modal Styles */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px);
-            z-index: 10000; display: none; align-items: center; justify-content: center;
-            padding: 1rem; opacity: 0; transition: opacity 0.3s ease;
-        }
-        .modal-overlay.show { display: flex; opacity: 1; }
-        .modal-container {
-            background: white; border-radius: 24px; max-width: 600px; width: 100%;
-            position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            overflow: hidden;
-        }
-        .modal-overlay.show .modal-container { transform: scale(1); }
-        .modal-close {
-            position: absolute; top: 1rem; right: 1rem; background: rgba(255, 255, 255, 0.2);
-            border: none; width: 40px; height: 40px; border-radius: 50%; color: #64748b;
-            font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
-            transition: background 0.2s; z-index: 50;
-        }
-        .modal-close:hover { background: rgba(255, 255, 255, 0.3); }
-
-        /* Split Login Modal Styles */
-        .modal-container.split-design {
-            max-width: 900px; width: 90%; display: flex; overflow: hidden;
-            padding: 0; border-radius: 20px; background: white; position: relative;
-        }
-        .login-left {
-            flex: 1; padding: 3rem; background: white;
-            display: flex; flex-direction: column; justify-content: center;
-        }
-        .login-right {
-            flex: 0.8; background: linear-gradient(135deg, #FF512F 0%, #F09819 100%);
-            color: white; padding: 3rem; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; text-align: center; position: relative;
-        }
-        .login-right::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at top right, rgba(255,255,255,0.2), transparent 40%);
-        }
-        .login-title { font-size: 2rem; font-weight: 800; color: #1e293b; margin-bottom: 0.5rem; }
-        .login-subtitle { color: #64748b; margin-bottom: 2rem; }
-        .input-group { margin-bottom: 1.5rem; position: relative; }
-        .input-group input {
-            width: 100%; padding: 1rem; border: 2px solid #e2e8f0;
-            border-radius: 12px; font-size: 1rem; transition: all 0.3s ease;
-            background: #f8fafc; box-sizing: border-box;
-        }
-        .input-group input:focus {
-            border-color: #F09819; background: white;
-            box-shadow: 0 0 0 4px rgba(240, 152, 25, 0.1); outline: none;
-        }
-        .forgot-password {
-            display: block; text-align: right; color: #F09819; font-weight: 600;
-            font-size: 0.9rem; margin-top: -1rem; margin-bottom: 1.5rem; text-decoration: none;
-        }
-        .btn-login {
-            width: 100%; padding: 1rem; background: linear-gradient(90deg, #FF512F 0%, #F09819 100%);
-            color: white; border: none; border-radius: 12px; font-size: 1.1rem;
-            font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(240, 152, 25, 0.3); }
-        .btn-register-outline {
-            margin-top: 1.5rem; padding: 0.8rem 2rem; border: 2px solid white;
-            color: white; position: relative; z-index: 20; background: transparent;
-            border-radius: 50px; font-weight: 700; cursor: pointer; transition: all 0.3s ease;
-        }
-        .btn-register-outline:hover {
-            background: white; color: #F09819; transform: translateY(-2px);
-        }
-        /* Registro Form Styles */
-        .form-input {
-            width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px;
-            font-size: 1rem; color: #4a5568; box-sizing: border-box;
-            height: auto; min-height: 45px;
-        }
-        .form-input:focus {
-            border-color: #F09819; outline: none; box-shadow: 0 0 0 3px rgba(240, 152, 25, 0.1);
-        }
-        .form-group label {
-            display: block; margin-bottom: 0.4rem; color: #4a5568; font-weight: 600; font-size: 0.9rem;
-        }
-        .btn-guardar {
-            background: #F09819; color: white; border: none; padding: 0.8rem 3rem;
-            border-radius: 50px; font-weight: 700; font-size: 1rem; cursor: pointer;
-            transition: transform 0.2s;
-            width: 100%; max-width: 300px;
-        }
-        .btn-guardar:hover { transform: translateY(-2px); background: #e68a00; }
-        .form-grid { display: grid; gap: 1rem; grid-template-columns: repeat(3, 1fr); }
-        @media (max-width: 900px) {
-            .form-grid { grid-template-columns: repeat(2, 1fr); }
-            .modal-container.split-design { flex-direction: column; overflow-y: auto; max-height: 90vh; }
-            .login-right { padding: 2rem; }
-        }
-        @media (max-width: 600px) {
-            .form-grid { grid-template-columns: 1fr !important; }
-            .modal-container { padding: 1rem; width: 95%; }
-            .form-input { font-size: 16px; }
-        }
-
-        /* New styles for health and policies */
-        .modal-section {
-            margin-top: 2rem;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 1.5rem;
-            grid-column: 1 / -1;
-        }
-        .modal-section-title {
-            color: #4a5568;
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background-color: #f8fafc;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            border-left: 4px solid #F09819;
-        }
-        .policy-item {
-            margin-bottom: 0.8rem;
-            display: flex;
-            align-items: flex-start;
-            gap: 0.8rem;
-            padding: 0.8rem;
-            border-radius: 8px;
-            background-color: #fff;
-            border: 1px solid transparent;
-            transition: all 0.2s;
-        }
-        .policy-item:hover {
-            background-color: #ffffdb;
-            border-color: #F09819;
-        }
-        .policy-checkbox {
-            margin-top: 0.2rem;
-            width: 1.2rem;
-            height: 1.2rem;
-            cursor: pointer;
-            accent-color: #F09819;
-        }
-        .policy-label {
-            font-size: 0.9rem;
-            line-height: 1.5;
-            cursor: pointer;
-            color: #4a5568;
-            flex: 1;
-        }
-        .health-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-        .health-full {
-            grid-column: 1 / -1;
-        }
-        @media (max-width: 768px) {
-            .health-grid {
-                grid-template-columns: 1fr;
-            }
-        }
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
         
-        body {
+        body, button, input, select, textarea {
             font-family: 'Be Vietnam Pro', sans-serif;
-            background: #f5f7fa;
-            min-height: 100vh;
         }
 
-        /* Ensure all form elements inherit the font */
-        input, button, select, textarea, optgroup, option {
-            font-family: 'Be Vietnam Pro', sans-serif;
+        body {
+            background: #f5f7fa;
+            min-height: 100vh;
+            color: var(--text-main);
         }
-        
-        /* Navbar - Latest Implementation */
+
+        /* Navbar */
         .navbar {
             background: linear-gradient(90deg, rgba(255, 81, 47, 0.95) 0%, rgba(240, 152, 25, 0.95) 100%);
             padding: 1rem 2rem;
@@ -215,7 +51,7 @@
             top: 0;
             z-index: 1000;
             backdrop-filter: blur(10px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Sombra neutra */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
 
         .navbar-content {
@@ -228,14 +64,6 @@
             padding: 0 1rem;
         }
         
-        .navbar-logo {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            text-decoration: none;
-            z-index: 10;
-        }
-        
         .navbar-logo img {
             height: 45px;
             transition: transform 0.3s ease;
@@ -244,17 +72,7 @@
         .navbar-logo:hover img {
             transform: scale(1.05);
         }
-        
-        .navbar-logo h1 {
-            color: white;
-            font-size: 1.8rem;
-            font-weight: 800;
-            margin: 0;
-            letter-spacing: -0.02em;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
 
-        /* Center Links */
         .navbar-links {
             display: flex;
             gap: 2.5rem;
@@ -277,7 +95,6 @@
         .navbar-link:hover {
             color: white;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-            transform: none;
         }
 
         .navbar-link::after {
@@ -301,10 +118,9 @@
             display: flex;
             gap: 1rem;
             align-items: center;
-            z-index: 10;
         }
 
-        .btn {
+         .btn {
             padding: 0.6rem 1.2rem;
             border-radius: 8px;
             text-decoration: none;
@@ -319,44 +135,158 @@
             gap: 0.5rem;
         }
 
-        /* Navbar Button Specifics - Glassmorphism */
-        .navbar-actions .btn-primary {
-            background: rgba(255, 255, 255, 0.25);
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 15px rgba(240, 152, 25, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(240, 152, 25, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* MODAL STYLES */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(8px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            font-weight: 600;
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
-
-        .navbar-actions .btn-primary:hover {
+        .modal-overlay.show { display: flex; opacity: 1; }
+        
+        .modal-container {
             background: white;
-            color: #F09819;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 24px;
+            width: 100%;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
+        }
+        .modal-overlay.show .modal-container { transform: scale(1); }
+
+        /* Split Login Modal Styles */
+        .modal-container.split-design {
+            max-width: 900px;
+            display: flex;
+        }
+        .login-left {
+            flex: 1; padding: 3rem;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        .login-right {
+            flex: 0.8;
+            background: linear-gradient(135deg, #FF512F 0%, #F09819 100%);
+            color: white; padding: 3rem;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            position: relative;
+        }
+        .login-title { font-size: 2rem; font-weight: 800; color: #1e293b; margin-bottom: 0.5rem; }
+        .login-subtitle { color: #64748b; margin-bottom: 2rem; }
+        .input-group { margin-bottom: 1.5rem; }
+        .input-group input {
+            width: 100%; padding: 1rem;
+            border: 2px solid #e2e8f0; border-radius: 12px;
+            font-size: 1rem; transition: all 0.3s ease; background: #f8fafc;
+        }
+        .input-group input:focus {
+            border-color: #F09819; background: white; outline: none;
+            box-shadow: 0 0 0 4px rgba(240, 152, 25, 0.1);
+        }
+        .forgot-password {
+            display: block; text-align: right; color: #F09819; font-weight: 600;
+            font-size: 0.9rem; margin-top: -1rem; margin-bottom: 1.5rem; text-decoration: none;
+        }
+        .btn-login {
+            width: 100%; padding: 1rem;
+            background: linear-gradient(90deg, #FF512F 0%, #F09819 100%);
+            color: white; border: none; border-radius: 12px;
+            font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(240, 152, 25, 0.3); }
+        .btn-register-outline {
+            margin-top: 1.5rem; padding: 0.8rem 2rem; border: 2px solid white;
+            color: white; background: transparent; border-radius: 50px; font-weight: 700;
+            cursor: pointer; transition: all 0.3s;
+        }
+        .btn-register-outline:hover { background: white; color: #F09819; }
+        .modal-close {
+            position: absolute; top: 1rem; right: 1rem; z-index: 100;
+            background: white; border: none; border-radius: 50%; width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); cursor: pointer; font-size: 1.5rem; color: #64748b;
+        }
+        
+        @media (max-width: 768px) {
+            .modal-container.split-design { flex-direction: column-reverse; max-height: 90vh; overflow-y: auto; }
+            .login-right, .login-left { padding: 2rem; }
         }
 
-        .navbar-actions .btn-secondary {
-            background: transparent;
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(4px);
-            font-weight: 600;
-            box-shadow: none;
+        /* Registration Modal Specifics */
+        .form-input {
+            width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0;
+            border-radius: 8px; font-size: 1rem; color: #4a5568;
+            height: auto; min-height: 45px;
         }
+        .form-input:focus {
+            border-color: #F09819; outline: none; box-shadow: 0 0 0 3px rgba(240, 152, 25, 0.1);
+        }
+        .form-group label {
+            display: block; margin-bottom: 0.4rem; color: #4a5568; font-weight: 600; font-size: 0.9rem;
+        }
+        .btn-guardar {
+            background: #F09819; color: white; border: none; padding: 0.8rem 3rem;
+            border-radius: 50px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+            width: 100%; max-width: 300px;
+        }
+        .btn-guardar:hover { transform: translateY(-2px); background: #e68a00; }
+        .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        
+        @media (max-width: 900px) { .form-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } .modal-container { padding: 1rem; width: 95%; } }
+        
+        .modal-section {
+            margin-top: 2rem; border-top: 1px solid #e2e8f0; padding-top: 1.5rem; grid-column: 1 / -1;
+        }
+        .modal-section-title {
+            color: #4a5568; font-size: 1.1rem; font-weight: 700; margin-bottom: 1.2rem;
+            display: flex; align-items: center; gap: 0.5rem; background-color: #f8fafc;
+            padding: 0.5rem 1rem; border-radius: 8px; border-left: 4px solid #F09819;
+        }
+        .policy-item {
+            margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.8rem;
+            padding: 0.8rem; border-radius: 8px; background-color: #fff; transition: all 0.2s;
+        }
+        .policy-item:hover { background-color: #ffffdb; }
+        .policy-checkbox { margin-top: 0.2rem; width: 1.2rem; height: 1.2rem; cursor: pointer; accent-color: #F09819; }
+        .policy-label { font-size: 0.9rem; line-height: 1.5; cursor: pointer; color: #4a5568; flex: 1; }
+        .health-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .health-full { grid-column: 1 / -1; }
+        @media (max-width: 768px) { .health-grid { grid-template-columns: 1fr; } }
 
-        .navbar-actions .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
-            transform: translateY(-2px);
-            border-color: white;
-        }
 
-        @media (max-width: 900px) {
-            .navbar-links {
-                display: none;
-            }
-        }
+        /* === DASHBOARD SPECIFIC STYLES === */
         
         /* Layout Principal */
         .main-layout {
@@ -369,7 +299,7 @@
         
         /* Sidebar */
         .sidebar {
-            background: #f9fafb; /* Gray 50 */
+            background: #f9fafb;
             padding: 1.5rem 1rem;
             border-right: 1px solid #e5e7eb;
             height: 100%;
@@ -391,7 +321,7 @@
             align-items: center;
             gap: 0.75rem;
             padding: 0.75rem 1rem;
-            color: #4b5563; /* Gray 600 */
+            color: #4b5563;
             text-decoration: none;
             transition: all 0.2s ease;
             font-weight: 500;
@@ -400,20 +330,17 @@
         }
         
         .sidebar-menu a:hover {
-            background-color: #f3f4f6; /* Gray 100 */
-            color: #1f2937; /* Gray 800 */
+            background-color: #f3f4f6;
+            color: #1f2937;
         }
         
         .sidebar-menu a.active {
-            background-color: #f97316; /* Orange 500 */
+            background-color: #f97316;
             color: white;
             box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.2);
             font-weight: 600;
-            border-left: none; /* Remove old style */
         }
 
-
-        
         /* Contenido Principal */
         .main-content {
             padding: 2rem;
@@ -535,290 +462,60 @@
             display: block;
         }
         
+        /* Responsive adjustments */
         @media (max-width: 1024px) {
-            .mobile-menu-toggle {
-                display: block;
-            }
+            .mobile-menu-toggle { display: block; }
+            .navbar-content { gap: 1rem; }
+            .navbar-logo h1 { font-size: 1.1rem; }
+            .navbar-logo img { height: 35px; }
             
-            .navbar-content {
-                gap: 1rem;
-            }
-            
-            .navbar-logo h1 {
-                font-size: 1.1rem;
-            }
-            
-            .navbar-logo img {
-                height: 35px;
-            }
-            
-            .user-info {
-                font-size: 0.9rem;
-                padding: 0.5rem 1rem;
-            }
-            
-            .user-role {
-                display: none;
-            }
-            
-            .main-layout {
-                grid-template-columns: 1fr;
-            }
+            .main-layout { grid-template-columns: 1fr; }
             
             .sidebar {
-                position: fixed;
-                top: 0;
-                left: -280px;
-                width: 280px;
-                height: 100vh;
-                transition: left 0.3s ease;
-                z-index: 1000;
-                overflow-y: auto;
+                position: fixed; top: 0; left: -280px; width: 280px; height: 100vh;
+                transition: left 0.3s ease; z-index: 1000; overflow-y: auto;
             }
-            
-            .sidebar.active {
-                left: 0;
-            }
-            
-            .main-content {
-                padding: 1.5rem;
-            }
-            
-            .page-header h2 {
-                font-size: 1.8rem;
-            }
-            
-            .page-header p {
-                font-size: 1rem;
-            }
+            .sidebar.active { left: 0; }
+            .main-content { padding: 1.5rem; }
+            .navbar-links { display: none; } /* Hide links on tablet/mobile */
         }
         
         @media (max-width: 768px) {
-            .navbar {
-                padding: 1rem;
-            }
+            .navbar { padding: 1rem; }
+            .navbar-content { flex-wrap: wrap; }
             
-            .navbar-content {
-                flex-wrap: wrap;
-            }
+            .navbar-logo { order: 1; flex: 1; text-align: center; justify-content: center; display: flex; }
+            .mobile-menu-toggle { order: 0; }
+            .navbar-actions { order: 2; }
             
-            .navbar-logo {
-                order: 1;
-                flex: 1;
-            }
-            
-            .mobile-menu-toggle {
-                order: 0;
-            }
-            
-            .navbar-user {
-                order: 2;
-                gap: 0.5rem;
-            }
-            
-            .user-info span {
-                font-size: 0.85rem;
-            }
-            
-            .btn-logout {
-                padding: 0.5rem 0.8rem;
-                font-size: 0.9rem;
-            }
-            
-            .main-content {
-                padding: 1rem;
-            }
-            
-            .page-header h2 {
-                font-size: 1.5rem;
-            }
-            
-            .dashboard-cards {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-                gap: 1rem;
-            }
-            
-            .dashboard-card {
-                padding: 1.5rem;
-            }
-            
-            .card-title {
-                font-size: 1rem;
-            }
-            
-            .card-value {
-                font-size: 2rem;
-            }
+            .dashboard-cards { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
+            .dashboard-card { padding: 1.5rem; }
+            .card-title { font-size: 1rem; }
+            .card-value { font-size: 2rem; }
         }
         
         @media (max-width: 480px) {
-            .navbar-logo h1 {
-                font-size: 1rem;
-            }
-            
-            .navbar-logo img {
-                height: 30px;
-            }
-            
-            .user-info {
-                padding: 0.4rem 0.8rem;
-            }
-            
-            .user-info span {
-                font-size: 0.8rem;
-            }
-            
-            .btn-logout {
-                padding: 0.4rem 0.6rem;
-                font-size: 0.85rem;
-            }
-            
-            .main-content {
-                padding: 0.8rem;
-            }
-            
-            .page-header {
-                margin-bottom: 1.5rem;
-            }
-            
-            .page-header h2 {
-                font-size: 1.3rem;
-            }
-            
-            .page-header p {
-                font-size: 0.9rem;
-            }
-            
-            .dashboard-cards {
-                grid-template-columns: 1fr 1fr;
-                gap: 0.8rem;
-            }
-            
-            .dashboard-card {
-                padding: 1.2rem 1rem;
-            }
-            
-            .card-icon {
-                font-size: 2rem;
-                margin-bottom: 0.5rem;
-            }
-            
-            .card-title {
-                font-size: 0.85rem;
-            }
-            
-            .card-value {
-                font-size: 1.8rem;
-            }
-            
-            .messages li {
-                padding: 0.8rem 1rem;
-                font-size: 0.9rem;
-            }
-        }
-        /* Preloader */
-        .preloader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-        }
-        
-        .preloader.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
-        
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid rgba(255,255,255,0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .preloader-text {
-            color: white;
-            margin-top: 1.5rem;
-            font-size: 1.2rem;
-            font-weight: 600;
+            .navbar-logo img { height: 30px; }
+            .main-content { padding: 0.8rem; }
+            .dashboard-cards { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+            .dashboard-card { padding: 1.2rem 1rem; }
         }
 
-        /* New styles for health and policies */
-        .modal-section {
-            margin-top: 2rem;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 1.5rem;
-            grid-column: 1 / -1;
+        /* Preloader */
+        .preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 9999; transition: opacity 0.5s ease, visibility 0.5s ease;
         }
-        .modal-section-title {
-            color: #4a5568;
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background-color: #f8fafc;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            border-left: 4px solid #F09819;
+        .preloader.hidden { opacity: 0; visibility: hidden; }
+        .spinner {
+            width: 60px; height: 60px; border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite;
         }
-        .policy-item {
-            margin-bottom: 0.8rem;
-            display: flex;
-            align-items: flex-start;
-            gap: 0.8rem;
-            padding: 0.8rem;
-            border-radius: 8px;
-            background-color: #fff;
-            border: 1px solid transparent;
-            transition: all 0.2s;
-        }
-        .policy-item:hover {
-            background-color: #ffffdb;
-            border-color: #F09819;
-        }
-        .policy-checkbox {
-            margin-top: 0.2rem;
-            width: 1.2rem;
-            height: 1.2rem;
-            cursor: pointer;
-            accent-color: #F09819;
-        }
-        .policy-label {
-            font-size: 0.9rem;
-            line-height: 1.5;
-            cursor: pointer;
-            color: #4a5568;
-            flex: 1;
-        }
-        .health-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-        .health-full {
-            grid-column: 1 / -1;
-        }
-        @media (max-width: 768px) {
-            .health-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .preloader-text { color: white; margin-top: 1.5rem; font-size: 1.2rem; font-weight: 600; }
+
     </style>
     {% block extra_styles %}{% endblock %}
 </head>
@@ -831,9 +528,10 @@
     <!-- Overlay para cerrar menú -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     
-    <!-- Navbar -->
+    <!-- Navbar (Official) -->
     <nav class="navbar">
         <div class="navbar-content">
+            <!-- Left Side: Toggle & Logo -->
             <div style="display: flex; align-items: center; gap: 1rem;">
                 <button class="mobile-menu-toggle" id="menuToggle">☰</button>
                 <a href="{% url 'landing' %}" class="navbar-logo">
@@ -841,13 +539,18 @@
                 </a>
             </div>
 
+            <!-- Center: Links (Hidden on mobile) -->
             <div class="navbar-links">
                 <a href="{% url 'landing' %}" class="navbar-link">Inicio</a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="navbar-link">Mi Panel</a>
+                {% endif %}
                 <a href="{% url 'lista_polos' %}" class="navbar-link">Cursos</a>
                 <a href="#" class="navbar-link" onclick="openContactoModal(); return false;">Contacto</a>
-                <a href="#" class="navbar-link">Acerca de</a>
+                <a href="#" class="navbar-link" onclick="openAcercaDeModal(); return false;">Acerca de</a>
             </div>
 
+            <!-- Right: Actions -->
             <div class="navbar-actions">
                 {% if user.is_authenticated %}
                 <form action="{% url 'logout' %}" method="post" style="display: inline;">
@@ -953,406 +656,338 @@
                 preloader.classList.remove('hidden');
             });
         });
+
+        /* === MODAL FUNCTIONS (Official) === */
+        function openLoginModal() {
+            const modal = document.getElementById('loginModal');
+            modal.style.display = 'flex'; modal.offsetHeight; modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLoginModal() {
+            const modal = document.getElementById('loginModal');
+            modal.classList.remove('show');
+            setTimeout(() => { modal.style.display = 'none'; document.body.style.overflow = 'auto'; }, 300);
+        }
+
+        function openRegistroModal() {
+            closeLoginModal();
+            const modal = document.getElementById('registroModal');
+            modal.style.display = 'flex'; modal.offsetHeight; modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeRegistroModal() {
+            const modal = document.getElementById('registroModal');
+            modal.classList.remove('show');
+            setTimeout(() => { modal.style.display = 'none'; document.body.style.overflow = 'auto'; }, 300);
+        }
+
+        function openContactoModal() {
+            const modal = document.getElementById('contactoModal');
+            modal.style.display = 'flex'; modal.offsetHeight; modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeContactoModal() {
+            const modal = document.getElementById('contactoModal');
+            modal.classList.remove('show');
+            setTimeout(() => { modal.style.display = 'none'; document.body.style.overflow = 'auto'; }, 300);
+        }
+
+        function openAcercaDeModal() {
+            const modal = document.getElementById('acercaDeModal');
+            modal.style.display = 'flex'; modal.offsetHeight; modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAcercaDeModal() {
+            const modal = document.getElementById('acercaDeModal');
+            modal.classList.remove('show');
+            setTimeout(() => { modal.style.display = 'none'; document.body.style.overflow = 'auto'; }, 300);
+        }
+
+        // Close on Outside Click
+        window.onclick = function(event) {
+            const modals = ['loginModal', 'registroModal', 'contactoModal', 'acercaDeModal'];
+            modals.forEach(id => {
+                const modal = document.getElementById(id);
+                if (event.target == modal) {
+                    if(id === 'loginModal') closeLoginModal();
+                    if(id === 'registroModal') closeRegistroModal();
+                    if(id === 'contactoModal') closeContactoModal();
+                    if(id === 'acercaDeModal') closeAcercaDeModal();
+                }
+            });
+        }
+        
+        // Close on Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const loginModal = document.getElementById('loginModal');
+                const registroModal = document.getElementById('registroModal');
+                const contactoModal = document.getElementById('contactoModal');
+                const acercaDeModal = document.getElementById('acercaDeModal');
+                
+                if (loginModal && loginModal.classList.contains('show')) closeLoginModal();
+                if (registroModal && registroModal.classList.contains('show')) closeRegistroModal();
+                if (contactoModal && contactoModal.classList.contains('show')) closeContactoModal();
+                if (acercaDeModal && acercaDeModal.classList.contains('show')) closeAcercaDeModal();
+            }
+        });
     </script>
-<!-- Modal Login -->
-<div id="loginModal" class="modal-overlay">
-    <div class="modal-container split-design">
-        <!-- Close Button -->
-        <button class="modal-close" onclick="closeLoginModal()">×</button>
 
-        <!-- Left Side: Form -->
-        <div class="login-left">
-            <div style="text-align: center; margin-bottom: 1.5rem;">
-                <img src="{% static 'img/logosesion.png' %}" alt="Logo Sesión" style="height: 80px; width: auto;">
+    <!-- Modal Login -->
+    <div id="loginModal" class="modal-overlay">
+        <div class="modal-container split-design">
+            <button class="modal-close" onclick="closeLoginModal()">×</button>
+            <div class="login-left">
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <img src="{% static 'img/logosesion.png' %}" alt="Logo Sesión" style="height: 80px; width: auto;">
+                </div>
+                <h2 class="login-title">Iniciar Sesión</h2>
+                <p class="login-subtitle">Accede a tu cuenta utilizando tu DNI</p>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="error-message" style="margin-bottom: 1rem; padding: 0.8rem; background: #fee2e2; color: #ef4444; border-radius: 8px; font-size: 0.9rem;">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post" action="{% url 'login' %}?next={{ request.path }}">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="text" name="username" required placeholder="Ingrese su DNI">
+                    </div>
+                    <div class="input-group">
+                        <input type="password" name="password" required placeholder="Contraseña">
+                    </div>
+                    <a href="{% url 'password_reset_request' %}" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                    <button type="submit" class="btn-login">INGRESAR</button>
+                </form>
             </div>
-            <h2 class="login-title">Iniciar Sesión</h2>
-            <p class="login-subtitle">Accede a tu cuenta utilizando tu DNI</p>
+            <div class="login-right">
+                <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">¡Bienvenido!</h2>
+                <p style="font-size: 1.1rem; margin-bottom: 2rem; opacity: 0.9;">Ingresa tus datos personales para acceder a todas las funcionalidades de Edu-Polo.</p>
+                <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 1rem;">¿Aún no tienes una cuenta?</p>
+                <button type="button" class="btn-register-outline" onclick="openRegistroModal()">REGISTRARSE</button>
+            </div>
+        </div>
+    </div>
 
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="error-message" style="margin-bottom: 1rem; padding: 0.8rem; background: #fee2e2; color: #ef4444; border-radius: 8px; font-size: 0.9rem;">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
+    <!-- Modal Registro -->
+    <div id="registroModal" class="modal-overlay">
+        <div class="modal-container" style="max-width: 950px; padding: 1.5rem; max-height: 85vh; overflow-y: auto;">
+            <button class="modal-close" onclick="closeRegistroModal()">×</button>
+            
+            <div class="registro-header" style="text-align: center; margin-bottom: 0.5rem;">
+                <div style="text-align: center; margin-bottom: 0.5rem;">
+                    <img src="{% static 'img/logosregister.png' %}" alt="Logo Registro" style="height: 50px; width: auto;">
+                </div>
+                <h2 style="color: #4a5568; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.1rem;">Crear cuenta</h2>
+                <p style="color: #718096; font-size: 0.85rem; margin-bottom: 0.5rem;">Ingrese sus datos personales para inscribirse</p>
+            </div>
 
-            <form method="post" action="{% url 'login' %}?next={{ request.path }}">
+            <form method="post" action="{% url 'usuario:registro' %}" class="registro-form">
                 {% csrf_token %}
-                
-                <div class="input-group">
-                    <input type="text" name="username" required placeholder="Ingrese su DNI">
+                <div class="form-grid">
+                    <div class="form-group"><label>DNI</label><input type="text" name="dni" required placeholder="Número de documento" class="form-input"></div>
+                    <div class="form-group"><label>Correo Electrónico *</label><input type="email" name="correo" required placeholder="Correo electrónico" class="form-input"></div>
+                    <div class="form-group"><label>Nombres *</label><input type="text" name="nombre" required placeholder="Nombres" class="form-input"></div>
+                    <div class="form-group"><label>Apellidos *</label><input type="text" name="apellido" required placeholder="Apellidos" class="form-input"></div>
+                    <div class="form-group"><label>Teléfono de contacto *</label><input type="text" name="telefono" required placeholder="+ 54 2964 999999" class="form-input"></div>
+                    <div class="form-group"><label>Fecha de Nacimiento</label><input type="date" name="fecha_nacimiento" class="form-input"></div>
+                    <div class="form-group">
+                        <label>Género</label>
+                        <select name="genero" class="form-input">
+                            <option value="">Seleccione...</option><option value="M">Masculino</option><option value="F">Femenino</option><option value="O">Otro</option><option value="P">Prefiero no decirlo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Ciudad *</label>
+                        <select name="ciudad" class="form-input" required>
+                            <option value="">Seleccione...</option><option value="Ushuaia">Ushuaia</option><option value="Rio Grande">Río Grande</option><option value="Tolhuin">Tolhuin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Zona/Barrio</label>
+                        <input type="text" name="zona_residencia" placeholder="Ej: Centro, Chacra II" class="form-input">
+                    </div>
+                    <div class="form-group"><label>Domicilio</label><input type="text" name="domicilio" placeholder="Calle 123, Ciudad" class="form-input"></div>
+                    <div class="form-group">
+                        <label>Nivel de estudios</label>
+                        <select name="nivel_estudios" class="form-input">
+                            <option value="">Seleccione...</option><option value="PI">Primaria Incompleto</option><option value="PR">Primaria Completo</option><option value="SI">Secundaria Incompleto</option><option value="SE">Secundaria Completo</option><option value="UI">Universidad Incompleto</option><option value="UN">Universidad Completo</option><option value="OT">Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Institución Actual</label><input type="text" name="institucion_actual" placeholder="Nombre de la institución" class="form-input"></div>
+                    <div class="form-group"><label>Contraseña *</label><input type="password" name="password" required placeholder="Mínimo 6 caracteres" class="form-input"></div>
+                    <div class="form-group"><label>Confirmar Contraseña *</label><input type="password" name="password_confirm" required placeholder="Repite la contraseña" class="form-input"></div>
                 </div>
-                
-                <div class="form-group input-group">
-                    <input type="password" name="password" required placeholder="Contraseña">
+
+                <div class="modal-section">
+                    <h3 class="modal-section-title"><span>🏥</span> Información de Salud y Observaciones</h3>
+                    <div class="health-grid">
+                        <div class="form-group"><label>¿Tienes alguna discapacidad o necesitas adaptaciones?</label><textarea name="observaciones_discapacidad" rows="3" class="form-input" placeholder="Especifica si necesitas alguna adaptación..."></textarea></div>
+                        <div class="form-group"><label>Alergias, Condiciones Médicas</label><textarea name="observaciones_salud" rows="3" class="form-input" placeholder="Alergias, diabetes, celiaquía, etc..."></textarea></div>
+                        <div class="form-group health-full"><label>Otras Observaciones</label><textarea name="observaciones_generales" rows="2" class="form-input" placeholder="Cualquier otra información relevante..."></textarea></div>
+                    </div>
                 </div>
-                
-                <a href="{% url 'password_reset_request' %}" class="forgot-password">¿Olvidaste tu contraseña?</a>
-                
-                <button type="submit" class="btn-login">
-                    INGRESAR
-                </button>
+
+                <div class="modal-section">
+                    <h3 class="modal-section-title"><span>📋</span> Políticas de Uso de Datos y Autorizaciones</h3>
+                    <div class="policy-item"><input type="checkbox" id="politica_datos" name="politica_datos" required class="policy-checkbox"><label for="politica_datos" class="policy-label">Acepto la <strong>Política de Uso de Datos Personales</strong> y autorizo el tratamiento de mi información conforme a la normativa vigente de protección de datos.</label></div>
+                    <div class="policy-item"><input type="checkbox" id="autorizacion_imagen" name="autorizacion_imagen" class="policy-checkbox"><label for="autorizacion_imagen" class="policy-label">Autorizo el <strong>uso de mi imagen</strong> en fotografías y videos con fines educativos e institucionales.</label></div>
+                    <div class="policy-item"><input type="checkbox" id="autorizacion_voz" name="autorizacion_voz" class="policy-checkbox"><label for="autorizacion_voz" class="policy-label">Autorizo el <strong>uso de mi voz</strong> en grabaciones con fines educativos e institucionales.</label></div>
+                </div>
+
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <button type="submit" class="btn-guardar">Guardar y Continuar</button>
+                </div>
+                <div style="text-align: right; margin-top: 1rem;">
+                     <p style="font-size: 0.9rem;">¿Ya sos miembro? <a href="#" onclick="closeRegistroModal(); openLoginModal(); return false;" style="color: #F09819; font-weight: bold;">Ingresar</a></p>
+                </div>
             </form>
         </div>
-
-        <!-- Right Side: Welcome -->
-        <div class="login-right">
-            <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">¡Bienvenido!</h2>
-            <p style="font-size: 1.1rem; margin-bottom: 2rem; opacity: 0.9;">
-                Ingresa tus datos personales para acceder a todas las funcionalidades de Edu-Polo.
-            </p>
-            <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 1rem;">¿Aún no tienes una cuenta?</p>
-            <button type="button" class="btn-register-outline" onclick="openRegistroModal()">REGISTRARSE</button>
-        </div>
     </div>
-</div>
 
-<!-- Modal Registro -->
-<div id="registroModal" class="modal-overlay" style="z-index: 10001;">
-    <div class="modal-container" style="max-width: 950px; padding: 1.5rem; max-height: 85vh; overflow-y: auto;">
-        <button class="modal-close" onclick="closeRegistroModal()">×</button>
-        
-        <div style="text-align: center; margin-bottom: 0.5rem;">
-            <div style="text-align: center; margin-bottom: 0.5rem;">
-                <img src="{% static 'img/logosregister.png' %}" alt="Logo Registro" style="height: 50px; width: auto;">
-            </div>
+    <!-- Modal Contacto -->
+    <div id="contactoModal" class="modal-overlay" style="z-index: 10002;">
+        <div class="modal-container" style="max-width: 700px; background: #1e293b; color: white; padding: 0; border: 1px solid rgba(255, 255, 255, 0.1); border-top: 5px solid #F09819;">
+            <button class="modal-close" onclick="closeContactoModal()" style="color: white; background: rgba(255,255,255,0.1); top: 1rem; right: 1rem; border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s;" onmouseover="this.style.background='#F09819'; this.style.borderColor='#F09819'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'">×</button>
             
-            <h2 style="color: #4a5568; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.1rem;">Crear cuenta</h2>
-            <p style="color: #718096; font-size: 0.85rem; margin-bottom: 0.5rem;">Ingrese sus datos personales para inscribirse</p>
-        </div>
+            <div style="padding: 3rem 2rem;">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                     <div style="width: 60px; height: 60px; background: rgba(255, 255, 255, 0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; border: 1px solid rgba(255, 255, 255, 0.1);">
+                        <span style="font-size: 2rem;">📞</span>
+                    </div>
+                    <h3 style="color: #F09819; font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem;">¡Estamos Conectados!</h3>
+                    <p style="color: #94a3b8; font-size: 0.95rem; max-width: 600px; margin: 0 auto 0.5rem;">
+                        ¿Tenés alguna duda sobre nuestros cursos o actividades?
+                    </p>
+                    <p style="color: #94a3b8; font-size: 0.9rem; max-width: 600px; margin: 0 auto; line-height: 1.5;">
+                        Nuestro equipo está disponible de <strong>Lunes a Viernes de 9:00 a 17:00 hs</strong>. Seleccioná tu sede más cercana para comunicarte directamente por WhatsApp o escribinos por correo electrónico para consultas generales.
+                    </p>
+                </div>
 
-        <form method="post" action="{% url 'usuario:registro' %}" class="registro-form">
-            {% csrf_token %}
-            
-            <div class="form-grid">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                    <a href="https://wa.me/5492964485527" target="_blank" style="text-decoration: none;">
+                        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s ease; height: 100%;" 
+                             onmouseover="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'" 
+                             onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'">
+                            <div style="background: rgba(34, 197, 94, 0.2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #4ade80; font-size: 1.2rem; flex-shrink: 0;">
+                                <i class="fab fa-whatsapp"></i>
+                            </div>
+                            <div>
+                                <h4 style="color: white; margin: 0; font-weight: 600; font-size: 1rem;">Río Grande</h4>
+                                <span style="color: #94a3b8; font-size: 0.85rem;">+54 9 2964 485527</span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="https://wa.me/5492901498171" target="_blank" style="text-decoration: none;">
+                        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s ease; height: 100%;" 
+                             onmouseover="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'" 
+                             onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'">
+                            <div style="background: rgba(34, 197, 94, 0.2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #4ade80; font-size: 1.2rem; flex-shrink: 0;">
+                                <i class="fab fa-whatsapp"></i>
+                            </div>
+                            <div>
+                                <h4 style="color: white; margin: 0; font-weight: 600; font-size: 1rem;">Tolhuin</h4>
+                                <span style="color: #94a3b8; font-size: 0.85rem;">+54 9 2901 498171</span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="https://wa.me/5492901307443" target="_blank" style="text-decoration: none;">
+                        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s ease; height: 100%;" 
+                             onmouseover="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'" 
+                             onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'">
+                            <div style="background: rgba(34, 197, 94, 0.2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #4ade80; font-size: 1.2rem; flex-shrink: 0;">
+                                <i class="fab fa-whatsapp"></i>
+                            </div>
+                            <div>
+                                <h4 style="color: white; margin: 0; font-weight: 600; font-size: 1rem;">Ushuaia</h4>
+                                <span style="color: #94a3b8; font-size: 0.85rem;">+54 9 2901 307443</span>
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <a href="mailto:soporte.polo@aif.gob.ar" style="text-decoration: none;">
+                         <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s ease; height: 100%;" 
+                             onmouseover="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'" 
+                             onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'">
+                            <div style="background: rgba(234, 88, 12, 0.2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fb923c; font-size: 1.2rem; flex-shrink: 0;">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div>
+                                <h4 style="color: white; margin: 0; font-weight: 600; font-size: 1rem;">Correo Electrónico</h4>
+                                <span style="color: #94a3b8; font-size: 0.85rem;">soporte.polo@aif.gob.ar</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
                 
-                <!-- DNI -->
-                <div class="form-group">
-                    <label>DNI</label>
-                    <input type="text" name="dni" required placeholder="Número de documento" class="form-input">
-                </div>
-                
-                <!-- Correo -->
-                <div class="form-group">
-                    <label>Correo Electrónico *</label>
-                    <input type="email" name="correo" required placeholder="Correo electrónico" class="form-input">
-                </div>
-
-                <!-- Nombres -->
-                <div class="form-group">
-                    <label>Nombres *</label>
-                    <input type="text" name="nombre" required placeholder="Nombres" class="form-input">
-                </div>
-
-                <!-- Apellidos -->
-                <div class="form-group">
-                    <label>Apellidos *</label>
-                    <input type="text" name="apellido" required placeholder="Apellidos" class="form-input">
-                </div>
-
-                <!-- Teléfono -->
-                <div class="form-group">
-                    <label>Teléfono de contacto *</label>
-                    <input type="text" name="telefono" required placeholder="+ 54 2964 999999" class="form-input">
-                </div>
-
-                <!-- Fecha Nacimiento -->
-                <div class="form-group">
-                    <label>Fecha de Nacimiento</label>
-                    <input type="date" name="fecha_nacimiento" class="form-input">
-                </div>
-
-                <!-- Género -->
-                <div class="form-group">
-                    <label>Género</label>
-                    <select name="genero" class="form-input">
-                        <option value="">Seleccione...</option>
-                        <option value="M">Masculino</option>
-                        <option value="F">Femenino</option>
-                        <option value="O">Otro</option>
-                        <option value="P">Prefiero no decirlo</option>
-                    </select>
-                </div>
-
-                <!-- Ciudad -->
-                <div class="form-group">
-                    <label>Ciudad *</label>
-                    <select name="ciudad" required class="form-input">
-                        <option value="">Seleccione...</option>
-                        <option value="Ushuaia">Ushuaia</option>
-                        <option value="Rio Grande">Río Grande</option>
-                        <option value="Tolhuin">Tolhuin</option>
-                    </select>
-                </div>
-
-                <!-- Zona/Barrio -->
-                <div class="form-group">
-                    <label>Zona/Barrio</label>
-                    <input type="text" name="zona_residencia" placeholder="Ej: Centro, Chacra II" class="form-input">
-                </div>
-
-                <!-- Domicilio -->
-                <div class="form-group">
-                    <label>Domicilio</label>
-                    <input type="text" name="domicilio" placeholder="Calle 123, Ciudad" class="form-input">
-                </div>
-
-                <!-- Nivel Estudios -->
-                <div class="form-group">
-                    <label>Nivel de estudios</label>
-                    <select name="nivel_estudios" class="form-input">
-                        <option value="">Seleccione...</option>
-                        <option value="PR">Primaria</option>
-                        <option value="SE">Secundaria</option>
-                        <option value="UN">Universidad</option>
-                        <option value="OT">Otro</option>
-                    </select>
-                </div>
-
-                <!-- Institución Actual -->
-                <div class="form-group">
-                    <label>Institución Actual</label>
-                    <input type="text" name="institucion_actual" placeholder="Nombre de la institución" class="form-input">
-                </div>
-
-                <!-- Contraseña -->
-                <div class="form-group">
-                    <label>Contraseña *</label>
-                    <input type="password" name="password" required placeholder="Mínimo 6 caracteres" class="form-input">
-                </div>
-
-                <!-- Confirmar Contraseña -->
-                <div class="form-group">
-                    <label>Confirmar Contraseña *</label>
-                    <input type="password" name="password_confirm" required placeholder="Repite la contraseña" class="form-input">
-                </div>
-
-                <!-- Health Section -->
-                <div class="modal-section">
-                    <h3 class="modal-section-title">
-                        <span>🏥</span> Información de Salud y Observaciones
-                    </h3>
-                    
-                    <div class="health-grid">
-                        <div class="form-group">
-                            <label>¿Tienes alguna discapacidad o necesitas adaptaciones?</label>
-                            <textarea name="observaciones_discapacidad" rows="3" class="form-input" placeholder="Especifica si necesitas alguna adaptación..."></textarea>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Alergias, Condiciones Médicas</label>
-                            <textarea name="observaciones_salud" rows="3" class="form-input" placeholder="Alergias, diabetes, celiaquía, etc..."></textarea>
-                        </div>
-                        
-                        <div class="form-group health-full">
-                            <label>Otras Observaciones</label>
-                            <textarea name="observaciones_generales" rows="2" class="form-input" placeholder="Cualquier otra información relevante..."></textarea>
-                        </div>
+                 <div style="text-align: center; padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                    <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1rem; font-weight: 600;">¡Seguinos en nuestras redes!</p>
+                    <div style="display: flex; justify-content: center; gap: 1rem;">
+                        <a href="#" style="width: 40px; height: 40px; background: rgba(255, 255, 255, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.background='#F09819'; this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" style="width: 40px; height: 40px; background: rgba(255, 255, 255, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.background='#F09819'; this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'"><i class="fab fa-instagram"></i></a>
+                        <a href="#" style="width: 40px; height: 40px; background: rgba(255, 255, 255, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.background='#F09819'; this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'"><i class="fab fa-linkedin-in"></i></a>
                     </div>
                 </div>
-
-                <!-- Policies Section -->
-                <div class="modal-section">
-                    <h3 class="modal-section-title">
-                        <span>📋</span> Políticas de Uso de Datos y Autorizaciones
-                    </h3>
-                    
-                    <div class="policy-item">
-                        <input type="checkbox" id="politica_datos" name="politica_datos" required class="policy-checkbox">
-                        <label for="politica_datos" class="policy-label">
-                            Acepto la <strong>Política de Uso de Datos Personales</strong> y autorizo el tratamiento de mi información conforme a la normativa vigente de protección de datos.
-                        </label>
-                    </div>
-                    
-                    <div class="policy-item">
-                        <input type="checkbox" id="autorizacion_imagen" name="autorizacion_imagen" class="policy-checkbox">
-                        <label for="autorizacion_imagen" class="policy-label">
-                            Autorizo el <strong>uso de mi imagen</strong> en fotografías y videos con fines educativos e institucionales.
-                        </label>
-                    </div>
-                    
-                    <div class="policy-item">
-                        <input type="checkbox" id="autorizacion_voz" name="autorizacion_voz" class="policy-checkbox">
-                        <label for="autorizacion_voz" class="policy-label">
-                            Autorizo el <strong>uso de mi voz</strong> en grabaciones con fines educativos e institucionales.
-                        </label>
-                    </div>
-                </div>
-
-            </div>
-
-            <div style="text-align: center; margin-top: 1.5rem;">
-                <button type="submit" class="btn-guardar">Guardar y Continuar</button>
-            </div>
-            
-            <div style="text-align: right; margin-top: 1rem;">
-                 <p style="font-size: 0.9rem;">¿Ya sos miembro? <a href="#" onclick="closeRegistroModal(); openLoginModal(); return false;" style="color: #F09819; font-weight: bold;">Ingresar</a></p>
-            </div>
-        </form>
-    </div>
-</div>
-
-<script>
-    // Login Modal
-    function openLoginModal() {
-        const modal = document.getElementById('loginModal');
-        modal.style.display = 'flex';
-        modal.offsetHeight; // Force reflow
-        modal.classList.add('show');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeLoginModal() {
-        const modal = document.getElementById('loginModal');
-        modal.classList.remove('show');
-        setTimeout(() => {
-            modal.style.display = 'none';
-            document.body.style.overflow = '';
-        }, 300);
-    }
-
-    // Registro Modal
-    function openRegistroModal() {
-        closeLoginModal();
-        const modal = document.getElementById('registroModal');
-        modal.style.display = 'flex';
-        modal.offsetHeight;
-        modal.classList.add('show');
-        document.body.style.overflow = 'hidden';
-        // Ensure overflow stays hidden after closeLoginModal timeout
-        setTimeout(() => {
-            document.body.style.overflow = 'hidden';
-        }, 350);
-    }
-
-    function closeRegistroModal() {
-        const modal = document.getElementById('registroModal');
-        modal.classList.remove('show');
-        setTimeout(() => {
-            modal.style.display = 'none';
-            document.body.style.overflow = '';
-        }, 300);
-    }
-
-    // Close on outside click
-    window.onclick = function(event) {
-        if (event.target.classList.contains('modal-overlay')) {
-            event.target.classList.remove('show');
-            setTimeout(() => {
-                event.target.style.display = 'none';
-                document.body.style.overflow = '';
-            }, 300);
-        }
-    }
-</script>
-<!-- Modal Contacto -->
-<div id="contactoModal" class="modal-overlay" style="z-index: 10002;">
-    <div class="modal-container" style="max-width: 500px; padding: 2rem; text-align: center;">
-        <button class="modal-close" onclick="closeContactoModal()" style="color: #4a5568; background: #f7fafc; top: 1rem; right: 1rem;">×</button>
-        
-        <div style="margin-bottom: 1.5rem;">
-            <div style="width: 60px; height: 60px; background: #FFF3E0; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
-                <span style="font-size: 2rem;">📞</span>
-            </div>
-            <h2 style="color: #F09819; font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem;">¡Estamos Conectados!</h2>
-            <p style="color: #718096; font-size: 1rem;">¿Tenés alguna duda? Escribinos por WhatsApp según tu ciudad o envíanos un correo.</p>
-        </div>
-
-        <div style="display: grid; gap: 1rem; text-align: left; margin-bottom: 2rem;">
-            <!-- Río Grande -->
-            <a href="https://wa.me/5492964485527" target="_blank" style="text-decoration: none;">
-                <div style="background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s; cursor: pointer;" onmouseover="this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'">
-                    <div style="background: #25D366; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;">
-                        <i class="fab fa-whatsapp"></i>
-                    </div>
-                    <div>
-                        <h4 style="color: #2d3748; margin: 0; font-weight: 700;">Río Grande</h4>
-                        <span style="color: #718096; font-size: 0.9rem;">+54 9 2964 485527</span>
-                    </div>
-                </div>
-            </a>
-
-            <!-- Tolhuin -->
-            <a href="https://wa.me/5492901498171" target="_blank" style="text-decoration: none;">
-                <div style="background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s; cursor: pointer;" onmouseover="this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'">
-                    <div style="background: #25D366; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;">
-                        <i class="fab fa-whatsapp"></i>
-                    </div>
-                    <div>
-                        <h4 style="color: #2d3748; margin: 0; font-weight: 700;">Tolhuin</h4>
-                        <span style="color: #718096; font-size: 0.9rem;">+54 9 2901 498171</span>
-                    </div>
-                </div>
-            </a>
-
-            <!-- Ushuaia -->
-            <a href="https://wa.me/5492901307443" target="_blank" style="text-decoration: none;">
-                <div style="background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s; cursor: pointer;" onmouseover="this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'">
-                    <div style="background: #25D366; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;">
-                        <i class="fab fa-whatsapp"></i>
-                    </div>
-                    <div>
-                        <h4 style="color: #2d3748; margin: 0; font-weight: 700;">Ushuaia</h4>
-                        <span style="color: #718096; font-size: 0.9rem;">+54 9 2901 307443</span>
-                    </div>
-                </div>
-            </a>
-            
-            <!-- Email -->
-            <a href="mailto:soporte.polo@aif.gob.ar" style="text-decoration: none;">
-                 <div style="background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s; cursor: pointer;" onmouseover="this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'">
-                    <div style="background: #F09819; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;">
-                        <i class="fas fa-envelope"></i>
-                    </div>
-                    <div>
-                        <h4 style="color: #2d3748; margin: 0; font-weight: 700;">Correo Electrónico</h4>
-                        <span style="color: #718096; font-size: 0.9rem;">soporte.polo@aif.gob.ar</span>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <div style="border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
-            <p style="color: #718096; font-size: 0.9rem; margin-bottom: 1rem; font-weight: 600;">¡Seguinos en nuestras redes!</p>
-            <div style="display: flex; justify-content: center; gap: 1.5rem;">
-                <a href="#" style="font-size: 1.8rem; color: #4267B2; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
-                    <i class="fab fa-facebook"></i>
-                </a>
-                <a href="#" style="font-size: 1.8rem; color: #E1306C; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
-                    <i class="fab fa-instagram"></i>
-                </a>
-                <a href="#" style="font-size: 1.8rem; color: #0077B5; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
-                    <i class="fab fa-linkedin"></i>
-                </a>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    function openContactoModal() {
-        const modal = document.getElementById('contactoModal');
-        modal.style.display = 'flex';
-        modal.offsetHeight;
-        modal.classList.add('show');
-        document.body.style.overflow = 'hidden';
-    }
+    <!-- Modal Acerca De -->
+    <div id="acercaDeModal" class="modal-overlay" style="z-index: 10002;">
+        <div class="modal-container" style="max-width: 900px; background: #1e293b; color: white; padding: 0; border: 1px solid rgba(255, 255, 255, 0.1); border-top: 5px solid #F09819;">
+            <button class="modal-close" onclick="closeAcercaDeModal()" style="color: white; background: rgba(255,255,255,0.1); top: 1rem; right: 1rem; border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s;" onmouseover="this.style.background='#F09819'; this.style.borderColor='#F09819'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'">×</button>
+            
+            <div style="padding: 3rem 2rem;">
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 3rem; margin-bottom: 3rem;">
+                    <!-- Logo & Description -->
+                    <div>
+                        <img src="{% static 'img/polocreativoblanco.png' %}" alt="Polo Creativo" style="height: 50px; margin-bottom: 1.5rem;">
+                        <h3 style="color: #F09819; font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem;">Sobre Edu-Polo</h3>
+                        <p style="color: #94a3b8; line-height: 1.6; font-size: 0.95rem; margin-bottom: 1rem;">
+                            Edu-Polo es una iniciativa del Gobierno de Tierra del Fuego, Antártida e Islas del Atlántico Sur, diseñada para impulsar la economía del conocimiento y fomentar el desarrollo de habilidades digitales en nuestra comunidad.
+                        </p>
+                        <p style="color: #94a3b8; line-height: 1.6; font-size: 0.95rem;">
+                            Ofrecemos cursos gratuitos de alta calidad en programación, diseño, marketing digital y otras disciplinas tecnológicas, con el objetivo de mejorar la empleabilidad y potenciar el talento local.
+                        </p>
+                    </div>
 
-    function closeContactoModal() {
-        const modal = document.getElementById('contactoModal');
-        modal.classList.remove('show');
-        setTimeout(() => {
-            modal.style.display = 'none';
-            document.body.style.overflow = '';
-        }, 300);
-    }
+                    <!-- Social Links -->
+                    <div style="display: flex; flex-direction: column; justify-content: center;">
+                        <h4 style="color: white; font-size: 1.1rem; font-weight: 700; margin-bottom: 1.5rem;">Síguenos en redes</h4>
+                        <a href="#" style="display: flex; align-items: center; gap: 1rem; color: #94a3b8; text-decoration: none; margin-bottom: 1rem; transition: color 0.3s;" onmouseover="this.style.color='#F09819'" onmouseout="this.style.color='#94a3b8'">
+                            <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fab fa-facebook-f"></i></div>
+                            <span>Facebook</span>
+                        </a>
+                        <a href="#" style="display: flex; align-items: center; gap: 1rem; color: #94a3b8; text-decoration: none; margin-bottom: 1rem; transition: color 0.3s;" onmouseover="this.style.color='#F09819'" onmouseout="this.style.color='#94a3b8'">
+                            <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fab fa-instagram"></i></div>
+                            <span>Instagram</span>
+                        </a>
+                        <a href="#" style="display: flex; align-items: center; gap: 1rem; color: #94a3b8; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#F09819'" onmouseout="this.style.color='#94a3b8'">
+                            <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fab fa-linkedin-in"></i></div>
+                            <span>LinkedIn</span>
+                        </a>
+                    </div>
+                </div>
 
-    // Close on outside click
-    document.getElementById('contactoModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeContactoModal();
-        }
-    });
-</script>
-    {% block scripts %}{% endblock %}
+                <!-- Footer Info -->
+                <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 2rem; text-align: center;">
+                    <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 0.5rem;">
+                        © 2024 Gobierno de Tierra del Fuego, AeIAS. Todos los derechos reservados.
+                    </p>
+                    <p style="color: #64748b; font-size: 0.85rem;">
+                        Desarrollado con ❤️ por el equipo de Polo Creativo
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
-
