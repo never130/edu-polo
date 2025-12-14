@@ -197,7 +197,39 @@
         
         .btn-secondary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.5);
+        }
+
+        /* Navbar Specific Buttons - Glassmorphism */
+        .navbar-actions .btn-primary {
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            font-weight: 600;
+        }
+        
+        .navbar-actions .btn-primary:hover {
+            background: white;
+            color: #F09819;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-actions .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(4px);
+            font-weight: 600;
+            box-shadow: none;
+        }
+
+        .navbar-actions .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            transform: translateY(-2px);
+            border-color: white;
         }
         
         .btn-logout {
@@ -1492,83 +1524,89 @@
 </script>
 <!-- Modal Contacto -->
 <div id="contactoModal" class="modal-overlay" style="z-index: 10002;">
-    <div class="modal-container" style="max-width: 500px; padding: 2rem; text-align: center;">
-        <button class="modal-close" onclick="closeContactoModal()" style="color: #4a5568; background: #f7fafc; top: 1rem; right: 1rem;">×</button>
-        
-        <div style="margin-bottom: 1.5rem;">
-            <div style="width: 60px; height: 60px; background: #FFF3E0; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
-                <span style="font-size: 2rem;">📞</span>
-            </div>
-            <h2 style="color: #F09819; font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem;">¡Estamos Conectados!</h2>
-            <p style="color: #718096; font-size: 1rem;">¿Tenés alguna duda? Escribinos por WhatsApp según tu ciudad o envíanos un correo.</p>
-        </div>
-
-        <div style="display: grid; gap: 1rem; text-align: left; margin-bottom: 2rem;">
-            <!-- Río Grande -->
-            <a href="https://wa.me/5492964485527" target="_blank" style="text-decoration: none;">
-                <div style="background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s; cursor: pointer;" onmouseover="this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'">
-                    <div style="background: #25D366; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;">
-                        <i class="fab fa-whatsapp"></i>
-                    </div>
-                    <div>
-                        <h4 style="color: #2d3748; margin: 0; font-weight: 700;">Río Grande</h4>
-                        <span style="color: #718096; font-size: 0.9rem;">+54 9 2964 485527</span>
-                    </div>
-                </div>
-            </a>
-
-            <!-- Tolhuin -->
-            <a href="https://wa.me/5492901498171" target="_blank" style="text-decoration: none;">
-                <div style="background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s; cursor: pointer;" onmouseover="this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'">
-                    <div style="background: #25D366; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;">
-                        <i class="fab fa-whatsapp"></i>
-                    </div>
-                    <div>
-                        <h4 style="color: #2d3748; margin: 0; font-weight: 700;">Tolhuin</h4>
-                        <span style="color: #718096; font-size: 0.9rem;">+54 9 2901 498171</span>
-                    </div>
-                </div>
-            </a>
-
-            <!-- Ushuaia -->
-            <a href="https://wa.me/5492901307443" target="_blank" style="text-decoration: none;">
-                <div style="background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s; cursor: pointer;" onmouseover="this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'">
-                    <div style="background: #25D366; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;">
-                        <i class="fab fa-whatsapp"></i>
-                    </div>
-                    <div>
-                        <h4 style="color: #2d3748; margin: 0; font-weight: 700;">Ushuaia</h4>
-                        <span style="color: #718096; font-size: 0.9rem;">+54 9 2901 307443</span>
-                    </div>
-                </div>
-            </a>
+    <div class="modal-container" style="max-width: 400px; padding: 0; text-align: center; overflow: hidden; border: none; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+        <!-- Header Gradient -->
+        <div style="background: linear-gradient(90deg, #FF512F 0%, #F09819 100%); padding: 1.2rem 1.2rem 1rem; position: relative;">
+            <button class="modal-close" onclick="closeContactoModal()" style="color: white; background: rgba(255,255,255,0.2); top: 0.8rem; right: 0.8rem; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.3); width: 28px; height: 28px; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; border-radius: 50%;">×</button>
             
-            <!-- Email -->
-            <a href="mailto:soporte.polo@aif.gob.ar" style="text-decoration: none;">
-                 <div style="background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s; cursor: pointer;" onmouseover="this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'">
-                    <div style="background: #F09819; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;">
-                        <i class="fas fa-envelope"></i>
-                    </div>
-                    <div>
-                        <h4 style="color: #2d3748; margin: 0; font-weight: 700;">Correo Electrónico</h4>
-                        <span style="color: #718096; font-size: 0.9rem;">soporte.polo@aif.gob.ar</span>
-                    </div>
-                </div>
-            </a>
+            <div style="width: 44px; height: 44px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.6rem; box-shadow: 0 8px 12px -3px rgba(0, 0, 0, 0.1);">
+                <span style="font-size: 1.6rem;">📞</span>
+            </div>
+            <h2 style="color: white; font-size: 1.3rem; font-weight: 800; margin-bottom: 0.2rem; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">¡Estamos Conectados!</h2>
+            <p style="color: rgba(255,255,255,0.95); font-size: 0.9rem; margin-bottom: 0; font-weight: 500;">¿Tenés alguna duda? Escribinos.</p>
         </div>
 
-        <div style="border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
-            <p style="color: #718096; font-size: 0.9rem; margin-bottom: 1rem; font-weight: 600;">¡Seguinos en nuestras redes!</p>
-            <div style="display: flex; justify-content: center; gap: 1.5rem;">
-                <a href="#" style="font-size: 1.8rem; color: #4267B2; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
-                    <i class="fab fa-facebook"></i>
+        <!-- Body Content -->
+        <div style="padding: 1.2rem; background: #f8fafc;">
+            <div style="display: grid; gap: 0.6rem; text-align: left; margin-bottom: 1.2rem;">
+                <!-- Río Grande -->
+                <a href="https://wa.me/5492964485527" target="_blank" style="text-decoration: none;">
+                    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 0.7rem; display: flex; align-items: center; gap: 0.7rem; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.02);" 
+                         onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 12px -3px rgba(0, 0, 0, 0.1)'; this.style.borderColor='#F09819';" 
+                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.02)'; this.style.borderColor='#e2e8f0';">
+                        <div style="background: #DCFCE7; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #16A34A; font-size: 1.1rem;">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <div>
+                            <h4 style="color: #1e293b; margin: 0; font-weight: 700; font-size: 0.95rem;">Río Grande</h4>
+                            <span style="color: #64748b; font-size: 0.8rem;">+54 9 2964 485527</span>
+                        </div>
+                    </div>
                 </a>
-                <a href="#" style="font-size: 1.8rem; color: #E1306C; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
-                    <i class="fab fa-instagram"></i>
+
+                <!-- Tolhuin -->
+                <a href="https://wa.me/5492901498171" target="_blank" style="text-decoration: none;">
+                    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 0.7rem; display: flex; align-items: center; gap: 0.7rem; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.02);" 
+                         onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 12px -3px rgba(0, 0, 0, 0.1)'; this.style.borderColor='#F09819';" 
+                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.02)'; this.style.borderColor='#e2e8f0';">
+                        <div style="background: #DCFCE7; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #16A34A; font-size: 1.1rem;">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <div>
+                            <h4 style="color: #1e293b; margin: 0; font-weight: 700; font-size: 0.95rem;">Tolhuin</h4>
+                            <span style="color: #64748b; font-size: 0.8rem;">+54 9 2901 498171</span>
+                        </div>
+                    </div>
                 </a>
-                <a href="#" style="font-size: 1.8rem; color: #0077B5; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
-                    <i class="fab fa-linkedin"></i>
+
+                <!-- Ushuaia -->
+                <a href="https://wa.me/5492901307443" target="_blank" style="text-decoration: none;">
+                    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 0.7rem; display: flex; align-items: center; gap: 0.7rem; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.02);" 
+                         onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 12px -3px rgba(0, 0, 0, 0.1)'; this.style.borderColor='#F09819';" 
+                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.02)'; this.style.borderColor='#e2e8f0';">
+                        <div style="background: #DCFCE7; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #16A34A; font-size: 1.1rem;">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <div>
+                            <h4 style="color: #1e293b; margin: 0; font-weight: 700; font-size: 0.95rem;">Ushuaia</h4>
+                            <span style="color: #64748b; font-size: 0.8rem;">+54 9 2901 307443</span>
+                        </div>
+                    </div>
                 </a>
+                
+                <!-- Email -->
+                <a href="mailto:soporte.polo@aif.gob.ar" style="text-decoration: none;">
+                     <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 0.7rem; display: flex; align-items: center; gap: 0.7rem; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.02);" 
+                         onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 12px -3px rgba(0, 0, 0, 0.1)'; this.style.borderColor='#F09819';" 
+                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.02)'; this.style.borderColor='#e2e8f0';">
+                        <div style="background: #FFEDD5; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #EA580C; font-size: 1.1rem;">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <h4 style="color: #1e293b; margin: 0; font-weight: 700; font-size: 0.95rem;">Correo Electrónico</h4>
+                            <span style="color: #64748b; font-size: 0.8rem;">soporte.polo@aif.gob.ar</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div style="border-top: 1px solid #e2e8f0; padding-top: 1rem;">
+                <p style="color: #64748b; font-size: 0.8rem; margin-bottom: 0.6rem; font-weight: 600;">¡Seguinos en nuestras redes!</p>
+                <div style="display: flex; justify-content: center; gap: 1rem;">
+                    <a href="#" style="font-size: 1.6rem; color: #4267B2; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"><i class="fab fa-facebook"></i></a>
+                    <a href="#" style="font-size: 1.6rem; color: #E1306C; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"><i class="fab fa-instagram"></i></a>
+                    <a href="#" style="font-size: 1.6rem; color: #0077B5; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"><i class="fab fa-linkedin"></i></a>
+                </div>
             </div>
         </div>
     </div>
