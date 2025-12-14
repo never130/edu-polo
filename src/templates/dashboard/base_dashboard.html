@@ -17,6 +17,15 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #FF512F;
+            --secondary: #F09819;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --text-main: #334155;
+            --text-light: #64748b;
+        }
+
         /* Modal Styles */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -200,22 +209,23 @@
         
         /* Navbar - Latest Implementation */
         .navbar {
-            background: linear-gradient(90deg, #FF512F 0%, #F09819 100%);
+            background: linear-gradient(90deg, rgba(255, 81, 47, 0.95) 0%, rgba(240, 152, 25, 0.95) 100%);
             padding: 1rem 2rem;
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 4px 20px rgba(240, 152, 25, 0.25);
             backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Sombra neutra */
         }
-        
+
         .navbar-content {
-            max-width: 100%;
+            max-width: 1400px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: relative;
+            padding: 0 1rem;
         }
         
         .navbar-logo {
@@ -227,12 +237,12 @@
         }
         
         .navbar-logo img {
-            height: 50px;
+            height: 45px;
             transition: transform 0.3s ease;
         }
         
         .navbar-logo:hover img {
-            transform: scale(1.1) rotate(-5deg);
+            transform: scale(1.05);
         }
         
         .navbar-logo h1 {
@@ -247,7 +257,7 @@
         /* Center Links */
         .navbar-links {
             display: flex;
-            gap: 2rem;
+            gap: 2.5rem;
             align-items: center;
             position: absolute;
             left: 50%;
@@ -255,19 +265,19 @@
         }
 
         .navbar-link {
-            color: white;
+            color: rgba(255, 255, 255, 0.9);
             text-decoration: none;
-            font-weight: 600;
-            font-size: 1.05rem;
+            font-weight: 500;
+            font-size: 1rem;
             transition: all 0.3s ease;
             position: relative;
             padding: 0.5rem 0;
-            opacity: 0.9;
         }
 
         .navbar-link:hover {
-            opacity: 1;
-            transform: translateY(-2px);
+            color: white;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            transform: none;
         }
 
         .navbar-link::after {
@@ -277,7 +287,7 @@
             height: 2px;
             bottom: 0;
             left: 50%;
-            background-color: white;
+            background: #ffffff;
             transition: all 0.3s ease;
             transform: translateX(-50%);
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -289,64 +299,57 @@
 
         .navbar-actions {
             display: flex;
-            gap: 0.5rem;
+            gap: 1rem;
             align-items: center;
             z-index: 10;
         }
-        
+
         .btn {
             padding: 0.6rem 1.2rem;
-            border-radius: 10px;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
             border: none;
             cursor: pointer;
-            font-size: 0.9rem;
-            letter-spacing: 0.01em;
-            position: relative;
-            overflow: hidden;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
-        
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-        
-        .btn:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+
+        /* Navbar Button Specifics - Glassmorphism */
+        .navbar-actions .btn-primary {
+            background: rgba(255, 255, 255, 0.25);
             color: white;
-            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            font-weight: 600;
         }
-        
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.5);
-        }
-        
-        .btn-secondary {
+
+        .navbar-actions .btn-primary:hover {
             background: white;
-            color: #FF512F;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        
-        .btn-secondary:hover {
-            background: #f8fafc;
-            transform: translateY(-2px);
             color: #F09819;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-actions .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(4px);
+            font-weight: 600;
+            box-shadow: none;
+        }
+
+        .navbar-actions .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            transform: translateY(-2px);
+            border-color: white;
         }
 
         @media (max-width: 900px) {
@@ -501,13 +504,20 @@
         /* Menu hamburguesa para móvil */
         .mobile-menu-toggle {
             display: none;
-            background: #667eea;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
             border: none;
-            padding: 0.8rem 1rem;
+            padding: 0.6rem 1rem;
             border-radius: 8px;
             cursor: pointer;
             font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(240, 152, 25, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(240, 152, 25, 0.4);
         }
         
         .sidebar-overlay {
@@ -840,10 +850,11 @@
 
             <div class="navbar-actions">
                 {% if user.is_authenticated %}
-                <a href="{% url 'dashboard' %}" class="btn btn-primary">Ir al Panel</a>
                 <form action="{% url 'logout' %}" method="post" style="display: inline;">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-secondary">Cerrar Sesión</button>
+                    <button type="submit" class="btn btn-secondary">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
                 </form>
                 {% else %}
                 <a href="#" class="btn btn-secondary" onclick="openRegistroModal(); return false;">Registrarse</a>

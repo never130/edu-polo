@@ -16,6 +16,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
+            --primary: #FF512F;
+            --secondary: #F09819;
             --primary-orange: #F97316;
             --primary-orange-hover: #ea580c;
             --text-dark: #1e293b;
@@ -34,22 +36,23 @@
         
         /* Navbar - Latest Implementation */
         .navbar {
-            background: linear-gradient(90deg, #FF512F 0%, #F09819 100%);
+            background: linear-gradient(90deg, rgba(255, 81, 47, 0.95) 0%, rgba(240, 152, 25, 0.95) 100%);
             padding: 1rem 2rem;
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 4px 20px rgba(240, 152, 25, 0.25);
             backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Sombra neutra */
         }
         
         .navbar-content {
-            max-width: 100%;
+            max-width: 1400px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: relative;
+            padding: 0 1rem;
         }
         
         .navbar-logo {
@@ -61,12 +64,12 @@
         }
         
         .navbar-logo img {
-            height: 50px;
+            height: 45px;
             transition: transform 0.3s ease;
         }
         
         .navbar-logo:hover img {
-            transform: scale(1.1) rotate(-5deg);
+            transform: scale(1.05);
         }
         
         .navbar-logo h1 {
@@ -81,7 +84,7 @@
         /* Center Links */
         .navbar-links {
             display: flex;
-            gap: 2rem;
+            gap: 2.5rem;
             align-items: center;
             position: absolute;
             left: 50%;
@@ -89,19 +92,21 @@
         }
 
         .navbar-link {
-            color: white;
+            color: rgba(255, 255, 255, 0.9);
             text-decoration: none;
-            font-weight: 600;
-            font-size: 1.05rem;
+            font-weight: 500;
+            font-size: 1rem;
             transition: all 0.3s ease;
             position: relative;
             padding: 0.5rem 0;
-            opacity: 0.9;
+            opacity: 1;
         }
 
         .navbar-link:hover {
+            color: white;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
             opacity: 1;
-            transform: translateY(-2px);
+            transform: none;
         }
 
         .navbar-link::after {
@@ -111,7 +116,7 @@
             height: 2px;
             bottom: 0;
             left: 50%;
-            background: #3b82f6;
+            background: #ffffff;
             transition: all 0.3s ease;
             transform: translateX(-50%);
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -123,65 +128,48 @@
 
         .navbar-actions {
             display: flex;
-            gap: 0.5rem;
+            gap: 1rem;
             align-items: center;
             z-index: 10;
         }
         
         .btn {
             padding: 0.6rem 1.2rem;
-            border-radius: 10px;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
             border: none;
             cursor: pointer;
-            font-size: 0.9rem;
-            letter-spacing: 0.01em;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-        
-        .btn:hover::before {
-            width: 300px;
-            height: 300px;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            letter-spacing: normal;
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
-            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 4px 15px rgba(240, 152, 25, 0.3);
         }
         
         .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(240, 152, 25, 0.4);
         }
         
         .btn-secondary {
-            background: white;
-            color: #FF512F;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .btn-secondary:hover {
-            background: #f8fafc;
+            background: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
-            color: #F09819;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
 
         /* Navbar Specific Buttons - Glassmorphism */
