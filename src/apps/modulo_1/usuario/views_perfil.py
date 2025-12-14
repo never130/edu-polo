@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import transaction
 from apps.modulo_1.usuario.models import Persona, Usuario
-from apps.modulo_1.roles.models import Estudiante, Docente, UsuarioRol
+from apps.modulo_1.roles.models import Estudiante, Docente, UsuarioRol, Rol
 from datetime import date
 
 
@@ -52,6 +52,43 @@ def mi_perfil(request):
         }
         return render(request, 'usuario/mi_perfil.html', context)
     except Usuario.DoesNotExist:
+        # Si es superuser y no tiene perfil, crearlo automáticamente
+        if request.user.is_superuser:
+            try:
+                with transaction.atomic():
+                    # Crear o recuperar Persona (usando username como DNI si es posible)
+                    persona, created = Persona.objects.get_or_create(
+                        dni=request.user.username,
+                        defaults={
+                            'nombre': request.user.first_name or 'Administrador',
+                            'apellido': request.user.last_name or 'Sistema',
+                            'correo': request.user.email or f'admin_{request.user.username}@example.com',
+                        }
+                    )
+                    
+                    # Crear Usuario
+                    usuario, created = Usuario.objects.get_or_create(
+                        persona=persona,
+                        defaults={
+                            'contrasena': 'admin_managed_via_django',
+                            'activo': True
+                        }
+                    )
+                    
+                    # Asignar Rol Administrador
+                    rol_admin, _ = Rol.objects.get_or_create(
+                        nombre='Administrador', 
+                        defaults={'descripcion': 'Administrador del sistema', 'jerarquia': 1}
+                    )
+                    
+                    UsuarioRol.objects.get_or_create(usuario_id=usuario, rol_id=rol_admin)
+                    
+                    messages.success(request, 'Perfil de administrador generado automáticamente.')
+                    return redirect('usuario:mi_perfil')
+            except Exception as e:
+                messages.error(request, f'Error al generar perfil de administrador: {str(e)}')
+                return redirect('dashboard')
+
         messages.error(request, 'No se encontró tu perfil de usuario.')
         return redirect('dashboard')
 
@@ -151,6 +188,8 @@ def editar_perfil(request):
         return render(request, 'usuario/editar_perfil.html', context)
         
     except Usuario.DoesNotExist:
+        if request.user.is_superuser:
+            return redirect('usuario:mi_perfil')
         messages.error(request, 'No se encontró tu perfil de usuario.')
         return redirect('dashboard')
 
@@ -239,6 +278,8 @@ def cambiar_contrasena(request):
         return render(request, 'usuario/cambiar_contrasena.html', context)
         
     except Usuario.DoesNotExist:
+        if request.user.is_superuser:
+            return redirect('usuario:mi_perfil')
         messages.error(request, 'No se encontró tu perfil de usuario.')
         return redirect('dashboard')
 
