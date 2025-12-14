@@ -28,7 +28,36 @@ class Command(BaseCommand):
 
         try:
             with transaction.atomic():
-                # 1. Eliminar Cursos
+                # Importar modelos primero
+                from apps.modulo_1.roles.models import Estudiante, Docente, Tutor, TutorEstudiante, UsuarioRol
+                from apps.modulo_1.usuario.models import Usuario, Persona
+                from apps.modulo_3.docentes.models import Docente as DocentePerfil
+                from apps.modulo_3.cursos.models import ComisionDocente, Comision, Material, Curso
+                from apps.modulo_2.inscripciones.models import Inscripcion
+                from apps.modulo_4.asistencia.models import Asistencia, RegistroAsistencia
+                from django.contrib.admin.models import LogEntry
+                
+                # 1. Limpieza de Módulo Académico (De abajo hacia arriba para evitar FK constraints)
+                self.stdout.write('Eliminando Asistencias...')
+                # Borrado masivo para evitar signals que intenten actualizar registros de inscripciones que se están borrando
+                Asistencia.objects.all().delete()
+                
+                self.stdout.write('Eliminando Registros de Asistencia...')
+                RegistroAsistencia.objects.all().delete()
+                
+                self.stdout.write('Eliminando Inscripciones...')
+                Inscripcion.objects.all().delete()
+                
+                self.stdout.write('Eliminando Materiales...')
+                Material.objects.all().delete()
+                
+                self.stdout.write('Eliminando Asignaciones Docentes...')
+                ComisionDocente.objects.all().delete()
+                
+                self.stdout.write('Eliminando Comisiones...')
+                Comision.objects.all().delete()
+                
+                self.stdout.write('Eliminando Cursos...')
                 cursos_count = Curso.objects.count()
                 Curso.objects.all().delete()
                 self.stdout.write(self.style.SUCCESS(f'✓ Se eliminaron {cursos_count} Cursos (y datos relacionados).'))
@@ -36,9 +65,46 @@ class Command(BaseCommand):
                 # 2. Eliminar Usuarios (No Superusers)
                 # Filtramos para no borrar al admin
                 users_to_delete = User.objects.filter(is_superuser=False)
+                
+                # Obtener los DNIs de los usuarios a borrar para limpiar las tablas personalizadas
+                dnis_to_delete = list(users_to_delete.values_list('username', flat=True))
+                
+                # 3. Eliminar relaciones Tutor-Estudiante
+                TutorEstudiante.objects.all().delete()
+                
+                # 4. Eliminar Tutores, Estudiantes, Docentes
+                # Filtramos por usuarios que vamos a borrar
+                usuarios_app = Usuario.objects.filter(persona__dni__in=dnis_to_delete)
+
+                # Eliminar LogEntry asociados a los usuarios de Django
+                LogEntry.objects.filter(user__in=users_to_delete).delete()
+
+                # Eliminar Perfiles de Docente (Módulo 3) que apuntan a Usuario
+                DocentePerfil.objects.filter(usuario__in=usuarios_app).delete()
+                
+                # Eliminar solo los roles (Estudiante/Tutor) y Usuario de App
+                
+                # Eliminar Estudiantes (el rol de estudiante y sus datos académicos)
+                Estudiante.objects.filter(usuario__in=usuarios_app).delete()
+                
+                # Eliminar Tutores y relaciones
+                Tutor.objects.filter(usuario__in=usuarios_app).delete()
+                
+                # Eliminar vinculación de roles en tabla intermedia
+                UsuarioRol.objects.filter(usuario_id__in=usuarios_app).delete()
+                
+                # 5. Eliminar Usuarios de la App y Usuarios de Django (Login)
+                # MANTENIENDO LA PERSONA FÍSICA
+                usuarios_app.delete()
+                
+                # NO borramos Persona
+                
+                # 6. Finalmente eliminar usuarios de Django (Cuentas de acceso)
                 users_count = users_to_delete.count()
                 users_to_delete.delete()
-                self.stdout.write(self.style.SUCCESS(f'✓ Se eliminaron {users_count} Usuarios (Estudiantes/Docentes/Staff no admin).'))
+                
+                self.stdout.write(self.style.SUCCESS(f'✓ Se eliminaron {users_count} Usuarios de Acceso y perfiles de Estudiante.'))
+                self.stdout.write(self.style.SUCCESS(f'✓ SE MANTUVIERON los registros de Personas Físicas en la base de datos.'))
 
                 self.stdout.write(self.style.SUCCESS('-----------------------------------------------------------------------'))
                 self.stdout.write(self.style.SUCCESS('LIMPIEZA COMPLETADA EXITOSAMENTE'))
