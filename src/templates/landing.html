@@ -36,8 +36,8 @@
         }
 
         body {
-            min-height: 100vh;
-            overflow-x: hidden;
+            height: 100vh;
+            overflow: hidden;
             position: relative;
             background-color: #0f172a; /* Fallback */
             color: var(--text-main);
@@ -199,7 +199,7 @@
 
         /* Hero Section */
         .hero-section {
-            min-height: 90vh;
+            height: calc(100vh - 90px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -604,34 +604,7 @@
 
 
 
-    <!-- Footer -->
-    <footer class="main-footer">
-        <div class="footer-content">
-            <div class="footer-logo">
-                <img src="{% static 'img/polocreativoblanco.png' %}" alt="Polo Creativo">
-                <p>Promoviendo la inclusión digital y el desarrollo de talento tecnológico en toda la provincia.</p>
-            </div>
-            <div class="footer-links">
-                <h4>Navegación</h4>
-                <a href="{% url 'landing' %}">Inicio</a>
-                <a href="{% url 'lista_polos' %}">Cursos Disponibles</a>
-                <a href="#" onclick="openContactoModal(); return false;">Contacto y Soporte</a>
-                <a href="#">Términos y Condiciones</a>
-            </div>
-            <div class="footer-social">
-                <h4>Síguenos</h4>
-                <div class="social-icons">
-                    <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 Gobierno de Tierra del Fuego A.I.A.S. - Todos los derechos reservados.</p>
-        </div>
-    </footer>
+
 
     <!-- MODALS SECTION -->
 
