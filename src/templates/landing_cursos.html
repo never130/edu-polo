@@ -10,6 +10,8 @@
     <link rel="shortcut icon" type="image/png" href="{% static 'img/aif-logo.png' %}">
     <link rel="apple-touch-icon" href="{% static 'img/aif-logo.png' %}">
     <link rel="stylesheet" href="{% static 'colores.css' %}">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1269,7 +1271,7 @@
             <div class="navbar-links">
                 <a href="{% url 'landing' %}" class="navbar-link">Inicio</a>
                 <a href="{% url 'lista_polos' %}" class="navbar-link">Cursos</a>
-                <a href="#" class="navbar-link">Contacto</a>
+                <a href="#" class="navbar-link" onclick="openContactoModal(); return false;">Contacto</a>
                 <a href="#" class="navbar-link">Acerca de</a>
             </div>
 
@@ -1485,6 +1487,115 @@
     document.getElementById('cursoModal').addEventListener('click', function(e) {
         if (e.target === this) {
             closeModal();
+        }
+    });
+</script>
+<!-- Modal Contacto -->
+<div id="contactoModal" class="modal-overlay" style="z-index: 10002;">
+    <div class="modal-container" style="max-width: 500px; padding: 2rem; text-align: center;">
+        <button class="modal-close" onclick="closeContactoModal()" style="color: #4a5568; background: #f7fafc; top: 1rem; right: 1rem;">×</button>
+        
+        <div style="margin-bottom: 1.5rem;">
+            <div style="width: 60px; height: 60px; background: #FFF3E0; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                <span style="font-size: 2rem;">📞</span>
+            </div>
+            <h2 style="color: #F09819; font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem;">¡Estamos Conectados!</h2>
+            <p style="color: #718096; font-size: 1rem;">¿Tenés alguna duda? Escribinos por WhatsApp según tu ciudad o envíanos un correo.</p>
+        </div>
+
+        <div style="display: grid; gap: 1rem; text-align: left; margin-bottom: 2rem;">
+            <!-- Río Grande -->
+            <a href="https://wa.me/5492964485527" target="_blank" style="text-decoration: none;">
+                <div style="background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s; cursor: pointer;" onmouseover="this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'">
+                    <div style="background: #25D366; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <div>
+                        <h4 style="color: #2d3748; margin: 0; font-weight: 700;">Río Grande</h4>
+                        <span style="color: #718096; font-size: 0.9rem;">+54 9 2964 485527</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Tolhuin -->
+            <a href="https://wa.me/5492901498171" target="_blank" style="text-decoration: none;">
+                <div style="background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s; cursor: pointer;" onmouseover="this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'">
+                    <div style="background: #25D366; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <div>
+                        <h4 style="color: #2d3748; margin: 0; font-weight: 700;">Tolhuin</h4>
+                        <span style="color: #718096; font-size: 0.9rem;">+54 9 2901 498171</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Ushuaia -->
+            <a href="https://wa.me/5492901307443" target="_blank" style="text-decoration: none;">
+                <div style="background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s; cursor: pointer;" onmouseover="this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'">
+                    <div style="background: #25D366; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <div>
+                        <h4 style="color: #2d3748; margin: 0; font-weight: 700;">Ushuaia</h4>
+                        <span style="color: #718096; font-size: 0.9rem;">+54 9 2901 307443</span>
+                    </div>
+                </div>
+            </a>
+            
+            <!-- Email -->
+            <a href="mailto:soporte.polo@aif.gob.ar" style="text-decoration: none;">
+                 <div style="background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s; cursor: pointer;" onmouseover="this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'">
+                    <div style="background: #F09819; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div>
+                        <h4 style="color: #2d3748; margin: 0; font-weight: 700;">Correo Electrónico</h4>
+                        <span style="color: #718096; font-size: 0.9rem;">soporte.polo@aif.gob.ar</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div style="border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
+            <p style="color: #718096; font-size: 0.9rem; margin-bottom: 1rem; font-weight: 600;">¡Seguinos en nuestras redes!</p>
+            <div style="display: flex; justify-content: center; gap: 1.5rem;">
+                <a href="#" style="font-size: 1.8rem; color: #4267B2; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
+                    <i class="fab fa-facebook"></i>
+                </a>
+                <a href="#" style="font-size: 1.8rem; color: #E1306C; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="#" style="font-size: 1.8rem; color: #0077B5; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openContactoModal() {
+        const modal = document.getElementById('contactoModal');
+        modal.style.display = 'flex';
+        modal.offsetHeight;
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeContactoModal() {
+        const modal = document.getElementById('contactoModal');
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }, 300);
+    }
+
+    // Close on outside click
+    document.getElementById('contactoModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeContactoModal();
         }
     });
 </script>
