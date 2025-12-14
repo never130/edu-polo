@@ -755,7 +755,11 @@
                                 {{ comision.dias_horarios|default:"Martes y Jueves 16:30hs" }}
                             </div>
                             {% if user.is_authenticated %}
-                            <a href="{% url 'inscripciones:formulario' comision.id_comision %}" class="btn-more" style="display: block; text-align: center; text-decoration: none;">Inscribirme</a>
+                                {% if comision.cupo_lleno %}
+                                    <button class="btn-more" style="display: block; width: 100%; text-align: center; background: #94a3b8; cursor: not-allowed; border: none;" disabled>Cupo Completo</button>
+                                {% else %}
+                                    <a href="{% url 'inscripciones:formulario' comision.id_comision %}" class="btn-more" style="display: block; text-align: center; text-decoration: none;">Inscribirme</a>
+                                {% endif %}
                             {% else %}
                             <button onclick="closeCourseModal('{{ curso.id_curso }}'); openLoginModal();" class="btn-more">Iniciar Sesión para Inscribirme</button>
                             {% endif %}
