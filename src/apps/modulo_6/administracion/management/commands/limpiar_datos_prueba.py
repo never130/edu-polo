@@ -97,14 +97,22 @@ class Command(BaseCommand):
                 # MANTENIENDO LA PERSONA FÍSICA
                 usuarios_app.delete()
                 
-                # NO borramos Persona
+                # 6. Eliminar Personas huérfanas (que no tienen Usuario asociado)
+                # OJO: No borrar Personas que estén vinculadas a Superusuarios
                 
-                # 6. Finalmente eliminar usuarios de Django (Cuentas de acceso)
-                users_count = users_to_delete.count()
+                # Obtener DNIs de superusuarios
+                superusers_dnis = User.objects.filter(is_superuser=True).values_list('username', flat=True)
+                
+                # Borrar Personas que NO son de superusuarios
+                # Como ya borramos los Usuarios de App de los no-superusers, estas personas ya no tienen usuario_app asociado
+                # Pero filtramos por si acaso para no borrar la persona del admin
+                
+                personas_borradas = Persona.objects.exclude(dni__in=superusers_dnis).delete()
+                self.stdout.write(self.style.SUCCESS(f'✓ Se eliminaron Personas huérfanas: {personas_borradas}'))
+                
+                # 7. Eliminar usuarios de Django (auth_user)
                 users_to_delete.delete()
-                
-                self.stdout.write(self.style.SUCCESS(f'✓ Se eliminaron {users_count} Usuarios de Acceso y perfiles de Estudiante.'))
-                self.stdout.write(self.style.SUCCESS(f'✓ SE MANTUVIERON los registros de Personas Físicas en la base de datos.'))
+                self.stdout.write(self.style.SUCCESS(f'✓ Se eliminaron usuarios de sistema.'))
 
                 self.stdout.write(self.style.SUCCESS('-----------------------------------------------------------------------'))
                 self.stdout.write(self.style.SUCCESS('LIMPIEZA COMPLETADA EXITOSAMENTE'))
