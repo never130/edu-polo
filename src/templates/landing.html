@@ -754,7 +754,7 @@
     </div>
 
     <div id="contactoModal" class="modal-overlay" style="z-index: 10002;">
-    <div class="modal-container" style="max-width: 500px; background: #1e293b; color: white; padding: 0; border: 1px solid rgba(255, 255, 255, 0.1); border-top: 5px solid #F09819;">
+    <div class="modal-container" style="max-width: 800px; background: #1e293b; color: white; padding: 0; border: 1px solid rgba(255, 255, 255, 0.1); border-top: 5px solid #F09819;">
         <button class="modal-close" onclick="closeContactoModal()" style="color: white; background: rgba(255,255,255,0.1); top: 1rem; right: 1rem; border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s;" onmouseover="this.style.background='#F09819'; this.style.borderColor='#F09819'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'">×</button>
         
         <div style="padding: 3rem 2rem;">
@@ -764,17 +764,22 @@
                     <span style="font-size: 2rem;">📞</span>
                 </div>
                 <h3 style="color: #F09819; font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem;">¡Estamos Conectados!</h3>
-                <p style="color: #94a3b8; font-size: 0.95rem;">¿Tenés alguna duda? Escribinos.</p>
+                <p style="color: #94a3b8; font-size: 0.95rem; max-width: 600px; margin: 0 auto 0.5rem;">
+                    ¿Tenés alguna duda sobre nuestros cursos o actividades?
+                </p>
+                <p style="color: #94a3b8; font-size: 0.9rem; max-width: 600px; margin: 0 auto; line-height: 1.5;">
+                    Nuestro equipo está disponible de <strong>Lunes a Viernes de 9:00 a 17:00 hs</strong>. Seleccioná tu sede más cercana para comunicarte directamente por WhatsApp o escribinos por correo electrónico para consultas generales.
+                </p>
             </div>
 
             <!-- Contact Options -->
-            <div style="display: grid; gap: 1rem; margin-bottom: 2rem;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
                 <!-- Río Grande -->
                 <a href="https://wa.me/5492964485527" target="_blank" style="text-decoration: none;">
-                    <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s ease;" 
+                    <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s ease; height: 100%;" 
                          onmouseover="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'" 
                          onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'">
-                        <div style="background: rgba(34, 197, 94, 0.2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #4ade80; font-size: 1.2rem;">
+                        <div style="background: rgba(34, 197, 94, 0.2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #4ade80; font-size: 1.2rem; flex-shrink: 0;">
                             <i class="fab fa-whatsapp"></i>
                         </div>
                         <div>
@@ -786,10 +791,10 @@
 
                 <!-- Tolhuin -->
                 <a href="https://wa.me/5492901498171" target="_blank" style="text-decoration: none;">
-                    <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s ease;" 
+                    <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s ease; height: 100%;" 
                          onmouseover="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'" 
                          onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'">
-                        <div style="background: rgba(34, 197, 94, 0.2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #4ade80; font-size: 1.2rem;">
+                        <div style="background: rgba(34, 197, 94, 0.2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #4ade80; font-size: 1.2rem; flex-shrink: 0;">
                             <i class="fab fa-whatsapp"></i>
                         </div>
                         <div>
@@ -801,10 +806,10 @@
 
                 <!-- Ushuaia -->
                 <a href="https://wa.me/5492901307443" target="_blank" style="text-decoration: none;">
-                    <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s ease;" 
+                    <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s ease; height: 100%;" 
                          onmouseover="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'" 
                          onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'">
-                        <div style="background: rgba(34, 197, 94, 0.2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #4ade80; font-size: 1.2rem;">
+                        <div style="background: rgba(34, 197, 94, 0.2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #4ade80; font-size: 1.2rem; flex-shrink: 0;">
                             <i class="fab fa-whatsapp"></i>
                         </div>
                         <div>
@@ -816,10 +821,10 @@
                 
                 <!-- Email -->
                 <a href="mailto:soporte.polo@aif.gob.ar" style="text-decoration: none;">
-                     <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s ease;" 
+                     <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s ease; height: 100%;" 
                          onmouseover="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'" 
                          onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'">
-                        <div style="background: rgba(234, 88, 12, 0.2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fb923c; font-size: 1.2rem;">
+                        <div style="background: rgba(234, 88, 12, 0.2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fb923c; font-size: 1.2rem; flex-shrink: 0;">
                             <i class="fas fa-envelope"></i>
                         </div>
                         <div>
