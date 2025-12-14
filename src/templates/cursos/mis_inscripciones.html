@@ -258,6 +258,15 @@
                 <p style="margin-top: 0.5rem; color: #666;">{{ inscripcion.observaciones }}</p>
             </div>
             {% endif %}
+
+            <div style="margin-top: 1.5rem; text-align: right; border-top: 1px solid #eee; padding-top: 1.5rem;">
+                <form action="{% url 'inscripciones:cancelar' inscripcion.pk %}" method="post" onsubmit="return confirm('¿Estás seguro que deseas darte de baja de este curso? Esta acción liberará tu cupo inmediatamente.');" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" style="background: white; color: #ef4444; border: 2px solid #ef4444; padding: 0.7rem 1.2rem; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 0.5rem;">
+                        🗑️ Darse de Baja
+                    </button>
+                </form>
+            </div>
         </div>
         {% endfor %}
     </div>

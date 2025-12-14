@@ -25,8 +25,8 @@ def formulario_inscripcion(request, comision_id):
     
     # Verificar cupo disponible
     if comision.cupo_lleno:
-        messages.warning(request, f'⚠️ Esta comisión tiene el cupo lleno. Si completas la inscripción, quedarás en LISTA DE ESPERA.')
-        # No redirigimos, permitimos continuar para inscribirse en lista de espera
+        messages.error(request, f'🚫 Lo sentimos, la comisión del curso "{comision.fk_id_curso.nombre}" tiene el cupo completo. Ya no se aceptan nuevas inscripciones.')
+        return redirect('landing')
     
     # Verificar si ya está inscrito (para evitar mostrar el formulario si ya lo está)
     try:
@@ -176,15 +176,14 @@ def formulario_inscripcion(request, comision_id):
                 comision.refresh_from_db()
                 
                 if comision.cupo_lleno:
-                    estado_inscripcion = 'lista_espera'
-                    ultimo_orden = Inscripcion.objects.filter(comision=comision, estado='lista_espera').aggregate(Max('orden_lista_espera'))['orden_lista_espera__max']
-                    orden = (ultimo_orden or 0) + 1
+                    messages.error(request, '🚫 Lo sentimos, el cupo se completó justo antes de finalizar tu inscripción. No se ha podido realizar la inscripción.')
+                    return redirect('landing')
                 
                 Inscripcion.objects.create(
                     estudiante=estudiante,
                     comision=comision,
                     estado=estado_inscripcion,
-                    orden_lista_espera=orden,
+                    orden_lista_espera=None,
                     observaciones_discapacidad=request.POST.get('observaciones_discapacidad', ''),
                     observaciones_salud=request.POST.get('observaciones_salud', ''),
                     observaciones_generales=request.POST.get('observaciones_generales', ''),
@@ -193,20 +192,16 @@ def formulario_inscripcion(request, comision_id):
                 # 7. Mensaje de éxito personalizado
                 curso_nombre = comision.fk_id_curso.nombre
                 
-                if estado_inscripcion == 'lista_espera':
-                    mensaje = f'📝 Te has inscrito en LISTA DE ESPERA para el curso "{curso_nombre}". Tu posición es: {orden}.'
-                    messages.warning(request, mensaje)
+                cupos_restantes = comision.cupos_disponibles - 1
+                
+                if cupos_restantes == 0:
+                    mensaje = f'🎉 ¡PRE-INSCRIPCIÓN EXITOSA! Te has pre-inscrito al curso "{curso_nombre}". ¡Has tomado el ÚLTIMO CUPO disponible! Tu inscripción está pendiente de confirmación.'
+                elif cupos_restantes <= 3:
+                    mensaje = f'✅ ¡PRE-INSCRIPCIÓN EXITOSA! Te has pre-inscrito al curso "{curso_nombre}". ⚠️ Solo quedan {cupos_restantes} cupos. Tu inscripción está pendiente de confirmación.'
                 else:
-                    cupos_restantes = comision.cupos_disponibles - 1
-                    
-                    if cupos_restantes == 0:
-                        mensaje = f'🎉 ¡PRE-INSCRIPCIÓN EXITOSA! Te has pre-inscrito al curso "{curso_nombre}". ¡Has tomado el ÚLTIMO CUPO disponible! Tu inscripción está pendiente de confirmación.'
-                    elif cupos_restantes <= 3:
-                        mensaje = f'✅ ¡PRE-INSCRIPCIÓN EXITOSA! Te has pre-inscrito al curso "{curso_nombre}". ⚠️ Solo quedan {cupos_restantes} cupos. Tu inscripción está pendiente de confirmación.'
-                    else:
-                        mensaje = f'✅ ¡PRE-INSCRIPCIÓN EXITOSA! Te has pre-inscrito al curso "{curso_nombre}". Tu inscripción está pendiente de confirmación.'
-                    
-                    messages.success(request, mensaje)
+                    mensaje = f'✅ ¡PRE-INSCRIPCIÓN EXITOSA! Te has pre-inscrito al curso "{curso_nombre}". Tu inscripción está pendiente de confirmación.'
+                
+                messages.success(request, mensaje)
                 
                 # Redirección inteligente: Si está logueado va a mis inscripciones, sino al landing
                 if request.user.is_authenticated:
@@ -252,3 +247,31 @@ def formulario_inscripcion(request, comision_id):
         pass
         
     return render(request, 'inscripciones/formulario_inscripcion.html', context)
+
+
+@login_required
+def cancelar_inscripcion(request, inscripcion_id):
+    """
+    Permite al estudiante cancelar su propia inscripción.
+    Cambia el estado a 'cancelada' para liberar cupo.
+    """
+    # 1. Obtener la inscripción asegurando que pertenezca al estudiante logueado
+    inscripcion = get_object_or_404(
+        Inscripcion, 
+        pk=inscripcion_id,
+        estudiante__usuario__persona__dni=request.user.username
+    )
+    
+    if request.method == 'POST':
+        # 2. Cambiar estado
+        inscripcion.estado = 'cancelada'
+        inscripcion.save()
+        
+        # 3. Mensaje de éxito
+        curso_nombre = inscripcion.comision.fk_id_curso.nombre
+        messages.success(request, f'✅ Has dado de baja tu inscripción al curso "{curso_nombre}" correctamente.')
+        
+        return redirect('cursos:mis_inscripciones')
+    
+    # Si intentan entrar por GET, redirigir
+    return redirect('cursos:mis_inscripciones')
