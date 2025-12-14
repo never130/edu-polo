@@ -146,65 +146,33 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            letter-spacing: normal;
         }
-        
+
         .btn-primary {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
             box-shadow: 0 4px 15px rgba(240, 152, 25, 0.3);
         }
-        
+
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(240, 152, 25, 0.4);
         }
-        
+
         .btn-secondary {
             background: rgba(255, 255, 255, 0.1);
             color: white;
             backdrop-filter: blur(5px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        
+
         .btn-secondary:hover {
             background: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
         }
 
-        /* Navbar Specific Buttons - Glassmorphism */
-        .navbar-actions .btn-primary {
-            background: rgba(255, 255, 255, 0.25);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(8px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            font-weight: 600;
-        }
+
         
-        .navbar-actions .btn-primary:hover {
-            background: white;
-            color: #F09819;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .navbar-actions .btn-secondary {
-            background: transparent;
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(4px);
-            font-weight: 600;
-            box-shadow: none;
-        }
-
-        .navbar-actions .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
-            transform: translateY(-2px);
-            border-color: white;
-        }
-
         @media (max-width: 900px) {
             .navbar-links {
                 display: none;
