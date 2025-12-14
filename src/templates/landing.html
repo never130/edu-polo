@@ -31,8 +31,11 @@
             box-sizing: border-box;
         }
         
-        body {
+        body, button, input, select, textarea {
             font-family: 'Be Vietnam Pro', sans-serif;
+        }
+
+        body {
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
@@ -91,12 +94,13 @@
         }
 
         .navbar-content {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: relative;
+            padding: 0 1rem;
         }
         
         .navbar-logo img {
@@ -156,7 +160,7 @@
         }
 
         .btn {
-            padding: 0.6rem 1.4rem;
+            padding: 0.6rem 1.2rem;
             border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
@@ -195,35 +199,31 @@
 
         /* Navbar Button Specifics - Glassmorphism */
         .navbar-actions .btn-primary {
-            background: rgba(255, 255, 255, 0.25);
+            background: #3b82f6; /* Azul intenso */
             color: white;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(8px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 2px solid #3b82f6;
             font-weight: 600;
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
         }
 
         .navbar-actions .btn-primary:hover {
-            background: white;
-            color: #F09819;
+            background: #2563eb;
+            border-color: #2563eb;
             transform: translateY(-2px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
         }
 
         .navbar-actions .btn-secondary {
-            background: transparent;
+            background: #3b82f6; /* Azul intenso */
             color: white;
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(4px);
+            border: 2px solid #3b82f6;
             font-weight: 600;
-            box-shadow: none;
         }
 
         .navbar-actions .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
+            background: #2563eb;
+            border-color: #2563eb;
             transform: translateY(-2px);
-            border-color: white;
         }
 
         /* Hero Section */
