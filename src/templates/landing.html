@@ -541,7 +541,7 @@
                 <a href="{% url 'landing' %}" class="navbar-link">Inicio</a>
                 <a href="{% url 'lista_polos' %}" class="navbar-link">Cursos</a>
                 <a href="#" class="navbar-link" onclick="openContactoModal(); return false;">Contacto</a>
-                <a href="#" class="navbar-link">Acerca de</a>
+                <a href="#" class="navbar-link" onclick="openAcercaDeModal(); return false;">Acerca de</a>
             </div>
 
             <div class="navbar-actions">
@@ -843,6 +843,47 @@
     </div>
 </div>
 
+<!-- Modal Acerca De -->
+<div id="acercaDeModal" class="modal-overlay" style="z-index: 10002;">
+    <div class="modal-container" style="max-width: 900px; background: #1e293b; color: white; padding: 0; border: 1px solid rgba(255, 255, 255, 0.1); border-top: 5px solid #F09819;">
+        <button class="modal-close" onclick="closeAcercaDeModal()" style="color: white; background: rgba(255,255,255,0.1); top: 1rem; right: 1rem; border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s;" onmouseover="this.style.background='#F09819'; this.style.borderColor='#F09819'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'">×</button>
+        
+        <div style="padding: 3rem 2rem;">
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 3rem; margin-bottom: 3rem;">
+                <!-- Logo & Description -->
+                <div>
+                    <img src="{% static 'img/polocreativoblanco.png' %}" alt="Polo Creativo" style="height: 50px; margin-bottom: 1.5rem;">
+                    <h3 style="color: #F09819; font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem;">Sobre Edu-Polo</h3>
+                    <p style="color: #94a3b8; line-height: 1.6; font-size: 0.95rem; margin-bottom: 1rem;">
+                        Edu-Polo es una iniciativa del Gobierno de Tierra del Fuego, Antártida e Islas del Atlántico Sur, diseñada para impulsar la economía del conocimiento y fomentar el desarrollo de habilidades digitales en nuestra comunidad.
+                    </p>
+                    <p style="color: #94a3b8; line-height: 1.6; font-size: 0.95rem; margin-bottom: 1rem;">
+                        A través de nuestros Polos Creativos en Ushuaia, Río Grande y Tolhuin, ofrecemos un espacio de aprendizaje innovador, gratuito y abierto a todos los fueguinos. Nuestra misión es reducir la brecha digital y preparar a jóvenes y adultos para los desafíos del futuro laboral.
+                    </p>
+                    <p style="color: #94a3b8; line-height: 1.6; font-size: 0.95rem;">
+                        Contamos con talleres de programación, robótica, diseño, videojuegos y mucho más, dictados por profesionales apasionados por la tecnología y la educación.
+                    </p>
+                </div>
+                
+                <!-- Social (Moved to right column, Navigation removed) -->
+                <div style="display: flex; flex-direction: column; justify-content: center;">
+                    <h4 style="color: white; font-size: 1.1rem; font-weight: 700; margin-bottom: 1.5rem;">Síguenos en redes</h4>
+                    <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 1.5rem;">Entérate de todas las novedades, cursos y eventos en nuestras redes sociales oficiales.</p>
+                    <div style="display: flex; gap: 1rem;">
+                        <a href="#" style="width: 50px; height: 50px; background: rgba(255, 255, 255, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: all 0.3s; font-size: 1.2rem;" onmouseover="this.style.background='#F09819'; this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" style="width: 50px; height: 50px; background: rgba(255, 255, 255, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: all 0.3s; font-size: 1.2rem;" onmouseover="this.style.background='#F09819'; this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'"><i class="fab fa-instagram"></i></a>
+                        <a href="#" style="width: 50px; height: 50px; background: rgba(255, 255, 255, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: all 0.3s; font-size: 1.2rem;" onmouseover="this.style.background='#F09819'; this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; padding-top: 2rem; border-top: 1px solid rgba(255, 255, 255, 0.1); color: #64748b; font-size: 0.9rem;">
+                <p>&copy; 2026 Gobierno de Tierra del Fuego A.I.A.S. - Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
     <!-- Scripts -->
     <script>
         // Login Modal
@@ -884,6 +925,30 @@
             setTimeout(() => { modal.style.display = 'none'; document.body.style.overflow = ''; }, 300);
         }
         document.getElementById('contactoModal').addEventListener('click', function(e) { if (e.target === this) closeContactoModal(); });
+
+        // Acerca De Modal Logic
+        function openAcercaDeModal() {
+            const modal = document.getElementById('acercaDeModal');
+            modal.style.display = 'flex';
+            modal.offsetHeight; // Force reflow
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAcercaDeModal() {
+            const modal = document.getElementById('acercaDeModal');
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        document.getElementById('acercaDeModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAcercaDeModal();
+            }
+        });
 
         // Show modal if messages exist
         {% if messages and not user.is_authenticated %}
