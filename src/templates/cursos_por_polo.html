@@ -201,46 +201,6 @@
             letter-spacing: -0.02em;
         }
 
-        /* Tabs Clean Design */
-        .tabs-wrapper {
-            margin-bottom: 2.5rem;
-            overflow-x: auto;
-            padding-bottom: 0.5rem;
-            /* Hide scrollbar */
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        .tabs-wrapper::-webkit-scrollbar { display: none; }
-
-        .tabs-list {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .tab-item {
-            padding: 0.6rem 1.2rem;
-            border-radius: 99px;
-            border: none;
-            background: transparent;
-            color: var(--text-gray);
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.2s;
-        }
-
-        .tab-item:hover {
-            color: var(--primary-orange);
-            background: #fff7ed;
-        }
-
-        .tab-item.active {
-            background: var(--primary-orange);
-            color: white;
-            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
-        }
-
         /* Grid Layout */
         .courses-grid {
             display: grid;
@@ -729,18 +689,7 @@
         
         <h2 class="page-title">Cursos disponibles</h2>
 
-        <!-- Tabs -->
-        <div class="tabs-wrapper">
-            <div class="tabs-list">
-                <button class="tab-item active" onclick="filterCursos('all', this)">Más populares</button>
-                <button class="tab-item" onclick="filterCursos('programacion', this)">Grupo 1</button>
-                <button class="tab-item" onclick="filterCursos('diseno', this)">Grupo 2</button>
-                <button class="tab-item" onclick="filterCursos('robotica', this)">Grupo 3</button>
-                <button class="tab-item" onclick="filterCursos('idiomas', this)">Grupo 4</button>
-                <button class="tab-item" onclick="filterCursos('taller', this)">Grupo 5</button>
-                <button class="tab-item" onclick="filterCursos('otros', this)">Grupo 6</button>
-            </div>
-        </div>
+        <!-- Tabs removed per user request -->
 
         {% if cursos %}
         <div class="courses-grid">
@@ -1066,22 +1015,6 @@
     </div>
 
     <script>
-        function filterCursos(category, btn) {
-            // Update tabs
-            document.querySelectorAll('.tab-item').forEach(b => b.classList.remove('active'));
-            if (btn) btn.classList.add('active');
-            
-            // Filter cards
-            const cards = document.querySelectorAll('.course-card');
-            cards.forEach(card => {
-                if (category === 'all' || card.dataset.category === category) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        }
-
         // Modal Logic
         function openCourseModal(id) {
             const modal = document.getElementById('modal-curso-' + id);
