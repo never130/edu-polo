@@ -114,6 +114,34 @@ class Command(BaseCommand):
                 users_to_delete.delete()
                 self.stdout.write(self.style.SUCCESS(f'✓ Se eliminaron usuarios de sistema.'))
 
+                # 8. Reiniciar secuencias de IDs (Autoincrement) en SQLite
+                self.stdout.write('Reiniciando contadores de IDs...')
+                from django.db import connection
+                with connection.cursor() as cursor:
+                    # Lista de tablas a reiniciar
+                    tablas = [
+                        'cursos_comision',
+                        'cursos_curso',
+                        'inscripciones_inscripcion',
+                        'roles_estudiante',
+                        'roles_tutor',
+                        'roles_tutorestudiante',
+                        'usuario_usuario',
+                        'usuario_persona',
+                        'asistencia_asistencia',
+                        'asistencia_registroasistencia',
+                        'cursos_material',
+                        'cursos_comisiondocente',
+                        'docentes_docente',
+                        'roles_usuariorol'
+                    ]
+                    for tabla in tablas:
+                        try:
+                            cursor.execute(f"DELETE FROM sqlite_sequence WHERE name='{tabla}';")
+                        except Exception:
+                            pass # Ignorar si la tabla no está en sqlite_sequence
+                self.stdout.write(self.style.SUCCESS(f'✓ Se reiniciaron los contadores de IDs.'))
+
                 self.stdout.write(self.style.SUCCESS('-----------------------------------------------------------------------'))
                 self.stdout.write(self.style.SUCCESS('LIMPIEZA COMPLETADA EXITOSAMENTE'))
                 self.stdout.write(self.style.SUCCESS('El sistema está limpio y listo para nuevas pruebas.'))
