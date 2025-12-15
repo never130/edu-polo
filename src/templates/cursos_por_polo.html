@@ -762,7 +762,15 @@
                                 <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                                     {% for comision in curso.comisiones_abiertas %}
                                         <div style="background: #f1f5f9; padding: 0.4rem 0.6rem; border-radius: 6px; font-size: 0.85rem; color: var(--text-dark); border-left: 3px solid var(--primary-color);">
-                                            {{ comision.dias_horarios|default:"Consultar" }}
+                                            <div style="font-weight: 600; margin-bottom: 2px;">{{ comision.dias_horarios|default:"Consultar" }}</div>
+                                            {% if comision.fecha_inicio or comision.fecha_fin %}
+                                                <div style="font-size: 0.75rem; color: #64748b;">
+                                                    <i class="fa-regular fa-calendar" style="font-size: 0.7rem; margin-right: 3px;"></i>
+                                                    {% if comision.fecha_inicio %}{{ comision.fecha_inicio|date:"d/m" }}{% endif %}
+                                                    {% if comision.fecha_inicio and comision.fecha_fin %} - {% endif %}
+                                                    {% if comision.fecha_fin %}{{ comision.fecha_fin|date:"d/m" }}{% endif %}
+                                                </div>
+                                            {% endif %}
                                         </div>
                                     {% endfor %}
                                 </div>
@@ -792,7 +800,14 @@
                                 <span style="color: #15803d; font-weight: 700; font-size: 0.9rem;">{{ comision.cupos_disponibles }} lugares</span>
                             </div>
                             <div style="font-size: 0.9rem; color: #64748b; margin-bottom: 1rem;">
-                                {{ comision.dias_horarios|default:"Martes y Jueves 16:30hs" }}
+                                <div style="margin-bottom: 0.3rem;"><i class="fa-regular fa-clock" style="margin-right: 5px;"></i> {{ comision.dias_horarios|default:"Martes y Jueves 16:30hs" }}</div>
+                                {% if comision.fecha_inicio or comision.fecha_fin %}
+                                    <div>
+                                        <i class="fa-regular fa-calendar-alt" style="margin-right: 5px;"></i>
+                                        Inicio: <strong>{{ comision.fecha_inicio|date:"d/m/Y"|default:"-" }}</strong> 
+                                        al <strong>{{ comision.fecha_fin|date:"d/m/Y"|default:"-" }}</strong>
+                                    </div>
+                                {% endif %}
                             </div>
                             {% if user.is_authenticated %}
                                 {% if comision.cupo_lleno %}
