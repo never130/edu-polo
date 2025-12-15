@@ -1,308 +1,415 @@
 {% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
 
 {% block title %}Dashboard Estudiante - Edu-Polo{% endblock %}
 
 {% block user_role %}Estudiante{% endblock %}
 
 {% block sidebar_menu %}
-<li><a href="{% url 'dashboard_estudiante' %}" class="active">Inicio</a></li>
-<li><a href="{% url 'cursos:ver_disponibles' %}">Cursos Disponibles</a></li>
-<li><a href="{% url 'cursos:mis_inscripciones' %}">Mis Inscripciones</a></li>
-<li><a href="{% url 'usuario:gestionar_tutores' %}">Mis Tutores</a></li>
-<li><a href="{% url 'usuario:mi_progreso' %}">Mi Progreso</a></li>
-{# <li><a href="{% url 'usuario:mis_certificados' %}">Certificados</a></li> #}
-{# <li><a href="{% url 'usuario:materiales_estudiante' %}">Materiales</a></li> #}
-<li><a href="{% url 'usuario:mi_perfil' %}">Mi Perfil</a></li>
+<li><a href="{% url 'dashboard_estudiante' %}" class="active"><i class="fa-solid fa-home"></i> Inicio</a></li>
+<li><a href="{% url 'cursos:ver_disponibles' %}"><i class="fa-solid fa-book-open"></i> Cursos Disponibles</a></li>
+<li><a href="{% url 'cursos:mis_inscripciones' %}"><i class="fa-solid fa-graduation-cap"></i> Mis Inscripciones</a></li>
+<li><a href="{% url 'usuario:gestionar_tutores' %}"><i class="fa-solid fa-chalkboard-teacher"></i> Mis Tutores</a></li>
+<li><a href="{% url 'usuario:mi_progreso' %}"><i class="fa-solid fa-chart-line"></i> Mi Progreso</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
 {% endblock %}
 
 {% block content %}
 <div class="page-header">
     <h2>¡Bienvenido/a, {{ user.first_name }}!</h2>
-    <p>Explora nuestros cursos disponibles y comienza tu aprendizaje</p>
+    <p>Continúa donde lo dejaste y completa tus cursos</p>
 </div>
 
-<div class="dashboard-cards">
-    <div class="dashboard-card">
-        <div class="card-icon">📚</div>
-        <div class="card-title">Cursos Activos</div>
-        <div class="card-value">{{ inscripciones_activas }}</div>
+<div class="dashboard-layout">
+    <!-- Left Column: Active Courses -->
+    <div class="main-column">
+        <h3 class="section-title">Tus Cursos Activos</h3>
+        
+        {% if cursos_activos %}
+            <div class="active-courses-list">
+                {% for curso in cursos_activos %}
+                {% with lower_name=curso.nombre|lower %}
+                <div class="course-card-horizontal">
+                    <div class="course-img-wrapper">
+                        <img src="{% if 'program' in lower_name or 'desarrollo' in lower_name or 'videojuego' in lower_name or 'código' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20cute%20character%20working%20with%20computer%20code%20futuristic%20lab%20colorful%20soft%20lighting?width=600&height=400&nologo=true{% elif 'diseño' in lower_name or 'arte' in lower_name or 'produccion' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20artist%20character%20painting%20on%20canvas%20creative%20studio%20colorful%20palette?width=600&height=400&nologo=true{% elif 'robot' in lower_name or 'arduino' in lower_name or 'sumo' in lower_name or 'bot' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cute%20robot%20character%20futuristic%20technology%20glowing%20blue%20lights%20sci-fi?width=600&height=400&nologo=true{% elif 'ingl' in lower_name or 'idioma' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20character%20reading%20flying%20books%20learning%20languages%20globe%20travel?width=600&height=400&nologo=true{% elif 'taller' in lower_name or 'explorador' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20character%20mechanic%20holding%20tools%20workshop%20helmet%20construction?width=600&height=400&nologo=true{% else %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20happy%20student%20backpack%20education%20school%20bright?width=600&height=400&nologo=true{% endif %}" 
+                             onerror="this.src='{% static 'img/landing5.png' %}';"
+                             alt="{{ curso.nombre }}" class="course-img">
+                    </div>
+                    <div class="course-content">
+                        <div class="course-header-row">
+                            <h4 class="course-title">{{ curso.nombre }}</h4>
+                            <span class="time-badge">En curso</span>
+                        </div>
+                        <p class="instructor-name">{{ curso.polo }} - Comisión #{{ curso.comision }}</p>
+                        
+                        <div class="progress-section">
+                            <div class="progress-label">
+                                <span>Progreso del curso</span>
+                                <span>{{ curso.asistencia }}%</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill" style="width: {{ curso.asistencia }}%;"></div>
+                            </div>
+                            <div class="course-meta">
+                                <span><i class="fa-regular fa-file-alt"></i> {{ curso.total_clases }} clases</span>
+                                <span><i class="fa-regular fa-calendar"></i> Próxima: {{ curso.horarios }}</span>
+                            </div>
+                        </div>
+                        
+                        <a href="{% url 'cursos:mis_inscripciones' %}" class="btn-continue">
+                            <i class="fa-solid fa-play-circle"></i> Continuar curso
+                        </a>
+                    </div>
+                </div>
+                {% endwith %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state-card">
+                <div class="empty-icon">🎓</div>
+                <h4>No tienes cursos activos</h4>
+                <p>Explora los cursos disponibles e inscríbete para comenzar a aprender.</p>
+                <a href="{% url 'cursos:ver_disponibles' %}" class="btn-primary-small">Ver Cursos Disponibles</a>
+            </div>
+        {% endif %}
     </div>
-    
-    <div class="dashboard-card">
-        <div class="card-icon">📊</div>
-        <div class="card-title">Asistencia Promedio</div>
-        <div class="card-value">{{ promedio_general }}%</div>
-    </div>
-    
-    <div class="dashboard-card">
-        <div class="card-icon">🎓</div>
-        <div class="card-title">Certificados</div>
-        <div class="card-value">{{ certificados }}</div>
-    </div>
-</div>
 
-<!-- Sección de Cursos Activos -->
-<div style="margin-top: 2rem;">
-    <h3 style="color: #4a5568; margin-bottom: 1rem; font-size: 1.2rem;">Mis Cursos en Curso</h3>
-    
-    {% if cursos_activos %}
-    <div class="cursos-grid">
-        {% for curso in cursos_activos %}
-        <div class="curso-card">
-            <div class="curso-header">
-                <span class="polo-badge">{{ curso.polo }}</span>
-                <span class="comision-badge">Comisión #{{ curso.comision }}</span>
-            </div>
-            <h4 class="curso-titulo">{{ curso.nombre }}</h4>
-            <p class="curso-horario">🕒 {{ curso.horarios }}</p>
-            
-            <div class="progreso-container">
-                <div class="progreso-info">
-                    <span>Asistencia</span>
-                    <span>{{ curso.asistencia }}%</span>
+    <!-- Right Column: Stats -->
+    <div class="stats-column">
+        <h3 class="section-title">Resumen de Progreso</h3>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon success"><i class="fa-solid fa-check-circle"></i></div>
+                <div class="stat-info">
+                    <span class="stat-value">0</span> <!-- Placeholder as data not available in context -->
+                    <span class="stat-label">Cursos Completados</span>
                 </div>
-                <div class="progreso-bar">
-                    <div class="progreso-fill" style="width: {{ curso.asistencia }}%;"></div>
-                </div>
-                <p class="progreso-detalle">{{ curso.presentes }} de {{ curso.total_clases }} clases asistidas</p>
             </div>
-            
-            <a href="{% url 'cursos:mis_inscripciones' %}" class="curso-btn">Ver Detalles</a>
+            <div class="stat-card">
+                <div class="stat-icon warning"><i class="fa-solid fa-chart-line"></i></div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ inscripciones_activas }}</span>
+                    <span class="stat-label">En Progreso</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon info"><i class="fa-solid fa-clock"></i></div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ promedio_general }}%</span>
+                    <span class="stat-label">Asistencia Promedio</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon primary"><i class="fa-solid fa-certificate"></i></div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ certificados }}</span>
+                    <span class="stat-label">Certificados</span>
+                </div>
+            </div>
         </div>
-        {% endfor %}
+
+        <div class="mini-courses-list">
+            <h4 class="mini-list-title">Cursos Activos</h4>
+            {% for curso in cursos_activos %}
+            <div class="mini-course-item">
+                <div class="mini-icon">
+                    <i class="fa-solid fa-circle-check" style="color: #F09819;"></i>
+                </div>
+                <div class="mini-info">
+                    <span class="mini-name">{{ curso.nombre }}</span>
+                    <span class="mini-progress">{{ curso.asistencia }}% Completado</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
-    {% else %}
-    <div class="empty-state">
-        <div style="font-size: 3rem; margin-bottom: 1rem;">🎓</div>
-        <h4 style="color: #4a5568; margin-bottom: 0.5rem;">No tienes cursos activos</h4>
-        <p style="color: #718096; margin-bottom: 1.5rem;">Explora los cursos disponibles e inscríbete para comenzar a aprender.</p>
-        <a href="{% url 'cursos:ver_disponibles' %}" class="accion-btn accion-primary" style="display: inline-block; width: auto; padding: 0.8rem 2rem;">
-            Ver Cursos Disponibles
-        </a>
-    </div>
-    {% endif %}
 </div>
 
 <style>
-    .cursos-grid {
+    /* Layout */
+    .dashboard-layout {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+        align-items: start;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+        color: #1e293b;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Active Courses List */
+    .active-courses-list {
+        display: flex;
+        flex-direction: column;
         gap: 1.5rem;
     }
-    
-    .curso-card {
+
+    .course-card-horizontal {
+        display: flex;
         background: white;
-        border-radius: 15px;
-        padding: 1.5rem;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        transition: transform 0.2s, box-shadow 0.2s;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         border: 1px solid #e2e8f0;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    
-    .curso-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+
+    .course-card-horizontal:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     }
-    
-    .curso-header {
+
+    .course-img-wrapper {
+        width: 280px;
+        min-width: 280px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .course-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .course-content {
+        padding: 1.5rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .course-header-row {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 1rem;
+        align-items: flex-start;
+        margin-bottom: 0.5rem;
     }
-    
-    .polo-badge {
-        background-color: #ebf8ff;
-        color: #3182ce;
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
-    
-    .comision-badge {
-        background-color: #f7fafc;
-        color: #718096;
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 500;
-        border: 1px solid #e2e8f0;
-    }
-    
-    .curso-titulo {
-        font-size: 1.25rem;
+
+    .course-title {
+        font-size: 1.1rem;
         font-weight: 700;
-        color: #2d3748;
-        margin: 0 0 0.5rem 0;
+        color: #1e293b;
+        margin: 0;
     }
-    
-    .curso-horario {
-        color: #718096;
+
+    .time-badge {
+        font-size: 0.75rem;
+        color: #64748b;
+        background: #f1f5f9;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+    }
+
+    .instructor-name {
         font-size: 0.9rem;
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .progreso-container {
+        color: #64748b;
         margin-bottom: 1.5rem;
     }
-    
-    .progreso-info {
+
+    .progress-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .progress-label {
         display: flex;
         justify-content: space-between;
         font-size: 0.85rem;
-        font-weight: 600;
-        color: #4a5568;
+        color: #475569;
         margin-bottom: 0.5rem;
+        font-weight: 500;
     }
-    
-    .progreso-bar {
+
+    .progress-track {
         height: 8px;
-        background-color: #edf2f7;
+        background: #e2e8f0;
         border-radius: 4px;
         overflow: hidden;
+        margin-bottom: 0.75rem;
     }
-    
-    .progreso-fill {
+
+    .progress-fill {
         height: 100%;
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(90deg, #FF512F 0%, #F09819 100%);
         border-radius: 4px;
-        transition: width 0.5s ease;
     }
-    
-    .progreso-detalle {
-        font-size: 0.75rem;
-        color: #a0aec0;
-        margin-top: 0.5rem;
-        text-align: right;
-    }
-    
-    .curso-btn {
-        display: block;
-        width: 100%;
-        padding: 0.75rem;
-        text-align: center;
-        background-color: #f7fafc;
-        color: #4a5568;
-        text-decoration: none;
-        border-radius: 8px;
-        font-weight: 600;
-        transition: all 0.2s;
-        border: 1px solid #e2e8f0;
-    }
-    
-    .curso-btn:hover {
-        background-color: #edf2f7;
-        color: #2d3748;
-        border-color: #cbd5e0;
-    }
-    
-    .empty-state {
-        background: white;
-        padding: 3rem;
-        border-radius: 15px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        text-align: center;
-        border: 1px dashed #cbd5e0;
-    }
-    
-    .card-icon {
-        font-size: 2rem;
-        margin-bottom: 0.5rem;
-    }
-</style>
 
-<div class="acciones-rapidas">
-    <h3 style="color: #667eea; margin-bottom: 1.5rem;">Acciones Rápidas</h3>
-    <div class="acciones-grid">
-    <a href="{% url 'cursos:ver_disponibles' %}" class="accion-btn accion-primary">
-        Ver Cursos Disponibles
-    </a>
-    <a href="{% url 'cursos:mis_inscripciones' %}" class="accion-btn accion-secondary">
-        Mis Inscripciones
-    </a>
-    <a href="#" class="accion-btn accion-tertiary">
-        Mis Certificados
-    </a>
-</div>
-</div>
+    .course-meta {
+        display: flex;
+        gap: 1.5rem;
+        font-size: 0.85rem;
+        color: #64748b;
+    }
 
-<style>
-    .acciones-rapidas {
-        background: white;
-        padding: 2rem;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        margin-top: 2rem;
+    .course-meta i {
+        color: #94a3b8;
+        margin-right: 0.4rem;
     }
-    
-    .acciones-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-    }
-    
-    .accion-btn {
-        display: block;
-        padding: 1.5rem;
+
+    .btn-continue {
+        margin-top: auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        background: #FF512F;
         color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
         text-decoration: none;
-        border-radius: 10px;
-        text-align: center;
         font-weight: 600;
-        transition: all 0.3s ease;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+        width: fit-content;
     }
-    
-    .accion-btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+
+    .btn-continue:hover {
+        background: #ea3e1d;
+        transform: translateY(-1px);
     }
-    
-    .accion-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 2rem;
     }
-    
-    .accion-secondary {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+
+    .stat-card {
+        background: white;
+        padding: 1.25rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
     }
-    
-    .accion-tertiary {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
     }
-    
-    @media (max-width: 768px) {
-        .acciones-rapidas {
-            padding: 1.5rem;
-        }
-        
-        .acciones-grid {
+
+    .stat-icon.success { background: #dcfce7; color: #16a34a; }
+    .stat-icon.warning { background: #ffedd5; color: #f97316; }
+    .stat-icon.info { background: #e0f2fe; color: #0284c7; }
+    .stat-icon.primary { background: #ffe4e6; color: #e11d48; }
+
+    .stat-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1e293b;
+        line-height: 1.2;
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+
+    /* Mini Courses List */
+    .mini-courses-list {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .mini-list-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 1rem;
+    }
+
+    .mini-course-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .mini-course-item:last-child {
+        border-bottom: none;
+    }
+
+    .mini-icon {
+        font-size: 1.2rem;
+    }
+
+    .mini-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .mini-name {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #334155;
+    }
+
+    .mini-progress {
+        font-size: 0.75rem;
+        color: #94a3b8;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .dashboard-layout {
             grid-template-columns: 1fr;
-            gap: 0.8rem;
         }
         
-        .accion-btn {
-            padding: 1.2rem;
-            font-size: 0.95rem;
+        .stats-column {
+            order: -1; /* Stats on top on mobile */
+        }
+        
+        .course-card-horizontal {
+            flex-direction: column;
+        }
+        
+        .course-img-wrapper {
+            width: 100%;
+            height: 200px;
         }
     }
     
-    @media (max-width: 480px) {
-        .acciones-rapidas {
-            padding: 1rem;
-        }
-        
-        .acciones-rapidas h3 {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-        }
-        
-        .accion-btn {
-            padding: 1rem;
-            font-size: 0.9rem;
-        }
+    .empty-state-card {
+        background: white;
+        border-radius: 20px;
+        padding: 3rem;
+        text-align: center;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    
+    .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+    
+    .btn-primary-small {
+        display: inline-block;
+        background: linear-gradient(90deg, #FF512F 0%, #F09819 100%);
+        color: white;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        margin-top: 1rem;
     }
 </style>
 {% endblock %}
-
