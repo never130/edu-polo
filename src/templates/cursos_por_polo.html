@@ -208,33 +208,49 @@
             gap: 2rem;
         }
 
-        /* Card Design Simplified */
+        /* Card Design Simplified & Enhanced */
         .course-card {
             background: white;
             border-radius: 24px;
             overflow: hidden;
-            border: 1px solid #f1f5f9;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex;
             flex-direction: column;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
         .course-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.1);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: rgba(240, 152, 25, 0.3);
         }
 
         .card-img-container {
             height: 220px;
             background: #f1f5f9;
             position: relative;
+            overflow: hidden;
         }
 
         .card-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.6s ease, filter 0.3s ease;
         }
+
+        .course-card:hover .card-img {
+            transform: scale(1.1);
+        }
+
+        /* Variaciones de imagen por categoría usando filtros CSS - REMOVIDO PARA USAR IMAGENES REALES */
+        .course-card[data-category="programacion"]:hover { border-color: rgba(59, 130, 246, 0.5); }
+        .course-card[data-category="diseno"]:hover { border-color: rgba(236, 72, 153, 0.5); }
+        .course-card[data-category="robotica"]:hover { border-color: rgba(34, 197, 94, 0.5); }
+        .course-card[data-category="idiomas"]:hover { border-color: rgba(245, 158, 11, 0.5); }
+        .course-card[data-category="taller"]:hover { border-color: rgba(120, 113, 108, 0.5); }
+        .course-card[data-category="otros"]:hover { border-color: rgba(100, 116, 139, 0.5); }
 
         .card-body {
             padding: 1.5rem;
@@ -261,6 +277,14 @@
 
         .tag.age { background: #f3e8ff; color: #7e22ce; }
         .tag.category { background: #dcfce7; color: #15803d; }
+
+        /* Category Badge Variations */
+        .course-card[data-category="programacion"] .tag.category { background: #dbeafe; color: #1e40af; }
+        .course-card[data-category="diseno"] .tag.category { background: #fce7f3; color: #9d174d; }
+        .course-card[data-category="robotica"] .tag.category { background: #dcfce7; color: #166534; }
+        .course-card[data-category="idiomas"] .tag.category { background: #fef3c7; color: #92400e; }
+        .course-card[data-category="taller"] .tag.category { background: #e5e7eb; color: #374151; }
+        .course-card[data-category="otros"] .tag.category { background: #f1f5f9; color: #475569; }
 
         .card-title {
             font-size: 1.25rem;
@@ -695,22 +719,32 @@
         <div class="courses-grid">
             {% for curso in cursos %}
             {% with lower_name=curso.nombre|lower %}
-            <div class="course-card" data-category="{% if 'program' in lower_name or 'desarrollo' in lower_name %}programacion{% elif 'diseño' in lower_name or 'arte' in lower_name %}diseno{% elif 'robot' in lower_name or 'arduino' in lower_name %}robotica{% elif 'ingles' in lower_name or 'idioma' in lower_name %}idiomas{% elif 'taller' in lower_name %}taller{% else %}otros{% endif %}">
+            <div class="course-card" data-category="{% if 'program' in lower_name or 'desarrollo' in lower_name or 'videojuego' in lower_name %}programacion{% elif 'diseño' in lower_name or 'arte' in lower_name or 'produccion' in lower_name %}diseno{% elif 'robot' in lower_name or 'arduino' in lower_name or 'sumo' in lower_name or 'bot' in lower_name %}robotica{% elif 'ingl' in lower_name or 'idioma' in lower_name %}idiomas{% elif 'taller' in lower_name or 'explorador' in lower_name %}taller{% else %}otros{% endif %}">
                 
                 <div class="card-img-container">
-                    <img src="https://img.freepik.com/free-photo/3d-rendering-cartoon-character-working_23-2151306637.jpg" 
-                         onerror="this.src='https://placehold.co/600x400/f1f5f9/94a3b8?text=EduPolo';"
+                    <img src="{% if 'program' in lower_name or 'desarrollo' in lower_name or 'videojuego' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20cute%20character%20working%20with%20computer%20code%20futuristic%20lab%20colorful%20soft%20lighting?width=600&height=400&nologo=true{% elif 'diseño' in lower_name or 'arte' in lower_name or 'produccion' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20artist%20character%20painting%20on%20canvas%20creative%20studio%20colorful%20palette?width=600&height=400&nologo=true{% elif 'robot' in lower_name or 'arduino' in lower_name or 'sumo' in lower_name or 'bot' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cute%20robot%20character%20futuristic%20technology%20glowing%20blue%20lights%20sci-fi?width=600&height=400&nologo=true{% elif 'ingl' in lower_name or 'idioma' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20character%20reading%20flying%20books%20learning%20languages%20globe%20travel?width=600&height=400&nologo=true{% elif 'taller' in lower_name or 'explorador' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20character%20mechanic%20holding%20tools%20workshop%20helmet%20construction?width=600&height=400&nologo=true{% else %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20happy%20student%20backpack%20education%20school%20bright?width=600&height=400&nologo=true{% endif %}" 
+                         onerror="this.src='{% static 'img/landing5.png' %}';"
                          alt="{{ curso.nombre }}" class="card-img">
+                    
+                    <span class="tag category" style="position: absolute; top: 1rem; left: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 10;">
+                        {% if 'program' in lower_name or 'desarrollo' in lower_name or 'videojuego' in lower_name %}
+                            <i class="fa-solid fa-code"></i> CIENCIA
+                        {% elif 'diseño' in lower_name or 'arte' in lower_name or 'produccion' in lower_name %}
+                            <i class="fa-solid fa-palette"></i> ARTE
+                        {% elif 'robot' in lower_name or 'arduino' in lower_name or 'sumo' in lower_name or 'bot' in lower_name %}
+                            <i class="fa-solid fa-robot"></i> TECNOLOGÍA
+                        {% elif 'ingl' in lower_name or 'idioma' in lower_name %}
+                            <i class="fa-solid fa-language"></i> IDIOMAS
+                        {% elif 'taller' in lower_name or 'explorador' in lower_name %}
+                            <i class="fa-solid fa-tools"></i> OFICIOS
+                        {% else %}
+                            <i class="fa-solid fa-layer-group"></i> GENERAL
+                        {% endif %}
+                    </span>
                 </div>
                 
                 <div class="card-body">
-                    <div class="card-header">
-                        <span class="tag category">
-                            {% if 'program' in lower_name %}CIENCIA
-                            {% elif 'diseño' in lower_name %}ARTE
-                            {% elif 'robot' in lower_name %}TECNOLOGÍA
-                            {% else %}GENERAL{% endif %}
-                        </span>
+                    <div class="card-header" style="justify-content: flex-end; margin-bottom: 0.5rem;">
                         {% if curso.edad_minima and curso.edad_maxima %}
                         <span class="tag age">{{ curso.edad_minima }} a {{ curso.edad_maxima }} AÑOS</span>
                         {% elif curso.edad_minima %}
@@ -721,14 +755,20 @@
                     <h3 class="card-title">{{ curso.nombre }}</h3>
                     <p class="card-desc">{{ curso.descripcion|default:"Explora, crea y aprende en nuestros talleres diseñados para potenciar tu creatividad." }}</p>
 
-                    <div class="card-info-grid">
-                        <div class="info-block">
-                            <label>DÍAS</label>
-                            <span>Martes y Jueves</span>
-                        </div>
-                        <div class="info-block">
-                            <label>HORARIO</label>
-                            <span>16:30 - 18:30 hs</span>
+                    <div class="card-info-grid" style="display: block;">
+                        <div class="info-block" style="width: 100%;">
+                            <label style="margin-bottom: 0.5rem; display: block;">DÍAS Y HORARIOS</label>
+                            {% if curso.comisiones_abiertas %}
+                                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                    {% for comision in curso.comisiones_abiertas %}
+                                        <div style="background: #f1f5f9; padding: 0.4rem 0.6rem; border-radius: 6px; font-size: 0.85rem; color: var(--text-dark); border-left: 3px solid var(--primary-color);">
+                                            {{ comision.dias_horarios|default:"Consultar" }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <span>Consultar disponibilidad</span>
+                            {% endif %}
                         </div>
                     </div>
 
