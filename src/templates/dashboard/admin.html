@@ -37,6 +37,7 @@
     <p>Vista general del sistema y estadísticas</p>
 </div>
 
+{% if es_admin_completo %}
 <div class="dashboard-cards">
     <div class="dashboard-card">
         <div class="card-title">Total Cursos</div>
@@ -61,6 +62,7 @@
         <div class="card-value">{{ total_inscripciones }}</div>
     </div>
 </div>
+{% endif %}
 
 <!-- Métricas de Hoy -->
 <div style="margin-top: 2rem;">

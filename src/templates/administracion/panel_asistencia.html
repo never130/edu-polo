@@ -45,18 +45,18 @@
 {% endblock %}
 
 {% block content %}
-<div style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); padding: 2.5rem; border-radius: 20px; color: white; margin-bottom: 2rem;">
+<div style="margin-bottom: 2rem;">
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div>
-            <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem;">📝 Panel de Asistencias</h2>
-            <p style="opacity: 0.9;">Gestiona las asistencias de los estudiantes por curso y comisión</p>
+            <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem; color: #1e293b;">Panel de Asistencias</h2>
+            <p style="color: #64748b;">Gestiona las asistencias de los estudiantes por curso y comisión</p>
         </div>
         {% if comision and not es_docente %}
         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <a href="{% url 'administracion:exportar_asistencias_comision' %}?comision_id={{ comision.id_comision }}" style="padding: 0.8rem 1.5rem; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; border: 2px solid rgba(255,255,255,0.3); transition: all 0.3s;">
+            <a href="{% url 'administracion:exportar_asistencias_comision' %}?comision_id={{ comision.id_comision }}" style="padding: 0.8rem 1.5rem; background: #6366f1; color: white; text-decoration: none; border-radius: 12px; font-weight: 600; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2); transition: all 0.3s;">
                 📥 Exportar Comisión
             </a>
-            <a href="{% url 'administracion:exportar_asistencias_curso' %}?curso_id={{ comision.fk_id_curso.id_curso }}" style="padding: 0.8rem 1.5rem; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; border: 2px solid rgba(255,255,255,0.3); transition: all 0.3s;">
+            <a href="{% url 'administracion:exportar_asistencias_curso' %}?curso_id={{ comision.fk_id_curso.id_curso }}" style="padding: 0.8rem 1.5rem; background: white; color: #6366f1; text-decoration: none; border-radius: 12px; font-weight: 600; border: 2px solid #6366f1; transition: all 0.3s;">
                 📥 Exportar Curso
             </a>
         </div>

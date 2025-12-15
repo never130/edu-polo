@@ -33,30 +33,28 @@
 {% endblock %}
 
 {% block content %}
-<div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 2.5rem; border-radius: 20px; color: white; margin-bottom: 2rem;">
+<div style="background: linear-gradient(135deg, #fb923c 0%, #f97316 100%); padding: 2.5rem; border-radius: 20px; color: white; margin-bottom: 2rem;">
     <h2 style="font-size: 2.2rem;">Buscador de Estudiantes</h2>
     <p>Encuentra estudiantes por nombre, apellido, DNI o correo electrónico.</p>
     
-    <div style="display: flex; gap: 1rem; margin-top: 1.5rem; align-items: center;">
+    <div style="display: flex; gap: 1rem; margin-top: 1.5rem; align-items: center; flex-wrap: wrap;">
         <input 
             type="text" 
             id="searchInput" 
             placeholder="Escribe para buscar... (mínimo 2 caracteres)" 
-            style="flex: 1; padding: 1rem; border: none; border-radius: 12px; font-size: 1rem;"
+            style="flex: 1; min-width: 300px; padding: 1rem; border: none; border-radius: 12px; font-size: 1rem;"
             autocomplete="off"
         >
         <div id="loadingIndicator" style="display: none; color: white; font-weight: 600;">
             Buscando...
         </div>
+        <a href="{% url 'administracion:exportar_estudiantes' %}" style="background: white; color: #f97316; padding: 1rem 1.5rem; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+            <i class="fa-solid fa-file-excel"></i> Exportar a Excel
+        </a>
     </div>
     <div style="margin-top: 1rem; color: rgba(255,255,255,0.9); font-size: 0.9rem;">
         Tip: La búsqueda se actualiza automáticamente mientras escribes
     </div>
-</div>
-
-<div style="text-align: right; margin-bottom: 1rem;">
-    <a href="{% url 'administracion:exportar_estudiantes' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 0.8rem 1.5rem; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block;">Exportar a Excel
-    </a>
 </div>
 
 <div id="resultadosContainer">
