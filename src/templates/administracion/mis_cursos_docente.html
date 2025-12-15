@@ -6,12 +6,12 @@
 {% block user_role %}Docente{% endblock %}
 
 {% block sidebar_menu %}
-<li><a href="{% url 'dashboard_docente' %}">Inicio</a></li>
-<li><a href="{% url 'administracion:mis_cursos_docente' %}" class="active">Mis Cursos</a></li>
-<li><a href="{% url 'administracion:panel_asistencia' %}">Asistencias</a></li>
-<li><a href="{% url 'administracion:materiales_docente' %}">Materiales</a></li>
-<li><a href="{% url 'administracion:estudiantes_docente' %}">Estudiantes</a></li>
-<li><a href="{% url 'usuario:mi_perfil' %}">Mi Perfil</a></li>
+<li><a href="{% url 'dashboard_docente' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
+<li><a href="{% url 'administracion:mis_cursos_docente' %}" class="active"><i class="fa-solid fa-chalkboard"></i> Mis Cursos</a></li>
+<li><a href="{% url 'administracion:panel_asistencia' %}"><i class="fa-solid fa-calendar-check"></i> Asistencias</a></li>
+<li><a href="{% url 'administracion:materiales_docente' %}"><i class="fa-solid fa-folder-open"></i> Materiales</a></li>
+<li><a href="{% url 'administracion:estudiantes_docente' %}"><i class="fa-solid fa-users"></i> Estudiantes</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
 {% endblock %}
 
 {% block content %}

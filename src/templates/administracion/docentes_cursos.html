@@ -6,29 +6,29 @@
 {% block user_role %}{{ tipo_usuario|default:"Administrador" }}{% endblock %}
 
 {% block sidebar_menu %}
-<li><a href="{% url 'dashboard_admin' %}">Inicio</a></li>
+<li><a href="{% url 'dashboard_admin' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
 {% if es_admin_completo %}
-<li><a href="{% url 'administracion:panel_cursos' %}">Gestión Cursos</a></li>
-<li><a href="{% url 'administracion:panel_comisiones' %}">Gestión Comisiones</a></li>
+<li><a href="{% url 'administracion:panel_cursos' %}"><i class="fa-solid fa-book"></i> Gestión Cursos</a></li>
+<li><a href="{% url 'administracion:panel_comisiones' %}"><i class="fa-solid fa-users-rectangle"></i> Gestión Comisiones</a></li>
 {% endif %}
-<li><a href="{% url 'administracion:panel_inscripciones' %}">Inscripciones</a></li>
+<li><a href="{% url 'administracion:panel_inscripciones' %}"><i class="fa-solid fa-clipboard-list"></i> Inscripciones</a></li>
 {% if es_admin_completo %}
-<li><a href="{% url 'administracion:gestion_usuarios' %}">Gestión Usuarios</a></li>
+<li><a href="{% url 'administracion:gestion_usuarios' %}"><i class="fa-solid fa-users-cog"></i> Gestión Usuarios</a></li>
 {% endif %}
-<li><a href="{% url 'administracion:buscador_estudiantes' %}">Buscar Estudiantes</a></li>
+<li><a href="{% url 'administracion:buscador_estudiantes' %}"><i class="fa-solid fa-search"></i> Buscar Estudiantes</a></li>
 {% if es_admin_completo %}
-<li><a href="{% url 'administracion:panel_polos' %}">Polos</a></li>
+<li><a href="{% url 'administracion:panel_polos' %}"><i class="fa-solid fa-map-marker-alt"></i> Polos</a></li>
 {% endif %}
 {% if es_admin_completo %}
-<li><a href="{% url 'administracion:estadisticas' %}">Estadísticas</a></li>
+<li><a href="{% url 'administracion:estadisticas' %}"><i class="fa-solid fa-chart-bar"></i> Estadísticas</a></li>
 {% endif %}
-<li><a href="{% url 'administracion:panel_asistencia' %}">Asistencias</a></li>
+<li><a href="{% url 'administracion:panel_asistencia' %}"><i class="fa-solid fa-calendar-check"></i> Asistencias</a></li>
 {% if es_admin_completo %}
-<li><a href="{% url 'administracion:docentes_cursos' %}" class="active">Docentes y Cursos</a></li>
+<li><a href="{% url 'administracion:docentes_cursos' %}" class="active"><i class="fa-solid fa-chalkboard-teacher"></i> Docentes y Cursos</a></li>
 {% endif %}
-<li><a href="{% url 'usuario:mi_perfil' %}">Mi Perfil</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
 {% if es_admin_completo %}
-<li><a href="{% url 'admin:index' %}">Django Admin</a></li>
+<li><a href="{% url 'admin:index' %}"><i class="fa-solid fa-cogs"></i> Django Admin</a></li>
 {% endif %}
 {% endblock %}
 

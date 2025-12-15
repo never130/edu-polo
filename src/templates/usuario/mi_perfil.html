@@ -8,52 +8,52 @@
 {% block sidebar_menu %}
 {% if es_admin or es_mesa_entrada %}
     {# Menú para Administrador y Mesa de Entrada #}
-    <li><a href="{% url 'dashboard_admin' %}">Inicio</a></li>
+    <li><a href="{% url 'dashboard_admin' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
     {% if es_admin_completo %}
-    <li><a href="{% url 'administracion:panel_cursos' %}">Gestión Cursos</a></li>
-    <li><a href="{% url 'administracion:panel_comisiones' %}">Gestión Comisiones</a></li>
+    <li><a href="{% url 'administracion:panel_cursos' %}"><i class="fa-solid fa-book"></i> Gestión Cursos</a></li>
+    <li><a href="{% url 'administracion:panel_comisiones' %}"><i class="fa-solid fa-users-rectangle"></i> Gestión Comisiones</a></li>
     {% endif %}
-    <li><a href="{% url 'administracion:panel_inscripciones' %}">Inscripciones</a></li>
+    <li><a href="{% url 'administracion:panel_inscripciones' %}"><i class="fa-solid fa-clipboard-list"></i> Inscripciones</a></li>
     {% if es_admin_completo %}
-    <li><a href="{% url 'administracion:gestion_usuarios' %}">Gestión Usuarios</a></li>
+    <li><a href="{% url 'administracion:gestion_usuarios' %}"><i class="fa-solid fa-users-cog"></i> Gestión Usuarios</a></li>
     {% endif %}
-    <li><a href="{% url 'administracion:buscador_estudiantes' %}">Buscar Estudiantes</a></li>
+    <li><a href="{% url 'administracion:buscador_estudiantes' %}"><i class="fa-solid fa-search"></i> Buscar Estudiantes</a></li>
     {% if es_admin_completo %}
-    <li><a href="{% url 'administracion:panel_polos' %}">Polos</a></li>
+    <li><a href="{% url 'administracion:panel_polos' %}"><i class="fa-solid fa-map-marker-alt"></i> Polos</a></li>
     {% endif %}
     {% if es_admin_completo %}
-    <li><a href="{% url 'administracion:estadisticas' %}">Estadísticas</a></li>
+    <li><a href="{% url 'administracion:estadisticas' %}"><i class="fa-solid fa-chart-pie"></i> Estadísticas</a></li>
     {% endif %}
-    <li><a href="{% url 'administracion:panel_asistencia' %}">Asistencias</a></li>
+    <li><a href="{% url 'administracion:panel_asistencia' %}"><i class="fa-solid fa-calendar-check"></i> Asistencias</a></li>
     {% if es_admin_completo %}
-    <li><a href="{% url 'administracion:docentes_cursos' %}">Docentes y Cursos</a></li>
+    <li><a href="{% url 'administracion:docentes_cursos' %}"><i class="fa-solid fa-chalkboard-teacher"></i> Docentes y Cursos</a></li>
     {% endif %}
-    <li><a href="{% url 'usuario:mi_perfil' %}" class="active">Mi Perfil</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}" class="active"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
     {% if es_admin_completo %}
-    <li><a href="{% url 'admin:index' %}">Django Admin</a></li>
+    <li><a href="{% url 'admin:index' %}"><i class="fa-solid fa-cogs"></i> Django Admin</a></li>
     {% endif %}
 {% elif es_docente %}
     {# Menú para Docentes #}
-    <li><a href="{% url 'dashboard_docente' %}">Inicio</a></li>
-    <li><a href="{% url 'administracion:mis_cursos_docente' %}">Mis Cursos</a></li>
-    <li><a href="{% url 'administracion:panel_asistencia' %}">Asistencias</a></li>
-    <li><a href="{% url 'administracion:materiales_docente' %}">Materiales</a></li>
-    <li><a href="{% url 'administracion:estudiantes_docente' %}">Estudiantes</a></li>
-    <li><a href="{% url 'usuario:mi_perfil' %}" class="active">Mi Perfil</a></li>
+    <li><a href="{% url 'dashboard_docente' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
+    <li><a href="{% url 'administracion:mis_cursos_docente' %}"><i class="fa-solid fa-chalkboard"></i> Mis Cursos</a></li>
+    <li><a href="{% url 'administracion:panel_asistencia' %}"><i class="fa-solid fa-calendar-check"></i> Asistencias</a></li>
+    <li><a href="{% url 'administracion:materiales_docente' %}"><i class="fa-solid fa-folder-open"></i> Materiales</a></li>
+    <li><a href="{% url 'administracion:estudiantes_docente' %}"><i class="fa-solid fa-users"></i> Estudiantes</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}" class="active"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
 {% else %}
     {# Menú para Estudiantes y otros usuarios #}
-    <li><a href="{% url 'dashboard_estudiante' %}">Inicio</a></li>
-    <li><a href="{% url 'cursos:ver_disponibles' %}">Cursos Disponibles</a></li>
-    <li><a href="{% url 'cursos:mis_inscripciones' %}">Mis Inscripciones</a></li>
+    <li><a href="{% url 'dashboard_estudiante' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
+    <li><a href="{% url 'cursos:ver_disponibles' %}"><i class="fa-solid fa-book-open"></i> Cursos Disponibles</a></li>
+    <li><a href="{% url 'cursos:mis_inscripciones' %}"><i class="fa-solid fa-graduation-cap"></i> Mis Inscripciones</a></li>
     {% if es_estudiante %}
-    <li><a href="{% url 'usuario:gestionar_tutores' %}">Mis Tutores</a></li>
+    <li><a href="{% url 'usuario:gestionar_tutores' %}"><i class="fa-solid fa-chalkboard-teacher"></i> Mis Tutores</a></li>
     {% endif %}
-    <li><a href="{% url 'usuario:mi_progreso' %}">Mi Progreso</a></li>
-    {# <li><a href="{% url 'usuario:mis_certificados' %}">Certificados</a></li> #}
+    <li><a href="{% url 'usuario:mi_progreso' %}"><i class="fa-solid fa-chart-line"></i> Mi Progreso</a></li>
+    {# <li><a href="{% url 'usuario:mis_certificados' %}"><i class="fa-solid fa-certificate"></i> Certificados</a></li> #}
     {% if es_estudiante %}
-    {# <li><a href="{% url 'usuario:materiales_estudiante' %}">Materiales</a></li> #}
+    {# <li><a href="{% url 'usuario:materiales_estudiante' %}"><i class="fa-solid fa-folder-open"></i> Materiales</a></li> #}
     {% endif %}
-    <li><a href="{% url 'usuario:mi_perfil' %}" class="active">Mi Perfil</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}" class="active"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
 {% endif %}
 {% endblock %}
 

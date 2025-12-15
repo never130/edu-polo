@@ -3,14 +3,14 @@
 {% block title %}Agregar Tutor - Edu-Polo{% endblock %}
 
 {% block sidebar_menu %}
-<li><a href="{% url 'dashboard_estudiante' %}"> Inicio</a></li>
-<li><a href="{% url 'cursos:ver_disponibles' %}"> Cursos Disponibles</a></li>
-<li><a href="{% url 'cursos:mis_inscripciones' %}"> Mis Inscripciones</a></li>
-<li><a href="{% url 'usuario:gestionar_tutores' %}" class="active"> Mis Tutores</a></li>
-<li><a href="{% url 'usuario:mi_progreso' %}"> Mi Progreso</a></li>
-{# <li><a href="{% url 'usuario:mis_certificados' %}"> Certificados</a></li> #}
-{# <li><a href="{% url 'usuario:materiales_estudiante' %}"> Materiales</a></li> #}
-<li><a href="{% url 'usuario:mi_perfil' %}"> Mi Perfil</a></li>
+<li><a href="{% url 'dashboard_estudiante' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
+<li><a href="{% url 'cursos:ver_disponibles' %}"><i class="fa-solid fa-book-open"></i> Cursos Disponibles</a></li>
+<li><a href="{% url 'cursos:mis_inscripciones' %}"><i class="fa-solid fa-graduation-cap"></i> Mis Inscripciones</a></li>
+<li><a href="{% url 'usuario:gestionar_tutores' %}" class="active"><i class="fa-solid fa-chalkboard-teacher"></i> Mis Tutores</a></li>
+<li><a href="{% url 'usuario:mi_progreso' %}"><i class="fa-solid fa-chart-line"></i> Mi Progreso</a></li>
+{# <li><a href="{% url 'usuario:mis_certificados' %}"><i class="fa-solid fa-certificate"></i> Certificados</a></li> #}
+{# <li><a href="{% url 'usuario:materiales_estudiante' %}"><i class="fa-solid fa-folder-open"></i> Materiales</a></li> #}
+<li><a href="{% url 'usuario:mi_perfil' %}"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
 {% endblock %}
 
 {% block content %}
