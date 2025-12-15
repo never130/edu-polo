@@ -47,10 +47,10 @@
 
 {% block content %}
 <div style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); padding: 2.5rem; border-radius: 20px; color: white; margin-bottom: 2rem;">
-    <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">📝 Tomar Asistencia</h2>
+    <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Tomar Asistencia</h2>
     <p style="opacity: 0.9;">{{ comision.fk_id_curso.nombre }} - Comisión #{{ comision.id_comision }}</p>
     {% if comision.fk_id_polo %}
-    <p style="opacity: 0.8; font-size: 0.9rem;">📍 {{ comision.fk_id_polo.nombre }}</p>
+    <p style="opacity: 0.8; font-size: 0.9rem;">{{ comision.fk_id_polo.nombre }}</p>
     {% endif %}
 </div>
 
@@ -67,14 +67,14 @@
 <div style="background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
     <form method="get" id="form-fecha" style="margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0;">
         <div>
-            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #334155;">📅 Fecha de la Clase</label>
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #334155;">Fecha de la Clase</label>
             <input type="date" name="fecha" value="{{ fecha_seleccionada }}" 
                    onchange="document.getElementById('form-fecha').submit()"
                    style="padding: 0.8rem; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 1rem; outline: none; transition: all 0.3s;">
         </div>
         <div style="flex: 1; padding-left: 1rem; border-left: 2px solid #e2e8f0;">
             <p style="color: #64748b; margin: 0; font-size: 0.9rem;">
-                ℹ️ Selecciona la fecha para cargar o registrar asistencias. <br>
+                Selecciona la fecha para cargar o registrar asistencias. <br>
                 Si ya existen registros para esa fecha, se mostrarán para editar.
             </p>
         </div>
@@ -137,7 +137,7 @@
             <a href="{% url 'administracion:panel_asistencia' %}?comision_id={{ comision.id_comision }}" style="padding: 0.9rem 2rem; background: #e2e8f0; color: #334155; text-decoration: none; border-radius: 12px; font-weight: 600;">Cancelar
             </a>
             <button type="submit" style="padding: 0.9rem 2rem; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4);">
-                💾 Guardar Asistencias
+                Guardar Asistencias
             </button>
         </div>
     </form>

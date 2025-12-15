@@ -59,7 +59,7 @@
 
 {% block content %}
 <div class="page-header">
-    <h2>✏️ Editar Perfil</h2>
+    <h2>Editar Perfil</h2>
     <p>Actualiza tu información personal</p>
 </div>
 
@@ -78,7 +78,6 @@
         <!-- Información Personal -->
         <div class="form-section">
             <h3 class="section-title">
-                <span>👤</span>
                 Información Personal
             </h3>
             <div class="form-row">
@@ -126,7 +125,6 @@
         <!-- Residencia -->
         <div class="form-section">
             <h3 class="section-title">
-                <span>🏠</span>
                 Información de Residencia
             </h3>
             <div class="form-row">
@@ -154,7 +152,6 @@
         {% if es_estudiante %}
         <div class="form-section">
             <h3 class="section-title">
-                <span>🎓</span>
                 Información Académica
             </h3>
             <div class="form-row">
@@ -181,7 +178,6 @@
         {% if es_docente %}
         <div class="form-section">
             <h3 class="section-title">
-                <span>👨‍🏫</span>
                 Información Profesional
             </h3>
             <div class="form-row">
@@ -200,7 +196,6 @@
         <!-- Salud y Autorizaciones -->
         <div class="form-section">
             <h3 class="section-title">
-                <span>🏥</span>
                 Salud y Autorizaciones
             </h3>
             <div class="form-group">
@@ -219,7 +214,7 @@
 
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">
-                💾 Guardar Cambios
+                Guardar Cambios
             </button>
             <a href="{% url 'usuario:mi_perfil' %}" class="btn btn-secondary">
                 Cancelar

@@ -533,7 +533,7 @@
         <div class="navbar-content">
             <!-- Left Side: Toggle & Logo -->
             <div style="display: flex; align-items: center; gap: 1rem;">
-                <button class="mobile-menu-toggle" id="menuToggle">☰</button>
+                <button class="mobile-menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
                 <a href="{% url 'landing' %}" class="navbar-logo">
                     <img src="{% static 'img/polocreativoblanco.png' %}" alt="Logo Polo">
                 </a>
@@ -833,7 +833,7 @@
                 </div>
 
                 <div class="modal-section">
-                    <h3 class="modal-section-title"><span>🏥</span> Información de Salud y Observaciones</h3>
+                    <h3 class="modal-section-title" style="justify-content: center; text-align: center;">Información de Salud y Observaciones</h3>
                     <div class="health-grid">
                         <div class="form-group"><label>¿Tienes alguna discapacidad o necesitas adaptaciones?</label><textarea name="observaciones_discapacidad" rows="3" class="form-input" placeholder="Especifica si necesitas alguna adaptación..."></textarea></div>
                         <div class="form-group"><label>Alergias, Condiciones Médicas</label><textarea name="observaciones_salud" rows="3" class="form-input" placeholder="Alergias, diabetes, celiaquía, etc..."></textarea></div>
@@ -842,10 +842,10 @@
                 </div>
 
                 <div class="modal-section">
-                    <h3 class="modal-section-title"><span>📋</span> Políticas de Uso de Datos y Autorizaciones</h3>
-                    <div class="policy-item"><input type="checkbox" id="politica_datos" name="politica_datos" required class="policy-checkbox"><label for="politica_datos" class="policy-label">Acepto la <strong>Política de Uso de Datos Personales</strong> y autorizo el tratamiento de mi información conforme a la normativa vigente de protección de datos.</label></div>
-                    <div class="policy-item"><input type="checkbox" id="autorizacion_imagen" name="autorizacion_imagen" class="policy-checkbox"><label for="autorizacion_imagen" class="policy-label">Autorizo el <strong>uso de mi imagen</strong> en fotografías y videos con fines educativos e institucionales.</label></div>
-                    <div class="policy-item"><input type="checkbox" id="autorizacion_voz" name="autorizacion_voz" class="policy-checkbox"><label for="autorizacion_voz" class="policy-label">Autorizo el <strong>uso de mi voz</strong> en grabaciones con fines educativos e institucionales.</label></div>
+                    <h3 class="modal-section-title" style="justify-content: center; text-align: center;">Políticas de Uso de Datos y Autorizaciones</h3>
+                    <div class="policy-item"><input type="checkbox" id="politica_datos" name="politica_datos" required class="policy-checkbox"><label for="politica_datos" class="policy-label">Acepto la <strong>Política de Uso de Datos Personales</strong> y autorizo el tratamiento de mi información conforme a la Ley Nº 25.326.</label></div>
+                    <div class="policy-item"><input type="checkbox" id="autorizacion_imagen" name="autorizacion_imagen" class="policy-checkbox"><label for="autorizacion_imagen" class="policy-label">Autorizo el uso de mi imagen y voz (fotografías, videos y grabaciones) con fines educativos e institucionales, en medios oficiales y redes sociales.</label></div>
+                    <div class="policy-item"><input type="checkbox" id="autorizacion_voz" name="autorizacion_voz" class="policy-checkbox"><label for="autorizacion_voz" class="policy-label">Autorizo el uso de mi imagen y voz con fines publicitarios y promocionales, para la difusión de actividades, programas y campañas institucionales.</label></div>
                 </div>
 
                 <div style="text-align: center; margin-top: 1.5rem;">
@@ -866,8 +866,8 @@
             <div style="padding: 3rem 2rem;">
                 <div style="text-align: center; margin-bottom: 2rem;">
                      <div style="width: 60px; height: 60px; background: rgba(255, 255, 255, 0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; border: 1px solid rgba(255, 255, 255, 0.1);">
-                        <span style="font-size: 2rem;">📞</span>
-                    </div>
+                    <i class="fas fa-phone" style="font-size: 2rem; color: #F09819;"></i>
+                </div>
                     <h3 style="color: #F09819; font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem;">¡Estamos Conectados!</h3>
                     <p style="color: #94a3b8; font-size: 0.95rem; max-width: 600px; margin: 0 auto 0.5rem;">
                         ¿Tenés alguna duda sobre nuestros cursos o actividades?
@@ -990,7 +990,7 @@
                         © 2024 Gobierno de Tierra del Fuego, AeIAS. Todos los derechos reservados.
                     </p>
                     <p style="color: #64748b; font-size: 0.85rem;">
-                        Desarrollado con ❤️ por el equipo de Polo Creativo
+                        Desarrollado con <i class="fas fa-heart" style="color: #ef4444;"></i> por el equipo de Polo Creativo
                     </p>
                 </div>
             </div>
