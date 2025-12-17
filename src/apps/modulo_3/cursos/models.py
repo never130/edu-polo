@@ -1,5 +1,8 @@
 from django.db import models
 from apps.modulo_1.usuario.models import Usuario
+import re
+import unicodedata
+from datetime import timedelta
 
 
 class PoloCreativo(models.Model):
@@ -83,6 +86,61 @@ class Comision(models.Model):
         through='ComisionDocente',
         related_name='comisiones_asignadas'
     )
+
+    @staticmethod
+    def _normalizar_texto(texto):
+        if not texto:
+            return ''
+        normalized = unicodedata.normalize('NFKD', texto)
+        normalized = ''.join(ch for ch in normalized if not unicodedata.combining(ch))
+        return normalized.lower()
+
+    def get_dias_semana_indices(self):
+        texto = self._normalizar_texto(self.dias_horarios or '')
+        if not texto:
+            return set()
+
+        tokens = set(re.findall(r"[a-z]+", texto))
+        dias = set()
+
+        if {'lunes', 'lun', 'lu'} & tokens:
+            dias.add(0)
+        if {'martes', 'mar', 'ma'} & tokens:
+            dias.add(1)
+        if {'miercoles', 'miércoles', 'mie', 'mi', 'x'} & tokens:
+            dias.add(2)
+        if {'jueves', 'jue', 'ju'} & tokens:
+            dias.add(3)
+        if {'viernes', 'vie', 'vi'} & tokens:
+            dias.add(4)
+        if {'sabado', 'sábado', 'sab', 'sa'} & tokens:
+            dias.add(5)
+        if {'domingo', 'dom'} & tokens:
+            dias.add(6)
+
+        return dias
+
+    def get_fechas_clase_programadas(self):
+        if not self.fecha_inicio or not self.fecha_fin or self.fecha_fin < self.fecha_inicio:
+            return []
+
+        dias = self.get_dias_semana_indices()
+        if not dias:
+            return []
+
+        fechas = []
+        current = self.fecha_inicio
+        while current <= self.fecha_fin:
+            if current.weekday() in dias:
+                fechas.append(current)
+            current = current + timedelta(days=1)
+        return fechas
+
+    def get_total_clases_programadas(self):
+        fechas = self.get_fechas_clase_programadas()
+        if not fechas:
+            return None
+        return len(fechas)
 
     def __str__(self):
         return f"{self.fk_id_curso.nombre} - (Comisión N°: {self.id_comision})"

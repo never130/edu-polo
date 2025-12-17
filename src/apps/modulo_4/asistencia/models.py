@@ -43,6 +43,11 @@ class Asistencia(models.Model):
                 raise ValidationError({
                     'fecha_clase': f"La fecha de asistencia no puede ser posterior al fin del curso ({comision.fecha_fin})"
                 })
+            dias = comision.get_dias_semana_indices() if hasattr(comision, 'get_dias_semana_indices') else set()
+            if dias and self.fecha_clase and self.fecha_clase.weekday() not in dias:
+                raise ValidationError({
+                    'fecha_clase': "La fecha de asistencia no coincide con los días establecidos para la comisión."
+                })
     
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -70,10 +75,14 @@ class RegistroAsistencia(models.Model):
     
     def calcular_porcentaje(self):
         """Calcula el porcentaje de asistencia"""
-        # Recalcular total_clases basado en la comisión (todas las fechas únicas)
-        self.total_clases = Asistencia.objects.filter(
-            inscripcion__comision=self.inscripcion.comision
-        ).values('fecha_clase').distinct().count()
+        comision = self.inscripcion.comision
+        total_programadas = comision.get_total_clases_programadas() if hasattr(comision, 'get_total_clases_programadas') else None
+        if total_programadas is not None:
+            self.total_clases = total_programadas
+        else:
+            self.total_clases = Asistencia.objects.filter(
+                inscripcion__comision=comision
+            ).values('fecha_clase').distinct().count()
         
         # Recalcular clases asistidas por este alumno
         self.clases_asistidas = Asistencia.objects.filter(

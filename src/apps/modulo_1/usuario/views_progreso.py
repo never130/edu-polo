@@ -43,20 +43,13 @@ def mi_progreso(request):
             registro, created = RegistroAsistencia.objects.get_or_create(
                 inscripcion=inscripcion
             )
-            
-            # Calcular asistencias
-            total_asistencias = Asistencia.objects.filter(inscripcion=inscripcion).count()
-            asistencias_presentes = Asistencia.objects.filter(inscripcion=inscripcion, presente=True).count()
-            
-            if total_asistencias > 0:
-                porcentaje = int((asistencias_presentes / total_asistencias) * 100)
-            else:
-                porcentaje = 0
-            
-            inscripcion.progreso = porcentaje
-            inscripcion.total_clases = total_asistencias
-            inscripcion.asistencias_count = asistencias_presentes
-            inscripcion.cumple_certificado = 80 <= porcentaje <= 100
+
+            registro.calcular_porcentaje()
+
+            inscripcion.progreso = int(registro.porcentaje_asistencia)
+            inscripcion.total_clases = registro.total_clases
+            inscripcion.asistencias_count = registro.clases_asistidas
+            inscripcion.cumple_certificado = registro.cumple_requisito_certificado
             
             inscripciones_con_progreso.append(inscripcion)
         
@@ -113,9 +106,9 @@ def descargar_certificado(request, inscripcion_id):
         # Obtener o crear registro de asistencia
         registro, created = RegistroAsistencia.objects.get_or_create(inscripcion=inscripcion)
         
-        # Verificar que cumpla con el requisito (60% o más de asistencia)
+        # Verificar que cumpla con el requisito (80% o más de asistencia)
         if not registro.cumple_requisito_certificado:
-            messages.error(request, '❌ No cumples con el requisito mínimo de 60% de asistencia para obtener el certificado.')
+            messages.error(request, '❌ No cumples con el requisito mínimo de 80% de asistencia para obtener el certificado.')
             return redirect('usuario:mi_progreso')
         
         # Crear el PDF
@@ -310,5 +303,4 @@ def materiales_comision_estudiante(request, comision_id):
     except Estudiante.DoesNotExist:
         messages.error(request, 'No tienes perfil de estudiante.')
         return redirect('dashboard')
-
 

@@ -14,11 +14,14 @@ def actualizar_registro_asistencia(inscripcion):
         inscripcion=inscripcion
     )
     
-    # Contar total de clases (todas las fechas únicas registradas para la COMISIÓN)
-    # Esto asegura que el total sea el mismo para todos los alumnos de la comisión
-    total_clases = Asistencia.objects.filter(
-        inscripcion__comision=inscripcion.comision
-    ).values('fecha_clase').distinct().count()
+    comision = inscripcion.comision
+    total_programadas = comision.get_total_clases_programadas() if hasattr(comision, 'get_total_clases_programadas') else None
+    if total_programadas is not None:
+        total_clases = total_programadas
+    else:
+        total_clases = Asistencia.objects.filter(
+            inscripcion__comision=comision
+        ).values('fecha_clase').distinct().count()
     
     # Contar clases asistidas por ESTE alumno (presente=True)
     clases_asistidas = Asistencia.objects.filter(
@@ -55,8 +58,12 @@ def actualizar_registro_despues_guardar(sender, instance, created, **kwargs):
     # Siempre actualizar al alumno actual
     actualizar_registro_asistencia(instance.inscripcion)
     
+    comision = instance.inscripcion.comision
+    total_programadas = comision.get_total_clases_programadas() if hasattr(comision, 'get_total_clases_programadas') else None
+    if total_programadas is not None:
+        return
+
     if created:
-        comision = instance.inscripcion.comision
         # Verificar si es la primera asistencia registrada para esta fecha en la comisión
         # Count > 1 significa que ya existían registros para esta fecha (la fecha ya estaba contabilizada)
         registros_misma_fecha = Asistencia.objects.filter(
@@ -90,6 +97,9 @@ def actualizar_registro_despues_eliminar(sender, instance, **kwargs):
         pass
     
     comision = instance.inscripcion.comision
+    total_programadas = comision.get_total_clases_programadas() if hasattr(comision, 'get_total_clases_programadas') else None
+    if total_programadas is not None:
+        return
     # Verificar si quedan registros para esta fecha en la comisión
     queda_alguien = Asistencia.objects.filter(
         inscripcion__comision=comision,

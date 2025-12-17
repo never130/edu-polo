@@ -108,7 +108,7 @@ def dashboard_estudiante(request):
     """Dashboard específico para estudiantes - Muestra cursos disponibles"""
     try:
         from apps.modulo_3.cursos.models import Curso
-        from apps.modulo_4.asistencia.models import Asistencia
+        from apps.modulo_4.asistencia.models import RegistroAsistencia
         from django.db.models import Count, Q
         
         estudiante = Estudiante.objects.get(usuario__persona__dni=request.user.username)
@@ -127,13 +127,14 @@ def dashboard_estudiante(request):
         cursos_con_asistencia = 0
         
         for inscripcion in inscripciones:
-            # Calcular asistencia
-            total_clases = Asistencia.objects.filter(inscripcion=inscripcion).count()
-            presentes = Asistencia.objects.filter(inscripcion=inscripcion, presente=True).count()
-            
-            porcentaje_asistencia = 0
+            registro, _ = RegistroAsistencia.objects.get_or_create(inscripcion=inscripcion)
+            registro.calcular_porcentaje()
+
+            total_clases = registro.total_clases
+            presentes = registro.clases_asistidas
+            porcentaje_asistencia = int(registro.porcentaje_asistencia)
+
             if total_clases > 0:
-                porcentaje_asistencia = int((presentes / total_clases) * 100)
                 asistencia_promedio_total += porcentaje_asistencia
                 cursos_con_asistencia += 1
             
@@ -152,9 +153,10 @@ def dashboard_estudiante(request):
         if cursos_con_asistencia > 0:
             promedio_general = int(asistencia_promedio_total / cursos_con_asistencia)
             
-        # Certificados (simulado o real si existe modelo)
-        # Por ahora 0 o lógica futura
-        certificados_count = 0 
+        certificados_count = RegistroAsistencia.objects.filter(
+            inscripcion__estudiante=estudiante,
+            cumple_requisito_certificado=True,
+        ).count()
         
         # Próxima clase (Simulación basada en días, requeriría lógica compleja de calendario)
         # Por ahora mostramos un mensaje genérico o el primer curso
