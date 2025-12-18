@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +13,9 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'colores.css' %}">
     <style>
@@ -30,8 +33,12 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
-        body, button, input, select, textarea {
+
+        body,
+        button,
+        input,
+        select,
+        textarea {
             font-family: 'Be Vietnam Pro', sans-serif;
         }
 
@@ -39,7 +46,8 @@
             height: 100vh;
             overflow: hidden;
             position: relative;
-            background-color: #0f172a; /* Fallback */
+            background-color: #0f172a;
+            /* Fallback */
             color: var(--text-main);
         }
 
@@ -90,7 +98,8 @@
             top: 0;
             z-index: 1000;
             backdrop-filter: blur(10px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Sombra neutra */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            /* Sombra neutra */
         }
 
         .navbar-content {
@@ -102,12 +111,12 @@
             position: relative;
             padding: 0 1rem;
         }
-        
+
         .navbar-logo img {
             height: 45px;
             transition: transform 0.3s ease;
         }
-        
+
         .navbar-logo:hover img {
             transform: scale(1.05);
         }
@@ -146,7 +155,7 @@
             background: #ffffff;
             transition: all 0.3s ease;
             transform: translateX(-50%);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .navbar-link:hover::after {
@@ -159,7 +168,7 @@
             align-items: center;
         }
 
-         .btn {
+        .btn {
             padding: 0.6rem 1.2rem;
             border-radius: 8px;
             text-decoration: none;
@@ -267,7 +276,7 @@
         }
 
         /* Features Section Removed */
-        
+
 
         /* Footer */
         .main-footer {
@@ -299,7 +308,8 @@
             max-width: 300px;
         }
 
-        .footer-links h4, .footer-social h4 {
+        .footer-links h4,
+        .footer-social h4 {
             color: white;
             font-size: 1.1rem;
             font-weight: 700;
@@ -360,6 +370,7 @@
             width: 100%;
             pointer-events: none;
         }
+
         .toast-message {
             background: white;
             border-left: 4px solid;
@@ -373,37 +384,102 @@
             pointer-events: auto;
             animation: slideInRight 0.3s ease-out forwards;
         }
-        .toast-message.success { border-color: #10b981; }
-        .toast-message.error { border-color: #ef4444; }
-        .toast-message.warning { border-color: #f59e0b; }
-        .toast-message.info { border-color: #3b82f6; }
-        .toast-content { color: #1e293b; font-size: 0.95rem; }
-        .toast-close { background: transparent; border: none; color: #94a3b8; cursor: pointer; font-size: 1.2rem; }
-        @keyframes slideInRight { to { opacity: 1; transform: translateX(0); } }
+
+        .toast-message.success {
+            border-color: #10b981;
+        }
+
+        .toast-message.error {
+            border-color: #ef4444;
+        }
+
+        .toast-message.warning {
+            border-color: #f59e0b;
+        }
+
+        .toast-message.info {
+            border-color: #3b82f6;
+        }
+
+        .toast-content {
+            color: #1e293b;
+            font-size: 0.95rem;
+        }
+
+        .toast-close {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        @keyframes slideInRight {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .navbar-links { display: none; }
-            .hero-title { font-size: 3rem; }
-            .hero-buttons { flex-direction: column; }
-            .footer-content { grid-template-columns: 1fr; gap: 2rem; }
-            .feature-card { text-align: center; }
-            .icon-box { margin: 0 auto 1.5rem; }
+            .navbar-links {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 3rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .feature-card {
+                text-align: center;
+            }
+
+            .icon-box {
+                margin: 0 auto 1.5rem;
+            }
         }
 
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+
         @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* MODAL STYLES PRESERVED & IMPROVED */
         .modal-overlay {
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(8px);
             z-index: 10000;
@@ -414,8 +490,12 @@
             opacity: 0;
             transition: opacity 0.3s ease;
         }
-        .modal-overlay.show { display: flex; opacity: 1; }
-        
+
+        .modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
         .modal-container {
             background: white;
             border-radius: 24px;
@@ -426,106 +506,270 @@
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             overflow: hidden;
         }
-        .modal-overlay.show .modal-container { transform: scale(1); }
+
+        .modal-overlay.show .modal-container {
+            transform: scale(1);
+        }
 
         /* Split Login Modal Styles */
         .modal-container.split-design {
             max-width: 900px;
             display: flex;
         }
+
         .login-left {
-            flex: 1; padding: 3rem;
-            display: flex; flex-direction: column; justify-content: center;
+            flex: 1;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
+
         .login-right {
             flex: 0.8;
             background: linear-gradient(135deg, #FF512F 0%, #F09819 100%);
-            color: white; padding: 3rem;
-            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            color: white;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
             position: relative;
         }
-        .login-title { font-size: 2rem; font-weight: 800; color: #1e293b; margin-bottom: 0.5rem; }
-        .login-subtitle { color: #64748b; margin-bottom: 2rem; }
-        .input-group { margin-bottom: 1.5rem; }
-        .input-group input {
-            width: 100%; padding: 1rem;
-            border: 2px solid #e2e8f0; border-radius: 12px;
-            font-size: 1rem; transition: all 0.3s ease; background: #f8fafc;
+
+        .login-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
         }
+
+        .login-subtitle {
+            color: #64748b;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
         .input-group input:focus {
-            border-color: #F09819; background: white; outline: none;
+            border-color: #F09819;
+            background: white;
+            outline: none;
             box-shadow: 0 0 0 4px rgba(240, 152, 25, 0.1);
         }
+
         .forgot-password {
-            display: block; text-align: right; color: #F09819; font-weight: 600;
-            font-size: 0.9rem; margin-top: -1rem; margin-bottom: 1.5rem; text-decoration: none;
+            display: block;
+            text-align: right;
+            color: #F09819;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: -1rem;
+            margin-bottom: 1.5rem;
+            text-decoration: none;
         }
+
         .btn-login {
-            width: 100%; padding: 1rem;
+            width: 100%;
+            padding: 1rem;
             background: linear-gradient(90deg, #FF512F 0%, #F09819 100%);
-            color: white; border: none; border-radius: 12px;
-            font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.2s;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
         }
-        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(240, 152, 25, 0.3); }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(240, 152, 25, 0.3);
+        }
+
         .btn-register-outline {
-            margin-top: 1.5rem; padding: 0.8rem 2rem; border: 2px solid white;
-            color: white; background: transparent; border-radius: 50px; font-weight: 700;
-            cursor: pointer; transition: all 0.3s;
+            margin-top: 1.5rem;
+            padding: 0.8rem 2rem;
+            border: 2px solid white;
+            color: white;
+            background: transparent;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
         }
-        .btn-register-outline:hover { background: white; color: #F09819; }
+
+        .btn-register-outline:hover {
+            background: white;
+            color: #F09819;
+        }
+
         .modal-close {
-            position: absolute; top: 1rem; right: 1rem; z-index: 100;
-            background: white; border: none; border-radius: 50%; width: 32px; height: 32px;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); cursor: pointer; font-size: 1.5rem; color: #64748b;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 100;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #64748b;
         }
-        
+
         @media (max-width: 768px) {
-            .modal-container.split-design { flex-direction: column-reverse; max-height: 90vh; overflow-y: auto; }
-            .login-right, .login-left { padding: 2rem; }
+            .modal-container.split-design {
+                flex-direction: column-reverse;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+
+            .login-right,
+            .login-left {
+                padding: 2rem;
+            }
         }
 
         /* Registration Modal Specifics */
         .form-input {
-            width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0;
-            border-radius: 8px; font-size: 1rem; color: #4a5568;
-            height: auto; min-height: 45px;
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #4a5568;
+            height: auto;
+            min-height: 45px;
         }
+
         .form-input:focus {
-            border-color: #F09819; outline: none; box-shadow: 0 0 0 3px rgba(240, 152, 25, 0.1);
+            border-color: #F09819;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(240, 152, 25, 0.1);
         }
+
         .form-group label {
-            display: block; margin-bottom: 0.4rem; color: #4a5568; font-weight: 600; font-size: 0.9rem;
+            display: block;
+            margin-bottom: 0.4rem;
+            color: #4a5568;
+            font-weight: 600;
+            font-size: 0.9rem;
         }
+
         .btn-guardar {
-            background: #F09819; color: white; border: none; padding: 0.8rem 3rem;
-            border-radius: 50px; font-weight: 700; cursor: pointer; transition: all 0.2s;
-            width: 100%; max-width: 300px;
+            background: #F09819;
+            color: white;
+            border: none;
+            padding: 0.8rem 3rem;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            max-width: 300px;
         }
-        .btn-guardar:hover { transform: translateY(-2px); background: #e68a00; }
-        .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-        
-        @media (max-width: 900px) { .form-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } .modal-container { padding: 1rem; width: 95%; } }
-        
+
+        .btn-guardar:hover {
+            transform: translateY(-2px);
+            background: #e68a00;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        @media (max-width: 900px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-container {
+                padding: 1rem;
+                width: 95%;
+            }
+        }
+
         .modal-section {
-            margin-top: 2rem; border-top: 1px solid #e2e8f0; padding-top: 1.5rem; grid-column: 1 / -1;
+            margin-top: 2rem;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 1.5rem;
+            grid-column: 1 / -1;
         }
+
         .modal-section-title {
-            color: #4a5568; font-size: 1.1rem; font-weight: 700; margin-bottom: 1.2rem;
-            display: flex; align-items: center; gap: 0.5rem; background-color: #f8fafc;
-            padding: 0.5rem 1rem; border-radius: 8px; border-left: 4px solid #F09819;
+            color: #4a5568;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: #f8fafc;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #F09819;
         }
+
         .policy-item {
-            margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.8rem;
-            padding: 0.8rem; border-radius: 8px; background-color: #fff; transition: all 0.2s;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            padding: 0.8rem;
+            border-radius: 8px;
+            background-color: #fff;
+            transition: all 0.2s;
         }
-        .policy-item:hover { background-color: #ffffdb; }
-        .health-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .health-full { grid-column: 1 / -1; }
-        @media (max-width: 768px) { .health-grid { grid-template-columns: 1fr; } }
+
+        .policy-item:hover {
+            background-color: #ffffdb;
+        }
+
+        .health-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .health-full {
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 768px) {
+            .health-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
+
 <body>
     <div id="bg-carousel"></div>
     <div id="bg-overlay"></div>
@@ -591,7 +835,7 @@
                 <span class="text-gradient">nosotros</span>
             </h1>
             <p class="hero-subtitle">
-                Accede a cursos gratuitos de programación, diseño y habilidades digitales. 
+                Accede a cursos gratuitos de programación, diseño y habilidades digitales.
                 Certificación oficial del Gobierno de Tierra del Fuego para potenciar tu perfil profesional.
             </p>
             <div class="hero-buttons">
@@ -620,8 +864,8 @@
                 <p class="login-subtitle">Accede a tu cuenta utilizando tu DNI</p>
 
                 {% if messages %}
-                    {% for message in messages %}
-                        <div style="margin-bottom: 1rem; padding: 0.8rem; border-radius: 8px; font-size: 0.9rem; 
+                {% for message in messages %}
+                <div style="margin-bottom: 1rem; padding: 0.8rem; border-radius: 8px; font-size: 0.9rem; 
                             {% if 'success' in message.tags %}
                                 background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0;
                             {% elif 'warning' in message.tags %}
@@ -629,9 +873,9 @@
                             {% else %}
                                 background: #fee2e2; color: #ef4444; border: 1px solid #fecaca;
                             {% endif %}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
+                    {{ message }}
+                </div>
+                {% endfor %}
                 {% endif %}
 
                 <form method="post" action="{% url 'login' %}">
@@ -648,7 +892,8 @@
             </div>
             <div class="login-right">
                 <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">¡Bienvenido!</h2>
-                <p style="font-size: 1.1rem; margin-bottom: 2rem; opacity: 0.9;">Ingresa tus datos personales para acceder a todas las funcionalidades de Edu-Polo.</p>
+                <p style="font-size: 1.1rem; margin-bottom: 2rem; opacity: 0.9;">Ingresa tus datos personales para
+                    acceder a todas las funcionalidades de Edu-Polo.</p>
                 <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 1rem;">¿Aún no tienes una cuenta?</p>
                 <button type="button" class="btn-register-outline" onclick="openRegistroModal()">REGISTRARSE</button>
             </div>
@@ -659,90 +904,134 @@
     <div id="registroModal" class="modal-overlay">
         <div class="modal-container" style="max-width: 950px; padding: 1.5rem; max-height: 85vh; overflow-y: auto;">
             <button class="modal-close" onclick="closeRegistroModal()">×</button>
-            
+
             <div class="registro-header" style="text-align: center; margin-bottom: 0.5rem;">
                 <div style="text-align: center; margin-bottom: 0.5rem;">
-                    <img src="{% static 'img/logosregister.png' %}" alt="Logo Registro" style="height: 50px; width: auto;">
+                    <img src="{% static 'img/logosregister.png' %}" alt="Logo Registro"
+                        style="height: 50px; width: auto;">
                 </div>
-                <h2 style="color: #4a5568; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.1rem;">Crear cuenta</h2>
-                <p style="color: #718096; font-size: 0.85rem; margin-bottom: 0.5rem;">Ingrese sus datos personales para inscribirse</p>
+                <h2 style="color: #4a5568; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.1rem;">Crear cuenta
+                </h2>
+                <p style="color: #718096; font-size: 0.85rem; margin-bottom: 0.5rem;">Ingrese sus datos personales para
+                    inscribirse</p>
             </div>
 
             <form method="post" action="{% url 'usuario:registro' %}" class="registro-form">
                 {% csrf_token %}
                 <div class="form-grid">
                     <!-- Basic Fields -->
-                    <div class="form-group"><label>DNI</label><input type="text" name="dni" required placeholder="Número de documento" class="form-input"></div>
-                    <div class="form-group"><label>Correo Electrónico *</label><input type="email" name="correo" required placeholder="Correo electrónico" class="form-input"></div>
-                    <div class="form-group"><label>Nombres *</label><input type="text" name="nombre" required placeholder="Nombres" class="form-input"></div>
-                    <div class="form-group"><label>Apellidos *</label><input type="text" name="apellido" required placeholder="Apellidos" class="form-input"></div>
-                    <div class="form-group"><label>Teléfono de contacto *</label><input type="text" name="telefono" required placeholder="+ 54 2964 999999" class="form-input"></div>
-                    <div class="form-group"><label>Fecha de Nacimiento</label><input type="date" name="fecha_nacimiento" class="form-input"></div>
+                    <div class="form-group"><label>DNI</label><input type="text" name="dni" required
+                            placeholder="Número de documento" class="form-input"></div>
+                    <div class="form-group"><label>Correo Electrónico *</label><input type="email" name="correo"
+                            required placeholder="Correo electrónico" class="form-input"></div>
+                    <div class="form-group"><label>Nombres *</label><input type="text" name="nombre" required
+                            placeholder="Nombres" class="form-input"></div>
+                    <div class="form-group"><label>Apellidos *</label><input type="text" name="apellido" required
+                            placeholder="Apellidos" class="form-input"></div>
+                    <div class="form-group"><label>Teléfono de contacto *</label><input type="text" name="telefono"
+                            required placeholder="+ 54 2964 999999" class="form-input"></div>
+                    <div class="form-group"><label>Fecha de Nacimiento</label><input type="date" name="fecha_nacimiento"
+                            class="form-input"></div>
                     <div class="form-group">
                         <label>Género</label>
                         <select name="genero" class="form-input">
-                            <option value="">Seleccione...</option><option value="M">Masculino</option><option value="F">Femenino</option><option value="O">Otro</option><option value="P">Prefiero no decirlo</option>
+                            <option value="">Seleccione...</option>
+                            <option value="M">Masculino</option>
+                            <option value="F">Femenino</option>
+                            <option value="O">Otro</option>
+                            <option value="P">Prefiero no decirlo</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Ciudad *</label>
                         <select name="ciudad" class="form-input" required>
-                            <option value="">Seleccione...</option><option value="Ushuaia">Ushuaia</option><option value="Rio Grande">Río Grande</option><option value="Tolhuin">Tolhuin</option>
+                            <option value="">Seleccione...</option>
+                            <option value="Ushuaia">Ushuaia</option>
+                            <option value="Rio Grande">Río Grande</option>
+                            <option value="Tolhuin">Tolhuin</option>
                         </select>
                     </div>
                     <!-- Zona/Barrio (ADDED AS REQUESTED) -->
                     <div class="form-group">
                         <label>Zona/Barrio</label>
-                        <input type="text" name="zona_residencia" placeholder="Ej: Centro, Chacra II" class="form-input">
+                        <input type="text" name="zona_residencia" placeholder="Ej: Centro, Chacra II"
+                            class="form-input">
                     </div>
-                    <div class="form-group"><label>Domicilio</label><input type="text" name="domicilio" placeholder="Calle 123, Ciudad" class="form-input"></div>
+                    <div class="form-group"><label>Domicilio</label><input type="text" name="domicilio"
+                            placeholder="Calle 123, Ciudad" class="form-input"></div>
                     <div class="form-group">
                         <label>Nivel de estudios</label>
                         <select name="nivel_estudios" class="form-input">
-                            <option value="">Seleccione...</option><option value="PI">Primaria Incompleto</option><option value="PR">Primaria Completo</option><option value="SI">Secundaria Incompleto</option><option value="SE">Secundaria Completo</option><option value="UI">Universidad Incompleto</option><option value="UN">Universidad Completo</option><option value="OT">Otro</option>
+                            <option value="">Seleccione...</option>
+                            <option value="PI">Primaria Incompleto</option>
+                            <option value="PR">Primaria Completo</option>
+                            <option value="SI">Secundaria Incompleto</option>
+                            <option value="SE">Secundaria Completo</option>
+                            <option value="UI">Universidad Incompleto</option>
+                            <option value="UN">Universidad Completo</option>
+                            <option value="OT">Otro</option>
                         </select>
                     </div>
-                    <div class="form-group"><label>Institución Actual</label><input type="text" name="institucion_actual" placeholder="Nombre de la institución" class="form-input"></div>
-                    <div class="form-group"><label>Contraseña *</label><input type="password" name="password" required placeholder="Mínimo 6 caracteres" class="form-input"></div>
-                    <div class="form-group"><label>Confirmar Contraseña *</label><input type="password" name="password_confirm" required placeholder="Repite la contraseña" class="form-input"></div>
+                    <div class="form-group"><label>Institución Actual</label><input type="text"
+                            name="institucion_actual" placeholder="Nombre de la institución" class="form-input"></div>
+                    <div class="form-group"><label>Contraseña *</label><input type="password" name="password" required
+                            placeholder="Mínimo 6 caracteres" class="form-input"></div>
+                    <div class="form-group"><label>Confirmar Contraseña *</label><input type="password"
+                            name="password_confirm" required placeholder="Repite la contraseña" class="form-input">
+                    </div>
                 </div>
 
                 <!-- Health Section -->
                 <div class="modal-section" style="border-top: none;">
-                    <h3 style="color: #4a5568; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-align: center;">
+                    <h3
+                        style="color: #4a5568; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-align: center;">
                         Información de Salud y Observaciones
                     </h3>
                     <div class="health-grid">
-                        <div class="form-group"><label>¿Tienes alguna discapacidad o necesitas adaptaciones?</label><textarea name="observaciones_discapacidad" rows="3" class="form-input" placeholder="Especifica si necesitas alguna adaptación..."></textarea></div>
-                        <div class="form-group"><label>Alergias, Condiciones Médicas</label><textarea name="observaciones_salud" rows="3" class="form-input" placeholder="Alergias, diabetes, celiaquía, etc..."></textarea></div>
-                        <div class="form-group health-full"><label>Otras Observaciones</label><textarea name="observaciones_generales" rows="2" class="form-input" placeholder="Cualquier otra información relevante..."></textarea></div>
+                        <div class="form-group"><label>¿Tienes alguna discapacidad o necesitas
+                                adaptaciones?</label><textarea name="observaciones_discapacidad" rows="3"
+                                class="form-input"
+                                placeholder="Especifica si necesitas alguna adaptación..."></textarea></div>
+                        <div class="form-group"><label>Alergias, Condiciones Médicas</label><textarea
+                                name="observaciones_salud" rows="3" class="form-input"
+                                placeholder="Alergias, diabetes, celiaquía, etc..."></textarea></div>
+                        <div class="form-group health-full"><label>Otras Observaciones</label><textarea
+                                name="observaciones_generales" rows="2" class="form-input"
+                                placeholder="Cualquier otra información relevante..."></textarea></div>
                     </div>
                 </div>
 
                 <!-- Policies Section -->
                 <div class="modal-section" style="border-top: none;">
-                    <h3 style="color: #4a5568; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-align: center;">
+                    <h3
+                        style="color: #4a5568; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-align: center;">
                         Políticas de Uso de Datos y Autorizaciones
                     </h3>
-                    
+
                     <div style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem;">
-                        <input type="checkbox" id="politica_datos" name="politica_datos" required style="margin-top: 0.3rem;">
+                        <input type="checkbox" id="politica_datos" name="politica_datos" required
+                            style="margin-top: 0.3rem;">
                         <label for="politica_datos" style="display: inline; font-weight: 400; font-size: 0.9rem;">
-                            Acepto la <strong>Política de Uso de Datos Personales</strong> y autorizo el tratamiento de mi información conforme a la Ley Nº 25.326.
+                            Acepto la <strong>Política de Uso de Datos Personales</strong> y autorizo el tratamiento de
+                            mi información conforme a la Ley Nº 25.326.
                         </label>
                     </div>
 
                     <div style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem;">
-                        <input type="checkbox" id="autorizacion_imagen" name="autorizacion_imagen" style="margin-top: 0.3rem;">
+                        <input type="checkbox" id="autorizacion_imagen" name="autorizacion_imagen"
+                            style="margin-top: 0.3rem;">
                         <label for="autorizacion_imagen" style="display: inline; font-weight: 400; font-size: 0.9rem;">
-                            Autorizo el uso de mi imagen y voz (fotografías, videos y grabaciones) con fines educativos e institucionales, en medios oficiales y redes sociales.
+                            Autorizo el uso de mi imagen y voz (fotografías, videos y grabaciones) con fines educativos
+                            e institucionales, en medios oficiales y redes sociales.
                         </label>
                     </div>
 
                     <div style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem;">
-                        <input type="checkbox" id="autorizacion_voz" name="autorizacion_voz" style="margin-top: 0.3rem;">
+                        <input type="checkbox" id="autorizacion_voz" name="autorizacion_voz"
+                            style="margin-top: 0.3rem;">
                         <label for="autorizacion_voz" style="display: inline; font-weight: 400; font-size: 0.9rem;">
-                            Autorizo el uso de mi imagen y voz con fines publicitarios y promocionales, para la difusión de actividades, programas y campañas institucionales.
+                            Autorizo el uso de mi imagen y voz con fines publicitarios y promocionales, para la difusión
+                            de actividades, programas y campañas institucionales.
                         </label>
                     </div>
                 </div>
@@ -751,153 +1040,188 @@
                     <button type="submit" class="btn-guardar">Guardar y Continuar</button>
                 </div>
                 <div style="text-align: right; margin-top: 1rem;">
-                     <p style="font-size: 0.9rem;">¿Ya sos miembro? <a href="#" onclick="closeRegistroModal(); openLoginModal(); return false;" style="color: #F09819; font-weight: bold;">Ingresar</a></p>
+                    <p style="font-size: 0.9rem;">¿Ya sos miembro? <a href="#"
+                            onclick="closeRegistroModal(); openLoginModal(); return false;"
+                            style="color: #F09819; font-weight: bold;">Ingresar</a></p>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- Modal Contacto -->
     <div id="contactoModal" class="modal-overlay" style="z-index: 10002;">
-    <div class="modal-container" style="max-width: 700px; background: #1e293b; color: white; padding: 0; border: 1px solid rgba(255, 255, 255, 0.1); border-top: 5px solid #F09819;">
-        <button class="modal-close" onclick="closeContactoModal()" style="color: white; background: rgba(255,255,255,0.1); top: 1rem; right: 1rem; border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s;" onmouseover="this.style.background='#F09819'; this.style.borderColor='#F09819'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'">×</button>
-        
-        <div style="padding: 3rem 2rem;">
-            <!-- Header -->
-            <div style="text-align: center; margin-bottom: 2rem;">
-                 <div style="width: 60px; height: 60px; background: rgba(255, 255, 255, 0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; border: 1px solid rgba(255, 255, 255, 0.1);">
-                    <i class="fas fa-phone" style="font-size: 2rem; color: #F09819;"></i>
-                </div>
-                <h3 style="color: #F09819; font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem;">¡Estamos Conectados!</h3>
-                <p style="color: #94a3b8; font-size: 0.95rem; max-width: 600px; margin: 0 auto 0.5rem;">
-                    ¿Tenés alguna duda sobre nuestros cursos o actividades?
-                </p>
-                <p style="color: #94a3b8; font-size: 0.9rem; max-width: 600px; margin: 0 auto; line-height: 1.5;">
-                    Nuestro equipo está disponible de <strong>Lunes a Viernes de 9:00 a 17:00 hs</strong>. Seleccioná tu sede más cercana para comunicarte directamente por WhatsApp o escribinos por correo electrónico para consultas generales.
-                </p>
-            </div>
+        <div class="modal-container"
+            style="max-width: 700px; background: white; color: #333; padding: 0; border: none; border-top: 5px solid #F09819; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+            <button class="modal-close" onclick="closeContactoModal()"
+                style="color: #666; background: transparent; top: 1rem; right: 1rem; border: none; font-size: 2rem; transition: color 0.2s;"
+                onmouseover="this.style.color='#F09819'" onmouseout="this.style.color='#666'">×</button>
 
-            <!-- Contact Options -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-                <!-- Río Grande -->
-                <a href="https://wa.me/5492964485527" target="_blank" style="text-decoration: none;">
-                    <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s ease; height: 100%;" 
-                         onmouseover="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'" 
-                         onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'">
-                        <div style="background: rgba(34, 197, 94, 0.2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #4ade80; font-size: 1.2rem; flex-shrink: 0;">
-                            <i class="fab fa-whatsapp"></i>
-                        </div>
-                        <div>
-                            <h4 style="color: white; margin: 0; font-weight: 600; font-size: 1rem;">Río Grande</h4>
-                            <span style="color: #94a3b8; font-size: 0.85rem;">+54 9 2964 485527</span>
-                        </div>
+            <div style="padding: 2rem;">
+                <!-- Header -->
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <div
+                        style="width: 60px; height: 60px; background: rgba(240, 152, 25, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                        <i class="fas fa-phone" style="font-size: 2rem; color: #F09819;"></i>
                     </div>
-                </a>
-
-                <!-- Tolhuin -->
-                <a href="https://wa.me/5492901498171" target="_blank" style="text-decoration: none;">
-                    <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s ease; height: 100%;" 
-                         onmouseover="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'" 
-                         onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'">
-                        <div style="background: rgba(34, 197, 94, 0.2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #4ade80; font-size: 1.2rem; flex-shrink: 0;">
-                            <i class="fab fa-whatsapp"></i>
-                        </div>
-                        <div>
-                            <h4 style="color: white; margin: 0; font-weight: 600; font-size: 1rem;">Tolhuin</h4>
-                            <span style="color: #94a3b8; font-size: 0.85rem;">+54 9 2901 498171</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Ushuaia -->
-                <a href="https://wa.me/5492901307443" target="_blank" style="text-decoration: none;">
-                    <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s ease; height: 100%;" 
-                         onmouseover="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'" 
-                         onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'">
-                        <div style="background: rgba(34, 197, 94, 0.2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #4ade80; font-size: 1.2rem; flex-shrink: 0;">
-                            <i class="fab fa-whatsapp"></i>
-                        </div>
-                        <div>
-                            <h4 style="color: white; margin: 0; font-weight: 600; font-size: 1rem;">Ushuaia</h4>
-                            <span style="color: #94a3b8; font-size: 0.85rem;">+54 9 2901 307443</span>
-                        </div>
-                    </div>
-                </a>
-                
-                <!-- Email -->
-                <a href="mailto:soporte.polo@aif.gob.ar" style="text-decoration: none;">
-                     <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s ease; height: 100%;" 
-                         onmouseover="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'" 
-                         onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'">
-                        <div style="background: rgba(234, 88, 12, 0.2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fb923c; font-size: 1.2rem; flex-shrink: 0;">
-                            <i class="fas fa-envelope"></i>
-                        </div>
-                        <div>
-                            <h4 style="color: white; margin: 0; font-weight: 600; font-size: 1rem;">Correo Electrónico</h4>
-                            <span style="color: #94a3b8; font-size: 0.85rem;">soporte.polo@aif.gob.ar</span>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            
-            <!-- Footer Social -->
-             <div style="text-align: center; padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1);">
-                <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1rem; font-weight: 600;">¡Seguinos en nuestras redes!</p>
-                <div style="display: flex; justify-content: center; gap: 1rem;">
-                    <a href="#" style="width: 40px; height: 40px; background: rgba(255, 255, 255, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.background='#F09819'; this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" style="width: 40px; height: 40px; background: rgba(255, 255, 255, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.background='#F09819'; this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'"><i class="fab fa-instagram"></i></a>
-                    <a href="#" style="width: 40px; height: 40px; background: rgba(255, 255, 255, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.background='#F09819'; this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'"><i class="fab fa-linkedin-in"></i></a>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</div>
-
-<!-- Modal Acerca De -->
-<div id="acercaDeModal" class="modal-overlay" style="z-index: 10002;">
-    <div class="modal-container" style="max-width: 700px; background: white; color: #333; padding: 0; border: none; border-top: 5px solid #F09819; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
-        <button class="modal-close" onclick="closeAcercaDeModal()" style="color: #666; background: transparent; top: 1rem; right: 1rem; border: none; font-size: 2rem; transition: color 0.2s;" onmouseover="this.style.color='#F09819'" onmouseout="this.style.color='#666'">×</button>
-        
-        <div style="padding: 1.5rem;">
-            <!-- Header Logos -->
-            <div style="margin-bottom: 1rem; display: flex; gap: 1rem; align-items: center;">
-                <img src="{% static 'img/polo_logo.png' %}" alt="PoloForma" style="height: 45px;">
-            </div>
-
-            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
-                <!-- Left Column: Text -->
-                <div>
-                    <h3 style="color: #F09819; font-size: 1.3rem; font-weight: 800; margin-bottom: 0.8rem;">Sobre nuestra plataforma</h3>
-                    <p style="color: #333; line-height: 1.5; font-size: 0.85rem; margin-bottom: 0.8rem;">
-                        Plataforma de formación de los Polos Creativos y Fábrica de Talentos de la Provincia de Tierra del Fuego, Antártida e Islas del Atlántico Sur, generada para impulsar la economía del conocimiento y fomentar el desarrollo de habilidades digitales y tecnológicas en la comunidad fueguina.
+                    <h3 style="color: #F09819; font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem;">¡Estamos
+                        Conectados!</h3>
+                    <p style="color: #64748b; font-size: 0.95rem; max-width: 600px; margin: 0 auto 0.5rem;">
+                        ¿Tenés alguna duda sobre nuestros cursos o actividades?
                     </p>
-                    <p style="color: #333; line-height: 1.5; font-size: 0.85rem; margin-bottom: 0.8rem;">
-                        A través de nuestras sedes, en las ciudades de Ushuaia, Río Grande y Tolhuin ofrecemos cursos de formación y aprendizaje innovador, gratuito y abierto para todos los fueguinos buscando reducir la brecha digital y preparar a jóvenes y adultos para su futuro laboral.
-                    </p>
-                    <p style="color: #333; line-height: 1.5; font-size: 0.85rem;">
-                        Agradecemos a las y los estudiantes del Colegio Técnico Provincial “Antonio M. Marte”, de la ciudad de Ushuaia, quienes desarrollaron esta plataforma en el marco de una pasantía formativa durante el año 2025.
+                    <p style="color: #64748b; font-size: 0.9rem; max-width: 600px; margin: 0 auto; line-height: 1.5;">
+                        Nuestro equipo está disponible de <strong>Lunes a Viernes de 9:00 a 17:00 hs</strong>.
+                        Seleccioná tu sede más cercana para comunicarte directamente por WhatsApp o escribinos por
+                        correo electrónico para consultas generales.
                     </p>
                 </div>
-                
-                <!-- Right Column: Social -->
-                <div style="display: flex; flex-direction: column; justify-content: flex-start; padding-top: 0.5rem;">
-                    <h4 style="color: #F09819; font-size: 1.1rem; font-weight: 700; margin-bottom: 0.8rem;">Seguinos en redes</h4>
-                    <p style="color: #333; font-size: 0.85rem; margin-bottom: 1rem; font-weight: 600;">Enterate de todas las novedades, cursos y eventos en nuestras redes sociales oficiales</p>
-                    <div style="display: flex; gap: 0.8rem;">
-                        <a href="https://www.facebook.com/ConocimientoTDF" target="_blank" style="width: 35px; height: 35px; background: #F09819; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'"><i class="fab fa-facebook-f" style="font-size: 1rem;"></i></a>
-                        <a href="https://www.instagram.com/conocimientotdf/" target="_blank" style="width: 35px; height: 35px; background: #F09819; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'"><i class="fab fa-instagram" style="font-size: 1rem;"></i></a>
-                        <a href="https://www.youtube.com/@AIFTDF" target="_blank" style="width: 35px; height: 35px; background: #F09819; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'"><i class="fab fa-youtube" style="font-size: 1rem;"></i></a>
-                    </div>
+
+                <!-- Contact Options -->
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 0;">
+                    <!-- Río Grande -->
+                    <a href="https://wa.me/5492964485527" target="_blank" style="text-decoration: none;">
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s ease; height: 100%;"
+                            onmouseover="this.style.background='white'; this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(240, 152, 25, 0.1)'"
+                            onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <div
+                                style="background: rgba(34, 197, 94, 0.1); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #16a34a; font-size: 1.2rem; flex-shrink: 0;">
+                                <i class="fab fa-whatsapp"></i>
+                            </div>
+                            <div>
+                                <h4 style="color: #334155; margin: 0; font-weight: 600; font-size: 1rem;">Río Grande
+                                </h4>
+                                <span style="color: #64748b; font-size: 0.85rem;">+54 9 2964 485527</span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Tolhuin -->
+                    <a href="https://wa.me/5492901498171" target="_blank" style="text-decoration: none;">
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s ease; height: 100%;"
+                            onmouseover="this.style.background='white'; this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(240, 152, 25, 0.1)'"
+                            onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <div
+                                style="background: rgba(34, 197, 94, 0.1); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #16a34a; font-size: 1.2rem; flex-shrink: 0;">
+                                <i class="fab fa-whatsapp"></i>
+                            </div>
+                            <div>
+                                <h4 style="color: #334155; margin: 0; font-weight: 600; font-size: 1rem;">Tolhuin</h4>
+                                <span style="color: #64748b; font-size: 0.85rem;">+54 9 2901 498171</span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Ushuaia -->
+                    <a href="https://wa.me/5492901307443" target="_blank" style="text-decoration: none;">
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s ease; height: 100%;"
+                            onmouseover="this.style.background='white'; this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(240, 152, 25, 0.1)'"
+                            onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <div
+                                style="background: rgba(34, 197, 94, 0.1); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #16a34a; font-size: 1.2rem; flex-shrink: 0;">
+                                <i class="fab fa-whatsapp"></i>
+                            </div>
+                            <div>
+                                <h4 style="color: #334155; margin: 0; font-weight: 600; font-size: 1rem;">Ushuaia</h4>
+                                <span style="color: #64748b; font-size: 0.85rem;">+54 9 2901 307443</span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Email -->
+                    <a href="mailto:soporte.polo@aif.gob.ar" style="text-decoration: none;">
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s ease; height: 100%;"
+                            onmouseover="this.style.background='white'; this.style.borderColor='#F09819'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(240, 152, 25, 0.1)'"
+                            onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <div
+                                style="background: rgba(234, 88, 12, 0.1); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #ea580c; font-size: 1.2rem; flex-shrink: 0;">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div>
+                                <h4 style="color: #334155; margin: 0; font-weight: 600; font-size: 1rem;">Correo
+                                    Electrónico</h4>
+                                <span style="color: #64748b; font-size: 0.85rem;">soporte.polo@aif.gob.ar</span>
+                            </div>
+                        </div>
+                    </a>
                 </div>
-            </div>
-            
-            <!-- Footer -->
-            <div style="text-align: center; padding-top: 1rem; border-top: 1px solid #eee; color: #999; font-size: 0.75rem;">
-                <p>&copy; 2025 Gobierno de Tierra del Fuego A.I.A.S. - Todos los derechos reservados.</p>
+
             </div>
         </div>
     </div>
-</div>
+    </div>
+
+    <!-- Modal Acerca De -->
+    <div id="acercaDeModal" class="modal-overlay" style="z-index: 10002;">
+        <div class="modal-container"
+            style="max-width: 700px; background: white; color: #333; padding: 0; border: none; border-top: 5px solid #F09819; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+            <button class="modal-close" onclick="closeAcercaDeModal()"
+                style="color: #666; background: transparent; top: 1rem; right: 1rem; border: none; font-size: 2rem; transition: color 0.2s;"
+                onmouseover="this.style.color='#F09819'" onmouseout="this.style.color='#666'">×</button>
+
+            <div style="padding: 1.5rem;">
+                <!-- Header Logos -->
+                <div style="margin-bottom: 1rem; display: flex; gap: 1rem; align-items: center;">
+                    <img src="{% static 'img/polo_logo.png' %}" alt="PoloForma" style="height: 45px;">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <!-- Left Column: Text -->
+                    <div>
+                        <h3 style="color: #F09819; font-size: 1.3rem; font-weight: 800; margin-bottom: 0.8rem;">Sobre
+                            nuestra plataforma</h3>
+                        <p style="color: #333; line-height: 1.5; font-size: 0.85rem; margin-bottom: 0.8rem;">
+                            Plataforma de formación de los Polos Creativos y Fábrica de Talentos de la Provincia de
+                            Tierra del Fuego, Antártida e Islas del Atlántico Sur, generada para impulsar la economía
+                            del conocimiento y fomentar el desarrollo de habilidades digitales y tecnológicas en la
+                            comunidad fueguina.
+                        </p>
+                        <p style="color: #333; line-height: 1.5; font-size: 0.85rem; margin-bottom: 0.8rem;">
+                            A través de nuestras sedes, en las ciudades de Ushuaia, Río Grande y Tolhuin ofrecemos
+                            cursos de formación y aprendizaje innovador, gratuito y abierto para todos los fueguinos
+                            buscando reducir la brecha digital y preparar a jóvenes y adultos para su futuro laboral.
+                        </p>
+                        <p style="color: #333; line-height: 1.5; font-size: 0.85rem;">
+                            Agradecemos a las y los estudiantes del Colegio Técnico Provincial “Antonio M. Marte”, de la
+                            ciudad de Ushuaia, quienes desarrollaron esta plataforma en el marco de una pasantía
+                            formativa durante el año 2025.
+                        </p>
+                    </div>
+
+                    <!-- Right Column: Social -->
+                    <div
+                        style="display: flex; flex-direction: column; justify-content: flex-start; padding-top: 0.5rem;">
+                        <h4 style="color: #F09819; font-size: 1.1rem; font-weight: 700; margin-bottom: 0.8rem;">Seguinos
+                            en redes</h4>
+                        <p style="color: #333; font-size: 0.85rem; margin-bottom: 1rem; font-weight: 600;">Enterate de
+                            todas las novedades, cursos y eventos en nuestras redes sociales oficiales</p>
+                        <div style="display: flex; gap: 0.8rem;">
+                            <a href="https://www.facebook.com/ConocimientoTDF" target="_blank"
+                                style="width: 35px; height: 35px; background: #F09819; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: transform 0.3s;"
+                                onmouseover="this.style.transform='translateY(-3px)'"
+                                onmouseout="this.style.transform='translateY(0)'"><i class="fab fa-facebook-f"
+                                    style="font-size: 1rem;"></i></a>
+                            <a href="https://www.instagram.com/conocimientotdf/" target="_blank"
+                                style="width: 35px; height: 35px; background: #F09819; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: transform 0.3s;"
+                                onmouseover="this.style.transform='translateY(-3px)'"
+                                onmouseout="this.style.transform='translateY(0)'"><i class="fab fa-instagram"
+                                    style="font-size: 1rem;"></i></a>
+                            <a href="https://www.youtube.com/@AIFTDF" target="_blank"
+                                style="width: 35px; height: 35px; background: #F09819; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: transform 0.3s;"
+                                onmouseover="this.style.transform='translateY(-3px)'"
+                                onmouseout="this.style.transform='translateY(0)'"><i class="fab fa-youtube"
+                                    style="font-size: 1rem;"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div
+                    style="text-align: center; padding-top: 1rem; border-top: 1px solid #eee; color: #999; font-size: 0.75rem;">
+                    <p>&copy; 2025 Gobierno de Tierra del Fuego A.I.A.S. - Todos los derechos reservados.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Scripts -->
     <script>
@@ -926,7 +1250,7 @@
             modal.classList.remove('show');
             setTimeout(() => { modal.style.display = 'none'; document.body.style.overflow = ''; }, 300);
         }
-        document.getElementById('registroModal').addEventListener('click', function(e) { if (e.target === this) closeRegistroModal(); });
+        document.getElementById('registroModal').addEventListener('click', function (e) { if (e.target === this) closeRegistroModal(); });
 
         // Contacto Modal
         function openContactoModal() {
@@ -947,7 +1271,7 @@
         }
 
         // Close on outside click
-        document.getElementById('contactoModal').addEventListener('click', function(e) {
+        document.getElementById('contactoModal').addEventListener('click', function (e) {
             if (e.target === this) {
                 closeContactoModal();
             }
@@ -971,7 +1295,7 @@
             }, 300);
         }
 
-        document.getElementById('acercaDeModal').addEventListener('click', function(e) {
+        document.getElementById('acercaDeModal').addEventListener('click', function (e) {
             if (e.target === this) {
                 closeAcercaDeModal();
             }
@@ -979,11 +1303,11 @@
 
         // Show modal if messages exist
         {% if messages and not user.is_authenticated %}
-            document.addEventListener('DOMContentLoaded', function() { openLoginModal(); });
+        document.addEventListener('DOMContentLoaded', function () { openLoginModal(); });
         {% endif %}
 
         // Carousel Logic
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const carouselContainer = document.getElementById('bg-carousel');
             const images = [
                 "{% static 'img/landing1.jpg' %}", "{% static 'img/landing2.jpg' %}", "{% static 'img/landing3.jpg' %}",
@@ -1008,13 +1332,14 @@
             let currentIndex = 0;
             const items = document.getElementsByClassName('carousel-item');
             setInterval(() => {
-                if(items.length > 0) {
+                if (items.length > 0) {
                     items[currentIndex].classList.remove('active');
                     currentIndex = (currentIndex + 1) % items.length;
                     items[currentIndex].classList.add('active');
                 }
-            }, 6000); 
+            }, 6000);
         });
     </script>
 </body>
+
 </html>
