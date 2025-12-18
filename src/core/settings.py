@@ -46,10 +46,12 @@ if IS_PRODUCTION:
     CSRF_TRUSTED_ORIGINS = [
         'https://polos.aif.gob.ar',
         'http://polos.aif.gob.ar',
+        'http://127.0.0.1:8000', 
+        'http://localhost:8000',
     ]
     # Agregar desde ALLOWED_HOSTS
     for host in ALLOWED_HOSTS:
-        if host != '*' and host != 'polos.aif.gob.ar': # Evitamos duplicados:
+        if host != '*' and host not in str(CSRF_TRUSTED_ORIGINS):
             CSRF_TRUSTED_ORIGINS.append(f'https://{host}')
             CSRF_TRUSTED_ORIGINS.append(f'http://{host}')
     # Agregar orígenes desde variable de entorno si existe
@@ -65,6 +67,7 @@ if IS_PRODUCTION:
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 else:
     CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 'http://localhost:8000']
     CSRF_COOKIE_SECURE = False
