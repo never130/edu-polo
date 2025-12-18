@@ -35,7 +35,7 @@ IS_PRODUCTION = not DEBUG
 
 # ALLOWED_HOSTS - permite todos los hosts en producción, específicos en desarrollo
 if IS_PRODUCTION:
-    ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
+    ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'polos.aif.gob.ar,*').split(',')
 else:
     # Permitir localhost y dominios de tunelización (ngrok, etc.) para demos
     ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0', '*']
@@ -43,10 +43,13 @@ else:
 # CSRF Settings
 if IS_PRODUCTION:
     # En producción, construir CSRF_TRUSTED_ORIGINS
-    CSRF_TRUSTED_ORIGINS = []
+    CSRF_TRUSTED_ORIGINS = [
+        'https://polos.aif.gob.ar',
+        'http://polos.aif.gob.ar',
+    ]
     # Agregar desde ALLOWED_HOSTS
     for host in ALLOWED_HOSTS:
-        if host != '*':
+        if host != '*' and host != 'polos.aif.gob.ar': # Evitamos duplicados:
             CSRF_TRUSTED_ORIGINS.append(f'https://{host}')
             CSRF_TRUSTED_ORIGINS.append(f'http://{host}')
     # Agregar orígenes desde variable de entorno si existe
