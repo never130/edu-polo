@@ -1,6 +1,6 @@
 {% extends 'dashboard/base_dashboard.html' %}
 
-{% block title %}Mi Progreso - Edu-Polo{% endblock %}
+{% block title %}Mi Progreso{% endblock %}
 
 {% block sidebar_menu %}
 <li><a href="{% url 'dashboard_estudiante' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
@@ -16,12 +16,13 @@
 {% block content %}
 <style>
     .page-header {
-        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+        background: white;
         padding: 2.5rem;
         border-radius: 20px;
-        color: white;
+        color: #1e293b;
         margin-bottom: 2rem;
-        box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e2e8f0;
     }
     
     .progreso-grid {
@@ -168,7 +169,7 @@
 </style>
 
 <div class="page-header">
-    <h2>📊 Mi Progreso Académico</h2>
+    <h2>Mi Progreso Académico</h2>
     <p>Seguimiento de tu avance en los cursos</p>
 </div>
 

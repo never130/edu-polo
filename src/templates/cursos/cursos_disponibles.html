@@ -1,19 +1,15 @@
 {% extends 'dashboard/base_dashboard.html' %}
 {% load static %}
 
-{% block title %}Cursos Disponibles - Edu-Polo{% endblock %}
+{% block title %}Cursos Disponibles{% endblock %}
 
 {% block scripts %}
 <script>
     function toggleDescripcion(id, btn) {
         const desc = document.getElementById(id);
-        desc.classList.toggle('expanded');
-        
-        if (desc.classList.contains('expanded')) {
-            btn.textContent = 'Ver menos';
-        } else {
-            btn.textContent = 'Ver más';
-        }
+        if (!desc) return;
+        const expanded = desc.classList.toggle('expanded');
+        btn.textContent = expanded ? 'Ver menos' : 'Ver más';
     }
 </script>
 {% endblock %}
@@ -31,32 +27,39 @@
 {% block content %}
 <style>
     .page-header {
-        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+        background: white;
         padding: 2.5rem;
         border-radius: 20px;
-        color: white;
+        color: #1e293b;
         margin-bottom: 2rem;
-        box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e2e8f0;
     }
     
     .page-header h2 {
         font-size: 2.5rem;
         margin-bottom: 0.5rem;
         font-weight: 800;
+        color: #1e293b;
+    }
+
+    .page-header p {
+        color: #475569;
+        margin: 0;
     }
     
     .cursos-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 1.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.25rem;
     }
     
     .curso-card {
         background: white;
-        padding: 1.5rem;
-        border-radius: 16px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        border: 1px solid #e5e7eb;
+        padding: 1rem;
+        border-radius: 14px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+        border: 1px solid #e2e8f0;
         transition: all 0.3s ease;
         display: flex;
         flex-direction: column;
@@ -64,69 +67,79 @@
     }
     
     .curso-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        border-color: #3b82f6;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        border-color: #cbd5e1;
     }
     
     .curso-header {
         display: flex;
         align-items: center;
-        gap: 1rem;
-        margin-bottom: 1rem;
-        padding-bottom: 1rem;
-        border-bottom: 2px solid #f1f5f9;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #f1f5f9;
     }
     
     .curso-icon {
-        font-size: 2.5rem;
+        font-size: 1.5rem;
         background: #eff6ff;
-        width: 60px;
-        height: 60px;
+        width: 40px;
+        height: 40px;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 12px;
+        border-radius: 10px;
+        flex-shrink: 0;
+    }
+
+    .curso-title {
+        min-width: 0;
     }
     
     .curso-title h3 {
         color: #1e293b;
-        font-size: 1.25rem;
+        font-size: 1.1rem;
         font-weight: 700;
         margin: 0;
         line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
     
     .curso-estado {
         display: inline-block;
         background: #dcfce7;
         color: #166534;
-        padding: 0.25rem 0.75rem;
+        padding: 0.15rem 0.5rem;
         border-radius: 9999px;
-        font-size: 0.75rem;
+        font-size: 0.65rem;
         font-weight: 600;
-        margin-top: 0.5rem;
+        margin-top: 0.25rem;
     }
     
     .curso-descripcion-wrapper {
-        margin-bottom: 1.5rem;
+        margin-bottom: 0.75rem;
         flex-grow: 1;
     }
 
     .curso-descripcion {
         color: #64748b;
-        font-size: 0.95rem;
-        line-height: 1.5;
+        font-size: 0.85rem;
+        line-height: 1.4;
         margin: 0;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        transition: max-height 0.3s ease;
     }
     
     .curso-descripcion.expanded {
         -webkit-line-clamp: unset;
+        display: block;
+        max-height: none;
         overflow: visible;
     }
     
@@ -134,7 +147,7 @@
         background: none;
         border: none;
         color: #3b82f6;
-        font-size: 0.85rem;
+        font-size: 0.75rem;
         font-weight: 600;
         cursor: pointer;
         padding: 0;
@@ -149,15 +162,15 @@
         display: flex;
         flex-wrap: wrap;
         gap: 0.5rem;
-        margin-bottom: 1.5rem;
+        margin-bottom: 0.75rem;
     }
     
     .info-badge {
         background: #f1f5f9;
         color: #475569;
-        padding: 0.25rem 0.75rem;
+        padding: 0.15rem 0.5rem;
         border-radius: 6px;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         font-weight: 500;
         display: flex;
         align-items: center;
@@ -166,23 +179,28 @@
 
     .comisiones-section {
         margin-top: auto;
+        padding-top: 0.5rem;
+        border-top: 1px dashed #e2e8f0;
+        max-height: 260px;
+        overflow: auto;
     }
     
     .comisiones-titulo {
-        font-size: 1rem;
+        font-size: 0.85rem;
         color: #334155;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.4rem;
+        font-weight: 600;
     }
     
     .comision-compact {
         background: #f8fafc;
         border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        padding: 1rem;
-        margin-bottom: 0.75rem;
+        border-radius: 8px;
+        padding: 0.6rem;
+        margin-bottom: 0.5rem;
         transition: all 0.2s;
     }
     
@@ -195,13 +213,15 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
         margin-bottom: 0.5rem;
     }
     
     .comision-id {
         font-weight: 600;
         color: #3b82f6;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
     }
     
     .cupos-badge {
@@ -218,10 +238,10 @@
     .comision-details-grid {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
-        font-size: 0.8rem;
+        gap: 0.35rem;
+        font-size: 0.75rem;
         color: #64748b;
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.6rem;
     }
     
     .detail-row {
@@ -238,12 +258,12 @@
     
     .btn-inscribir-sm {
         width: 100%;
-        padding: 0.5rem;
+        padding: 0.45rem;
         background: #3b82f6;
         color: white;
         border: none;
         border-radius: 6px;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         font-weight: 600;
         cursor: pointer;
         text-align: center;
@@ -269,7 +289,7 @@
 </style>
 
 <div class="page-header">
-    <h2>📚 Cursos Disponibles</h2>
+    <h2>Cursos Disponibles</h2>
     <p>Explora nuestra oferta educativa e inscríbete en los cursos que te interesen</p>
 </div>
 
@@ -290,7 +310,7 @@
                     {{ curso.descripcion|default:"Curso de formación profesional." }}
                 </p>
                 {% if curso.descripcion|length > 80 %}
-                <button class="btn-leer-mas" onclick="toggleDescripcion('desc-{{ forloop.counter }}', this)">Ver más</button>
+                <button type="button" class="btn-leer-mas" onclick="toggleDescripcion('desc-{{ forloop.counter }}', this)">Ver más</button>
                 {% endif %}
             </div>
             
