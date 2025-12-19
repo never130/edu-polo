@@ -29,8 +29,19 @@ def lista_polos(request):
     Vista para mostrar el listado de Polos Creativos y sus cursos
     """
     from apps.modulo_3.cursos.models import PoloCreativo
+    from django.db.models import Case, IntegerField, When
     
-    polos = PoloCreativo.objects.filter(activo=True)
+    polos = PoloCreativo.objects.filter(activo=True).order_by(
+        Case(
+            When(id_polo=1, then=0),
+            When(id_polo=2, then=1),
+            When(id_polo=3, then=2),
+            When(id_polo=4, then=3),
+            default=99,
+            output_field=IntegerField(),
+        ),
+        'id_polo',
+    )
     
     context = {
         'polos': polos,
