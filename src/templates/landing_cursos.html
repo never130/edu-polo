@@ -248,9 +248,11 @@
         }
 
         .polo-img {
-            width: 120px;
-            height: 120px;
-            object-fit: contain;
+            width: 170px;
+            height: 170px;
+            object-fit: cover;
+            object-position: center;
+            display: block;
             margin-bottom: 1.5rem;
             transition: transform 0.4s ease;
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
@@ -748,12 +750,13 @@
         }
 
         .polo-img {
-            height: 130px;
-            width: auto;
-            max-width: 100%;
+            width: 170px;
+            height: 170px;
+            object-fit: cover;
+            object-position: center;
+            display: block;
             margin-bottom: 1.5rem;
             transition: transform 0.4s ease;
-            object-fit: contain;
         }
 
         .polo-card:hover .polo-img {
@@ -1288,7 +1291,7 @@
                             {% elif polo.id_polo == 3 %}
                                 <img src="{% static 'img/polo Tolhuin.png' %}" alt="{{ polo.nombre }}" class="polo-img">
                             {% elif polo.id_polo == 4 %}
-                                <img src="{% static 'img/fabrica.png' %}" alt="{{ polo.nombre }}" class="polo-img">
+                                <img src="{% static 'img/Container@2x.png' %}" alt="{{ polo.nombre }}" class="polo-img">
                             {% endif %}
                             <h3>{{ polo.nombre }}</h3>
                             <p>{{ polo.ciudad }}</p>
