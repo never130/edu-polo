@@ -754,6 +754,10 @@
                     </div>
 
                     <h3 class="card-title">{{ curso.nombre }}</h3>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.35rem; margin-bottom: 0.75rem; color: #64748b; font-weight: 600; font-size: 0.95rem;">
+                        <i class="fa-solid fa-location-dot" style="color: #F09819;"></i>
+                        <span>{{ polo_seleccionado.nombre }}</span>
+                    </div>
                     <p class="card-desc">{{ curso.descripcion|default:"Explora, crea y aprende en nuestros talleres diseñados para potenciar tu creatividad." }}</p>
 
                     <div class="card-info-grid" style="display: block;">
