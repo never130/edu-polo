@@ -87,6 +87,7 @@
                         <th style="padding: 1rem 1.5rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #6b7280; letter-spacing: 0.05em;">Curso</th>
                         <th style="padding: 1rem 1.5rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #6b7280; letter-spacing: 0.05em;">Ciudad / Sede</th>
                         <th style="padding: 1rem 1.5rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #6b7280; letter-spacing: 0.05em;">Estado</th>
+                        <th style="padding: 1rem 1.5rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #6b7280; letter-spacing: 0.05em;">Fecha de inscripción</th>
                         <th style="padding: 1rem 1.5rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #6b7280; letter-spacing: 0.05em; text-align: right;">Acciones</th>
                     </tr>
                 </thead>
@@ -118,6 +119,9 @@
                             {% else %}
                                 <span style="background-color: #f3f4f6; color: #374151; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; display: inline-block;">{{ inscripcion.get_estado_display }}</span>
                             {% endif %}
+                        </td>
+                        <td style="padding: 1rem 1.5rem; color: #4b5563; white-space: nowrap;">
+                            {{ inscripcion.fecha_hora_inscripcion|date:"d/m/Y H:i" }}
                         </td>
                         <td style="padding: 1rem 1.5rem; text-align: right;">
                             <button title="Imprimir Comprobante" style="background: none; border: none; cursor: pointer; color: #9ca3af; padding: 0.25rem; border-radius: 0.25rem; transition: color 0.2s;">
