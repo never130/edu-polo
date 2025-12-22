@@ -117,6 +117,38 @@ class TutorEstudiante(models.Model):
         return f"Tutor: {self.tutor.usuario.persona.nombre_completo} - Estudiante: {self.estudiante.usuario.persona.nombre_completo}"
 
 
+class AutorizadoRetiro(models.Model):
+    PARENTESCOS = TutorEstudiante.PARENTESCOS + [
+        ('otro', 'Otro'),
+    ]
+
+    estudiante = models.ForeignKey(Estudiante, on_delete=models.CASCADE, related_name='autorizados_retiro')
+
+    dni = models.CharField(max_length=12)
+    nombre = models.CharField(max_length=100)
+    apellido = models.CharField(max_length=100)
+    telefono = models.CharField(max_length=15)
+    correo = models.EmailField(blank=True, null=True)
+    parentesco = models.CharField(max_length=20, choices=PARENTESCOS)
+
+    confirmado = models.BooleanField(default=False)
+    confirmado_en = models.DateTimeField(blank=True, null=True)
+
+    revocado = models.BooleanField(default=False)
+    revocado_en = models.DateTimeField(blank=True, null=True)
+
+    creado_en = models.DateTimeField(auto_now_add=True)
+    actualizado_en = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Autorizado para Retirar"
+        verbose_name_plural = "Autorizados para Retirar"
+        unique_together = ('estudiante', 'dni')
+
+    def __str__(self):
+        return f"{self.nombre} {self.apellido} ({self.dni})"
+
+
 class UsuarioRol(models.Model):
     usuario_id = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     rol_id = models.ForeignKey(Rol, on_delete=models.CASCADE)

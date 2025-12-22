@@ -130,6 +130,9 @@
         font-weight: 700;
         transition: all 0.3s ease;
         box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        border: none;
+        cursor: pointer;
+        appearance: none;
     }
     
     .btn-agregar:hover {
@@ -148,6 +151,115 @@
     .no-tutores .icon {
         font-size: 5rem;
         margin-bottom: 1rem;
+    }
+
+    .alert-info {
+        background: linear-gradient(145deg, #dbeafe 0%, #bfdbfe 100%);
+        border-left: 4px solid #3b82f6;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin: 2rem 0;
+        color: #1e3a8a;
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .section-title h3 {
+        margin: 0;
+        color: #0f172a;
+    }
+
+    .autorizado-form {
+        background: white;
+        padding: 2rem;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        margin-bottom: 1.5rem;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+
+    .form-field label {
+        font-weight: 700;
+        color: #334155;
+        font-size: 0.95rem;
+    }
+
+    .form-input {
+        padding: 0.9rem 1rem;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+        outline: none;
+        transition: border-color 0.2s ease;
+    }
+
+    .form-input:focus {
+        border-color: #3b82f6;
+        background: white;
+    }
+
+    .estado-badge {
+        padding: 0.35rem 0.8rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: white;
+        margin-left: 0.5rem;
+        display: inline-block;
+    }
+
+    .estado-confirmado {
+        background: #10b981;
+    }
+
+    .estado-pendiente {
+        background: #f59e0b;
+    }
+
+    .estado-revocado {
+        background: #ef4444;
+    }
+
+    .acciones {
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .btn-secundario {
+        background: #334155;
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 700;
+        transition: all 0.2s ease;
+    }
+
+    .btn-secundario:hover {
+        background: #0f172a;
+        transform: translateY(-2px);
     }
 </style>
 
@@ -233,6 +345,147 @@
         ➕ Agregar Nuevo Tutor
     </a>
 </div>
+
+<div class="section-title">
+    <h3>Autorizaciones para retiro</h3>
+</div>
+<div style="color: #64748b; font-weight: 600; margin-bottom: 1rem;">
+    Estudiante: {{ estudiante.usuario.persona.nombre_completo }}
+</div>
+
+{% if not tiene_tutor %}
+<div class="alert-info">
+    <strong>ℹ️ Importante:</strong> Para cargar personas autorizadas para retirar, primero tenés que tener al menos un tutor registrado.
+</div>
+{% endif %}
+
+{% if tiene_tutor %}
+<div class="autorizado-form">
+    <form method="post" action="{% url 'usuario:agregar_autorizado_retiro' %}">
+        {% csrf_token %}
+        <div class="form-grid">
+            <div class="form-field">
+                <label for="dni">DNI *</label>
+                <input id="dni" name="dni" type="text" class="form-input" placeholder="Ej: 30123456" required>
+            </div>
+            <div class="form-field">
+                <label for="parentesco">Parentesco *</label>
+                <select id="parentesco" name="parentesco" class="form-input" required>
+                    <option value="" selected disabled>Seleccionar</option>
+                    <option value="padre">Padre</option>
+                    <option value="madre">Madre</option>
+                    <option value="tutor_legal">Tutor Legal</option>
+                    <option value="abuelo">Abuelo/a</option>
+                    <option value="hermano">Hermano/a</option>
+                    <option value="vecino">Vecino/a</option>
+                    <option value="otro">Otro</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <label for="nombre">Nombre *</label>
+                <input id="nombre" name="nombre" type="text" class="form-input" required>
+            </div>
+            <div class="form-field">
+                <label for="apellido">Apellido *</label>
+                <input id="apellido" name="apellido" type="text" class="form-input" required>
+            </div>
+            <div class="form-field">
+                <label for="telefono">Teléfono *</label>
+                <input id="telefono" name="telefono" type="text" class="form-input" placeholder="Ej: 2964xxxxxx" required>
+            </div>
+            <div class="form-field">
+                <label for="correo">Email</label>
+                <input id="correo" name="correo" type="email" class="form-input" placeholder="Opcional">
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <button type="submit" class="btn-agregar">➕ Agregar Autorizado</button>
+        </div>
+    </form>
+</div>
+{% endif %}
+
+{% if autorizados_retiro %}
+<div class="tutores-grid">
+    {% for autorizado in autorizados_retiro %}
+    <div class="tutor-card">
+        <div class="tutor-header">
+            <div class="tutor-info">
+                <h3>
+                    {{ autorizado.nombre }} {{ autorizado.apellido }}
+                    {% if autorizado.revocado %}
+                        <span class="estado-badge estado-revocado">Revocado</span>
+                    {% elif autorizado.confirmado %}
+                        <span class="estado-badge estado-confirmado">Confirmado</span>
+                    {% else %}
+                        <span class="estado-badge estado-pendiente">Pendiente</span>
+                    {% endif %}
+                </h3>
+                <span class="parentesco-badge">{{ autorizado.get_parentesco_display }}</span>
+            </div>
+
+            <div class="acciones">
+                {% if not autorizado.confirmado and not autorizado.revocado %}
+                <form method="post" action="{% url 'usuario:confirmar_autorizado_retiro' autorizado.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-secundario">✅ Confirmar</button>
+                </form>
+                {% endif %}
+
+                <form method="post" action="{% url 'usuario:revocar_autorizado_retiro' autorizado.id %}" style="display:inline;" onsubmit="return confirm('¿Seguro que querés cambiar el estado de esta autorización?');">
+                    {% csrf_token %}
+                    {% if autorizado.revocado %}
+                    <button type="submit" class="btn-secundario">↩️ Reactivar</button>
+                    {% else %}
+                    <button type="submit" class="btn-secundario">⛔ Revocar</button>
+                    {% endif %}
+                </form>
+
+                <form method="post" action="{% url 'usuario:eliminar_autorizado_retiro' autorizado.id %}" style="display:inline;" onsubmit="return confirm('¿Estás seguro de eliminar este autorizado?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-eliminar">🗑️ Eliminar</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="tutor-detalles">
+            <div class="detalle-item">
+                <span>📋</span>
+                <strong>DNI:</strong>
+                <span>{{ autorizado.dni }}</span>
+            </div>
+            <div class="detalle-item">
+                <span>📞</span>
+                <strong>Teléfono:</strong>
+                <span>{{ autorizado.telefono }}</span>
+            </div>
+            {% if autorizado.correo %}
+            <div class="detalle-item">
+                <span>📧</span>
+                <strong>Email:</strong>
+                <span>{{ autorizado.correo }}</span>
+            </div>
+            {% endif %}
+            {% if autorizado.confirmado_en %}
+            <div class="detalle-item">
+                <span>🕒</span>
+                <strong>Confirmado:</strong>
+                <span>{{ autorizado.confirmado_en|date:"d/m/Y H:i" }}</span>
+            </div>
+            {% endif %}
+            {% if autorizado.revocado_en %}
+            <div class="detalle-item">
+                <span>⛔</span>
+                <strong>Revocado:</strong>
+                <span>{{ autorizado.revocado_en|date:"d/m/Y H:i" }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 
 {% endblock %}
 
