@@ -257,7 +257,8 @@ def dashboard_admin(request):
     
     # Métricas de Hoy
     hoy = timezone.now().date()
-    inscripciones_hoy = Inscripcion.objects.filter(fecha_hora_inscripcion__date=hoy).count()
+    inscripciones_hoy_qs = Inscripcion.objects.filter(fecha_hora_inscripcion__date=hoy)
+    inscripciones_hoy = inscripciones_hoy_qs.count()
     asistencias_hoy = Asistencia.objects.filter(fecha_clase=hoy, presente=True).count()
     
     # Cursos más populares (con más inscripciones)
@@ -288,13 +289,15 @@ def dashboard_admin(request):
         estado='pre_inscripto'
     ).select_related(
         'estudiante__usuario__persona',
-        'comision__fk_id_curso'
+        'comision__fk_id_curso',
+        'comision__fk_id_polo'
     ).order_by('-fecha_hora_inscripcion')
     
     # Determinar el tipo de usuario para el template
     tipo_usuario = 'Administrador'
     puede_crear_usuarios = es_admin_django
     es_admin_completo = es_admin_django
+    ciudad_mesa_entrada = None
     if not es_admin_django:
         try:
             usuario = Usuario.objects.get(persona__dni=request.user.username)
@@ -302,12 +305,25 @@ def dashboard_admin(request):
             if 'Mesa de Entrada' in roles:
                 tipo_usuario = 'Mesa de Entrada'
                 es_admin_completo = False
+                ciudad_mesa_entrada = usuario.persona.ciudad_residencia
             elif 'Administrador' in roles:
                 tipo_usuario = 'Administrador'
                 puede_crear_usuarios = True
                 es_admin_completo = True
         except Usuario.DoesNotExist:
             pass
+
+    if tipo_usuario == 'Mesa de Entrada':
+        if ciudad_mesa_entrada:
+            nuevas_preinscripciones = nuevas_preinscripciones.filter(
+                comision__fk_id_polo__ciudad=ciudad_mesa_entrada
+            )
+            inscripciones_hoy = inscripciones_hoy_qs.filter(
+                comision__fk_id_polo__ciudad=ciudad_mesa_entrada
+            ).count()
+        else:
+            nuevas_preinscripciones = Inscripcion.objects.none()
+            inscripciones_hoy = 0
     
     context = {
         'total_cursos': total_cursos,
@@ -328,3 +344,4 @@ def dashboard_admin(request):
     }
     return render(request, 'dashboard/admin.html', context)
 
+        

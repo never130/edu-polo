@@ -35,7 +35,17 @@ class Inscripcion(models.Model):
         ordering = ['orden_lista_espera', '-fecha_hora_inscripcion']
     
     def __str__(self):
-        return f"{self.estudiante.usuario.persona.nombre_completo} - {self.comision.fk_id_curso.nombre}"
+        try:
+            estudiante_nombre = self.estudiante.usuario.persona.nombre_completo
+        except Exception:
+            estudiante_nombre = f"Estudiante#{self.estudiante_id}"
+
+        try:
+            curso_nombre = self.comision.fk_id_curso.nombre
+        except Exception:
+            curso_nombre = f"Comision#{self.comision_id}"
+
+        return f"{estudiante_nombre} - {curso_nombre}"
     
     @property
     def esta_en_lista_espera(self):

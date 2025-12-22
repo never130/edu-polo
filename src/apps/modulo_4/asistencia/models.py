@@ -29,7 +29,11 @@ class Asistencia(models.Model):
     
     def __str__(self):
         estado = "✅ Presente" if self.presente else "❌ Ausente"
-        return f"{self.inscripcion.estudiante.usuario.persona.nombre_completo} - {self.fecha_clase} - {estado}"
+        try:
+            nombre = self.inscripcion.estudiante.usuario.persona.nombre_completo
+        except Exception:
+            nombre = f"Inscripcion#{self.inscripcion_id}"
+        return f"{nombre} - {self.fecha_clase} - {estado}"
 
     def clean(self):
         super().clean()
@@ -101,4 +105,9 @@ class RegistroAsistencia(models.Model):
         return self.porcentaje_asistencia
     
     def __str__(self):
-        return f"{self.inscripcion.estudiante.usuario.persona.nombre_completo} - {self.porcentaje_asistencia}%"
+        try:
+            nombre = self.inscripcion.estudiante.usuario.persona.nombre_completo
+        except Exception:
+            nombre = f"Inscripcion#{self.inscripcion_id}"
+        return f"{nombre} - {self.porcentaje_asistencia}%"
+    
