@@ -136,6 +136,20 @@ def password_reset_confirm(request):
             usuario = Usuario.objects.get(persona__dni=dni)
             usuario.contrasena = password
             usuario.save()
+
+            django_user, _ = User.objects.get_or_create(
+                username=dni,
+                defaults={
+                    'email': usuario.persona.correo or '',
+                    'first_name': usuario.persona.nombre,
+                    'last_name': usuario.persona.apellido,
+                }
+            )
+            django_user.email = usuario.persona.correo or django_user.email
+            django_user.first_name = usuario.persona.nombre
+            django_user.last_name = usuario.persona.apellido
+            django_user.set_password(password)
+            django_user.save()
             
             # Eliminar el token de la sesión
             del request.session[session_key]

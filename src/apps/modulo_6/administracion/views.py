@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.db.models import Count, Q, F, Max, Prefetch
 from django.db import transaction, models
@@ -898,6 +899,21 @@ def editar_usuario_admin(request, persona_id):
                 if nueva_contrasena:
                     usuario.contrasena = nueva_contrasena
                     usuario.save()
+
+                    UserModel = get_user_model()
+                    django_user, _ = UserModel.objects.get_or_create(
+                        username=persona.dni,
+                        defaults={
+                            'email': persona.correo or '',
+                            'first_name': persona.nombre,
+                            'last_name': persona.apellido,
+                        }
+                    )
+                    django_user.email = persona.correo or django_user.email
+                    django_user.first_name = persona.nombre
+                    django_user.last_name = persona.apellido
+                    django_user.set_password(nueva_contrasena)
+                    django_user.save()
                 
                 # Gestionar roles
                 nuevo_rol = request.POST.get('nuevo_rol')

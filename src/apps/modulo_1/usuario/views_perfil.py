@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from django.db import transaction
 from apps.modulo_1.usuario.models import Persona, Usuario
@@ -278,6 +279,10 @@ def cambiar_contrasena(request):
             # Actualizar contraseña
             usuario.contrasena = contrasena_nueva
             usuario.save()
+
+            request.user.set_password(contrasena_nueva)
+            request.user.save()
+            update_session_auth_hash(request, request.user)
             
             messages.success(request, '✅ ¡Contraseña actualizada exitosamente!')
             return redirect('usuario:mi_perfil')
