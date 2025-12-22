@@ -463,7 +463,7 @@
         }
         
         /* Responsive adjustments */
-        @media (max-width: 1024px) {
+        @media (max-width: 1200px) {
             .mobile-menu-toggle { display: block; }
             .navbar-content { gap: 1rem; }
             .navbar-logo h1 { font-size: 1.1rem; }
@@ -625,7 +625,7 @@
         const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
         sidebarLinks.forEach(link => {
             link.addEventListener('click', () => {
-                if (window.innerWidth <= 1024) {
+                if (window.innerWidth <= 1200) {
                     closeMenu();
                 }
             });
@@ -633,7 +633,7 @@
         
         // Cerrar menú al cambiar tamaño de ventana
         window.addEventListener('resize', () => {
-            if (window.innerWidth > 1024) {
+            if (window.innerWidth > 1200) {
                 closeMenu();
             }
         });
