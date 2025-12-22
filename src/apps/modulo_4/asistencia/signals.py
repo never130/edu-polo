@@ -88,30 +88,34 @@ def actualizar_registro_despues_eliminar(sender, instance, **kwargs):
     Señal que se ejecuta después de eliminar una Asistencia.
     Si se eliminó el último registro de una fecha para la comisión, actualiza a TODOS.
     """
-    # Siempre actualizar al alumno actual
-    # Nota: instance.inscripcion sigue accesible en memoria aunque la Asistencia se borre
     try:
-        actualizar_registro_asistencia(instance.inscripcion)
+        inscripcion = instance.inscripcion
     except Inscripcion.DoesNotExist:
-        # Si también se borró la inscripción, no hacemos nada
-        pass
-    
-    comision = instance.inscripcion.comision
+        return
+
+    try:
+        actualizar_registro_asistencia(inscripcion)
+    except Inscripcion.DoesNotExist:
+        return
+
+    try:
+        comision = inscripcion.comision
+    except Exception:
+        return
+
     total_programadas = comision.get_total_clases_programadas() if hasattr(comision, 'get_total_clases_programadas') else None
     if total_programadas is not None:
         return
-    # Verificar si quedan registros para esta fecha en la comisión
+
     queda_alguien = Asistencia.objects.filter(
         inscripcion__comision=comision,
         fecha_clase=instance.fecha_clase
     ).exists()
-    
-    # Si NO queda nadie (False), la fecha desapareció del conteo total.
-    # Debemos actualizar a todos los DEMÁS alumnos.
+
     if not queda_alguien:
         otras_inscripciones = Inscripcion.objects.filter(
             comision=comision
-        ).exclude(id=instance.inscripcion.id)
-        
-        for inscripcion in otras_inscripciones:
-            actualizar_registro_asistencia(inscripcion)
+        ).exclude(id=inscripcion.id)
+
+        for inscripcion_otro in otras_inscripciones:
+            actualizar_registro_asistencia(inscripcion_otro)

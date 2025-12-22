@@ -88,7 +88,6 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',  # Fallback al backend por defecto
 ]
 
-
 # Application definition
 
 INSTALLED_APPS = [
