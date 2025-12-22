@@ -161,7 +161,23 @@
             transform: translateY(-2px);
         }
 
+        @media (max-width: 900px) {
+            .navbar-links {
+                display: none;
+            }
+        }
 
+        @media (max-width: 768px) {
+            .navbar { padding: 1rem; }
+            .navbar-actions { gap: 0.6rem; }
+            .navbar-actions .btn { padding: 0.5rem 0.9rem; font-size: 0.85rem; }
+        }
+
+        @media (max-width: 480px) {
+            .navbar { padding: 0.8rem; }
+            .navbar-actions { gap: 0.5rem; }
+            .navbar-actions .btn { padding: 0.45rem 0.75rem; font-size: 0.82rem; }
+        }
 
         /* Polos Section Redesign */
         .polos-section {

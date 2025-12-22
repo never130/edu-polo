@@ -483,20 +483,29 @@
         @media (max-width: 768px) {
             .navbar { padding: 1rem; }
             .navbar-content { flex-wrap: wrap; }
-            
+
             .navbar-logo { order: 1; flex: 1; text-align: center; justify-content: center; display: flex; }
-            .mobile-menu-toggle { order: 0; }
-            .navbar-actions { order: 2; }
-            
+            .mobile-menu-toggle { order: 0; padding: 0.5rem 0.8rem; font-size: 1.05rem; }
+            .navbar-actions { order: 2; gap: 0.6rem; }
+
+            .navbar-actions .btn { padding: 0.5rem 0.9rem; font-size: 0.85rem; }
+            .navbar-actions form .btn { padding: 0.5rem; width: 40px; }
+
             .dashboard-cards { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
             .dashboard-card { padding: 1.5rem; }
             .card-title { font-size: 1rem; }
             .card-value { font-size: 2rem; }
         }
-        
+
         @media (max-width: 480px) {
             .navbar-logo img { height: 30px; }
             .main-content { padding: 0.8rem; }
+
+            .navbar { padding: 0.8rem; }
+            .navbar-actions { gap: 0.5rem; }
+            .navbar-actions .btn { padding: 0.45rem 0.75rem; font-size: 0.82rem; }
+            .navbar-actions form .btn { padding: 0.45rem; width: 38px; }
+
             .dashboard-cards { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
             .dashboard-card { padding: 1.2rem 1rem; }
         }
