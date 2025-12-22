@@ -264,15 +264,15 @@
 </style>
 
 <div class="page-header">
-    <h2>Gestionar Mis Tutores</h2>
-    <p>Administra los tutores responsables asociados a tu cuenta</p>
+    <h2>Mis tutores</h2>
+    <p>Administrá los tutores responsables asociados a tu cuenta.</p>
     {% if edad %}
     <div class="info-edad">
         <strong>Tu edad:</strong> {{ edad }} años
         {% if es_menor %}
-        <span style="color: #fbbf24; font-weight: 700;"> ⚠️ Menor de edad - Requiere al menos un tutor</span>
+        <span style="color: #f59e0b; font-weight: 700;">Menor de edad: necesitás al menos un tutor</span>
         {% else %}
-        <span style="color: #34d399;"> ✅ Mayor de edad</span>
+        <span style="color: #10b981; font-weight: 700;">Mayor de edad</span>
         {% endif %}
     </div>
     {% endif %}
@@ -280,7 +280,7 @@
 
 {% if es_menor and not relaciones_tutores %}
 <div class="alert-menor">
-    <strong>⚠️ Atención:</strong> Como sos menor de 16 años, tenés que tener al menos un tutor registrado para poder inscribirte a cursos.
+    <strong>Atención:</strong> Como sos menor de 16 años, tenés que tener al menos un tutor registrado para poder inscribirte a cursos.
 </div>
 {% endif %}
 
@@ -293,32 +293,32 @@
                     <h3>{{ relacion.tutor.usuario.persona.nombre_completo }}</h3>
                     <span class="parentesco-badge">{{ relacion.get_parentesco_display }}</span>
                 </div>
-                <form method="post" action="{% url 'usuario:eliminar_tutor' relacion.id %}" style="display: inline;" onsubmit="return confirm('¿Estás seguro de eliminar este tutor?');">
+                <form method="post" action="{% url 'usuario:eliminar_tutor' relacion.id %}" style="display: inline;" onsubmit="return confirm('¿Seguro que querés eliminar este tutor?');">
                     {% csrf_token %}
-                    <button type="submit" class="btn-eliminar">🗑️ Eliminar</button>
+                    <button type="submit" class="btn-eliminar">Eliminar</button>
                 </form>
             </div>
             
             <div class="tutor-detalles">
                 <div class="detalle-item">
-                    <span>📋</span>
+                    <span>•</span>
                     <strong>DNI:</strong>
                     <span>{{ relacion.tutor.usuario.persona.dni }}</span>
                 </div>
                 <div class="detalle-item">
-                    <span>📞</span>
+                    <span>•</span>
                     <strong>Teléfono:</strong>
                     <span>{{ relacion.tutor.telefono_contacto }}</span>
                 </div>
                 {% if relacion.tutor.usuario.persona.correo %}
                 <div class="detalle-item">
-                    <span>📧</span>
+                    <span>•</span>
                     <strong>Email:</strong>
                     <span>{{ relacion.tutor.usuario.persona.correo }}</span>
                 </div>
                 {% endif %}
                 <div class="detalle-item">
-                    <span>📅</span>
+                    <span>•</span>
                     <strong>Registrado:</strong>
                     <span>{{ relacion.fecha_asignacion|date:"d/m/Y" }}</span>
                 </div>
@@ -328,13 +328,13 @@
     </div>
 {% else %}
     <div class="no-tutores">
-        <div class="icon">👨‍👩‍👧</div>
-        <h3 style="color: #3b82f6; margin-bottom: 1rem;">No tienes tutores registrados</h3>
+        <div class="icon">Tutores</div>
+        <h3 style="color: #3b82f6; margin-bottom: 1rem;">Todavía no tenés tutores registrados</h3>
         <p style="color: #64748b; font-size: 1.1rem;">
             {% if es_menor %}
             Como sos menor de 16 años, tenés que agregar al menos un tutor responsable.
             {% else %}
-            Aunque no es obligatorio para mayores de edad, podes agregar tutores si lo deseas.
+            Si querés, podés agregar un tutor responsable para registrar un referente.
             {% endif %}
         </p>
     </div>
@@ -342,20 +342,23 @@
 
 <div style="text-align: center; margin-top: 2rem;">
     <a href="{% url 'usuario:agregar_tutor' %}" class="btn-agregar">
-        ➕ Agregar Nuevo Tutor
+        Agregar nuevo tutor
     </a>
 </div>
 
 <div class="section-title">
     <h3>Autorizaciones para retiro</h3>
 </div>
-<div style="color: #64748b; font-weight: 600; margin-bottom: 1rem;">
+<div style="color: #64748b; font-weight: 600; margin-bottom: 0.5rem;">
     Estudiante: {{ estudiante.usuario.persona.nombre_completo }}
+</div>
+<div style="color: #64748b; margin-bottom: 1rem;">
+    Cargá personas autorizadas para retirarte. Revisá los datos y confirmá la autorización cuando estén correctos.
 </div>
 
 {% if not tiene_tutor %}
 <div class="alert-info">
-    <strong>ℹ️ Importante:</strong> Para cargar personas autorizadas para retirar, primero tenés que tener al menos un tutor registrado.
+    <strong>Importante:</strong> Para cargar personas autorizadas para retiro, primero tenés que tener al menos un tutor registrado.
 </div>
 {% endif %}
 
@@ -400,7 +403,7 @@
         </div>
 
         <div style="text-align: center;">
-            <button type="submit" class="btn-agregar">➕ Agregar Autorizado</button>
+            <button type="submit" class="btn-agregar">Agregar autorizado</button>
         </div>
     </form>
 </div>
@@ -429,54 +432,54 @@
                 {% if not autorizado.confirmado and not autorizado.revocado %}
                 <form method="post" action="{% url 'usuario:confirmar_autorizado_retiro' autorizado.id %}" style="display:inline;">
                     {% csrf_token %}
-                    <button type="submit" class="btn-secundario">✅ Confirmar</button>
+                    <button type="submit" class="btn-secundario">Confirmar autorización</button>
                 </form>
                 {% endif %}
 
                 <form method="post" action="{% url 'usuario:revocar_autorizado_retiro' autorizado.id %}" style="display:inline;" onsubmit="return confirm('¿Seguro que querés cambiar el estado de esta autorización?');">
                     {% csrf_token %}
                     {% if autorizado.revocado %}
-                    <button type="submit" class="btn-secundario">↩️ Reactivar</button>
+                    <button type="submit" class="btn-secundario">Reactivar</button>
                     {% else %}
-                    <button type="submit" class="btn-secundario">⛔ Revocar</button>
+                    <button type="submit" class="btn-secundario">Revocar</button>
                     {% endif %}
                 </form>
 
-                <form method="post" action="{% url 'usuario:eliminar_autorizado_retiro' autorizado.id %}" style="display:inline;" onsubmit="return confirm('¿Estás seguro de eliminar este autorizado?');">
+                <form method="post" action="{% url 'usuario:eliminar_autorizado_retiro' autorizado.id %}" style="display:inline;" onsubmit="return confirm('¿Seguro que querés eliminar este autorizado?');">
                     {% csrf_token %}
-                    <button type="submit" class="btn-eliminar">🗑️ Eliminar</button>
+                    <button type="submit" class="btn-eliminar">Eliminar</button>
                 </form>
             </div>
         </div>
 
         <div class="tutor-detalles">
             <div class="detalle-item">
-                <span>📋</span>
+                <span>•</span>
                 <strong>DNI:</strong>
                 <span>{{ autorizado.dni }}</span>
             </div>
             <div class="detalle-item">
-                <span>📞</span>
+                <span>•</span>
                 <strong>Teléfono:</strong>
                 <span>{{ autorizado.telefono }}</span>
             </div>
             {% if autorizado.correo %}
             <div class="detalle-item">
-                <span>📧</span>
+                <span>•</span>
                 <strong>Email:</strong>
                 <span>{{ autorizado.correo }}</span>
             </div>
             {% endif %}
             {% if autorizado.confirmado_en %}
             <div class="detalle-item">
-                <span>🕒</span>
+                <span>•</span>
                 <strong>Confirmado:</strong>
                 <span>{{ autorizado.confirmado_en|date:"d/m/Y H:i" }}</span>
             </div>
             {% endif %}
             {% if autorizado.revocado_en %}
             <div class="detalle-item">
-                <span>⛔</span>
+                <span>•</span>
                 <strong>Revocado:</strong>
                 <span>{{ autorizado.revocado_en|date:"d/m/Y H:i" }}</span>
             </div>
@@ -485,6 +488,16 @@
     </div>
     {% endfor %}
 </div>
+{% else %}
+    {% if tiene_tutor %}
+    <div class="no-tutores">
+        <div class="icon">Autorizaciones</div>
+        <h3 style="color: #3b82f6; margin-bottom: 1rem;">Todavía no tenés autorizaciones cargadas</h3>
+        <p style="color: #64748b; font-size: 1.1rem;">
+            Usá el formulario de arriba para agregar una persona autorizada para retiro.
+        </p>
+    </div>
+    {% endif %}
 {% endif %}
 
 {% endblock %}
