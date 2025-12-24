@@ -2,7 +2,7 @@ from django.db import models
 from apps.modulo_1.usuario.models import Usuario
 import re
 import unicodedata
-from datetime import timedelta
+from datetime import date, timedelta
 
 
 class PoloCreativo(models.Model):
@@ -120,8 +120,26 @@ class Comision(models.Model):
 
         return dias
 
-    def get_fechas_clase_programadas(self):
-        if not self.fecha_inicio or not self.fecha_fin or self.fecha_fin < self.fecha_inicio:
+    def get_fechas_clase_programadas(self, hasta=None):
+        fecha_inicio = self.fecha_inicio
+        if not fecha_inicio:
+            try:
+                from django.db.models import Min
+                from apps.modulo_4.asistencia.models import Asistencia
+
+                fecha_inicio = Asistencia.objects.filter(inscripcion__comision=self).aggregate(
+                    Min('fecha_clase')
+                )['fecha_clase__min']
+            except Exception:
+                fecha_inicio = None
+
+        if not fecha_inicio:
+            return []
+
+        fecha_fin = self.fecha_fin or (hasta or date.today())
+        if hasta and fecha_fin > hasta:
+            fecha_fin = hasta
+        if fecha_fin < fecha_inicio:
             return []
 
         dias = self.get_dias_semana_indices()
@@ -129,15 +147,15 @@ class Comision(models.Model):
             return []
 
         fechas = []
-        current = self.fecha_inicio
-        while current <= self.fecha_fin:
+        current = fecha_inicio
+        while current <= fecha_fin:
             if current.weekday() in dias:
                 fechas.append(current)
             current = current + timedelta(days=1)
         return fechas
 
-    def get_total_clases_programadas(self):
-        fechas = self.get_fechas_clase_programadas()
+    def get_total_clases_programadas(self, hasta=None):
+        fechas = self.get_fechas_clase_programadas(hasta=hasta)
         if not fechas:
             return None
         return len(fechas)

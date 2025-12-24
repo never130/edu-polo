@@ -112,7 +112,7 @@
 {% if comisiones_con_docentes %}
 <div class="comisiones-grid">
     {% for item in comisiones_con_docentes %}
-    {% with comision=item.comision docentes=item.docentes %}
+    {% with comision=item.comision docentes=item.docentes total_clases_calculadas=item.total_clases_calculadas %}
     <div class="comision-card">
         <div class="comision-header">
             <div>
@@ -121,6 +121,12 @@
                 </h3>
                 <p style="color: #1e40af; font-weight: 600;">{{ comision.fk_id_curso.nombre }}</p>
             </div>
+            <div style="display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
+                {% if es_admin_completo %}
+                <a href="{% url 'admin:cursos_comision_change' comision.id_comision %}" style="padding: 0.55rem 1rem; background: #0f172a; color: white; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 0.9rem;">
+                    Editar
+                </a>
+                {% endif %}
             {% if comision.cupo_lleno %}
                 <span class="cupos-badge cupos-lleno">🚫 LLENO ({{ comision.inscritos_count }}/{{ comision.cupo_maximo }})</span>
             {% elif comision.cupos_limitados %}
@@ -128,6 +134,7 @@
             {% else %}
                 <span class="cupos-badge cupos-ok">✅ {{ comision.cupos_disponibles }}/{{ comision.cupo_maximo }}</span>
             {% endif %}
+            </div>
         </div>
         
         <div style="display: grid; gap: 0.8rem; margin-bottom: 1rem;">
@@ -138,6 +145,19 @@
             <div style="display: flex; align-items: center; gap: 0.5rem;">
                 <span>⏰</span>
                 <span><strong>Horario:</strong> {{ comision.dias_horarios|default:"Por definir" }}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span>📅</span>
+                <span>
+                    <strong>Fechas:</strong>
+                    {{ comision.fecha_inicio|date:"d/m/Y"|default:"--" }}
+                    {% if comision.fecha_inicio and comision.fecha_fin %} - {% endif %}
+                    {{ comision.fecha_fin|date:"d/m/Y"|default:"--" }}
+                </span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span>📚</span>
+                <span><strong>Clases:</strong> {{ total_clases_calculadas|default:"--" }}</span>
             </div>
             <div style="display: flex; align-items: center; gap: 0.5rem;">
                 <span>🎯</span>

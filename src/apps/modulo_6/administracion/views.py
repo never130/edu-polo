@@ -182,9 +182,11 @@ def panel_comisiones(request):
     comisiones_con_docentes = []
     for comision in comisiones:
         docentes_asignados = ComisionDocente.objects.filter(fk_id_comision=comision).select_related('fk_id_docente__persona')
+        total_clases_calculadas = comision.get_total_clases_programadas() if hasattr(comision, 'get_total_clases_programadas') else None
         comisiones_con_docentes.append({
             'comision': comision,
             'docentes': docentes_asignados,
+            'total_clases_calculadas': total_clases_calculadas,
         })
     
     # Obtener docentes disponibles para asignar

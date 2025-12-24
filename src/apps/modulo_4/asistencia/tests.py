@@ -65,3 +65,25 @@ class AsistenciaProgramacionTests(TestCase):
         registro.calcular_porcentaje()
         self.assertEqual(registro.total_clases, 3)
         self.assertEqual(registro.clases_asistidas, 1)
+
+    def test_total_clases_programadas_sin_fecha_fin(self):
+        comision = Comision.objects.create(
+            fk_id_curso=self.curso,
+            fk_id_polo=self.polo,
+            dias_horarios='Lunes y Miércoles 18:00 - 21:00',
+            fecha_inicio=date(2025, 1, 1),
+            fecha_fin=None,
+        )
+        self.assertEqual(comision.get_total_clases_programadas(hasta=date(2025, 1, 8)), 3)
+
+    def test_total_clases_programadas_sin_fecha_inicio_infiere_por_asistencias(self):
+        comision = Comision.objects.create(
+            fk_id_curso=self.curso,
+            fk_id_polo=self.polo,
+            dias_horarios='Lunes y Miércoles 18:00 - 21:00',
+            fecha_inicio=None,
+            fecha_fin=date(2025, 1, 8),
+        )
+        inscripcion = Inscripcion.objects.create(estudiante=self.estudiante, comision=comision)
+        Asistencia.objects.create(inscripcion=inscripcion, fecha_clase=date(2025, 1, 1), presente=True)
+        self.assertEqual(comision.get_total_clases_programadas(), 3)
