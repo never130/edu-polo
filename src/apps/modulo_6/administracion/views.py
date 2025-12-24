@@ -633,7 +633,7 @@ def crear_polo(request):
 def estadisticas_detalladas(request):
     """Panel de estadísticas detalladas con gráficos"""
     from apps.modulo_4.asistencia.models import RegistroAsistencia
-    from django.db.models import Avg, Count, Q, Value
+    from django.db.models import Avg, Count, DecimalField, Q, Value
     from django.db.models.functions import Coalesce
     
     # Estadísticas generales
@@ -666,7 +666,12 @@ def estadisticas_detalladas(request):
     
     # Estadísticas de asistencia
     promedio_asistencia = Inscripcion.objects.filter(estado='confirmado').aggregate(
-        avg=Avg(Coalesce('registro_asistencia__porcentaje_asistencia', Value(0)))
+        avg=Avg(
+            Coalesce(
+                'registro_asistencia__porcentaje_asistencia',
+                Value(0, output_field=DecimalField(max_digits=5, decimal_places=2)),
+            )
+        )
     )['avg'] or 0
     
     # Cursos completados vs en proceso
