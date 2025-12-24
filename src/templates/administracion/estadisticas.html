@@ -139,7 +139,7 @@
                 <td>{{ curso.total_alumnos }}</td>
                 <td>
                     {% if total_inscripciones > 0 %}
-                        {{ curso.total_alumnos|floatformat:0 }}%
+                        {{ curso.porcentaje_total }}%
                     {% else %}
                         0%
                     {% endif %}

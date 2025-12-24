@@ -633,7 +633,8 @@ def crear_polo(request):
 def estadisticas_detalladas(request):
     """Panel de estadísticas detalladas con gráficos"""
     from apps.modulo_4.asistencia.models import RegistroAsistencia
-    from django.db.models import Avg
+    from django.db.models import Avg, Count, Q, Value
+    from django.db.models.functions import Coalesce
     
     # Estadísticas generales
     total_cursos = Curso.objects.count()
@@ -642,12 +643,21 @@ def estadisticas_detalladas(request):
     
     # Cursos con cantidad de alumnos
     cursos_con_alumnos = Curso.objects.annotate(
-        total_alumnos=Count('comision__inscripciones', filter=Q(comision__inscripciones__estado='confirmado'))
+        total_alumnos=Count(
+            'comision__inscripciones__estudiante',
+            filter=Q(comision__inscripciones__estado='confirmado'),
+            distinct=True,
+        )
     ).order_by('-total_alumnos')
     
     # Datos para gráficos
     datos_grafico = []
     for curso in cursos_con_alumnos:
+        if total_inscripciones > 0:
+            curso.porcentaje_total = round((curso.total_alumnos / total_inscripciones) * 100, 1)
+        else:
+            curso.porcentaje_total = 0
+
         if curso.total_alumnos > 0:
             datos_grafico.append({
                 'nombre': curso.nombre,
@@ -655,14 +665,18 @@ def estadisticas_detalladas(request):
             })
     
     # Estadísticas de asistencia
-    if RegistroAsistencia.objects.exists():
-        promedio_asistencia = RegistroAsistencia.objects.aggregate(Avg('porcentaje_asistencia'))['porcentaje_asistencia__avg'] or 0
-    else:
-        promedio_asistencia = 0
+    promedio_asistencia = Inscripcion.objects.filter(estado='confirmado').aggregate(
+        avg=Avg(Coalesce('registro_asistencia__porcentaje_asistencia', Value(0)))
+    )['avg'] or 0
     
     # Cursos completados vs en proceso
-    total_completados = RegistroAsistencia.objects.filter(cumple_requisito_certificado=True).count()
-    total_en_proceso = total_inscripciones - total_completados
+    total_completados = RegistroAsistencia.objects.filter(
+        inscripcion__estado='confirmado',
+        cumple_requisito_certificado=True,
+    ).count()
+    total_en_proceso = Inscripcion.objects.filter(estado='confirmado').exclude(
+        registro_asistencia__cumple_requisito_certificado=True
+    ).count()
     
     import json
     
