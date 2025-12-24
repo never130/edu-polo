@@ -43,6 +43,7 @@ urlpatterns = [
     path('panel/', include('apps.modulo_6.administracion.urls')),
     # API
     path('api/buscar-estudiante/<str:dni>/', buscar_estudiante_por_dni, name='api_buscar_estudiante'),
+    path('api/estudiantes-por-curso/', core_views.api_estudiantes_por_curso, name='api_estudiantes_por_curso'),
 ]
 
 # Servir archivos media y estáticos en desarrollo

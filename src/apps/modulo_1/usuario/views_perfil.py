@@ -142,7 +142,17 @@ def editar_perfil(request):
                     # Fecha de nacimiento
                     fecha_nac = request.POST.get('fecha_nacimiento')
                     if fecha_nac:
-                        persona.fecha_nacimiento = fecha_nac
+                        try:
+                            fecha_nac_date = date.fromisoformat(fecha_nac)
+                        except ValueError:
+                            messages.error(request, '❌ La fecha de nacimiento no es válida.')
+                            return redirect('usuario:editar_perfil')
+
+                        if fecha_nac_date > date.today():
+                            messages.error(request, '❌ La fecha de nacimiento no puede ser futura.')
+                            return redirect('usuario:editar_perfil')
+
+                        persona.fecha_nacimiento = fecha_nac_date
                     
                     # Género
                     persona.genero = request.POST.get('genero', persona.genero)

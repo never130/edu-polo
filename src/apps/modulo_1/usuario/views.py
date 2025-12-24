@@ -125,6 +125,18 @@ class RegistroView(View):
                 if User.objects.filter(username=dni).exists():
                     messages.error(request, 'Ya existe un usuario con ese DNI.')
                     return render(request, 'usuario/registro.html')
+
+                fecha_nacimiento_date = None
+                if fecha_nacimiento:
+                    try:
+                        fecha_nacimiento_date = date.fromisoformat(fecha_nacimiento)
+                    except ValueError:
+                        messages.error(request, 'La fecha de nacimiento no es válida.')
+                        return render(request, 'usuario/registro.html')
+
+                    if fecha_nacimiento_date > date.today():
+                        messages.error(request, 'La fecha de nacimiento no puede ser futura.')
+                        return render(request, 'usuario/registro.html')
                 
                 # Crear Persona
                 persona = Persona.objects.create(
@@ -133,7 +145,7 @@ class RegistroView(View):
                     apellido=apellido,
                     correo=correo,
                     telefono=telefono,
-                    fecha_nacimiento=fecha_nacimiento if fecha_nacimiento else None,
+                    fecha_nacimiento=fecha_nacimiento_date,
                     genero=genero,
                     ciudad_residencia=ciudad if ciudad else None,
                     zona_residencia=zona_residencia if zona_residencia else None,

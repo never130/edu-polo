@@ -324,7 +324,23 @@ def dashboard_admin(request):
         else:
             nuevas_preinscripciones = Inscripcion.objects.none()
             inscripciones_hoy = 0
-    
+
+    inscripciones_confirmadas_qs = Inscripcion.objects.filter(estado='confirmado')
+    if tipo_usuario == 'Mesa de Entrada':
+        if ciudad_mesa_entrada:
+            inscripciones_confirmadas_qs = inscripciones_confirmadas_qs.filter(comision__fk_id_polo__ciudad=ciudad_mesa_entrada)
+        else:
+            inscripciones_confirmadas_qs = Inscripcion.objects.none()
+
+    estudiantes_por_curso = list(
+        inscripciones_confirmadas_qs.values(
+            'comision__fk_id_curso_id',
+            'comision__fk_id_curso__nombre',
+        )
+        .annotate(total_estudiantes=Count('estudiante', distinct=True))
+        .order_by('comision__fk_id_curso__nombre')
+    )
+
     context = {
         'total_cursos': total_cursos,
         'total_estudiantes': total_estudiantes,
@@ -341,7 +357,90 @@ def dashboard_admin(request):
         'puede_crear_usuarios': puede_crear_usuarios,
         'es_admin_completo': es_admin_completo,
         'nuevas_preinscripciones': nuevas_preinscripciones,
+        'ciudad_mesa_entrada': ciudad_mesa_entrada,
+        'estudiantes_por_curso': estudiantes_por_curso,
     }
     return render(request, 'dashboard/admin.html', context)
 
-        
+
+@login_required
+def api_estudiantes_por_curso(request):
+    from django.http import JsonResponse
+    from apps.modulo_1.usuario.models import Usuario
+    from apps.modulo_1.roles.models import UsuarioRol
+    from apps.modulo_3.cursos.models import Curso
+
+    if not (request.user.is_staff or request.user.is_superuser):
+        try:
+            usuario = Usuario.objects.get(persona__dni=request.user.username)
+            roles = UsuarioRol.objects.filter(usuario_id=usuario).values_list('rol_id__nombre', flat=True)
+            if 'Administrador' not in roles and 'Mesa de Entrada' not in roles:
+                return JsonResponse({'error': 'No autorizado.'}, status=403)
+        except Usuario.DoesNotExist:
+            return JsonResponse({'error': 'No autorizado.'}, status=403)
+
+    curso_id = (request.GET.get('curso_id') or '').strip()
+    if not curso_id:
+        return JsonResponse({'error': 'curso_id requerido.'}, status=400)
+
+    try:
+        curso = Curso.objects.get(id_curso=curso_id)
+    except Curso.DoesNotExist:
+        return JsonResponse({'error': 'Curso no encontrado.'}, status=404)
+
+    tipo_usuario = 'Administrador'
+    ciudad_mesa_entrada = None
+
+    if not (request.user.is_staff or request.user.is_superuser):
+        try:
+            usuario = Usuario.objects.get(persona__dni=request.user.username)
+            roles = UsuarioRol.objects.filter(usuario_id=usuario).values_list('rol_id__nombre', flat=True)
+            if 'Mesa de Entrada' in roles and 'Administrador' not in roles:
+                tipo_usuario = 'Mesa de Entrada'
+                ciudad_mesa_entrada = usuario.persona.ciudad_residencia
+        except Usuario.DoesNotExist:
+            pass
+
+    qs = Inscripcion.objects.filter(
+        estado='confirmado',
+        comision__fk_id_curso_id=curso.id_curso,
+    ).select_related('estudiante__usuario__persona')
+
+    if tipo_usuario == 'Mesa de Entrada':
+        if ciudad_mesa_entrada:
+            qs = qs.filter(comision__fk_id_polo__ciudad=ciudad_mesa_entrada)
+        else:
+            qs = Inscripcion.objects.none()
+
+    estudiantes = list(
+        qs.values(
+            'estudiante__usuario__persona__dni',
+            'estudiante__usuario__persona__nombre',
+            'estudiante__usuario__persona__apellido',
+            'estudiante__usuario__persona__correo',
+            'estudiante__usuario__persona__telefono',
+            'estudiante__usuario__persona__ciudad_residencia',
+        )
+        .distinct()
+        .order_by('estudiante__usuario__persona__apellido', 'estudiante__usuario__persona__nombre')
+    )
+
+    data_estudiantes = []
+    for e in estudiantes:
+        nombre = (e.get('estudiante__usuario__persona__nombre') or '').strip()
+        apellido = (e.get('estudiante__usuario__persona__apellido') or '').strip()
+        data_estudiantes.append({
+            'dni': e.get('estudiante__usuario__persona__dni') or '',
+            'nombre_completo': f"{nombre} {apellido}".strip(),
+            'correo': e.get('estudiante__usuario__persona__correo') or '',
+            'telefono': e.get('estudiante__usuario__persona__telefono') or '',
+            'ciudad_residencia': e.get('estudiante__usuario__persona__ciudad_residencia') or '',
+        })
+
+    return JsonResponse({
+        'curso_id': curso.id_curso,
+        'curso_nombre': curso.nombre,
+        'ciudad_mesa_entrada': ciudad_mesa_entrada,
+        'total_estudiantes': len(data_estudiantes),
+        'estudiantes': data_estudiantes,
+    })

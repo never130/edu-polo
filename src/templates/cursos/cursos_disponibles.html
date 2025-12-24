@@ -7,8 +7,22 @@
 <script>
     function toggleDescripcion(id, btn) {
         const desc = document.getElementById(id);
-        if (!desc) return;
+        if (!desc || !btn) return;
+
         const expanded = desc.classList.toggle('expanded');
+
+        if (expanded) {
+            desc.style.display = 'block';
+            desc.style.overflow = 'visible';
+            desc.style.maxHeight = 'none';
+            desc.style.webkitLineClamp = 'unset';
+        } else {
+            desc.style.display = '-webkit-box';
+            desc.style.overflow = 'hidden';
+            desc.style.maxHeight = '';
+            desc.style.webkitLineClamp = '2';
+        }
+
         btn.textContent = expanded ? 'Ver menos' : 'Ver más';
     }
 </script>
@@ -70,6 +84,26 @@
         transform: translateY(-3px);
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         border-color: #cbd5e1;
+    }
+
+    .curso-img-container {
+        height: 150px;
+        background: #f1f5f9;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 0.75rem;
+    }
+
+    .curso-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.6s ease;
+    }
+
+    .curso-card:hover .curso-img {
+        transform: scale(1.05);
     }
     
     .curso-header {
@@ -296,7 +330,14 @@
 {% if cursos %}
     <div class="cursos-grid">
         {% for curso in cursos %}
+        {% with lower_name=curso.nombre|lower %}
         <div class="curso-card">
+            <div class="curso-img-container">
+                <img class="curso-img" alt="{{ curso.nombre }}"
+                     src="{% if 'program' in lower_name or 'desarrollo' in lower_name or 'videojuego' in lower_name or 'código' in lower_name or 'codigo' in lower_name or 'gamer' in lower_name or 'gaming' in lower_name or 'game' in lower_name or 'inteligencia artificial' in lower_name or ' ai' in lower_name or 'ai ' in lower_name or ' ia' in lower_name or 'ia ' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20cute%20character%20working%20with%20computer%20code%20futuristic%20lab%20colorful%20soft%20lighting?width=600&height=400&nologo=true{% elif 'diseño' in lower_name or 'arte' in lower_name or 'produccion' in lower_name or 'animación' in lower_name or 'animacion' in lower_name or 'stop motion' in lower_name or 'stopmotion' in lower_name or 'motion' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20artist%20character%20painting%20on%20canvas%20creative%20studio%20colorful%20palette?width=600&height=400&nologo=true{% elif 'robot' in lower_name or 'arduino' in lower_name or 'sumo' in lower_name or 'bot' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cute%20robot%20character%20futuristic%20technology%20glowing%20blue%20lights%20sci-fi?width=600&height=400&nologo=true{% elif 'ingl' in lower_name or 'idioma' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20character%20reading%20flying%20books%20learning%20languages%20globe%20travel?width=600&height=400&nologo=true{% elif 'taller' in lower_name or 'explorador' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20young%20maker%20character%20building%20a%20robot%20with%20tools%20and%20electronics%20in%20a%20modern%20technology%20lab%20colorful%20soft%20lighting?width=600&height=400&nologo=true{% else %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20happy%20student%20backpack%20education%20school%20bright?width=600&height=400&nologo=true{% endif %}"
+                     onerror="this.src='{% static 'img/landing5.png' %}';" />
+            </div>
+
             <div class="curso-header">
                 <span class="curso-icon">📖</span>
                 <div class="curso-title">
@@ -377,6 +418,7 @@
                 {% endif %}
             </div>
         </div>
+        {% endwith %}
         {% endfor %}
     </div>
 {% else %}

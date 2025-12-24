@@ -79,11 +79,23 @@
                 <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Ciudad</th>
                 <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Nivel Estudios</th>
                 <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Inscripciones</th>
+                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Acciones</th>
             </tr>
         </thead>
         <tbody id="resultadosBody">
         </tbody>
     </table>
+</div>
+
+<div id="detalleEstudianteModal" class="modal-overlay" style="z-index: 10050; display: none;">
+    <div class="modal-container" style="max-width: 900px; padding: 0; max-height: 85vh; overflow: hidden;">
+        <button class="modal-close" onclick="closeDetalleEstudianteModal()">×</button>
+        <div style="padding: 1.5rem; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+            <h3 id="detalleNombre" style="margin: 0; color: #1e293b; font-size: 1.4rem; font-weight: 800;"></h3>
+            <div id="detalleSub" style="margin-top: 0.35rem; color: #64748b; font-weight: 600;"></div>
+        </div>
+        <div id="detalleBody" style="padding: 1.5rem; overflow: auto; max-height: calc(85vh - 90px);"></div>
+    </div>
 </div>
 
 <style>
@@ -152,6 +164,11 @@
     const resultadosTabla = document.getElementById('resultadosTabla');
     const resultadosBody = document.getElementById('resultadosBody');
     const cantidadResultados = document.getElementById('cantidadResultados');
+
+    const detalleEstudianteModal = document.getElementById('detalleEstudianteModal');
+    const detalleNombre = document.getElementById('detalleNombre');
+    const detalleSub = document.getElementById('detalleSub');
+    const detalleBody = document.getElementById('detalleBody');
     
     searchInput.addEventListener('input', function() {
         const query = this.value.trim();
@@ -205,17 +222,21 @@
             resultadosBody.innerHTML = '';
             data.estudiantes.forEach(est => {
                 const row = document.createElement('tr');
+                const dni = escapeHtml(est.dni);
                 row.innerHTML = `
-                    <td><strong>${est.dni}</strong></td>
-                    <td>${est.nombre_completo}</td>
-                    <td>${est.correo}</td>
-                    <td>${est.edad}</td>
-                    <td>${est.ciudad}</td>
-                    <td>${est.nivel_estudios}</td>
+                    <td><strong>${dni}</strong></td>
+                    <td>${escapeHtml(est.nombre_completo)}</td>
+                    <td>${escapeHtml(est.correo)}</td>
+                    <td>${escapeHtml(est.edad)}</td>
+                    <td>${escapeHtml(est.ciudad)}</td>
+                    <td>${escapeHtml(est.nivel_estudios)}</td>
                     <td>
                         <span style="background: #dbeafe; color: #1e40af; padding: 0.4rem 0.8rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem;">
-                            ${est.inscripciones}
+                            ${escapeHtml(est.inscripciones)}
                         </span>
+                    </td>
+                    <td>
+                        <button type="button" class="btn-primary" style="padding: 0.5rem 0.9rem; font-size: 0.85rem;" onclick="openDetalleEstudianteModal('${dni}')">Ver detalle</button>
                     </td>
                 `;
                 resultadosBody.appendChild(row);
@@ -232,7 +253,118 @@
             `;
         }
     }
-    
+
+    function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>'"]/g, function (c) {
+            return {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                "'": '&#39;',
+                '"': '&quot;'
+            }[c];
+        });
+    }
+
+    function openDetalleEstudianteModal(dni) {
+        detalleNombre.textContent = '';
+        detalleSub.textContent = '';
+        detalleBody.innerHTML = '<div style="color:#64748b; font-weight:700;">Cargando...</div>';
+
+        detalleEstudianteModal.style.display = 'flex';
+        detalleEstudianteModal.offsetHeight;
+        detalleEstudianteModal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+
+        fetch(`{% url 'administracion:api_detalle_estudiante' %}?dni=${encodeURIComponent(dni)}`)
+            .then(async (r) => {
+                const payload = await r.json().catch(() => ({}));
+                if (!r.ok) {
+                    throw new Error(payload && payload.error ? payload.error : 'No se pudo cargar el detalle.');
+                }
+                return payload;
+            })
+            .then((data) => {
+                detalleNombre.textContent = data.nombre_completo || '';
+                detalleSub.textContent = `DNI: ${data.dni || ''} • Email: ${data.correo || ''}`;
+
+                const inscripciones = Array.isArray(data.inscripciones) ? data.inscripciones : [];
+                const rows = inscripciones.map(i => {
+                    return `<tr>
+                        <td style="padding:0.6rem 0.75rem; border-bottom:1px solid #f1f5f9;"><strong>${escapeHtml(i.curso || '')}</strong></td>
+                        <td style="padding:0.6rem 0.75rem; border-bottom:1px solid #f1f5f9;">#${escapeHtml(i.comision_id || '')}</td>
+                        <td style="padding:0.6rem 0.75rem; border-bottom:1px solid #f1f5f9;">${escapeHtml(i.estado || '')}</td>
+                        <td style="padding:0.6rem 0.75rem; border-bottom:1px solid #f1f5f9;">${escapeHtml(i.polo || '')}</td>
+                        <td style="padding:0.6rem 0.75rem; border-bottom:1px solid #f1f5f9;">${escapeHtml(i.ciudad_polo || '')}</td>
+                    </tr>`;
+                }).join('');
+
+                const tablaInsc = inscripciones.length ? `
+                    <div style="overflow:auto; border:1px solid #e2e8f0; border-radius:12px;">
+                        <table style="width:100%; border-collapse:collapse; background:#fff;">
+                            <thead style="background:#f8fafc;">
+                                <tr>
+                                    <th style="padding:0.6rem 0.75rem; text-align:left; color:#64748b; font-weight:800; border-bottom:1px solid #e2e8f0;">Curso</th>
+                                    <th style="padding:0.6rem 0.75rem; text-align:left; color:#64748b; font-weight:800; border-bottom:1px solid #e2e8f0;">Comisión</th>
+                                    <th style="padding:0.6rem 0.75rem; text-align:left; color:#64748b; font-weight:800; border-bottom:1px solid #e2e8f0;">Estado</th>
+                                    <th style="padding:0.6rem 0.75rem; text-align:left; color:#64748b; font-weight:800; border-bottom:1px solid #e2e8f0;">Polo</th>
+                                    <th style="padding:0.6rem 0.75rem; text-align:left; color:#64748b; font-weight:800; border-bottom:1px solid #e2e8f0;">Ciudad</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>
+                ` : '<div style="color:#64748b; font-weight:700;">Sin inscripciones.</div>';
+
+                detalleBody.innerHTML = `
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:1rem;">
+                        <div style="border:1px solid #e2e8f0; border-radius:12px; padding:1rem; background:#fff;">
+                            <div style="font-weight:900; color:#0f172a; margin-bottom:0.5rem;">Salud</div>
+                            <div style="white-space:pre-wrap; color:#475569;">${escapeHtml(data.condiciones_medicas || '')}</div>
+                        </div>
+                        <div style="border:1px solid #e2e8f0; border-radius:12px; padding:1rem; background:#fff;">
+                            <div style="font-weight:900; color:#0f172a; margin-bottom:0.5rem;">Autorizaciones</div>
+                            <div style="color:#475569; display:flex; flex-direction:column; gap:0.35rem;">
+                                <div><strong>Imagen:</strong> ${data.autorizacion_imagen ? 'Sí' : 'No'}</div>
+                                <div><strong>Voz:</strong> ${data.autorizacion_voz ? 'Sí' : 'No'}</div>
+                            </div>
+                        </div>
+                        <div style="border:1px solid #e2e8f0; border-radius:12px; padding:1rem; background:#fff;">
+                            <div style="font-weight:900; color:#0f172a; margin-bottom:0.5rem;">Estudios</div>
+                            <div style="color:#475569; display:flex; flex-direction:column; gap:0.35rem;">
+                                <div><strong>Nivel:</strong> ${escapeHtml(data.nivel_estudios || '')}</div>
+                                <div><strong>Institución:</strong> ${escapeHtml(data.institucion_actual || '')}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:1.25rem;">
+                        <div style="font-weight:900; color:#0f172a; margin-bottom:0.75rem;">Cursos inscriptos (${escapeHtml(data.total_inscripciones || 0)})</div>
+                        ${tablaInsc}
+                    </div>
+                `;
+            })
+            .catch((err) => {
+                detalleBody.innerHTML = `<div style="color:#ef4444; font-weight:800;">${escapeHtml(err.message || 'No se pudo cargar el detalle.')}</div>`;
+            });
+    }
+
+    function closeDetalleEstudianteModal() {
+        detalleEstudianteModal.classList.remove('show');
+        setTimeout(() => { detalleEstudianteModal.style.display = 'none'; document.body.style.overflow = 'auto'; }, 250);
+    }
+
+    window.addEventListener('click', function(event) {
+        if (event.target === detalleEstudianteModal) {
+            closeDetalleEstudianteModal();
+        }
+    });
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && detalleEstudianteModal && detalleEstudianteModal.classList.contains('show')) {
+            closeDetalleEstudianteModal();
+        }
+    });
+
     // Focus automático en el input al cargar
     searchInput.focus();
 </script>

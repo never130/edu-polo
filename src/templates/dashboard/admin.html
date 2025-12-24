@@ -89,6 +89,50 @@
     </div>
 </div>
 
+<!-- Estudiantes por Curso -->
+<div style="margin-top: 2rem;">
+    <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:1rem; flex-wrap:wrap;">
+            <div>
+                <h3 style="color:#0f172a; margin:0; font-size:1.2rem; font-weight:900;">Estudiantes por curso</h3>
+                {% if tipo_usuario == 'Mesa de Entrada' and ciudad_mesa_entrada %}
+                    <div style="margin-top:0.35rem; color:#64748b; font-weight:700;">Ciudad: {{ ciudad_mesa_entrada }}</div>
+                {% endif %}
+            </div>
+            <a href="{% url 'administracion:buscador_estudiantes' %}" style="text-decoration:none; font-weight:800; color:#10b981;">Ir al buscador →</a>
+        </div>
+
+        {% if estudiantes_por_curso %}
+            <div style="margin-top: 1.25rem; overflow-x:auto; border: 1px solid #e2e8f0; border-radius: 12px;">
+                <table style="width:100%; border-collapse:collapse; background:#fff;">
+                    <thead style="background:#f8fafc;">
+                        <tr>
+                            <th style="padding:0.85rem 1rem; text-align:left; color:#64748b; font-weight:800; border-bottom:1px solid #e2e8f0;">Curso</th>
+                            <th style="padding:0.85rem 1rem; text-align:left; color:#64748b; font-weight:800; border-bottom:1px solid #e2e8f0;">Estudiantes (confirmados)</th>
+                            <th style="padding:0.85rem 1rem; text-align:right; color:#64748b; font-weight:800; border-bottom:1px solid #e2e8f0;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in estudiantes_por_curso %}
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding:0.85rem 1rem; color:#0f172a; font-weight:800;">{{ c.comision__fk_id_curso__nombre }}</td>
+                                <td style="padding:0.85rem 1rem; color:#334155; font-weight:700;">{{ c.total_estudiantes }}</td>
+                                <td style="padding:0.85rem 1rem; text-align:right;">
+                                    <button type="button" onclick="openEstudiantesCursoModal('{{ c.comision__fk_id_curso_id }}', '{{ c.comision__fk_id_curso__nombre|escapejs }}')" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 0.55rem 1rem; border-radius: 10px; font-weight: 800; cursor: pointer;">
+                                        Ver estudiantes
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div style="margin-top: 1.25rem; color:#64748b; font-weight:700;">No hay inscripciones confirmadas para mostrar.</div>
+        {% endif %}
+    </div>
+</div>
+
 <!-- Estadísticas Detalladas -->
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
     
@@ -356,6 +400,27 @@
     }
 </style>
 
+<!-- Modal: Estudiantes por Curso -->
+<div id="modalEstudiantesCurso" style="display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(4px); overflow-y: auto;">
+    <div style="background-color: white; margin: 5% auto; padding: 2rem; border-radius: 1rem; width: 90%; max-width: 900px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 1rem;">
+            <div>
+                <h2 id="modalEstudiantesCursoTitulo" style="color: #1f2937; font-size: 1.5rem; font-weight: 800; margin: 0;"></h2>
+                <div id="modalEstudiantesCursoSub" style="margin-top: 0.35rem; color: #6b7280; font-weight: 700;"></div>
+            </div>
+            <button onclick="closeModal('modalEstudiantesCurso')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #9ca3af; transition: color 0.2s;">&times;</button>
+        </div>
+
+        <div id="modalEstudiantesCursoBody"></div>
+
+        <div style="margin-top: 2rem; text-align: right;">
+            <button onclick="closeModal('modalEstudiantesCurso')" style="padding: 0.75rem 1.5rem; background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; border-radius: 0.5rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                Cerrar
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- Modal de Nuevas Pre-Inscripciones -->
 <div id="modalPreInscripciones" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(4px); overflow-y: auto;">
     <div style="background-color: white; margin: 5% auto; padding: 2rem; border-radius: 1rem; width: 90%; max-width: 900px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
@@ -427,18 +492,95 @@
         document.body.style.overflow = 'auto';
     }
 
-    // Cerrar modal al hacer clic fuera de él
-    window.onclick = function(event) {
-        const modal = document.getElementById('modalPreInscripciones');
-        if (event.target == modal) {
+    function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>'"]/g, function (c) {
+            return {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                "'": '&#39;',
+                '"': '&quot;'
+            }[c];
+        });
+    }
+
+    function openEstudiantesCursoModal(cursoId, cursoNombre) {
+        const titulo = document.getElementById('modalEstudiantesCursoTitulo');
+        const sub = document.getElementById('modalEstudiantesCursoSub');
+        const body = document.getElementById('modalEstudiantesCursoBody');
+
+        titulo.textContent = cursoNombre || 'Curso';
+        sub.textContent = 'Cargando...';
+        body.innerHTML = '<div style="color:#6b7280; font-weight:700;">Cargando estudiantes...</div>';
+
+        openModal('modalEstudiantesCurso');
+
+        fetch(`{% url 'api_estudiantes_por_curso' %}?curso_id=${encodeURIComponent(cursoId)}`)
+            .then(async (r) => {
+                const payload = await r.json().catch(() => ({}));
+                if (!r.ok) {
+                    throw new Error(payload && payload.error ? payload.error : 'No se pudo cargar la lista.');
+                }
+                return payload;
+            })
+            .then((data) => {
+                const estudiantes = Array.isArray(data.estudiantes) ? data.estudiantes : [];
+                const ciudad = data.ciudad_mesa_entrada ? `Ciudad: ${data.ciudad_mesa_entrada}` : '';
+                sub.textContent = `${estudiantes.length} estudiante(s)${ciudad ? ' • ' + ciudad : ''}`;
+
+                if (!estudiantes.length) {
+                    body.innerHTML = '<div style="color:#6b7280; font-weight:700;">No hay estudiantes confirmados para este curso.</div>';
+                    return;
+                }
+
+                const rows = estudiantes.map(e => {
+                    return `<tr style="border-bottom: 1px solid #f3f4f6;">
+                        <td style="padding: 0.85rem 1rem; font-weight: 800; color: #111827;">${escapeHtml(e.dni)}</td>
+                        <td style="padding: 0.85rem 1rem; color: #374151; font-weight: 700;">${escapeHtml(e.nombre_completo)}</td>
+                        <td style="padding: 0.85rem 1rem; color: #6b7280;">${escapeHtml(e.correo)}</td>
+                        <td style="padding: 0.85rem 1rem; color: #6b7280;">${escapeHtml(e.telefono)}</td>
+                        <td style="padding: 0.85rem 1rem; color: #6b7280;">${escapeHtml(e.ciudad_residencia)}</td>
+                    </tr>`;
+                }).join('');
+
+                body.innerHTML = `
+                    <div style="overflow-x:auto; border: 1px solid #e5e7eb; border-radius: 12px;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                            <thead>
+                                <tr style="background-color: #f3f4f6; border-bottom: 1px solid #e5e7eb;">
+                                    <th style="padding: 1rem; font-size: 0.85rem; font-weight: 800; color: #4b5563;">DNI</th>
+                                    <th style="padding: 1rem; font-size: 0.85rem; font-weight: 800; color: #4b5563;">Estudiante</th>
+                                    <th style="padding: 1rem; font-size: 0.85rem; font-weight: 800; color: #4b5563;">Email</th>
+                                    <th style="padding: 1rem; font-size: 0.85rem; font-weight: 800; color: #4b5563;">Teléfono</th>
+                                    <th style="padding: 1rem; font-size: 0.85rem; font-weight: 800; color: #4b5563;">Ciudad</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>
+                `;
+            })
+            .catch((err) => {
+                sub.textContent = '';
+                body.innerHTML = `<div style="color:#ef4444; font-weight:800;">${escapeHtml(err.message || 'No se pudo cargar la lista.')}</div>`;
+            });
+    }
+
+    window.addEventListener('click', function(event) {
+        const modalPre = document.getElementById('modalPreInscripciones');
+        const modalCurso = document.getElementById('modalEstudiantesCurso');
+        if (event.target === modalPre) {
             closeModal('modalPreInscripciones');
         }
-    }
-    
-    // Cerrar con tecla ESC
+        if (event.target === modalCurso) {
+            closeModal('modalEstudiantesCurso');
+        }
+    });
+
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape') {
             closeModal('modalPreInscripciones');
+            closeModal('modalEstudiantesCurso');
         }
     });
 </script>

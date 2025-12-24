@@ -48,6 +48,21 @@ def es_admin(user):
     return False
 
 
+def es_admin_o_mesa(user):
+    if not user.is_authenticated:
+        return False
+
+    if user.is_staff or user.is_superuser:
+        return True
+
+    try:
+        usuario = Usuario.objects.get(persona__dni=user.username)
+        roles = UsuarioRol.objects.filter(usuario_id=usuario).values_list('rol_id__nombre', flat=True)
+        return 'Administrador' in roles or 'Mesa de Entrada' in roles
+    except Usuario.DoesNotExist:
+        return False
+
+
 def es_admin_completo(user):
     """Verifica si el usuario es administrador completo (puede crear usuarios)"""
     if not user.is_authenticated:
@@ -522,7 +537,7 @@ def exportar_inscripciones(request):
 
 
 @login_required
-@user_passes_test(es_admin)
+@user_passes_test(es_admin_o_mesa)
 def buscador_estudiantes(request):
     """Buscador de estudiantes"""
     estudiantes = Estudiante.objects.all().select_related('usuario__persona')
@@ -545,7 +560,7 @@ def buscador_estudiantes(request):
 
 
 @login_required
-@user_passes_test(es_admin)
+@user_passes_test(es_admin_o_mesa)
 def exportar_estudiantes(request):
     """Exportar estudiantes a CSV"""
     response = HttpResponse(content_type='text/csv; charset=utf-8')
@@ -663,7 +678,7 @@ def estadisticas_detalladas(request):
 
 
 @login_required
-@user_passes_test(es_admin)
+@user_passes_test(es_admin_o_mesa)
 def api_buscar_estudiantes(request):
     """API para búsqueda en tiempo real de estudiantes"""
     from django.http import JsonResponse
@@ -698,6 +713,74 @@ def api_buscar_estudiantes(request):
         })
     
     return JsonResponse({'estudiantes': resultados})
+
+
+@login_required
+@user_passes_test(es_admin_o_mesa)
+def api_detalle_estudiante(request):
+    from django.http import JsonResponse
+
+    dni = (request.GET.get('dni') or '').strip()
+    if not dni:
+        return JsonResponse({'error': 'DNI requerido.'}, status=400)
+
+    try:
+        estudiante = Estudiante.objects.select_related('usuario__persona').get(usuario__persona__dni=dni)
+    except Estudiante.DoesNotExist:
+        return JsonResponse({'error': 'Estudiante no encontrado.'}, status=404)
+
+    persona = estudiante.usuario.persona
+
+    inscripciones_qs = Inscripcion.objects.filter(estudiante=estudiante).select_related(
+        'comision__fk_id_curso',
+        'comision__fk_id_polo',
+    ).order_by('-fecha_hora_inscripcion')
+
+    ciudad_mesa_entrada = get_mesa_entrada_ciudad(request.user)
+    if ciudad_mesa_entrada:
+        inscripciones_qs = inscripciones_qs.filter(comision__fk_id_polo__ciudad=ciudad_mesa_entrada)
+
+    inscripciones = []
+    for insc in inscripciones_qs:
+        comision = insc.comision
+        polo = comision.fk_id_polo if comision else None
+        inscripciones.append({
+            'id': insc.id,
+            'estado': insc.get_estado_display(),
+            'fecha_hora_inscripcion': insc.fecha_hora_inscripcion.strftime('%d/%m/%Y %H:%M') if insc.fecha_hora_inscripcion else None,
+            'curso': comision.fk_id_curso.nombre if comision and comision.fk_id_curso else None,
+            'comision_id': comision.id_comision if comision else None,
+            'modalidad': getattr(comision, 'modalidad', None),
+            'dias_horarios': getattr(comision, 'dias_horarios', None),
+            'lugar': getattr(comision, 'lugar', None),
+            'polo': polo.nombre if polo else None,
+            'ciudad_polo': polo.ciudad if polo else None,
+        })
+
+    data = {
+        'dni': persona.dni,
+        'nombre': persona.nombre,
+        'apellido': persona.apellido,
+        'nombre_completo': persona.nombre_completo,
+        'correo': persona.correo,
+        'telefono': persona.telefono or '',
+        'fecha_nacimiento': persona.fecha_nacimiento.strftime('%d/%m/%Y') if persona.fecha_nacimiento else '',
+        'edad': persona.edad or '',
+        'genero': persona.get_genero_display() if persona.genero else '',
+        'ciudad_residencia': persona.ciudad_residencia or '',
+        'zona_residencia': persona.zona_residencia or '',
+        'domicilio': persona.domicilio or '',
+        'condiciones_medicas': persona.condiciones_medicas or '',
+        'autorizacion_imagen': bool(persona.autorizacion_imagen),
+        'autorizacion_voz': bool(persona.autorizacion_voz),
+        'nivel_estudios': estudiante.get_nivel_estudios_display(),
+        'institucion_actual': estudiante.institucion_actual,
+        'experiencia_laboral': estudiante.experiencia_laboral or '',
+        'inscripciones': inscripciones,
+        'total_inscripciones': len(inscripciones),
+    }
+
+    return JsonResponse(data)
 
 
 @login_required
@@ -800,6 +883,18 @@ def crear_usuario_admin(request):
                 correo = request.POST.get('correo').strip()
                 telefono = request.POST.get('telefono', '').strip()
                 fecha_nacimiento = request.POST.get('fecha_nacimiento')
+                fecha_nacimiento_date = None
+                if fecha_nacimiento:
+                    try:
+                        fecha_nacimiento_date = date.fromisoformat(fecha_nacimiento)
+                    except ValueError:
+                        messages.error(request, '❌ La fecha de nacimiento no es válida.')
+                        return redirect('administracion:crear_usuario')
+
+                    if fecha_nacimiento_date > date.today():
+                        messages.error(request, '❌ La fecha de nacimiento no puede ser futura.')
+                        return redirect('administracion:crear_usuario')
+
                 genero = request.POST.get('genero')
                 ciudad = request.POST.get('ciudad_residencia')
                 contrasena = request.POST.get('contrasena')
@@ -817,7 +912,7 @@ def crear_usuario_admin(request):
                     apellido=apellido,
                     correo=correo,
                     telefono=telefono,
-                    fecha_nacimiento=fecha_nacimiento if fecha_nacimiento else None,
+                    fecha_nacimiento=fecha_nacimiento_date,
                     genero=genero if genero else None,
                     ciudad_residencia=ciudad if ciudad else None,
                 )
@@ -888,7 +983,17 @@ def editar_usuario_admin(request, persona_id):
                 
                 fecha_nac = request.POST.get('fecha_nacimiento')
                 if fecha_nac:
-                    persona.fecha_nacimiento = fecha_nac
+                    try:
+                        fecha_nac_date = date.fromisoformat(fecha_nac)
+                    except ValueError:
+                        messages.error(request, '❌ La fecha de nacimiento no es válida.')
+                        return redirect('administracion:editar_usuario', persona_id=persona_id)
+
+                    if fecha_nac_date > date.today():
+                        messages.error(request, '❌ La fecha de nacimiento no puede ser futura.')
+                        return redirect('administracion:editar_usuario', persona_id=persona_id)
+
+                    persona.fecha_nacimiento = fecha_nac_date
                 
                 persona.genero = request.POST.get('genero', persona.genero)
                 persona.ciudad_residencia = request.POST.get('ciudad_residencia', persona.ciudad_residencia)

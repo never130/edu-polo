@@ -39,6 +39,7 @@ urlpatterns = [
     
     # API
     path('api/buscar-estudiantes/', views.api_buscar_estudiantes, name='api_buscar_estudiantes'),
+    path('api/detalle-estudiante/', views.api_detalle_estudiante, name='api_detalle_estudiante'),
     
     # Gestión de Asistencias
     path('asistencias/', views.panel_asistencia, name='panel_asistencia'),
