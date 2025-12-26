@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from .models import Asistencia, RegistroAsistencia
@@ -15,32 +17,44 @@ def actualizar_registro_asistencia(inscripcion):
     )
     
     comision = inscripcion.comision
-    total_programadas = comision.get_total_clases_programadas() if hasattr(comision, 'get_total_clases_programadas') else None
-    if total_programadas is not None:
-        total_clases = total_programadas
+
+    total_programadas_hasta_hoy = comision.get_total_clases_programadas(hasta=date.today()) if hasattr(comision, 'get_total_clases_programadas') else None
+    if total_programadas_hasta_hoy is not None:
+        total_clases = total_programadas_hasta_hoy
     else:
         total_clases = Asistencia.objects.filter(
-            inscripcion__comision=comision
+            inscripcion__comision=comision,
+            fecha_clase__lte=date.today(),
         ).values('fecha_clase').distinct().count()
-    
-    # Contar clases asistidas por ESTE alumno (presente=True)
+
     clases_asistidas = Asistencia.objects.filter(
         inscripcion=inscripcion,
-        presente=True
+        presente=True,
+        fecha_clase__lte=date.today(),
     ).count()
-    
-    # Actualizar los valores
+
     registro.total_clases = total_clases
     registro.clases_asistidas = clases_asistidas
-    
-    # Calcular porcentaje
+
     if total_clases > 0:
         registro.porcentaje_asistencia = (clases_asistidas / total_clases) * 100
-        # Cumple requisito si tiene entre 80% y 100% de asistencia
-        registro.cumple_requisito_certificado = 80 <= registro.porcentaje_asistencia <= 100
     else:
         registro.porcentaje_asistencia = 0
-        registro.cumple_requisito_certificado = False
+
+    cumple_certificado = False
+    if comision.fecha_fin and comision.fecha_fin <= date.today():
+        total_programadas_curso = comision.get_total_clases_programadas(hasta=comision.fecha_fin) if hasattr(comision, 'get_total_clases_programadas') else None
+        if total_programadas_curso is None:
+            total_programadas_curso = Asistencia.objects.filter(
+                inscripcion__comision=comision,
+                fecha_clase__lte=comision.fecha_fin,
+            ).values('fecha_clase').distinct().count()
+
+        if total_programadas_curso > 0:
+            porcentaje_certificado = (clases_asistidas / total_programadas_curso) * 100
+            cumple_certificado = 80 <= porcentaje_certificado <= 100
+
+    registro.cumple_requisito_certificado = cumple_certificado
     
     # Guardar el registro actualizado
     registro.save()
@@ -59,7 +73,7 @@ def actualizar_registro_despues_guardar(sender, instance, created, **kwargs):
     actualizar_registro_asistencia(instance.inscripcion)
     
     comision = instance.inscripcion.comision
-    total_programadas = comision.get_total_clases_programadas() if hasattr(comision, 'get_total_clases_programadas') else None
+    total_programadas = comision.get_total_clases_programadas(hasta=date.today()) if hasattr(comision, 'get_total_clases_programadas') else None
     if total_programadas is not None:
         return
 
@@ -103,7 +117,7 @@ def actualizar_registro_despues_eliminar(sender, instance, **kwargs):
     except Exception:
         return
 
-    total_programadas = comision.get_total_clases_programadas() if hasattr(comision, 'get_total_clases_programadas') else None
+    total_programadas = comision.get_total_clases_programadas(hasta=date.today()) if hasattr(comision, 'get_total_clases_programadas') else None
     if total_programadas is not None:
         return
 

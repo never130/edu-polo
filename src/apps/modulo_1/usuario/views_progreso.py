@@ -106,9 +106,13 @@ def descargar_certificado(request, inscripcion_id):
         # Obtener o crear registro de asistencia
         registro, created = RegistroAsistencia.objects.get_or_create(inscripcion=inscripcion)
         
-        # Verificar que cumpla con el requisito (80% o más de asistencia)
         if not registro.cumple_requisito_certificado:
-            messages.error(request, '❌ No cumples con el requisito mínimo de 80% de asistencia para obtener el certificado.')
+            fecha_fin = inscripcion.comision.fecha_fin
+            hoy = datetime.now().date()
+            if fecha_fin and fecha_fin > hoy:
+                messages.error(request, '❌ El certificado se habilita al finalizar la comisión.')
+            else:
+                messages.error(request, '❌ No cumples con el requisito mínimo de 80% de asistencia para obtener el certificado.')
             return redirect('usuario:mi_progreso')
         
         # Crear el PDF

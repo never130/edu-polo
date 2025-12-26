@@ -192,10 +192,10 @@ def formulario_inscripcion(request, comision_id):
                 # 7. Mensaje de éxito personalizado
                 curso_nombre = comision.fk_id_curso.nombre
                 
-                cupos_restantes = comision.cupos_disponibles - 1
+                cupos_restantes = comision.cupos_disponibles
                 
                 if cupos_restantes == 0:
-                    mensaje = f'🎉 ¡PRE-INSCRIPCIÓN EXITOSA! Te has pre-inscrito al curso "{curso_nombre}". ¡Has tomado el ÚLTIMO CUPO disponible! Tu inscripción está pendiente de confirmación.'
+                    mensaje = f'✅ ¡PRE-INSCRIPCIÓN EXITOSA! Te has pre-inscrito al curso "{curso_nombre}". La comisión está completa y tu inscripción queda pendiente de confirmación.'
                 elif cupos_restantes <= 3:
                     mensaje = f'✅ ¡PRE-INSCRIPCIÓN EXITOSA! Te has pre-inscrito al curso "{curso_nombre}". ⚠️ Solo quedan {cupos_restantes} cupos. Tu inscripción está pendiente de confirmación.'
                 else:

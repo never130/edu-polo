@@ -450,10 +450,15 @@ def inscribir_estudiante_admin(request):
             
             if inscripcion_existente:
                 if inscripcion_existente.estado == 'pre_inscripto':
-                    # Confirmar inscripción
                     with transaction.atomic():
+                        comision.refresh_from_db()
+                        if comision.cupo_lleno:
+                            messages.error(request, f'🚫 La comisión {comision.fk_id_curso.nombre} (Comisión #{comision.id_comision}) no tiene cupos disponibles para confirmar inscripciones.')
+                            return redirect(redirect_url)
+
                         inscripcion_existente.estado = 'confirmado'
                         inscripcion_existente.save()
+
                     messages.success(request, f'✅ Inscripción confirmada exitosamente para {estudiante.usuario.persona.nombre_completo}.')
                     return redirect(redirect_url)
                 elif inscripcion_existente.estado == 'confirmado':
@@ -1348,16 +1353,15 @@ def panel_asistencia(request):
         fechas_clases = list(Asistencia.objects.filter(
             inscripcion__comision=comision
         ).values_list('fecha_clase', flat=True).distinct().order_by('-fecha_clase'))
-        
-        # Organizar asistencias por estudiante y fecha (para el historial)
-        for inscripcion in inscripciones:
-            for fecha in fechas_clases:
-                asistencia = Asistencia.objects.filter(
-                    inscripcion=inscripcion,
-                    fecha_clase=fecha
-                ).first()
-                key = f"{inscripcion.id}_{fecha}"
-                asistencias_dict[key] = asistencia
+
+        asistencias_historial = Asistencia.objects.filter(
+            inscripcion__in=inscripciones,
+            fecha_clase__in=fechas_clases,
+        )
+
+        for asistencia in asistencias_historial:
+            key = f"{asistencia.inscripcion_id}_{asistencia.fecha_clase}"
+            asistencias_dict[key] = asistencia
     
     context = {
         'comisiones': comisiones,

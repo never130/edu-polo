@@ -1,8 +1,12 @@
+from datetime import date, timedelta
+
+from django.core.exceptions import ValidationError
 from django.db import models
+
 from apps.modulo_1.usuario.models import Usuario
+
 import re
 import unicodedata
-from datetime import date, timedelta
 
 
 class PoloCreativo(models.Model):
@@ -160,13 +164,22 @@ class Comision(models.Model):
             return None
         return len(fechas)
 
+    def clean(self):
+        super().clean()
+
+        if self.fecha_inicio and self.fecha_fin and self.fecha_fin < self.fecha_inicio:
+            raise ValidationError({'fecha_fin': 'La fecha de fin no puede ser anterior a la fecha de inicio.'})
+
+        if (self.fecha_inicio or self.fecha_fin) and not self.get_dias_semana_indices():
+            raise ValidationError({'dias_horarios': 'Debe indicar días/horarios válidos para poder calcular el calendario de clases.'})
+
     def __str__(self):
         return f"{self.fk_id_curso.nombre} - (Comisión N°: {self.id_comision})"
     
     @property
     def inscritos_count(self):
-        """Cuenta de estudiantes inscritos confirmados y pre-inscriptos"""
-        return self.inscripciones.filter(estado__in=['confirmado', 'pre_inscripto']).count()
+        """Cuenta de estudiantes inscritos confirmados"""
+        return self.inscripciones.filter(estado='confirmado').count()
     
     @property
     def cupos_disponibles(self):

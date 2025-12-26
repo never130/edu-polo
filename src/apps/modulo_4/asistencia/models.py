@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.db import models
 from django.core.exceptions import ValidationError
 from apps.modulo_2.inscripciones.models import Inscripcion
@@ -80,27 +82,41 @@ class RegistroAsistencia(models.Model):
     def calcular_porcentaje(self):
         """Calcula el porcentaje de asistencia"""
         comision = self.inscripcion.comision
-        total_programadas = comision.get_total_clases_programadas() if hasattr(comision, 'get_total_clases_programadas') else None
-        if total_programadas is not None:
-            self.total_clases = total_programadas
+
+        total_programadas_hasta_hoy = comision.get_total_clases_programadas(hasta=date.today()) if hasattr(comision, 'get_total_clases_programadas') else None
+        if total_programadas_hasta_hoy is not None:
+            self.total_clases = total_programadas_hasta_hoy
         else:
             self.total_clases = Asistencia.objects.filter(
-                inscripcion__comision=comision
+                inscripcion__comision=comision,
+                fecha_clase__lte=date.today(),
             ).values('fecha_clase').distinct().count()
-        
-        # Recalcular clases asistidas por este alumno
+
         self.clases_asistidas = Asistencia.objects.filter(
             inscripcion=self.inscripcion,
-            presente=True
+            presente=True,
+            fecha_clase__lte=date.today(),
         ).count()
-        
+
         if self.total_clases > 0:
             self.porcentaje_asistencia = (self.clases_asistidas / self.total_clases) * 100
-            # Cumple requisito si tiene entre 80% y 100% de asistencia
-            self.cumple_requisito_certificado = 80 <= self.porcentaje_asistencia <= 100
         else:
             self.porcentaje_asistencia = 0
-            self.cumple_requisito_certificado = False
+
+        cumple_certificado = False
+        if comision.fecha_fin and comision.fecha_fin <= date.today():
+            total_programadas_curso = comision.get_total_clases_programadas(hasta=comision.fecha_fin) if hasattr(comision, 'get_total_clases_programadas') else None
+            if total_programadas_curso is None:
+                total_programadas_curso = Asistencia.objects.filter(
+                    inscripcion__comision=comision,
+                    fecha_clase__lte=comision.fecha_fin,
+                ).values('fecha_clase').distinct().count()
+
+            if total_programadas_curso > 0:
+                porcentaje_certificado = (self.clases_asistidas / total_programadas_curso) * 100
+                cumple_certificado = 80 <= porcentaje_certificado <= 100
+
+        self.cumple_requisito_certificado = cumple_certificado
         self.save()
         return self.porcentaje_asistencia
     
