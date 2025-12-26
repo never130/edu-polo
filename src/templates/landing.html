@@ -491,9 +491,13 @@
 
         @media (max-width: 1200px) {
             .navbar-toggle { display: block; }
-            .navbar-content { gap: 1rem; }
+            .navbar-content {
+                gap: 0.6rem;
+                justify-content: flex-start;
+            }
             .navbar-logo img { height: 35px; }
             .navbar-links { display: none; }
+            .navbar-actions { margin-left: auto; }
         }
 
         @media (max-width: 768px) {
