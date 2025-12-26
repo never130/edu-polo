@@ -47,8 +47,20 @@
             overflow: hidden;
             position: relative;
             background-color: #0f172a;
-            /* Fallback */
             color: var(--text-main);
+        }
+
+        @media (max-width: 1024px) {
+            body {
+                height: auto;
+                overflow-x: hidden;
+                overflow-y: auto;
+            }
+
+            .hero-section {
+                height: auto;
+                min-height: calc(100vh - 90px);
+            }
         }
 
         /* Carousel Styles */
@@ -166,6 +178,49 @@
             display: flex;
             gap: 1rem;
             align-items: center;
+        }
+
+        .navbar-toggle {
+            display: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .navbar-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 1rem;
+            right: 1rem;
+            margin-top: 0.75rem;
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            padding: 0.5rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .navbar-menu.open { display: block; }
+
+        .navbar-menu .navbar-link {
+            display: block;
+            padding: 0.75rem 0.9rem;
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 700;
+        }
+
+        .navbar-menu .navbar-link:hover {
+            background: rgba(255, 255, 255, 0.08);
+            text-shadow: none;
         }
 
         .btn {
@@ -429,11 +484,12 @@
             .footer-content { grid-template-columns: 1.5fr 1fr; gap: 2.5rem; }
         }
 
-        @media (max-width: 768px) {
-            .navbar-links {
-                display: none;
-            }
+        @media (max-width: 900px) {
+            .navbar-links { display: none; }
+            .navbar-toggle { display: inline-flex; }
+        }
 
+        @media (max-width: 768px) {
             .navbar { padding: 1rem; }
             .navbar-actions { gap: 0.6rem; }
             .navbar-actions .btn { padding: 0.5rem 0.9rem; font-size: 0.85rem; }
@@ -806,6 +862,9 @@
             </div>
 
             <div class="navbar-actions">
+                <button type="button" class="navbar-toggle" aria-label="Abrir menú" aria-expanded="false">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
                 {% if user.is_authenticated %}
                 <a href="{% url 'dashboard' %}" class="btn btn-primary">Ir al Panel</a>
                 <form action="{% url 'logout' %}" method="post" style="display: inline;">
@@ -818,6 +877,13 @@
                 <a href="#" class="btn btn-secondary" onclick="openRegistroModal(); return false;">Registrarse</a>
                 <a href="#" class="btn btn-primary" onclick="openLoginModal(); return false;">Iniciar Sesión</a>
                 {% endif %}
+            </div>
+
+            <div class="navbar-menu">
+                <a href="{% url 'landing' %}" class="navbar-link">Inicio</a>
+                <a href="{% url 'lista_polos' %}" class="navbar-link">Cursos</a>
+                <a href="#" class="navbar-link" onclick="openContactoModal(); return false;">Contacto</a>
+                <a href="#" class="navbar-link" onclick="openAcercaDeModal(); return false;">Acerca de</a>
             </div>
         </div>
     </nav>
@@ -1355,6 +1421,99 @@
                     items[currentIndex].classList.add('active');
                 }
             }, 6000);
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.navbar').forEach(function(nav) {
+                const toggle = nav.querySelector('.navbar-toggle');
+                const menu = nav.querySelector('.navbar-menu');
+                if (!toggle || !menu) return;
+
+                function closeMenu() {
+                    menu.classList.remove('open');
+                    toggle.setAttribute('aria-expanded', 'false');
+                }
+
+                toggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isOpen = menu.classList.toggle('open');
+                    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                });
+
+                menu.querySelectorAll('a').forEach(function(a) {
+                    a.addEventListener('click', closeMenu);
+                });
+
+                document.addEventListener('click', function(e) {
+                    if (!nav.contains(e.target)) closeMenu();
+                });
+
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') closeMenu();
+                });
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.navbar').forEach(function(nav) {
+                const toggle = nav.querySelector('.navbar-toggle');
+                const menu = nav.querySelector('.navbar-menu');
+                if (!toggle || !menu) return;
+
+                function closeMenu() {
+                    menu.classList.remove('open');
+                    toggle.setAttribute('aria-expanded', 'false');
+                }
+
+                toggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isOpen = menu.classList.toggle('open');
+                    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                });
+
+                menu.querySelectorAll('a').forEach(function(a) {
+                    a.addEventListener('click', closeMenu);
+                });
+
+                document.addEventListener('click', function(e) {
+                    if (!nav.contains(e.target)) closeMenu();
+                });
+
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') closeMenu();
+                });
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.navbar').forEach(function(nav) {
+                const toggle = nav.querySelector('.navbar-toggle');
+                const menu = nav.querySelector('.navbar-menu');
+                if (!toggle || !menu) return;
+
+                function closeMenu() {
+                    menu.classList.remove('open');
+                    toggle.setAttribute('aria-expanded', 'false');
+                }
+
+                toggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isOpen = menu.classList.toggle('open');
+                    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                });
+
+                menu.querySelectorAll('a').forEach(function(a) {
+                    a.addEventListener('click', closeMenu);
+                });
+
+                document.addEventListener('click', function(e) {
+                    if (!nav.contains(e.target)) closeMenu();
+                });
+
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') closeMenu();
+                });
+            });
         });
     </script>
 </body>
