@@ -182,15 +182,20 @@
 
         .navbar-toggle {
             display: none;
-            width: 44px;
-            height: 44px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            background: rgba(255, 255, 255, 0.12);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
             cursor: pointer;
-            align-items: center;
-            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(240, 152, 25, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .navbar-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(240, 152, 25, 0.4);
         }
 
         .navbar-menu {
@@ -484,15 +489,48 @@
             .footer-content { grid-template-columns: 1.5fr 1fr; gap: 2.5rem; }
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1200px) {
+            .navbar-toggle { display: block; }
+            .navbar-content { gap: 1rem; }
+            .navbar-logo img { height: 35px; }
             .navbar-links { display: none; }
-            .navbar-toggle { display: inline-flex; }
         }
 
         @media (max-width: 768px) {
             .navbar { padding: 1rem; }
-            .navbar-actions { gap: 0.6rem; }
+
+            .navbar-content {
+                flex-wrap: wrap;
+                justify-content: flex-start;
+            }
+
+            .navbar-toggle {
+                order: 0;
+                padding: 0.5rem 0.8rem;
+                font-size: 1.05rem;
+            }
+
+            .navbar-logo {
+                order: 1;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                text-align: left;
+                flex: 0 0 auto;
+                margin-left: 0.6rem;
+                position: static;
+                transform: none;
+                width: auto;
+            }
+
+            .navbar-actions {
+                order: 2;
+                margin-left: auto;
+                gap: 0.6rem;
+            }
+
             .navbar-actions .btn { padding: 0.5rem 0.9rem; font-size: 0.85rem; }
+            .navbar-actions form .btn { padding: 0.5rem; width: 40px; }
 
             .hero-title {
                 font-size: 3rem;
@@ -517,9 +555,11 @@
         }
 
         @media (max-width: 480px) {
+            .navbar-logo img { height: 30px; }
             .navbar { padding: 0.8rem; }
             .navbar-actions { gap: 0.5rem; }
             .navbar-actions .btn { padding: 0.45rem 0.75rem; font-size: 0.82rem; }
+            .navbar-actions form .btn { padding: 0.45rem; width: 38px; }
         }
 
         @keyframes fadeInUp {
@@ -850,6 +890,10 @@
     <!-- Navbar -->
     <nav class="navbar">
         <div class="navbar-content">
+            <button type="button" class="navbar-toggle" aria-label="Abrir menú" aria-expanded="false">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
             <a href="{% url 'landing' %}" class="navbar-logo">
                 <img src="{% static 'img/polocreativoblanco.png' %}" alt="Logo Polo">
             </a>
@@ -862,9 +906,6 @@
             </div>
 
             <div class="navbar-actions">
-                <button type="button" class="navbar-toggle" aria-label="Abrir menú" aria-expanded="false">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
                 {% if user.is_authenticated %}
                 <a href="{% url 'dashboard' %}" class="btn btn-primary">Ir al Panel</a>
                 <form action="{% url 'logout' %}" method="post" style="display: inline;">
