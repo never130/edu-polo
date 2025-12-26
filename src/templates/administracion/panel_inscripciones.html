@@ -44,7 +44,7 @@
             <a href="{% url 'administracion:exportar_inscripciones' %}" style="display: inline-flex; align-items: center; justify-content: center; background-color: white; border: 1px solid #e5e7eb; color: #374151; padding: 0.75rem 1rem; border-radius: 0.5rem; font-weight: 500; text-decoration: none; cursor: pointer; transition: all 0.2s;">
                 <span style="margin-right: 0.5rem;">📥</span> Exportar
             </a>
-            <button onclick="document.getElementById('modalInscribir').style.display='block'" style="display: inline-flex; align-items: center; justify-content: center; background-color: #f97316; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.2); transition: background-color 0.2s;">
+            <button type="button" onclick="openModalInscribir()" style="display: inline-flex; align-items: center; justify-content: center; background-color: #f97316; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.2); transition: background-color 0.2s;">
                 Nueva Inscripción
             </button>
         </div>
@@ -154,10 +154,10 @@
             
             <div style="margin-bottom: 1.5rem;">
                 <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Estudiante *</label>
-                <select name="estudiante_id" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; outline: none; transition: border-color 0.2s;">
+                <select id="inscribirEstudianteSelect" name="estudiante_id" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; outline: none; transition: border-color 0.2s;">
                     <option value="">Selecciona un estudiante...</option>
                     {% for estudiante in estudiantes %}
-                    <option value="{{ estudiante.id }}">
+                    <option value="{{ estudiante.id }}" data-comisiones="{% if estudiante.pre_inscripciones_list %}{% for insc in estudiante.pre_inscripciones_list %}{{ insc.comision.id_comision }}{% if not forloop.last %},{% endif %}{% endfor %}{% endif %}">
                         {{ estudiante.usuario.persona.nombre_completo }} - DNI: {{ estudiante.usuario.persona.dni }}
                         {% if estudiante.pre_inscripciones_list %}
                             ➡️ (Preinscripto en: {% for insc in estudiante.pre_inscripciones_list %}{{ insc.comision.fk_id_curso.nombre }} #{{ insc.comision.id_comision }}{% if not forloop.last %}, {% endif %}{% endfor %})
@@ -169,10 +169,10 @@
             
             <div style="margin-bottom: 1.5rem;">
                 <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Comisión (con cupo disponible) *</label>
-                <select name="comision_id" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; outline: none; transition: border-color 0.2s;">
+                <select id="inscribirComisionSelect" name="comision_id" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; outline: none; transition: border-color 0.2s;">
                     <option value="">Selecciona una comisión...</option>
                     {% for comision in comisiones_disponibles %}
-                    <option value="{{ comision.id_comision }}">
+                    <option value="{{ comision.id_comision }}" data-comision-id="{{ comision.id_comision }}">
                         {{ comision.fk_id_curso.nombre }} - Comisión #{{ comision.id_comision }} 
                         ({{ comision.cupos_disponibles_calc }} cupos disponibles)
                         {% if comision.fk_id_polo %} - {{ comision.fk_id_polo.nombre }}{% endif %}
@@ -187,11 +187,13 @@
             </div>
             {% endif %}
             
+            <div style="margin-top: 0.75rem; font-size: 0.9rem; color: #6b7280;" id="inscribirComisionHint"></div>
+
             <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
                 <button type="button" onclick="document.getElementById('modalInscribir').style.display='none'" style="padding: 0.75rem 1.5rem; background: white; color: #374151; border: 1px solid #d1d5db; border-radius: 0.5rem; font-weight: 500; cursor: pointer; transition: all 0.2s;">
                     Cancelar
                 </button>
-                <button type="submit" {% if not comisiones_disponibles %}disabled{% endif %} style="padding: 0.75rem 1.5rem; background-color: #f97316; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.2); transition: background-color 0.2s;">
+                <button id="inscribirSubmitBtn" type="submit" {% if not comisiones_disponibles %}disabled{% endif %} style="padding: 0.75rem 1.5rem; background-color: #f97316; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.2); transition: background-color 0.2s;">
                     Confirmar Inscripción
                 </button>
             </div>
@@ -218,15 +220,84 @@
 </style>
 
 <script>
-    // Cerrar modal al hacer clic fuera de él
+    function openModalInscribir() {
+        const modal = document.getElementById('modalInscribir');
+        modal.style.display = 'block';
+        const estudianteSelect = document.getElementById('inscribirEstudianteSelect');
+        if (estudianteSelect) estudianteSelect.dispatchEvent(new Event('change'));
+    }
+
+    function setInscribirHint(msg) {
+        const hint = document.getElementById('inscribirComisionHint');
+        if (!hint) return;
+        hint.textContent = msg || '';
+    }
+
+    function setInscribirSubmitEnabled(enabled) {
+        const btn = document.getElementById('inscribirSubmitBtn');
+        if (!btn) return;
+        btn.disabled = !enabled;
+    }
+
+    function filterComisionesByEstudiante() {
+        const estudianteSelect = document.getElementById('inscribirEstudianteSelect');
+        const comisionSelect = document.getElementById('inscribirComisionSelect');
+
+        if (!estudianteSelect || !comisionSelect) return;
+
+        const selectedOpt = estudianteSelect.options[estudianteSelect.selectedIndex];
+        const raw = selectedOpt ? (selectedOpt.getAttribute('data-comisiones') || '') : '';
+        const ids = raw.split(',').map(s => s.trim()).filter(Boolean);
+        const idSet = new Set(ids);
+
+        comisionSelect.value = '';
+
+        const options = Array.from(comisionSelect.options);
+        const nonPlaceholder = options.filter((o, idx) => idx !== 0);
+
+        if (!ids.length) {
+            nonPlaceholder.forEach(o => { o.hidden = true; });
+            comisionSelect.disabled = true;
+            setInscribirSubmitEnabled(false);
+            setInscribirHint('Seleccioná un estudiante con preinscripción para ver sus comisiones disponibles.');
+            return;
+        }
+
+        let visibleCount = 0;
+        nonPlaceholder.forEach(o => {
+            const optionId = o.getAttribute('data-comision-id') || o.value;
+            const visible = idSet.has(String(optionId));
+            o.hidden = !visible;
+            if (visible) visibleCount += 1;
+        });
+
+        comisionSelect.disabled = visibleCount === 0;
+        setInscribirSubmitEnabled(visibleCount > 0);
+        setInscribirHint(visibleCount > 0 ? '' : 'No hay cupos disponibles para las comisiones donde este estudiante está preinscripto.');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const estudianteSelect = document.getElementById('inscribirEstudianteSelect');
+        const comisionSelect = document.getElementById('inscribirComisionSelect');
+
+        if (comisionSelect) {
+            comisionSelect.disabled = true;
+            Array.from(comisionSelect.options).forEach((o, idx) => { if (idx !== 0) o.hidden = true; });
+        }
+        setInscribirSubmitEnabled(false);
+
+        if (estudianteSelect) {
+            estudianteSelect.addEventListener('change', filterComisionesByEstudiante);
+        }
+    });
+
     window.onclick = function(event) {
         const modal = document.getElementById('modalInscribir');
         if (event.target == modal) {
             modal.style.display = 'none';
         }
     }
-    
-    // Cerrar modal con tecla ESC
+
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape') {
             const modal = document.getElementById('modalInscribir');

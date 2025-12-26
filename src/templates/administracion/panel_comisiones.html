@@ -34,15 +34,12 @@
 {% block content %}
 <style>
     .page-header {
-        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-        padding: 2.5rem;
-        border-radius: 20px;
-        color: white;
-        margin-bottom: 2rem;
-        box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-end;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
     }
     
     .btn-crear {
@@ -100,12 +97,11 @@
 
 <div class="page-header">
     <div>
-        <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem;">📋 Gestión de Comisiones</h2>
-        <p style="opacity: 0.95;">Administra comisiones y controla cupos</p>
+        <h2>Gestión de Comisiones</h2>
+        <p>Administra comisiones y controla cupos</p>
     </div>
     {% if es_admin_completo %}
-    <a href="{% url 'administracion:crear_comision' %}" class="btn-crear">➕ Crear Nueva Comisión
-    </a>
+    <a href="{% url 'administracion:crear_comision' %}" class="btn-crear">Crear nueva comisión</a>
     {% endif %}
 </div>
 

@@ -34,15 +34,12 @@
 {% block content %}
 <style>
     .page-header {
-        background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
-        padding: 2.5rem;
-        border-radius: 20px;
-        color: white;
-        margin-bottom: 2rem;
-        box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-end;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
     }
     
     .btn-crear {
@@ -131,11 +128,10 @@
 
 <div class="page-header">
     <div>
-        <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem;">📚 Gestión de Cursos</h2>
-        <p style="opacity: 0.95;">Administra todos los cursos del sistema</p>
+        <h2>Gestión de Cursos</h2>
+        <p>Administra todos los cursos del sistema</p>
     </div>
-    <a href="{% url 'administracion:crear_curso' %}" class="btn-crear">➕ Crear Nuevo Curso
-    </a>
+    <a href="{% url 'administracion:crear_curso' %}" class="btn-crear">Crear nuevo curso</a>
 </div>
 
 {% if cursos %}
