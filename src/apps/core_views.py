@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from apps.modulo_1.roles.models import Estudiante, Docente
@@ -149,11 +151,24 @@ def dashboard_estudiante(request):
                 asistencia_promedio_total += porcentaje_asistencia
                 cursos_con_asistencia += 1
             
+            comision = inscripcion.comision
+            proxima_fecha = None
+            try:
+                fechas = comision.get_fechas_clase_programadas(hasta=comision.fecha_fin)
+                hoy = date.today()
+                for f in fechas:
+                    if f >= hoy:
+                        proxima_fecha = f
+                        break
+            except Exception:
+                proxima_fecha = None
+
             cursos_activos.append({
-                'nombre': inscripcion.comision.fk_id_curso.nombre,
-                'comision': inscripcion.comision.id_comision,
-                'polo': inscripcion.comision.fk_id_polo.nombre if inscripcion.comision.fk_id_polo else 'Virtual',
-                'horarios': inscripcion.comision.dias_horarios,
+                'nombre': comision.fk_id_curso.nombre,
+                'comision': comision.id_comision,
+                'polo': comision.fk_id_polo.nombre if comision.fk_id_polo else 'Virtual',
+                'horarios': comision.dias_horarios,
+                'proxima_fecha': proxima_fecha,
                 'asistencia': porcentaje_asistencia,
                 'total_clases': total_clases,
                 'presentes': presentes

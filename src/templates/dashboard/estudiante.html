@@ -52,7 +52,7 @@
                             </div>
                             <div class="course-meta">
                                 <span><i class="fa-regular fa-file-alt"></i> {{ curso.total_clases }} clases</span>
-                                <span><i class="fa-regular fa-calendar"></i> Próxima: {{ curso.horarios }}</span>
+                                <span><i class="fa-regular fa-calendar"></i> Próxima: {% if curso.proxima_fecha %}{{ curso.proxima_fecha|date:"d/m/Y" }}{% else %}{{ curso.horarios|default:"Por definir" }}{% endif %}</span>
                             </div>
                         </div>
                         
