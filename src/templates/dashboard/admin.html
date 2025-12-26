@@ -533,32 +533,78 @@
                     return;
                 }
 
-                const rows = estudiantes.map(e => {
-                    return `<tr style="border-bottom: 1px solid #f3f4f6;">
-                        <td style="padding: 0.85rem 1rem; font-weight: 800; color: #111827;">${escapeHtml(e.dni)}</td>
-                        <td style="padding: 0.85rem 1rem; color: #374151; font-weight: 700;">${escapeHtml(e.nombre_completo)}</td>
-                        <td style="padding: 0.85rem 1rem; color: #6b7280;">${escapeHtml(e.correo)}</td>
-                        <td style="padding: 0.85rem 1rem; color: #6b7280;">${escapeHtml(e.telefono)}</td>
-                        <td style="padding: 0.85rem 1rem; color: #6b7280;">${escapeHtml(e.ciudad_residencia)}</td>
-                    </tr>`;
-                }).join('');
+                const state = {
+                    estudiantes,
+                    sortKey: 'dni',
+                    sortDir: 'asc'
+                };
 
-                body.innerHTML = `
-                    <div style="overflow-x:auto; border: 1px solid #e5e7eb; border-radius: 12px;">
-                        <table style="width: 100%; border-collapse: collapse; text-align: left;">
-                            <thead>
-                                <tr style="background-color: #f3f4f6; border-bottom: 1px solid #e5e7eb;">
-                                    <th style="padding: 1rem; font-size: 0.85rem; font-weight: 800; color: #4b5563;">DNI</th>
-                                    <th style="padding: 1rem; font-size: 0.85rem; font-weight: 800; color: #4b5563;">Estudiante</th>
-                                    <th style="padding: 1rem; font-size: 0.85rem; font-weight: 800; color: #4b5563;">Email</th>
-                                    <th style="padding: 1rem; font-size: 0.85rem; font-weight: 800; color: #4b5563;">Teléfono</th>
-                                    <th style="padding: 1rem; font-size: 0.85rem; font-weight: 800; color: #4b5563;">Ciudad</th>
-                                </tr>
-                            </thead>
-                            <tbody>${rows}</tbody>
-                        </table>
-                    </div>
-                `;
+                const collator = new Intl.Collator('es', { numeric: true, sensitivity: 'base' });
+
+                function getSortValue(e, key) {
+                    if (!e) return '';
+                    const v = e[key];
+                    return v == null ? '' : String(v);
+                }
+
+                function render() {
+                    const sorted = [...state.estudiantes].sort((a, b) => {
+                        const av = getSortValue(a, state.sortKey);
+                        const bv = getSortValue(b, state.sortKey);
+                        const r = collator.compare(av, bv);
+                        return state.sortDir === 'asc' ? r : -r;
+                    });
+
+                    const arrow = (key) => {
+                        if (state.sortKey !== key) return '';
+                        return state.sortDir === 'asc' ? ' ▲' : ' ▼';
+                    };
+
+                    const thStyle = 'padding: 1rem; font-size: 0.85rem; font-weight: 800; color: #4b5563; cursor: pointer; user-select: none;';
+
+                    const rows = sorted.map(e => {
+                        return `<tr style="border-bottom: 1px solid #f3f4f6;">
+                            <td style="padding: 0.85rem 1rem; font-weight: 800; color: #111827;">${escapeHtml(e.dni)}</td>
+                            <td style="padding: 0.85rem 1rem; color: #374151; font-weight: 700;">${escapeHtml(e.nombre_completo)}</td>
+                            <td style="padding: 0.85rem 1rem; color: #6b7280;">${escapeHtml(e.correo)}</td>
+                            <td style="padding: 0.85rem 1rem; color: #6b7280;">${escapeHtml(e.telefono)}</td>
+                            <td style="padding: 0.85rem 1rem; color: #6b7280;">${escapeHtml(e.ciudad_residencia)}</td>
+                        </tr>`;
+                    }).join('');
+
+                    body.innerHTML = `
+                        <div style="overflow-x:auto; border: 1px solid #e5e7eb; border-radius: 12px;">
+                            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                                <thead>
+                                    <tr style="background-color: #f3f4f6; border-bottom: 1px solid #e5e7eb;">
+                                        <th data-sort-key="dni" style="${thStyle}">DNI${arrow('dni')}</th>
+                                        <th data-sort-key="nombre_completo" style="${thStyle}">Estudiante${arrow('nombre_completo')}</th>
+                                        <th data-sort-key="correo" style="${thStyle}">Email${arrow('correo')}</th>
+                                        <th data-sort-key="telefono" style="${thStyle}">Teléfono${arrow('telefono')}</th>
+                                        <th data-sort-key="ciudad_residencia" style="${thStyle}">Ciudad${arrow('ciudad_residencia')}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>${rows}</tbody>
+                            </table>
+                        </div>
+                    `;
+
+                    body.querySelectorAll('th[data-sort-key]').forEach((th) => {
+                        th.addEventListener('click', () => {
+                            const key = th.getAttribute('data-sort-key');
+                            if (!key) return;
+                            if (state.sortKey === key) {
+                                state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+                            } else {
+                                state.sortKey = key;
+                                state.sortDir = 'asc';
+                            }
+                            render();
+                        });
+                    });
+                }
+
+                render();
             })
             .catch((err) => {
                 sub.textContent = '';

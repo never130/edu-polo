@@ -1395,5 +1395,37 @@
     </div>
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.navbar').forEach(function(nav) {
+            const toggle = nav.querySelector('.navbar-toggle');
+            const menu = nav.querySelector('.navbar-menu');
+            if (!toggle || !menu) return;
+
+            function closeMenu() {
+                menu.classList.remove('open');
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+
+            toggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isOpen = menu.classList.toggle('open');
+                toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            });
+
+            menu.querySelectorAll('a').forEach(function(a) {
+                a.addEventListener('click', closeMenu);
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!nav.contains(e.target)) closeMenu();
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeMenu();
+            });
+        });
+    });
+</script>
 </body>
 </html>
