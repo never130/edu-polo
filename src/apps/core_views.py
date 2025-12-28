@@ -262,7 +262,20 @@ def dashboard_admin(request):
     
     from apps.modulo_3.cursos.models import Curso, Comision
     from apps.modulo_4.asistencia.models import Asistencia
-    from django.db.models import Count, F
+    from django.db.models import Count, F, Q
+
+    hoy = timezone.now().date()
+    Comision.objects.filter(fecha_fin__lt=hoy).exclude(estado='Finalizada').update(estado='Finalizada')
+    comisiones_llenas_ids = list(
+        Comision.objects.filter(estado='Abierta')
+        .annotate(
+            inscritos_confirmados=Count('inscripciones', filter=Q(inscripciones__estado='confirmado'))
+        )
+        .filter(inscritos_confirmados__gte=F('cupo_maximo'))
+        .values_list('id_comision', flat=True)
+    )
+    if comisiones_llenas_ids:
+        Comision.objects.filter(id_comision__in=comisiones_llenas_ids).update(estado='Cerrada')
     
     # Estadísticas generales
     total_cursos = Curso.objects.count()
@@ -271,7 +284,6 @@ def dashboard_admin(request):
     total_inscripciones = Inscripcion.objects.filter(estado='confirmado').count()
     
     # Métricas de Hoy
-    hoy = timezone.now().date()
     inscripciones_hoy_qs = Inscripcion.objects.filter(fecha_hora_inscripcion__date=hoy)
     inscripciones_hoy = inscripciones_hoy_qs.count()
     asistencias_hoy = Asistencia.objects.filter(fecha_clase=hoy, presente=True).count()

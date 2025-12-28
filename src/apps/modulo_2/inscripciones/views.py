@@ -22,6 +22,10 @@ def formulario_inscripcion(request, comision_id):
     - Políticas de uso de datos
     """
     comision = get_object_or_404(Comision, id_comision=comision_id)
+
+    if comision.estado != 'Abierta':
+        messages.error(request, f'🚫 La inscripción para la comisión del curso "{comision.fk_id_curso.nombre}" está cerrada.')
+        return redirect('landing')
     
     # Verificar cupo disponible
     if comision.cupo_lleno:
@@ -174,6 +178,10 @@ def formulario_inscripcion(request, comision_id):
                 
                 # Re-verificar cupo en el momento de guardar (dentro de transacción)
                 comision.refresh_from_db()
+
+                if comision.estado != 'Abierta':
+                    messages.error(request, f'🚫 La inscripción para la comisión del curso "{comision.fk_id_curso.nombre}" está cerrada.')
+                    return redirect('landing')
                 
                 if comision.cupo_lleno:
                     messages.error(request, '🚫 Lo sentimos, el cupo se completó justo antes de finalizar tu inscripción. No se ha podido realizar la inscripción.')

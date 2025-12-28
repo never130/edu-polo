@@ -451,13 +451,20 @@ def inscribir_estudiante_admin(request):
             if inscripcion_existente:
                 if inscripcion_existente.estado == 'pre_inscripto':
                     with transaction.atomic():
-                        comision.refresh_from_db()
-                        if comision.cupo_lleno:
+                        comision_locked = Comision.objects.select_for_update().get(id_comision=comision.id_comision)
+                        if comision_locked.estado == 'Finalizada':
+                            messages.error(request, f'🚫 La comisión {comision_locked.fk_id_curso.nombre} (Comisión #{comision_locked.id_comision}) está finalizada.')
+                            return redirect(redirect_url)
+                        if comision_locked.cupo_lleno:
                             messages.error(request, f'🚫 La comisión {comision.fk_id_curso.nombre} (Comisión #{comision.id_comision}) no tiene cupos disponibles para confirmar inscripciones.')
                             return redirect(redirect_url)
 
                         inscripcion_existente.estado = 'confirmado'
                         inscripcion_existente.save()
+
+                        if comision_locked.estado == 'Abierta' and comision_locked.cupo_lleno:
+                            comision_locked.estado = 'Cerrada'
+                            comision_locked.save(update_fields=['estado'])
 
                     messages.success(request, f'✅ Inscripción confirmada exitosamente para {estudiante.usuario.persona.nombre_completo}.')
                     return redirect(redirect_url)
@@ -470,6 +477,10 @@ def inscribir_estudiante_admin(request):
                     return redirect(redirect_url)
             
             # Si no existe inscripción previa (o se permite crear nueva para otros casos)
+            if comision.estado != 'Abierta':
+                messages.error(request, f'🚫 La comisión {comision.fk_id_curso.nombre} (Comisión #{comision.id_comision}) tiene la inscripción cerrada.')
+                return redirect(redirect_url)
+
             # Verificar cupo disponible
             if comision.cupo_lleno:
                 messages.error(request, f'🚫 La comisión {comision.fk_id_curso.nombre} (Comisión #{comision.id_comision}) no tiene cupos disponibles.')
@@ -495,11 +506,22 @@ def inscribir_estudiante_admin(request):
 
             # Crear inscripción
             with transaction.atomic():
+                comision_locked = Comision.objects.select_for_update().get(id_comision=comision.id_comision)
+                if comision_locked.estado != 'Abierta':
+                    messages.error(request, f'🚫 La comisión {comision_locked.fk_id_curso.nombre} (Comisión #{comision_locked.id_comision}) tiene la inscripción cerrada.')
+                    return redirect(redirect_url)
+                if comision_locked.cupo_lleno:
+                    messages.error(request, f'🚫 La comisión {comision_locked.fk_id_curso.nombre} (Comisión #{comision_locked.id_comision}) no tiene cupos disponibles.')
+                    return redirect(redirect_url)
                 Inscripcion.objects.create(
                     estudiante=estudiante,
-                    comision=comision,
+                    comision=comision_locked,
                     estado='confirmado'
                 )
+
+                if comision_locked.estado == 'Abierta' and comision_locked.cupo_lleno:
+                    comision_locked.estado = 'Cerrada'
+                    comision_locked.save(update_fields=['estado'])
             
             messages.success(request, f'✅ Estudiante {estudiante.usuario.persona.nombre_completo} inscrito exitosamente en {comision.fk_id_curso.nombre} (Comisión #{comision.id_comision}). Cupos restantes: {comision.cupos_disponibles}')
             return redirect(redirect_url)
