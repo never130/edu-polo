@@ -115,7 +115,18 @@
                     <tbody>
                         {% for c in estudiantes_por_curso %}
                             <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding:0.85rem 1rem; color:#0f172a; font-weight:800;">{{ c.comision__fk_id_curso__nombre }}</td>
+                                <td style="padding:0.85rem 1rem; color:#0f172a; font-weight:800;">
+                                    <div>{{ c.comision__fk_id_curso__nombre }}</div>
+                                    {% if c.comisiones %}
+                                        <div style="margin-top:0.35rem; display:flex; flex-wrap:wrap; gap:0.35rem;">
+                                            {% for com in c.comisiones %}
+                                                <span style="background:#eff6ff; color:#1d4ed8; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">
+                                                    Com #{{ com.id_comision }} • {{ com.cupos_disponibles }}/{{ com.cupo_maximo }}
+                                                </span>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </td>
                                 <td style="padding:0.85rem 1rem; color:#334155; font-weight:700;">{{ c.total_estudiantes }}</td>
                                 <td style="padding:0.85rem 1rem; text-align:right;">
                                     <button type="button" onclick="openEstudiantesCursoModal('{{ c.comision__fk_id_curso_id }}', '{{ c.comision__fk_id_curso__nombre|escapejs }}')" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 0.55rem 1rem; border-radius: 10px; font-weight: 800; cursor: pointer;">
@@ -525,6 +536,7 @@
             })
             .then((data) => {
                 const estudiantes = Array.isArray(data.estudiantes) ? data.estudiantes : [];
+                const comisiones = Array.isArray(data.comisiones) ? data.comisiones : [];
                 const ciudad = data.ciudad_mesa_entrada ? `Ciudad: ${data.ciudad_mesa_entrada}` : '';
                 sub.textContent = `${estudiantes.length} estudiante(s)${ciudad ? ' • ' + ciudad : ''}`;
 
@@ -535,6 +547,8 @@
 
                 const state = {
                     estudiantes,
+                    comisiones,
+                    filterComision: 'todas',
                     sortKey: 'dni',
                     sortDir: 'asc'
                 };
@@ -543,12 +557,17 @@
 
                 function getSortValue(e, key) {
                     if (!e) return '';
+                    if (key === 'comision') return e.comision_id == null ? '' : String(e.comision_id);
                     const v = e[key];
                     return v == null ? '' : String(v);
                 }
 
                 function render() {
-                    const sorted = [...state.estudiantes].sort((a, b) => {
+                    const filtered = state.filterComision === 'todas'
+                        ? state.estudiantes
+                        : state.estudiantes.filter(e => String(e.comision_id ?? '') === state.filterComision);
+
+                    const sorted = [...filtered].sort((a, b) => {
                         const av = getSortValue(a, state.sortKey);
                         const bv = getSortValue(b, state.sortKey);
                         const r = collator.compare(av, bv);
@@ -563,22 +582,53 @@
                     const thStyle = 'padding: 1rem; font-size: 0.85rem; font-weight: 800; color: #4b5563; cursor: pointer; user-select: none;';
 
                     const rows = sorted.map(e => {
+                        const comisionLabel = e.comision_id == null ? '' : `#${e.comision_id}`;
                         return `<tr style="border-bottom: 1px solid #f3f4f6;">
                             <td style="padding: 0.85rem 1rem; font-weight: 800; color: #111827;">${escapeHtml(e.dni)}</td>
                             <td style="padding: 0.85rem 1rem; color: #374151; font-weight: 700;">${escapeHtml(e.nombre_completo)}</td>
+                            <td style="padding: 0.85rem 1rem; color: #6b7280;">${escapeHtml(comisionLabel)}</td>
                             <td style="padding: 0.85rem 1rem; color: #6b7280;">${escapeHtml(e.correo)}</td>
                             <td style="padding: 0.85rem 1rem; color: #6b7280;">${escapeHtml(e.telefono)}</td>
                             <td style="padding: 0.85rem 1rem; color: #6b7280;">${escapeHtml(e.ciudad_residencia)}</td>
                         </tr>`;
                     }).join('');
 
+                    const comisionesBadges = state.comisiones.map(c => {
+                        const id = c.id_comision == null ? '' : String(c.id_comision);
+                        const cupos = `${c.cupos_disponibles ?? ''}/${c.cupo_maximo ?? ''}`;
+                        const polo = c.fk_id_polo__nombre ? ` • ${c.fk_id_polo__nombre}` : '';
+                        return `<span style="background:#f1f5f9; color:#0f172a; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Com #${escapeHtml(id)} • ${escapeHtml(cupos)}${escapeHtml(polo)}</span>`;
+                    }).join('');
+
+                    const filterHtml = state.comisiones.length > 1 ? `
+                        <div style="display:flex; align-items:center; gap:0.5rem;">
+                            <div style="color:#64748b; font-weight:900; font-size:0.85rem;">Comisión</div>
+                            <select id="modalEstudiantesCursoFiltroComision" style="padding:0.5rem 0.75rem; border:1px solid #e2e8f0; border-radius:10px; font-weight:800; color:#0f172a;">
+                                <option value="todas"${state.filterComision === 'todas' ? ' selected' : ''}>Todas</option>
+                                ${state.comisiones.map(c => {
+                                    const id = c.id_comision == null ? '' : String(c.id_comision);
+                                    const label = `Com #${id} (${c.cupos_disponibles ?? ''}/${c.cupo_maximo ?? ''})`;
+                                    const selected = state.filterComision === id ? ' selected' : '';
+                                    return `<option value="${escapeHtml(id)}"${selected}>${escapeHtml(label)}</option>`;
+                                }).join('')}
+                            </select>
+                        </div>
+                    ` : '';
+
                     body.innerHTML = `
+                        ${state.comisiones.length ? `
+                            <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; margin-bottom:0.75rem;">
+                                <div style="display:flex; flex-wrap:wrap; gap:0.35rem;">${comisionesBadges}</div>
+                                ${filterHtml}
+                            </div>
+                        ` : ''}
                         <div style="overflow-x:auto; border: 1px solid #e5e7eb; border-radius: 12px;">
                             <table style="width: 100%; border-collapse: collapse; text-align: left;">
                                 <thead>
                                     <tr style="background-color: #f3f4f6; border-bottom: 1px solid #e5e7eb;">
                                         <th data-sort-key="dni" style="${thStyle}">DNI${arrow('dni')}</th>
                                         <th data-sort-key="nombre_completo" style="${thStyle}">Estudiante${arrow('nombre_completo')}</th>
+                                        <th data-sort-key="comision" style="${thStyle}">Comisión${arrow('comision')}</th>
                                         <th data-sort-key="correo" style="${thStyle}">Email${arrow('correo')}</th>
                                         <th data-sort-key="telefono" style="${thStyle}">Teléfono${arrow('telefono')}</th>
                                         <th data-sort-key="ciudad_residencia" style="${thStyle}">Ciudad${arrow('ciudad_residencia')}</th>
@@ -602,6 +652,15 @@
                             render();
                         });
                     });
+
+                    const filter = body.querySelector('#modalEstudiantesCursoFiltroComision');
+                    if (filter) {
+                        filter.addEventListener('change', (ev) => {
+                            const v = ev && ev.target ? ev.target.value : 'todas';
+                            state.filterComision = v || 'todas';
+                            render();
+                        });
+                    }
                 }
 
                 render();

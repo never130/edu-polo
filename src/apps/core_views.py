@@ -358,6 +358,44 @@ def dashboard_admin(request):
         .order_by('comision__fk_id_curso__nombre')
     )
 
+    curso_ids = sorted({c.get('comision__fk_id_curso_id') for c in estudiantes_por_curso if c.get('comision__fk_id_curso_id')})
+    comisiones_por_curso = {}
+    if curso_ids:
+        comisiones_qs = Comision.objects.filter(fk_id_curso_id__in=curso_ids).select_related('fk_id_polo')
+        if tipo_usuario == 'Mesa de Entrada':
+            if ciudad_mesa_entrada:
+                comisiones_qs = comisiones_qs.filter(fk_id_polo__ciudad=ciudad_mesa_entrada)
+            else:
+                comisiones_qs = Comision.objects.none()
+
+        comisiones_data = list(
+            comisiones_qs.annotate(
+                inscritos_total=Count('inscripciones', filter=Q(inscripciones__estado__in=['confirmado', 'pre_inscripto'])),
+                confirmados_total=Count('inscripciones', filter=Q(inscripciones__estado='confirmado')),
+            ).values(
+                'id_comision',
+                'fk_id_curso_id',
+                'cupo_maximo',
+                'inscritos_total',
+                'confirmados_total',
+                'fk_id_polo__nombre',
+            )
+        )
+
+        for com in comisiones_data:
+            curso_id = com.get('fk_id_curso_id')
+            cupo_maximo = int(com.get('cupo_maximo') or 0)
+            inscritos_total = int(com.get('inscritos_total') or 0)
+            com['cupos_disponibles'] = max(cupo_maximo - inscritos_total, 0)
+            comisiones_por_curso.setdefault(curso_id, []).append(com)
+
+        for curso_id, coms in comisiones_por_curso.items():
+            coms.sort(key=lambda x: int(x.get('id_comision') or 0))
+
+    for c in estudiantes_por_curso:
+        cid = c.get('comision__fk_id_curso_id')
+        c['comisiones'] = comisiones_por_curso.get(cid, [])
+
     context = {
         'total_cursos': total_cursos,
         'total_estudiantes': total_estudiantes,
@@ -421,7 +459,7 @@ def api_estudiantes_por_curso(request):
     qs = Inscripcion.objects.filter(
         estado='confirmado',
         comision__fk_id_curso_id=curso.id_curso,
-    ).select_related('estudiante__usuario__persona')
+    ).select_related('estudiante__usuario__persona', 'comision', 'comision__fk_id_polo')
 
     if tipo_usuario == 'Mesa de Entrada':
         if ciudad_mesa_entrada:
@@ -429,35 +467,62 @@ def api_estudiantes_por_curso(request):
         else:
             qs = Inscripcion.objects.none()
 
-    estudiantes = list(
-        qs.values(
-            'estudiante__usuario__persona__dni',
-            'estudiante__usuario__persona__nombre',
-            'estudiante__usuario__persona__apellido',
-            'estudiante__usuario__persona__correo',
-            'estudiante__usuario__persona__telefono',
-            'estudiante__usuario__persona__ciudad_residencia',
-        )
-        .distinct()
-        .order_by('estudiante__usuario__persona__apellido', 'estudiante__usuario__persona__nombre')
-    )
-
     data_estudiantes = []
-    for e in estudiantes:
-        nombre = (e.get('estudiante__usuario__persona__nombre') or '').strip()
-        apellido = (e.get('estudiante__usuario__persona__apellido') or '').strip()
+    seen_dni = set()
+    for ins in qs.order_by(
+        'estudiante__usuario__persona__apellido',
+        'estudiante__usuario__persona__nombre',
+        'comision_id',
+    ):
+        persona = ins.estudiante.usuario.persona
+        dni = (persona.dni or '').strip()
+        if dni in seen_dni:
+            continue
+        seen_dni.add(dni)
+
+        nombre = (persona.nombre or '').strip()
+        apellido = (persona.apellido or '').strip()
         data_estudiantes.append({
-            'dni': e.get('estudiante__usuario__persona__dni') or '',
+            'dni': dni,
             'nombre_completo': f"{nombre} {apellido}".strip(),
-            'correo': e.get('estudiante__usuario__persona__correo') or '',
-            'telefono': e.get('estudiante__usuario__persona__telefono') or '',
-            'ciudad_residencia': e.get('estudiante__usuario__persona__ciudad_residencia') or '',
+            'correo': (persona.correo or '').strip(),
+            'telefono': (persona.telefono or '').strip(),
+            'ciudad_residencia': (persona.ciudad_residencia or '').strip(),
+            'comision_id': getattr(ins.comision, 'id_comision', None),
         })
+
+    from apps.modulo_3.cursos.models import Comision
+    from django.db.models import Count, Q
+
+    comisiones_qs = Comision.objects.filter(fk_id_curso_id=curso.id_curso).select_related('fk_id_polo')
+    if tipo_usuario == 'Mesa de Entrada':
+        if ciudad_mesa_entrada:
+            comisiones_qs = comisiones_qs.filter(fk_id_polo__ciudad=ciudad_mesa_entrada)
+        else:
+            comisiones_qs = Comision.objects.none()
+
+    comisiones_data = list(
+        comisiones_qs.annotate(
+            inscritos_total=Count('inscripciones', filter=Q(inscripciones__estado__in=['confirmado', 'pre_inscripto'])),
+            confirmados_total=Count('inscripciones', filter=Q(inscripciones__estado='confirmado')),
+        ).values(
+            'id_comision',
+            'cupo_maximo',
+            'inscritos_total',
+            'confirmados_total',
+            'fk_id_polo__nombre',
+        )
+    )
+    for com in comisiones_data:
+        cupo_maximo = int(com.get('cupo_maximo') or 0)
+        inscritos_total = int(com.get('inscritos_total') or 0)
+        com['cupos_disponibles'] = max(cupo_maximo - inscritos_total, 0)
 
     return JsonResponse({
         'curso_id': curso.id_curso,
         'curso_nombre': curso.nombre,
         'ciudad_mesa_entrada': ciudad_mesa_entrada,
         'total_estudiantes': len(data_estudiantes),
+        'comisiones': comisiones_data,
         'estudiantes': data_estudiantes,
     })
