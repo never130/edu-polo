@@ -70,6 +70,7 @@ def cursos_por_polo(request, polo_id):
     # Agregar comisiones abiertas a cada curso para este polo
     for curso in cursos:
         curso.comisiones_abiertas = curso.comision_set.filter(estado='Abierta', fk_id_polo=polo_seleccionado)
+        curso.comisiones_polo = curso.comision_set.filter(fk_id_polo=polo_seleccionado)
     
     context = {
         'polo_seleccionado': polo_seleccionado,

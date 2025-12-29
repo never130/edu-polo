@@ -26,20 +26,18 @@ def ver_cursos_disponibles(request):
         )
         return render(request, 'cursos/cursos_disponibles.html', {'cursos': Curso.objects.none()})
 
-    comisiones_abiertas_qs = Comision.objects.filter(
-        estado='Abierta',
+    comisiones_ciudad_qs = Comision.objects.filter(
         fk_id_polo__ciudad=ciudad,
     ).select_related('fk_id_polo').prefetch_related('inscripciones')
 
     cursos = (
         Curso.objects.filter(
             estado='Abierto',
-            comision__estado='Abierta',
             comision__fk_id_polo__ciudad=ciudad,
         )
         .distinct()
         .prefetch_related(
-            Prefetch('comision_set', queryset=comisiones_abiertas_qs, to_attr='comisiones_abiertas')
+            Prefetch('comision_set', queryset=comisiones_ciudad_qs, to_attr='comisiones_ciudad')
         )
     )
 

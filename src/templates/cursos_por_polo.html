@@ -774,6 +774,23 @@
                     <div class="card-info-grid" style="display: block;">
                         <div class="info-block" style="width: 100%;">
                             <label style="margin-bottom: 0.5rem; display: block;">DÍAS Y HORARIOS</label>
+                            {% if user.is_authenticated and curso.comisiones_polo %}
+                                <div style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:0.5rem;">
+                                    <span style="background:#eef2ff; color:#3730a3; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:800;">
+                                        Comisiones: {{ curso.comisiones_polo|length }}
+                                    </span>
+                                    {% if curso.comisiones_abiertas %}
+                                        <span style="background:#ecfdf5; color:#065f46; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:800;">
+                                            Abiertas: {{ curso.comisiones_abiertas|length }}
+                                        </span>
+                                    {% else %}
+                                        <span style="background:#fff7ed; color:#9a3412; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:800;">
+                                            Sin abiertas
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+
                             {% if curso.comisiones_abiertas %}
                                 <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                                     {% for comision in curso.comisiones_abiertas %}
@@ -808,12 +825,28 @@
                     <p style="color: var(--text-gray); line-height: 1.6; margin-bottom: 2rem;">{{ curso.descripcion }}</p>
                     
                     <h4 style="font-weight: 700; margin-bottom: 1rem;">Comisiones</h4>
-                    {% if curso.comisiones_abiertas %}
-                        {% for comision in curso.comisiones_abiertas %}
+                    {% if curso.comisiones_polo %}
+                        {% for comision in curso.comisiones_polo %}
                         <div style="background: #f8fafc; padding: 1rem; border-radius: 12px; margin-bottom: 1rem; border: 1px solid #e2e8f0;">
                             <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
                                 <strong>Comisión {{ comision.id_comision }}</strong>
-                                <span style="color: #15803d; font-weight: 700; font-size: 0.9rem;">{{ comision.cupos_disponibles }} lugares</span>
+                                <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
+                                    {% if comision.estado == 'Abierta' %}
+                                        <span style="background:#dcfce7; color:#166534; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Abierta</span>
+                                    {% elif comision.estado == 'Cerrada' %}
+                                        <span style="background:#fee2e2; color:#991b1b; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Cerrada</span>
+                                    {% elif comision.estado == 'En proceso' %}
+                                        <span style="background:#fef9c3; color:#854d0e; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">En proceso</span>
+                                    {% elif comision.estado == 'Finalizada' %}
+                                        <span style="background:#e2e8f0; color:#334155; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Finalizada</span>
+                                    {% endif %}
+
+                                    {% if comision.cupo_lleno %}
+                                        <span style="background:#f1f5f9; color:#0f172a; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">0/{{ comision.cupo_maximo }}</span>
+                                    {% else %}
+                                        <span style="background:#f1f5f9; color:#0f172a; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">{{ comision.cupos_disponibles }}/{{ comision.cupo_maximo }}</span>
+                                    {% endif %}
+                                </div>
                             </div>
                             <div style="font-size: 0.9rem; color: #64748b; margin-bottom: 1rem;">
                                 <div style="margin-bottom: 0.3rem;"><i class="fa-regular fa-clock" style="margin-right: 5px;"></i> {{ comision.dias_horarios|default:"Martes y Jueves 16:30hs" }}</div>
@@ -826,13 +859,21 @@
                                 {% endif %}
                             </div>
                             {% if user.is_authenticated %}
-                                {% if comision.cupo_lleno %}
-                                    <button class="btn-more" style="display: block; width: 100%; text-align: center; background: #94a3b8; cursor: not-allowed; border: none;" disabled>Cupo Completo</button>
+                                {% if comision.estado != 'Abierta' %}
+                                    <button class="btn-more" style="display: block; width: 100%; text-align: center; background: #94a3b8; cursor: not-allowed; border: none;" disabled>Inscripción cerrada</button>
+                                {% elif comision.cupo_lleno %}
+                                    <button class="btn-more" style="display: block; width: 100%; text-align: center; background: #94a3b8; cursor: not-allowed; border: none;" disabled>Cupo lleno</button>
                                 {% else %}
                                     <a href="{% url 'inscripciones:formulario' comision.id_comision %}" class="btn-more" style="display: block; text-align: center; text-decoration: none;">Inscribirme</a>
                                 {% endif %}
                             {% else %}
-                            <button onclick="closeCourseModal('{{ curso.id_curso }}'); openLoginModal();" class="btn-more">Iniciar Sesión para Inscribirme</button>
+                                {% if comision.estado != 'Abierta' %}
+                                    <button class="btn-more" style="display: block; width: 100%; text-align: center; background: #94a3b8; cursor: not-allowed; border: none;" disabled>Inscripción cerrada</button>
+                                {% elif comision.cupo_lleno %}
+                                    <button class="btn-more" style="display: block; width: 100%; text-align: center; background: #94a3b8; cursor: not-allowed; border: none;" disabled>Cupo lleno</button>
+                                {% else %}
+                                    <button onclick="closeCourseModal('{{ curso.id_curso }}'); openLoginModal();" class="btn-more">Iniciar Sesión para Inscribirme</button>
+                                {% endif %}
                             {% endif %}
                         </div>
                         {% endfor %}

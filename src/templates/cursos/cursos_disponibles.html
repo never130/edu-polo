@@ -371,19 +371,41 @@
             </div>
             
             <div class="comisiones-section">
-                {% if curso.comisiones_abiertas %}
+                {% if curso.comisiones_ciudad %}
+                    <div style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:0.75rem;">
+                        <span style="background:#eef2ff; color:#3730a3; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:800;">
+                            Comisiones: {{ curso.comisiones_ciudad|length }}
+                        </span>
+                        <span style="background:#e2e8f0; color:#334155; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:800;">
+                            Incluye cerradas
+                        </span>
+                    </div>
                     <h4 class="comisiones-titulo">🗓️ Comisiones</h4>
-                    {% for comision in curso.comisiones_abiertas %}
+                    {% for comision in curso.comisiones_ciudad %}
                     <div class="comision-compact">
                         <div class="comision-compact-header">
                             <span class="comision-id">#{{ comision.id_comision }} - {{ comision.modalidad }}</span>
-                            {% if comision.cupo_lleno %}
-                                <span class="cupos-badge cupos-error">Lleno</span>
-                            {% elif comision.cupos_limitados %}
-                                <span class="cupos-badge cupos-warning">{{ comision.cupos_disponibles }} cupos</span>
-                            {% else %}
-                                <span class="cupos-badge cupos-ok">{{ comision.cupos_disponibles }} cupos</span>
-                            {% endif %}
+                            <div style="display:flex; gap:0.35rem; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
+                                {% if comision.estado == 'Abierta' %}
+                                    <span class="cupos-badge cupos-ok">Abierta</span>
+                                {% elif comision.estado == 'Cerrada' %}
+                                    <span class="cupos-badge cupos-error">Cerrada</span>
+                                {% elif comision.estado == 'En proceso' %}
+                                    <span class="cupos-badge cupos-warning">En proceso</span>
+                                {% elif comision.estado == 'Finalizada' %}
+                                    <span class="cupos-badge" style="background:#e2e8f0; color:#334155;">Finalizada</span>
+                                {% endif %}
+
+                                {% if comision.estado == 'Abierta' %}
+                                    {% if comision.cupo_lleno %}
+                                        <span class="cupos-badge cupos-error">Cupo lleno</span>
+                                    {% elif comision.cupos_limitados %}
+                                        <span class="cupos-badge cupos-warning">{{ comision.cupos_disponibles }}/{{ comision.cupo_maximo }}</span>
+                                    {% else %}
+                                        <span class="cupos-badge cupos-ok">{{ comision.cupos_disponibles }}/{{ comision.cupo_maximo }}</span>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
                         </div>
                         
                         <div class="comision-details-grid">
@@ -400,13 +422,17 @@
                             {% endif %}
                         </div>
                         
-                        {% if not comision.cupo_lleno %}
+                        {% if comision.estado == 'Abierta' and not comision.cupo_lleno %}
                             <a href="{% url 'inscripciones:formulario' comision.id_comision %}" class="btn-inscribir-sm">
                                 Inscribirse
                             </a>
                         {% else %}
                             <button class="btn-inscribir-sm disabled" disabled>
-                                Completo
+                                {% if comision.estado != 'Abierta' %}
+                                    Inscripción cerrada
+                                {% else %}
+                                    Cupo lleno
+                                {% endif %}
                             </button>
                         {% endif %}
                     </div>

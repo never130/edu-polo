@@ -255,7 +255,7 @@
                         {% if user.is_authenticated %}
                             {% if comision.cupo_lleno %}
                                 <button class="btn-inscribir" style="background: #94a3b8; cursor: not-allowed; box-shadow: none;" disabled>
-                                    ⛔ Cupo Completo
+                                    ⛔ Cupo lleno
                                 </button>
                             {% else %}
                                 <a href="{% url 'inscripciones:formulario' comision.id_comision %}" class="btn-inscribir">
