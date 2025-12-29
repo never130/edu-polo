@@ -69,8 +69,13 @@ def cursos_por_polo(request, polo_id):
             
     # Agregar comisiones abiertas a cada curso para este polo
     for curso in cursos:
-        curso.comisiones_abiertas = curso.comision_set.filter(estado='Abierta', fk_id_polo=polo_seleccionado)
-        curso.comisiones_polo = curso.comision_set.filter(fk_id_polo=polo_seleccionado)
+        curso.comisiones_abiertas = curso.comision_set.filter(
+            estado='Abierta',
+            fk_id_polo=polo_seleccionado,
+        ).order_by('id_comision')
+        curso.comisiones_polo = curso.comision_set.filter(
+            fk_id_polo=polo_seleccionado,
+        ).order_by('id_comision')
     
     context = {
         'polo_seleccionado': polo_seleccionado,
@@ -371,8 +376,8 @@ def dashboard_admin(request):
 
         comisiones_data = list(
             comisiones_qs.annotate(
-                inscritos_total=Count('inscripciones', filter=Q(inscripciones__estado__in=['confirmado', 'pre_inscripto'])),
-                confirmados_total=Count('inscripciones', filter=Q(inscripciones__estado='confirmado')),
+                inscritos_total=Count('inscripciones', filter=~Q(inscripciones__estado__in=['lista_espera', 'cancelada', 'rechazada'])),
+                confirmados_total=Count('inscripciones', filter=Q(inscripciones__estado__in=['confirmado', 'aprobada'])),
             ).values(
                 'id_comision',
                 'fk_id_curso_id',
@@ -504,8 +509,8 @@ def api_estudiantes_por_curso(request):
 
     comisiones_data = list(
         comisiones_qs.annotate(
-            inscritos_total=Count('inscripciones', filter=Q(inscripciones__estado__in=['confirmado', 'pre_inscripto'])),
-            confirmados_total=Count('inscripciones', filter=Q(inscripciones__estado='confirmado')),
+            inscritos_total=Count('inscripciones', filter=~Q(inscripciones__estado__in=['lista_espera', 'cancelada', 'rechazada'])),
+            confirmados_total=Count('inscripciones', filter=Q(inscripciones__estado__in=['confirmado', 'aprobada'])),
         ).values(
             'id_comision',
             'cupo_maximo',

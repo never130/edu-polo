@@ -178,8 +178,15 @@ class Comision(models.Model):
     
     @property
     def inscritos_count(self):
-        """Cuenta de estudiantes inscritos confirmados"""
-        return self.inscripciones.filter(estado__in=['confirmado', 'pre_inscripto']).count()
+        return self.inscripciones.exclude(estado__in=['lista_espera', 'cancelada', 'rechazada']).count()
+
+    @property
+    def lista_espera_count(self):
+        return self.inscripciones.filter(estado='lista_espera').count()
+
+    @property
+    def tiene_lista_espera(self):
+        return self.lista_espera_count > 0
     
     @property
     def cupos_disponibles(self):

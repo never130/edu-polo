@@ -22,7 +22,7 @@ class CursoListView(ListView):
         context = super().get_context_data(**kwargs)
         # Agregar comisiones abiertas para cada curso
         for curso in context['cursos']:
-            curso.comisiones_abiertas = curso.comision_set.filter(estado='Abierta')
+            curso.comisiones_abiertas = curso.comision_set.filter(estado='Abierta').order_by('id_comision')
         return context
 
 

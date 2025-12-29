@@ -28,7 +28,7 @@ def ver_cursos_disponibles(request):
 
     comisiones_ciudad_qs = Comision.objects.filter(
         fk_id_polo__ciudad=ciudad,
-    ).select_related('fk_id_polo').prefetch_related('inscripciones')
+    ).select_related('fk_id_polo').prefetch_related('inscripciones').order_by('id_comision')
 
     cursos = (
         Curso.objects.filter(
