@@ -841,11 +841,7 @@
                                         <span style="background:#e2e8f0; color:#334155; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Finalizada</span>
                                     {% endif %}
 
-                                    {% if comision.cupo_lleno %}
-                                        <span style="background:#f1f5f9; color:#0f172a; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">0/{{ comision.cupo_maximo }}</span>
-                                    {% else %}
-                                        <span style="background:#f1f5f9; color:#0f172a; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">{{ comision.cupos_disponibles }}/{{ comision.cupo_maximo }}</span>
-                                    {% endif %}
+                                    <span style="background:#f1f5f9; color:#0f172a; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Cupo: {{ comision.inscritos_count }}/{{ comision.cupo_maximo }}</span>
                                 </div>
                             </div>
                             <div style="font-size: 0.9rem; color: #64748b; margin-bottom: 1rem;">
