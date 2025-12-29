@@ -773,7 +773,7 @@
 
                     <div class="card-info-grid" style="display: block;">
                         <div class="info-block" style="width: 100%;">
-                            <label style="margin-bottom: 0.5rem; display: block;">DÍAS Y HORARIOS</label>
+                            <label style="margin-bottom: 0.5rem; display: block;">COMISIONES Y HORARIOS</label>
                             {% if user.is_authenticated and curso.comisiones_polo %}
                                 <div style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:0.5rem;">
                                     <span style="background:#eef2ff; color:#3730a3; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:800;">
@@ -785,17 +785,30 @@
                                         </span>
                                     {% else %}
                                         <span style="background:#fff7ed; color:#9a3412; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:800;">
-                                            Sin abiertas
+                                            Abiertas: 0
                                         </span>
                                     {% endif %}
                                 </div>
                             {% endif %}
 
-                            {% if curso.comisiones_abiertas %}
+                            {% if curso.comisiones_polo %}
                                 <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                                    {% for comision in curso.comisiones_abiertas %}
+                                    {% for comision in curso.comisiones_polo %}
                                         <div style="background: #f1f5f9; padding: 0.4rem 0.6rem; border-radius: 6px; font-size: 0.85rem; color: var(--text-dark); border-left: 3px solid var(--primary-color);">
-                                            <div style="font-weight: 600; margin-bottom: 2px;">{{ comision.dias_horarios|default:"Consultar" }}</div>
+                                            <div style="display:flex; align-items:center; justify-content:space-between; gap:0.5rem;">
+                                                <div style="font-weight: 600; margin-bottom: 2px;">{{ comision.dias_horarios|default:"Horarios a confirmar" }}</div>
+                                                {% if comision.estado == 'Abierta' and not comision.cupo_lleno %}
+                                                    <span style="background:#dcfce7; color:#166534; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Abierta</span>
+                                                {% elif comision.estado == 'Abierta' and comision.cupo_lleno %}
+                                                    <span style="background:#fee2e2; color:#991b1b; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Cerrada</span>
+                                                {% elif comision.estado == 'Cerrada' %}
+                                                    <span style="background:#fee2e2; color:#991b1b; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Cerrada</span>
+                                                {% elif comision.estado == 'En proceso' %}
+                                                    <span style="background:#fef9c3; color:#854d0e; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">En proceso</span>
+                                                {% elif comision.estado == 'Finalizada' %}
+                                                    <span style="background:#e2e8f0; color:#334155; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Finalizada</span>
+                                                {% endif %}
+                                            </div>
                                             {% if comision.fecha_inicio or comision.fecha_fin %}
                                                 <div style="font-size: 0.75rem; color: #64748b;">
                                                     <i class="fa-regular fa-calendar" style="font-size: 0.7rem; margin-right: 3px;"></i>
@@ -808,7 +821,7 @@
                                     {% endfor %}
                                 </div>
                             {% else %}
-                                <span>Consultar disponibilidad</span>
+                                <span>Sin comisiones publicadas</span>
                             {% endif %}
                         </div>
                     </div>
@@ -829,7 +842,7 @@
                         {% for comision in curso.comisiones_polo %}
                         <div style="background: #f8fafc; padding: 1rem; border-radius: 12px; margin-bottom: 1rem; border: 1px solid #e2e8f0;">
                             <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                                <strong>Comisión {{ comision.id_comision }}</strong>
+                                <strong>Comisión {{ forloop.counter }}</strong>
                                 <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
                                     {% if comision.estado == 'Abierta' and not comision.cupo_lleno %}
                                         <span style="background:#dcfce7; color:#166534; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Abierta</span>
@@ -847,7 +860,7 @@
                                 </div>
                             </div>
                             <div style="font-size: 0.9rem; color: #64748b; margin-bottom: 1rem;">
-                                <div style="margin-bottom: 0.3rem;"><i class="fa-regular fa-clock" style="margin-right: 5px;"></i> {{ comision.dias_horarios|default:"Martes y Jueves 16:30hs" }}</div>
+                                <div style="margin-bottom: 0.3rem;"><i class="fa-regular fa-clock" style="margin-right: 5px;"></i> {{ comision.dias_horarios|default:"Horarios a confirmar" }}</div>
                                 {% if comision.fecha_inicio or comision.fecha_fin %}
                                     <div>
                                         <i class="fa-regular fa-calendar-alt" style="margin-right: 5px;"></i>
@@ -876,7 +889,7 @@
                         </div>
                         {% endfor %}
                     {% else %}
-                        <p style="color: #94a3b8; text-align: center;">No hay cupos disponibles por el momento.</p>
+                        <p style="color: #94a3b8; text-align: center;">No hay comisiones publicadas por el momento.</p>
                     {% endif %}
                 </div>
             </div>
