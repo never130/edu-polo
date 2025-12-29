@@ -439,12 +439,14 @@ def panel_inscripciones(request):
             Q(comision__fk_id_curso__nombre__icontains=busqueda)
         )
     
+    inscripciones_para_resumen = inscripciones
+
     # Filtros
     estado_filtro = request.GET.get('estado')
     if estado_filtro:
         inscripciones = inscripciones.filter(estado=estado_filtro)
 
-    resumen_estados_qs = inscripciones.values('estado').annotate(total=Count('id'))
+    resumen_estados_qs = inscripciones_para_resumen.values('estado').annotate(total=Count('id'))
     resumen_estados = {row['estado']: row['total'] for row in resumen_estados_qs}
     
     # Obtener comisiones con cupo disponible para el formulario de inscripción
