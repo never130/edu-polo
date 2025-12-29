@@ -383,8 +383,10 @@
                         <div class="comision-compact-header">
                             <span class="comision-id">#{{ comision.id_comision }} - {{ comision.modalidad }}</span>
                             <div style="display:flex; gap:0.35rem; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
-                                {% if comision.estado == 'Abierta' %}
+                                {% if comision.estado == 'Abierta' and not comision.cupo_lleno %}
                                     <span class="cupos-badge cupos-ok">Abierta</span>
+                                {% elif comision.estado == 'Abierta' and comision.cupo_lleno %}
+                                    <span class="cupos-badge cupos-error">Cerrada</span>
                                 {% elif comision.estado == 'Cerrada' %}
                                     <span class="cupos-badge cupos-error">Cerrada</span>
                                 {% elif comision.estado == 'En proceso' %}

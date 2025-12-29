@@ -831,8 +831,10 @@
                             <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
                                 <strong>Comisión {{ comision.id_comision }}</strong>
                                 <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
-                                    {% if comision.estado == 'Abierta' %}
+                                    {% if comision.estado == 'Abierta' and not comision.cupo_lleno %}
                                         <span style="background:#dcfce7; color:#166534; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Abierta</span>
+                                    {% elif comision.estado == 'Abierta' and comision.cupo_lleno %}
+                                        <span style="background:#fee2e2; color:#991b1b; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Cerrada</span>
                                     {% elif comision.estado == 'Cerrada' %}
                                         <span style="background:#fee2e2; color:#991b1b; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Cerrada</span>
                                     {% elif comision.estado == 'En proceso' %}
