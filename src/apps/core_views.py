@@ -266,16 +266,6 @@ def dashboard_admin(request):
 
     hoy = timezone.now().date()
     Comision.objects.filter(fecha_fin__lt=hoy).exclude(estado='Finalizada').update(estado='Finalizada')
-    comisiones_llenas_ids = list(
-        Comision.objects.filter(estado='Abierta')
-        .annotate(
-            inscritos_confirmados=Count('inscripciones', filter=Q(inscripciones__estado='confirmado'))
-        )
-        .filter(inscritos_confirmados__gte=F('cupo_maximo'))
-        .values_list('id_comision', flat=True)
-    )
-    if comisiones_llenas_ids:
-        Comision.objects.filter(id_comision__in=comisiones_llenas_ids).update(estado='Cerrada')
     
     # Estadísticas generales
     total_cursos = Curso.objects.count()

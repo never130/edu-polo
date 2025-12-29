@@ -3,7 +3,7 @@
 
 {% block title %}Inscripciones - Gestión{% endblock %}
 
-{% block user_role %}Administrador{% endblock %}
+{% block user_role %}{{ tipo_usuario|default:"Administrador" }}{% endblock %}
 
 {% block sidebar_menu %}
 <li><a href="{% url 'dashboard_admin' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
@@ -62,8 +62,22 @@
 
     <!-- Filter Bar -->
     <div style="background: white; padding: 1rem 1.5rem; border-radius: 0.75rem; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;">
-        <div style="font-weight: 600; color: #374151; font-size: 1.1rem;">Lista de Inscripciones</div>
-        <form method="get" style="display: flex; align-items: center; gap: 0.5rem; flex: 1; max-width: 500px; justify-content: flex-end;">
+        <div>
+            <div style="font-weight: 600; color: #374151; font-size: 1.1rem;">Lista de Inscripciones</div>
+            <div style="margin-top: 0.35rem; display: flex; gap: 0.4rem; flex-wrap: wrap; font-size: 0.85rem; color: #6b7280;">
+                <span style="background: #f3f4f6; padding: 0.2rem 0.6rem; border-radius: 9999px;">Confirmados: {{ resumen_estados.confirmado|default:0 }}</span>
+                <span style="background: #f3f4f6; padding: 0.2rem 0.6rem; border-radius: 9999px;">Preinscriptos: {{ resumen_estados.pre_inscripto|default:0 }}</span>
+                <span style="background: #f3f4f6; padding: 0.2rem 0.6rem; border-radius: 9999px;">Lista de espera: {{ resumen_estados.lista_espera|default:0 }}</span>
+            </div>
+        </div>
+        <form method="get" style="display: flex; align-items: center; gap: 0.5rem; flex: 1; max-width: 720px; justify-content: flex-end;">
+            <select name="estado" style="padding: 0.75rem 0.9rem; background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 0.5rem; color: #1f2937; outline: none; transition: border-color 0.2s;">
+                <option value="" {% if not estado_filtro %}selected{% endif %}>Todos</option>
+                <option value="confirmado" {% if estado_filtro == 'confirmado' %}selected{% endif %}>Confirmados</option>
+                <option value="pre_inscripto" {% if estado_filtro == 'pre_inscripto' %}selected{% endif %}>Preinscriptos</option>
+                <option value="lista_espera" {% if estado_filtro == 'lista_espera' %}selected{% endif %}>Lista de espera</option>
+                <option value="cancelada" {% if estado_filtro == 'cancelada' %}selected{% endif %}>Cancelados</option>
+            </select>
             <div style="position: relative; width: 100%;">
                 <span style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #9ca3af;">🔍</span>
                 <input type="text" name="q" value="{{ busqueda|default:'' }}" placeholder="Buscar por nombre o DNI..." 
@@ -114,6 +128,9 @@
                                 <span style="background-color: #dbeafe; color: #1e40af; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; display: inline-block;">Preinscripto</span>
                             {% elif inscripcion.estado == 'lista_espera' %}
                                 <span style="background-color: #ffedd5; color: #9a3412; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; display: inline-block;">En Espera</span>
+                                {% if inscripcion.orden_lista_espera %}
+                                    <div style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem;">Orden: {{ inscripcion.orden_lista_espera }}</div>
+                                {% endif %}
                             {% elif inscripcion.estado == 'cancelada' %}
                                 <span style="background-color: #fee2e2; color: #991b1b; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; display: inline-block;">Rechazado</span>
                             {% else %}
@@ -124,9 +141,38 @@
                             {{ inscripcion.fecha_hora_inscripcion|date:"d/m/Y H:i" }}
                         </td>
                         <td style="padding: 1rem 1.5rem; text-align: right;">
-                            <button title="Imprimir Comprobante" style="background: none; border: none; cursor: pointer; color: #9ca3af; padding: 0.25rem; border-radius: 0.25rem; transition: color 0.2s;">
-                                🖨️
+                            {% if inscripcion.estado == 'pre_inscripto' or inscripcion.estado == 'lista_espera' %}
+                                <form method="post" action="{% url 'administracion:inscribir_estudiante' %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="estudiante_id" value="{{ inscripcion.estudiante.id }}">
+                                    <input type="hidden" name="comision_id" value="{{ inscripcion.comision.id_comision }}">
+                                    <input type="hidden" name="next" value="{% url 'administracion:panel_inscripciones' %}">
+                                    <button type="submit" style="background-color: #16a34a; color: white; border: none; padding: 0.5rem 0.9rem; border-radius: 0.5rem; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: background-color 0.2s;">
+                                        ✓ Confirmar
+                                    </button>
+                                </form>
+                            {% endif %}
+                            <button type="button" onclick="toggleDetalles('{{ inscripcion.id }}')" style="background-color: white; color: #374151; border: 1px solid #e5e7eb; padding: 0.5rem 0.9rem; border-radius: 0.5rem; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: background-color 0.2s; margin-left: 0.4rem;">
+                                Ver
                             </button>
+                        </td>
+                    </tr>
+                    <tr id="detalles-{{ inscripcion.id }}" style="display: none; background: #f9fafb; border-bottom: 1px solid #f3f4f6;">
+                        <td colspan="7" style="padding: 1rem 1.5rem; color: #374151;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                                <div>
+                                    <div style="font-weight: 700; margin-bottom: 0.25rem;">Discapacidad</div>
+                                    <div style="color: #6b7280; white-space: pre-wrap;">{{ inscripcion.observaciones_discapacidad|default:"-" }}</div>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 700; margin-bottom: 0.25rem;">Salud</div>
+                                    <div style="color: #6b7280; white-space: pre-wrap;">{{ inscripcion.observaciones_salud|default:"-" }}</div>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 700; margin-bottom: 0.25rem;">Generales</div>
+                                    <div style="color: #6b7280; white-space: pre-wrap;">{{ inscripcion.observaciones_generales|default:"-" }}</div>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
@@ -220,6 +266,12 @@
 </style>
 
 <script>
+    function toggleDetalles(id) {
+        const row = document.getElementById(`detalles-${id}`);
+        if (!row) return;
+        row.style.display = row.style.display === 'none' || row.style.display === '' ? 'table-row' : 'none';
+    }
+
     function openModalInscribir() {
         const modal = document.getElementById('modalInscribir');
         modal.style.display = 'block';

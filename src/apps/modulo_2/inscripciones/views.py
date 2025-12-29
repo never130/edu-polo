@@ -27,11 +27,6 @@ def formulario_inscripcion(request, comision_id):
         messages.error(request, f'🚫 La inscripción para la comisión del curso "{comision.fk_id_curso.nombre}" está cerrada.')
         return redirect('landing')
     
-    # Verificar cupo disponible
-    if comision.cupo_lleno:
-        messages.error(request, f'🚫 Lo sentimos, la comisión del curso "{comision.fk_id_curso.nombre}" tiene el cupo completo. Ya no se aceptan nuevas inscripciones.')
-        return redirect('landing')
-    
     # Verificar si ya está inscrito (para evitar mostrar el formulario si ya lo está)
     try:
         # Asumiendo que el username es el DNI
@@ -154,11 +149,6 @@ def formulario_inscripcion(request, comision_id):
                         messages.error(request, '❌ Como eres menor de 16 años, debes registrar al menos un tutor.')
                         return render(request, 'inscripciones/formulario_inscripcion.html', {'comision': comision})
                 
-                # 6. Verificar nuevamente cupo disponible (por si alguien se inscribió mientras llenaba el form)
-                if comision.cupo_lleno:
-                    messages.error(request, '🚫 Lo sentimos, el cupo se completó mientras completabas el formulario.')
-                    return redirect('landing')
-                
                 # 7. Verificar si ya está inscrito en la comisión o en otra comisión del mismo curso
                 # Verificar inscripción en la misma comisión
                 if Inscripcion.objects.filter(estudiante=estudiante, comision=comision).exists():
@@ -172,42 +162,43 @@ def formulario_inscripcion(request, comision_id):
                     return redirect('landing')
                 
                 # 8. Crear inscripción con observaciones
-                # Determinar estado y orden
+                comision_locked = Comision.objects.select_for_update().get(id_comision=comision.id_comision)
+                if comision_locked.estado != 'Abierta':
+                    messages.error(request, f'🚫 La inscripción para la comisión del curso "{comision_locked.fk_id_curso.nombre}" está cerrada.')
+                    return redirect('landing')
+                
                 estado_inscripcion = 'pre_inscripto'
                 orden = None
-                
-                # Re-verificar cupo en el momento de guardar (dentro de transacción)
-                comision.refresh_from_db()
-
-                if comision.estado != 'Abierta':
-                    messages.error(request, f'🚫 La inscripción para la comisión del curso "{comision.fk_id_curso.nombre}" está cerrada.')
-                    return redirect('landing')
-                
-                if comision.cupo_lleno:
-                    messages.error(request, '🚫 Lo sentimos, el cupo se completó justo antes de finalizar tu inscripción. No se ha podido realizar la inscripción.')
-                    return redirect('landing')
+                if comision_locked.cupo_lleno:
+                    estado_inscripcion = 'lista_espera'
+                    max_orden = Inscripcion.objects.filter(
+                        comision=comision_locked,
+                        estado='lista_espera'
+                    ).aggregate(Max('orden_lista_espera'))['orden_lista_espera__max'] or 0
+                    orden = max_orden + 1
                 
                 Inscripcion.objects.create(
                     estudiante=estudiante,
-                    comision=comision,
+                    comision=comision_locked,
                     estado=estado_inscripcion,
-                    orden_lista_espera=None,
+                    orden_lista_espera=orden,
                     observaciones_discapacidad=request.POST.get('observaciones_discapacidad', ''),
                     observaciones_salud=request.POST.get('observaciones_salud', ''),
                     observaciones_generales=request.POST.get('observaciones_generales', ''),
                 )
                 
                 # 7. Mensaje de éxito personalizado
-                curso_nombre = comision.fk_id_curso.nombre
-                
-                cupos_restantes = comision.cupos_disponibles
-                
-                if cupos_restantes == 0:
-                    mensaje = f'✅ ¡PRE-INSCRIPCIÓN EXITOSA! Te has pre-inscrito al curso "{curso_nombre}". La comisión está completa y tu inscripción queda pendiente de confirmación.'
-                elif cupos_restantes <= 3:
-                    mensaje = f'✅ ¡PRE-INSCRIPCIÓN EXITOSA! Te has pre-inscrito al curso "{curso_nombre}". ⚠️ Solo quedan {cupos_restantes} cupos. Tu inscripción está pendiente de confirmación.'
+                curso_nombre = comision_locked.fk_id_curso.nombre
+                if estado_inscripcion == 'lista_espera':
+                    mensaje = f'📝 Te anotaste en la lista de espera del curso "{curso_nombre}". Orden: {orden}.'
                 else:
-                    mensaje = f'✅ ¡PRE-INSCRIPCIÓN EXITOSA! Te has pre-inscrito al curso "{curso_nombre}". Tu inscripción está pendiente de confirmación.'
+                    cupos_restantes = comision_locked.cupos_disponibles
+                    if cupos_restantes == 0:
+                        mensaje = f'✅ ¡PRE-INSCRIPCIÓN EXITOSA! Te has pre-inscrito al curso "{curso_nombre}". La comisión está completa y tu inscripción queda pendiente de confirmación.'
+                    elif cupos_restantes <= 3:
+                        mensaje = f'✅ ¡PRE-INSCRIPCIÓN EXITOSA! Te has pre-inscrito al curso "{curso_nombre}". ⚠️ Solo quedan {cupos_restantes} cupos. Tu inscripción está pendiente de confirmación.'
+                    else:
+                        mensaje = f'✅ ¡PRE-INSCRIPCIÓN EXITOSA! Te has pre-inscrito al curso "{curso_nombre}". Tu inscripción está pendiente de confirmación.'
                 
                 messages.success(request, mensaje)
                 

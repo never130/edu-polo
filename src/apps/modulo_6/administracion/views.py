@@ -360,17 +360,72 @@ def get_mesa_entrada_ciudad(user):
     return None
 
 
+def _normalizar_cupos_y_espera(comision_locked):
+    confirmados_count = Inscripcion.objects.filter(comision=comision_locked, estado='confirmado').count()
+    cupos_para_preinscriptos = max(comision_locked.cupo_maximo - confirmados_count, 0)
+
+    pre_qs = Inscripcion.objects.select_for_update().filter(
+        comision=comision_locked,
+        estado='pre_inscripto'
+    ).order_by('fecha_hora_inscripcion', 'id')
+    pre_ids = list(pre_qs.values_list('id', flat=True))
+
+    if len(pre_ids) <= cupos_para_preinscriptos:
+        if pre_ids:
+            Inscripcion.objects.filter(id__in=pre_ids).update(orden_lista_espera=None)
+        return
+
+    keep_ids = pre_ids[:cupos_para_preinscriptos]
+    move_ids = pre_ids[cupos_para_preinscriptos:]
+
+    if keep_ids:
+        Inscripcion.objects.filter(id__in=keep_ids).update(orden_lista_espera=None)
+
+    max_orden = Inscripcion.objects.filter(
+        comision=comision_locked,
+        estado='lista_espera'
+    ).aggregate(Max('orden_lista_espera'))['orden_lista_espera__max'] or 0
+
+    inscripciones_a_mover = list(
+        Inscripcion.objects.select_for_update().filter(id__in=move_ids).order_by('fecha_hora_inscripcion', 'id')
+    )
+    for idx, insc in enumerate(inscripciones_a_mover, start=1):
+        insc.estado = 'lista_espera'
+        insc.orden_lista_espera = max_orden + idx
+    if inscripciones_a_mover:
+        Inscripcion.objects.bulk_update(inscripciones_a_mover, ['estado', 'orden_lista_espera'])
+
+
 @login_required
 @user_passes_test(es_admin)
 def panel_inscripciones(request):
     """Panel de gestión de inscripciones con búsqueda y filtros"""
-    inscripciones = Inscripcion.objects.all().select_related(
-        'estudiante__usuario__persona',
-        'comision__fk_id_curso'
-    ).order_by('-fecha_hora_inscripcion')
-    
     # Filtrar por ciudad si es Mesa de Entrada
     ciudad_mesa_entrada = get_mesa_entrada_ciudad(request.user)
+    comisiones_scope = Comision.objects.all()
+    if ciudad_mesa_entrada:
+        comisiones_scope = comisiones_scope.filter(fk_id_polo__ciudad=ciudad_mesa_entrada)
+
+    comisiones_con_exceso = comisiones_scope.annotate(
+        confirmados_count=Count('inscripciones', filter=Q(inscripciones__estado='confirmado')),
+        preinscriptos_count=Count('inscripciones', filter=Q(inscripciones__estado='pre_inscripto')),
+    ).filter(
+        preinscriptos_count__gt=0
+    ).filter(
+        Q(confirmados_count__gte=F('cupo_maximo')) |
+        Q(preinscriptos_count__gt=F('cupo_maximo') - F('confirmados_count'))
+    ).values_list('id_comision', flat=True)
+
+    for comision_id in comisiones_con_exceso:
+        with transaction.atomic():
+            comision_locked = Comision.objects.select_for_update().get(id_comision=comision_id)
+            _normalizar_cupos_y_espera(comision_locked)
+
+    inscripciones = Inscripcion.objects.all().select_related(
+        'estudiante__usuario__persona',
+        'comision__fk_id_curso',
+        'comision__fk_id_polo'
+    ).order_by('-fecha_hora_inscripcion')
     if ciudad_mesa_entrada:
         inscripciones = inscripciones.filter(comision__fk_id_polo__ciudad=ciudad_mesa_entrada)
     
@@ -388,13 +443,16 @@ def panel_inscripciones(request):
     estado_filtro = request.GET.get('estado')
     if estado_filtro:
         inscripciones = inscripciones.filter(estado=estado_filtro)
+
+    resumen_estados_qs = inscripciones.values('estado').annotate(total=Count('id'))
+    resumen_estados = {row['estado']: row['total'] for row in resumen_estados_qs}
     
     # Obtener comisiones con cupo disponible para el formulario de inscripción
     # Obtener todas las comisiones abiertas y calcular cupos disponibles usando anotaciones
     comisiones_disponibles = Comision.objects.filter(
         estado='Abierta'
     ).annotate(
-        inscritos_count_annotated=Count('inscripciones', filter=Q(inscripciones__estado='confirmado'))
+        inscritos_count_annotated=Count('inscripciones', filter=Q(inscripciones__estado__in=['confirmado', 'pre_inscripto']))
     ).annotate(
         cupos_disponibles_calc=F('cupo_maximo') - F('inscritos_count_annotated')
     ).filter(
@@ -416,6 +474,7 @@ def panel_inscripciones(request):
         'inscripciones': inscripciones,
         'estado_filtro': estado_filtro,
         'busqueda': busqueda,
+        'resumen_estados': resumen_estados,
         'comisiones_disponibles': comisiones_disponibles,
         'estudiantes': estudiantes,
     }
@@ -455,16 +514,19 @@ def inscribir_estudiante_admin(request):
                         if comision_locked.estado == 'Finalizada':
                             messages.error(request, f'🚫 La comisión {comision_locked.fk_id_curso.nombre} (Comisión #{comision_locked.id_comision}) está finalizada.')
                             return redirect(redirect_url)
-                        if comision_locked.cupo_lleno:
-                            messages.error(request, f'🚫 La comisión {comision.fk_id_curso.nombre} (Comisión #{comision.id_comision}) no tiene cupos disponibles para confirmar inscripciones.')
-                            return redirect(redirect_url)
 
-                        inscripcion_existente.estado = 'confirmado'
-                        inscripcion_existente.save()
-
-                        if comision_locked.estado == 'Abierta' and comision_locked.cupo_lleno:
-                            comision_locked.estado = 'Cerrada'
-                            comision_locked.save(update_fields=['estado'])
+                        _normalizar_cupos_y_espera(comision_locked)
+                        inscripcion_locked = Inscripcion.objects.select_for_update().get(pk=inscripcion_existente.pk)
+                        if inscripcion_locked.estado == 'lista_espera':
+                            if comision_locked.cupo_lleno:
+                                messages.error(request, f'🚫 La comisión {comision_locked.fk_id_curso.nombre} (Comisión #{comision_locked.id_comision}) no tiene cupos disponibles.')
+                                return redirect(redirect_url)
+                            inscripcion_locked.estado = 'confirmado'
+                            inscripcion_locked.orden_lista_espera = None
+                            inscripcion_locked.save(update_fields=['estado', 'orden_lista_espera'])
+                        else:
+                            inscripcion_locked.estado = 'confirmado'
+                            inscripcion_locked.save(update_fields=['estado'])
 
                     messages.success(request, f'✅ Inscripción confirmada exitosamente para {estudiante.usuario.persona.nombre_completo}.')
                     return redirect(redirect_url)
@@ -472,8 +534,22 @@ def inscribir_estudiante_admin(request):
                     messages.warning(request, f'⚠️ El estudiante {estudiante.usuario.persona.nombre_completo} ya está inscrito y confirmado en esta comisión.')
                     return redirect(redirect_url)
                 elif inscripcion_existente.estado == 'lista_espera':
-                    messages.warning(request, f'⚠️ El estudiante {estudiante.usuario.persona.nombre_completo} está en lista de espera.')
-                    # Aquí se podría agregar lógica para mover de lista de espera a confirmado si hay cupo
+                    with transaction.atomic():
+                        comision_locked = Comision.objects.select_for_update().get(id_comision=comision.id_comision)
+                        if comision_locked.estado == 'Finalizada':
+                            messages.error(request, f'🚫 La comisión {comision_locked.fk_id_curso.nombre} (Comisión #{comision_locked.id_comision}) está finalizada.')
+                            return redirect(redirect_url)
+                        _normalizar_cupos_y_espera(comision_locked)
+                        if comision_locked.cupo_lleno:
+                            messages.error(request, f'🚫 La comisión {comision_locked.fk_id_curso.nombre} (Comisión #{comision_locked.id_comision}) no tiene cupos disponibles.')
+                            return redirect(redirect_url)
+
+                        inscripcion_locked = Inscripcion.objects.select_for_update().get(pk=inscripcion_existente.pk)
+                        inscripcion_locked.estado = 'confirmado'
+                        inscripcion_locked.orden_lista_espera = None
+                        inscripcion_locked.save(update_fields=['estado', 'orden_lista_espera'])
+
+                    messages.success(request, f'✅ Inscripción confirmada exitosamente para {estudiante.usuario.persona.nombre_completo}.')
                     return redirect(redirect_url)
             
             # Si no existe inscripción previa (o se permite crear nueva para otros casos)
@@ -518,10 +594,6 @@ def inscribir_estudiante_admin(request):
                     comision=comision_locked,
                     estado='confirmado'
                 )
-
-                if comision_locked.estado == 'Abierta' and comision_locked.cupo_lleno:
-                    comision_locked.estado = 'Cerrada'
-                    comision_locked.save(update_fields=['estado'])
             
             messages.success(request, f'✅ Estudiante {estudiante.usuario.persona.nombre_completo} inscrito exitosamente en {comision.fk_id_curso.nombre} (Comisión #{comision.id_comision}). Cupos restantes: {comision.cupos_disponibles}')
             return redirect(redirect_url)

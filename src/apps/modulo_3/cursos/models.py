@@ -179,12 +179,12 @@ class Comision(models.Model):
     @property
     def inscritos_count(self):
         """Cuenta de estudiantes inscritos confirmados"""
-        return self.inscripciones.filter(estado='confirmado').count()
+        return self.inscripciones.filter(estado__in=['confirmado', 'pre_inscripto']).count()
     
     @property
     def cupos_disponibles(self):
         """Calcula cupos disponibles en tiempo real"""
-        return self.cupo_maximo - self.inscritos_count
+        return max(self.cupo_maximo - self.inscritos_count, 0)
     
     @property
     def cupo_lleno(self):
