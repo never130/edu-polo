@@ -120,7 +120,7 @@
                         </td>
                         <td style="padding: 1rem 1.5rem; color: #4b5563;">
                             {{ inscripcion.comision.fk_id_curso.nombre }}
-                            <div style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.1rem;">Comisión #{{ inscripcion.comision.id_comision }}</div>
+                            <span style="font-size: 0.8rem; color: #9ca3af;">(Comisión #{{ inscripcion.comision.id_comision }})</span>
                         </td>
                         <td style="padding: 1rem 1.5rem; color: #4b5563;">
                             {{ inscripcion.comision.fk_id_polo.nombre|default:"-" }}
@@ -131,10 +131,9 @@
                             {% elif inscripcion.estado == 'pre_inscripto' %}
                                 <span style="background-color: #dbeafe; color: #1e40af; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; display: inline-block;">Preinscripto</span>
                             {% elif inscripcion.estado == 'lista_espera' %}
-                                <span style="background-color: #ffedd5; color: #9a3412; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; display: inline-block;">En Espera</span>
-                                {% if inscripcion.orden_lista_espera %}
-                                    <div style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem;">Orden: {{ inscripcion.orden_lista_espera }}</div>
-                                {% endif %}
+                                <span style="background-color: #ffedd5; color: #9a3412; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; display: inline-block;">
+                                    En Espera{% if inscripcion.orden_lista_espera %} (N° {{ inscripcion.orden_lista_espera }}){% endif %}
+                                </span>
                             {% elif inscripcion.estado == 'cancelada' %}
                                 <span style="background-color: #fee2e2; color: #991b1b; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; display: inline-block;">Rechazado</span>
                             {% else %}

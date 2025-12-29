@@ -421,32 +421,36 @@ def panel_inscripciones(request):
             comision_locked = Comision.objects.select_for_update().get(id_comision=comision_id)
             _normalizar_cupos_y_espera(comision_locked)
 
-    inscripciones = Inscripcion.objects.all().select_related(
+    inscripciones_base = Inscripcion.objects.all().select_related(
         'estudiante__usuario__persona',
         'comision__fk_id_curso',
         'comision__fk_id_polo'
-    ).order_by('-fecha_hora_inscripcion')
+    )
     if ciudad_mesa_entrada:
-        inscripciones = inscripciones.filter(comision__fk_id_polo__ciudad=ciudad_mesa_entrada)
+        inscripciones_base = inscripciones_base.filter(comision__fk_id_polo__ciudad=ciudad_mesa_entrada)
     
     # Búsqueda
     busqueda = request.GET.get('q')
     if busqueda:
-        inscripciones = inscripciones.filter(
+        inscripciones_base = inscripciones_base.filter(
             Q(estudiante__usuario__persona__nombre__icontains=busqueda) |
             Q(estudiante__usuario__persona__apellido__icontains=busqueda) |
             Q(estudiante__usuario__persona__dni__icontains=busqueda) |
             Q(comision__fk_id_curso__nombre__icontains=busqueda)
         )
-    
-    inscripciones_para_resumen = inscripciones
 
     # Filtros
     estado_filtro = request.GET.get('estado')
+    inscripciones = inscripciones_base
     if estado_filtro:
         inscripciones = inscripciones.filter(estado=estado_filtro)
 
-    resumen_estados_qs = inscripciones_para_resumen.values('estado').annotate(total=Count('id'))
+    if estado_filtro == 'lista_espera':
+        inscripciones = inscripciones.order_by('comision_id', 'orden_lista_espera', 'fecha_hora_inscripcion', 'id')
+    else:
+        inscripciones = inscripciones.order_by('-fecha_hora_inscripcion')
+
+    resumen_estados_qs = inscripciones_base.values('estado').annotate(total=Count('id'))
     resumen_estados = {row['estado']: row['total'] for row in resumen_estados_qs}
     
     # Obtener comisiones con cupo disponible para el formulario de inscripción
@@ -470,7 +474,10 @@ def panel_inscripciones(request):
         queryset=Inscripcion.objects.filter(estado='pre_inscripto').select_related('comision__fk_id_curso'),
         to_attr='pre_inscripciones_list'
     )
-    estudiantes = Estudiante.objects.filter(inscripciones__estado='pre_inscripto').distinct().select_related('usuario__persona').prefetch_related(pre_inscripciones_prefetch).order_by('usuario__persona__apellido', 'usuario__persona__nombre')
+    estudiantes = Estudiante.objects.filter(inscripciones__estado='pre_inscripto')
+    if ciudad_mesa_entrada:
+        estudiantes = estudiantes.filter(inscripciones__comision__fk_id_polo__ciudad=ciudad_mesa_entrada)
+    estudiantes = estudiantes.distinct().select_related('usuario__persona').prefetch_related(pre_inscripciones_prefetch).order_by('usuario__persona__apellido', 'usuario__persona__nombre')
     
     context = {
         'inscripciones': inscripciones,
