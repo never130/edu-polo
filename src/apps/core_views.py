@@ -58,6 +58,7 @@ def cursos_por_polo(request, polo_id):
     """
     from apps.modulo_3.cursos.models import Curso, PoloCreativo
     from django.shortcuts import get_object_or_404
+    from django.db.models import Count, F, Q
     
     polo_seleccionado = get_object_or_404(PoloCreativo, id_polo=polo_id)
     
@@ -72,6 +73,13 @@ def cursos_por_polo(request, polo_id):
         curso.comisiones_abiertas = curso.comision_set.filter(
             estado='Abierta',
             fk_id_polo=polo_seleccionado,
+        ).annotate(
+            inscritos_count_annotated=Count(
+                'inscripciones',
+                filter=~Q(inscripciones__estado__in=['lista_espera', 'cancelada']),
+            )
+        ).filter(
+            inscritos_count_annotated__lt=F('cupo_maximo')
         ).order_by('id_comision')
         curso.comisiones_polo = curso.comision_set.filter(
             fk_id_polo=polo_seleccionado,
@@ -376,8 +384,8 @@ def dashboard_admin(request):
 
         comisiones_data = list(
             comisiones_qs.annotate(
-                inscritos_total=Count('inscripciones', filter=~Q(inscripciones__estado__in=['lista_espera', 'cancelada', 'rechazada'])),
-                confirmados_total=Count('inscripciones', filter=Q(inscripciones__estado__in=['confirmado', 'aprobada'])),
+                inscritos_total=Count('inscripciones', filter=~Q(inscripciones__estado__in=['lista_espera', 'cancelada'])),
+                confirmados_total=Count('inscripciones', filter=Q(inscripciones__estado='confirmado')),
             ).values(
                 'id_comision',
                 'fk_id_curso_id',

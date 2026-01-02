@@ -178,7 +178,7 @@ class Comision(models.Model):
     
     @property
     def inscritos_count(self):
-        return self.inscripciones.exclude(estado__in=['lista_espera', 'cancelada', 'rechazada']).count()
+        return self.inscripciones.exclude(estado__in=['lista_espera', 'cancelada']).count()
 
     @property
     def lista_espera_count(self):

@@ -135,7 +135,7 @@
                                     En Espera{% if inscripcion.orden_lista_espera %} (N° {{ inscripcion.orden_lista_espera }}){% endif %}
                                 </span>
                             {% elif inscripcion.estado == 'cancelada' %}
-                                <span style="background-color: #fee2e2; color: #991b1b; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; display: inline-block;">Rechazado</span>
+                                <span style="background-color: #fee2e2; color: #991b1b; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; display: inline-block;">Cancelado</span>
                             {% else %}
                                 <span style="background-color: #f3f4f6; color: #374151; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; display: inline-block;">{{ inscripcion.get_estado_display }}</span>
                             {% endif %}

@@ -3,7 +3,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.urls import reverse_lazy
-from django.db.models import Max
+from django.db.models import Count, F, Max, Q
 from .models import Curso, Comision
 from apps.modulo_1.roles.models import Estudiante
 from apps.modulo_2.inscripciones.models import Inscripcion
@@ -22,7 +22,16 @@ class CursoListView(ListView):
         context = super().get_context_data(**kwargs)
         # Agregar comisiones abiertas para cada curso
         for curso in context['cursos']:
-            curso.comisiones_abiertas = curso.comision_set.filter(estado='Abierta').order_by('id_comision')
+            curso.comisiones_abiertas = curso.comision_set.filter(
+                estado='Abierta'
+            ).annotate(
+                inscritos_count_annotated=Count(
+                    'inscripciones',
+                    filter=~Q(inscripciones__estado__in=['lista_espera', 'cancelada']),
+                )
+            ).filter(
+                inscritos_count_annotated__lt=F('cupo_maximo')
+            ).order_by('id_comision')
         return context
 
 
@@ -98,7 +107,7 @@ def mis_inscripciones(request):
         inscripciones = Inscripcion.objects.filter(
             estudiante=estudiante
         ).exclude(
-            estado__in=['cancelada', 'rechazada']
+            estado='cancelada'
         ).select_related('comision__fk_id_curso', 'comision__fk_id_polo').order_by('-fecha_hora_inscripcion')
         
         return render(request, 'cursos/mis_inscripciones.html', {'inscripciones': inscripciones})

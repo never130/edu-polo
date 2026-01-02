@@ -361,12 +361,12 @@ def get_mesa_entrada_ciudad(user):
 
 
 def _normalizar_cupos_y_espera(comision_locked):
-    confirmados_count = Inscripcion.objects.filter(comision=comision_locked, estado__in=['confirmado', 'aprobada']).count()
+    confirmados_count = Inscripcion.objects.filter(comision=comision_locked, estado='confirmado').count()
     cupos_para_preinscriptos = max(comision_locked.cupo_maximo - confirmados_count, 0)
 
     pre_qs = Inscripcion.objects.select_for_update().filter(
         comision=comision_locked,
-        estado__in=['pre_inscripto', 'pendiente']
+        estado='pre_inscripto'
     ).order_by('fecha_hora_inscripcion', 'id')
     pre_ids = list(pre_qs.values_list('id', flat=True))
 
@@ -407,8 +407,8 @@ def panel_inscripciones(request):
         comisiones_scope = comisiones_scope.filter(fk_id_polo__ciudad=ciudad_mesa_entrada)
 
     comisiones_con_exceso = comisiones_scope.annotate(
-        confirmados_count=Count('inscripciones', filter=Q(inscripciones__estado__in=['confirmado', 'aprobada'])),
-        preinscriptos_count=Count('inscripciones', filter=Q(inscripciones__estado__in=['pre_inscripto', 'pendiente'])),
+        confirmados_count=Count('inscripciones', filter=Q(inscripciones__estado='confirmado')),
+        preinscriptos_count=Count('inscripciones', filter=Q(inscripciones__estado='pre_inscripto')),
     ).filter(
         preinscriptos_count__gt=0
     ).filter(
@@ -458,7 +458,7 @@ def panel_inscripciones(request):
     comisiones_disponibles = Comision.objects.filter(
         estado='Abierta'
     ).annotate(
-        inscritos_count_annotated=Count('inscripciones', filter=~Q(inscripciones__estado__in=['lista_espera', 'cancelada', 'rechazada']))
+        inscritos_count_annotated=Count('inscripciones', filter=~Q(inscripciones__estado__in=['lista_espera', 'cancelada']))
     ).annotate(
         cupos_disponibles_calc=F('cupo_maximo') - F('inscritos_count_annotated')
     ).filter(
