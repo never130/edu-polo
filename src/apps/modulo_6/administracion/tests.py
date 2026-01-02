@@ -8,6 +8,7 @@ from apps.modulo_1.roles.models import Estudiante, Rol, UsuarioRol
 from apps.modulo_1.usuario.models import Persona, Usuario
 from apps.modulo_2.inscripciones.models import Inscripcion
 from apps.modulo_3.cursos.models import Comision, Curso, PoloCreativo
+from apps.modulo_4.asistencia.models import Asistencia
 from apps.modulo_6.administracion.views import _normalizar_cupos_y_espera
 
 
@@ -295,3 +296,71 @@ class InscribirEstudianteAdminTests(TestCase):
 
         response = self.client.get(reverse('administracion:panel_inscripciones'), secure=True)
         self.assertEqual(response.status_code, 200)
+
+    def test_exportar_inscripciones_csv_filtra_por_ciudad_mesa_entrada(self):
+        self.client.logout()
+        mesa_password = 'mesapass'
+        mesa_usuario = self._crear_usuario(dni='96000000', password=mesa_password, ciudad='Ushuaia')
+        self._asignar_rol(mesa_usuario, nombre_rol='Mesa de Entrada', jerarquia=2)
+        self.assertTrue(self.client.login(username='96000000', password=mesa_password))
+
+        estudiante_ush = self._crear_estudiante('10101010', ciudad='Ushuaia')
+        estudiante_rg = self._crear_estudiante('20202020', ciudad='Rio Grande')
+        Inscripcion.objects.create(estudiante=estudiante_ush, comision=self.comision_ushuaia, estado='pre_inscripto')
+        Inscripcion.objects.create(estudiante=estudiante_rg, comision=self.comision_rg, estado='pre_inscripto')
+
+        response = self.client.get(reverse('administracion:exportar_inscripciones'), secure=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'text/csv; charset=utf-8')
+
+        csv_text = response.content.decode('utf-8')
+        self.assertIn('10101010', csv_text)
+        self.assertNotIn('20202020', csv_text)
+
+    def test_exportar_usuarios_excel_requiere_admin_completo(self):
+        response = self.client.get(reverse('administracion:exportar_usuarios_excel'), secure=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', response['Content-Type'])
+        self.assertTrue(response.content.startswith(b'PK'))
+
+        self.client.logout()
+        mesa_password = 'mesapass'
+        mesa_usuario = self._crear_usuario(dni='97000000', password=mesa_password, ciudad='Ushuaia')
+        self._asignar_rol(mesa_usuario, nombre_rol='Mesa de Entrada', jerarquia=2)
+        self.assertTrue(self.client.login(username='97000000', password=mesa_password))
+
+        response = self.client.get(reverse('administracion:exportar_usuarios_excel'), secure=True)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith(reverse('login')))
+
+    def test_exportar_asistencias_por_curso_xlsx(self):
+        estudiante = self._crear_estudiante('30303030')
+        inscripcion = Inscripcion.objects.create(estudiante=estudiante, comision=self.comision_ushuaia, estado='confirmado')
+        Asistencia.objects.create(
+            inscripcion=inscripcion,
+            fecha_clase=date(2025, 1, 1),
+            presente=True,
+            registrado_por='Admin',
+        )
+
+        url = reverse('administracion:exportar_asistencias_curso') + f'?curso_id={self.curso.id_curso}'
+        response = self.client.get(url, secure=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', response['Content-Type'])
+        self.assertTrue(response.content.startswith(b'PK'))
+
+    def test_exportar_asistencias_por_comision_xlsx(self):
+        estudiante = self._crear_estudiante('40404040')
+        inscripcion = Inscripcion.objects.create(estudiante=estudiante, comision=self.comision_ushuaia, estado='confirmado')
+        Asistencia.objects.create(
+            inscripcion=inscripcion,
+            fecha_clase=date(2025, 1, 1),
+            presente=False,
+            registrado_por='Admin',
+        )
+
+        url = reverse('administracion:exportar_asistencias_comision') + f'?comision_id={self.comision_ushuaia.id_comision}'
+        response = self.client.get(url, secure=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', response['Content-Type'])
+        self.assertTrue(response.content.startswith(b'PK'))

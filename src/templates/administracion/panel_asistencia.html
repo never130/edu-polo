@@ -46,13 +46,13 @@
 
 {% block content %}
 <div style="margin-bottom: 2rem;">
-    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div class="asistencia-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div>
             <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem; color: #1e293b;">Panel de Asistencias</h2>
             <p style="color: #64748b;">Gestiona las asistencias de los estudiantes por curso y comisión</p>
         </div>
         {% if comision and not es_docente %}
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <div class="asistencia-header-actions" style="display: flex; gap: 1rem; flex-wrap: wrap;">
             <a href="{% url 'administracion:exportar_asistencias_comision' %}?comision_id={{ comision.id_comision }}" style="padding: 0.8rem 1.5rem; background: #6366f1; color: white; text-decoration: none; border-radius: 12px; font-weight: 600; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2); transition: all 0.3s;">
                 <i class="fas fa-download"></i> Exportar Comisión
             </a>
@@ -77,7 +77,7 @@
 <!-- Selección de Comisión -->
 <div style="background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 2rem;">
     <h3 style="color: #334155; margin-bottom: 1.5rem; font-size: 1.5rem;">Seleccionar Comisión</h3>
-    <form method="get" style="display: flex; gap: 1rem; align-items: flex-end;">
+    <form method="get" class="asistencia-select-form" style="display: flex; gap: 1rem; align-items: flex-end;">
         <div style="flex: 1;">
             <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #334155;">Comisión</label>
             <select name="comision_id" required style="width: 100%; padding: 0.9rem; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 1rem;">
@@ -122,7 +122,7 @@
                        onchange="document.getElementById('form-fecha').submit()"
                        style="padding: 0.8rem; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 1rem; outline: none; transition: all 0.3s;">
             </div>
-            <div style="flex: 1; padding-left: 1rem; border-left: 2px solid #e2e8f0;">
+            <div class="asistencia-fecha-ayuda" style="flex: 1; padding-left: 1rem; border-left: 2px solid #e2e8f0;">
                 <p style="color: #64748b; margin: 0; font-size: 0.9rem;">
                     <i class="fas fa-info-circle"></i> Selecciona la fecha para cargar o registrar asistencias. <br>
                     Si ya existen registros para esa fecha, se mostrarán para editar.
@@ -183,7 +183,7 @@
                 </table>
             </div>
 
-            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+            <div class="asistencia-actions" style="display: flex; gap: 1rem; justify-content: flex-end;">
                 <button type="submit" style="padding: 0.9rem 2rem; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4);">
                     💾 Guardar Asistencias
                 </button>
@@ -195,8 +195,45 @@
 
 <style>
     @media (max-width: 768px) {
-        .table-container {
-            overflow-x: scroll;
+        .asistencia-header-actions a {
+            width: 100%;
+            text-align: center;
+        }
+
+        .asistencia-select-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .asistencia-select-form button {
+            width: 100%;
+        }
+
+        #form-fecha {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .asistencia-fecha-ayuda {
+            border-left: 0 !important;
+            padding-left: 0 !important;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 1rem;
+        }
+
+        .asistencia-actions button {
+            width: 100%;
+        }
+
+        .asistencia-actions {
+            justify-content: stretch !important;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .switch {
+            transform: scale(0.9);
+            transform-origin: center;
         }
     }
 

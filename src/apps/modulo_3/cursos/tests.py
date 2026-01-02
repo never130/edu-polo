@@ -1,3 +1,4 @@
+import re
 from datetime import date
 
 from django.contrib.auth.models import User
@@ -43,6 +44,7 @@ class CursosViewsTests(TestCase):
             nombre='Ana',
             apellido='Test',
             correo='ana@test.com',
+            ciudad_residencia='Ushuaia',
         )
         self.usuario = Usuario.objects.create(persona=self.persona, contrasena='x')
         self.estudiante = Estudiante.objects.create(
@@ -107,3 +109,43 @@ class CursosViewsTests(TestCase):
         cursos = list(response.context['cursos'])
         curso_ctx = next(c for c in cursos if c.nombre == 'Curso Cupo Lleno')
         self.assertEqual(list(curso_ctx.comisiones_abiertas), [])
+
+        html = response.content.decode('utf-8')
+        pattern = r"Curso Cupo Lleno[\s\S]*?Abiertas:\s*0"
+        self.assertRegex(html, pattern)
+
+        pattern = rf"#{comision_llena.id_comision}[\s\S]*?>Cerrada<"
+        self.assertRegex(html, pattern)
+
+    def test_ver_cursos_disponibles_html_badges_y_botones(self):
+        curso = Curso.objects.create(nombre='Curso UI', estado='Abierto', orden=10)
+        comision_llena = Comision.objects.create(
+            fk_id_curso=curso,
+            fk_id_polo=self.polo,
+            dias_horarios='Martes 10:00 - 12:00',
+            fecha_inicio=date(2025, 1, 1),
+            fecha_fin=date(2025, 1, 8),
+            estado='Abierta',
+            cupo_maximo=1,
+        )
+        Inscripcion.objects.create(estudiante=self.estudiante, comision=comision_llena, estado='confirmado')
+
+        comision_ok = Comision.objects.create(
+            fk_id_curso=curso,
+            fk_id_polo=self.polo,
+            dias_horarios='Jueves 10:00 - 12:00',
+            fecha_inicio=date(2025, 1, 1),
+            fecha_fin=date(2025, 1, 8),
+            estado='Abierta',
+            cupo_maximo=1,
+        )
+
+        response = self.client.get(reverse('cursos:ver_disponibles'), secure=True)
+        self.assertEqual(response.status_code, 200)
+        html = response.content.decode('utf-8')
+
+        pattern = rf"#{comision_llena.id_comision}\s*-\s*[\s\S]*?Cerrada[\s\S]*?Disponibles:\s*0/1[\s\S]*?Cupo lleno"
+        self.assertRegex(html, pattern)
+
+        pattern = rf"#{comision_ok.id_comision}\s*-\s*[\s\S]*?Abierta[\s\S]*?Disponibles:\s*1/1[\s\S]*?Inscribirme"
+        self.assertRegex(html, pattern)

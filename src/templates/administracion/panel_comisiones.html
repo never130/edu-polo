@@ -68,6 +68,8 @@
         display: flex;
         justify-content: space-between;
         align-items: start;
+        flex-wrap: wrap;
+        gap: 1rem;
         margin-bottom: 1.5rem;
         padding-bottom: 1rem;
         border-bottom: 2px solid #e2e8f0;
@@ -92,6 +94,19 @@
     .cupos-lleno {
         background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
         color: white;
+    }
+
+    @media (max-width: 768px) {
+        .comision-card {
+            padding: 1.25rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .btn-crear {
+            width: 100%;
+            text-align: center;
+        }
     }
 </style>
 

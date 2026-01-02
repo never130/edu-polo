@@ -65,14 +65,14 @@
 {% endif %}
 
 <div style="background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
-    <form method="get" id="form-fecha" style="margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+    <form method="get" id="form-fecha" class="asistencia-fecha-form" style="margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0;">
         <div>
             <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #334155;">Fecha de la Clase</label>
             <input type="date" name="fecha" value="{{ fecha_seleccionada }}" 
                    onchange="document.getElementById('form-fecha').submit()"
                    style="padding: 0.8rem; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 1rem; outline: none; transition: all 0.3s;">
         </div>
-        <div style="flex: 1; padding-left: 1rem; border-left: 2px solid #e2e8f0;">
+        <div class="asistencia-fecha-ayuda" style="flex: 1; padding-left: 1rem; border-left: 2px solid #e2e8f0;">
             <p style="color: #64748b; margin: 0; font-size: 0.9rem;">
                 Selecciona la fecha para cargar o registrar asistencias. <br>
                 Si ya existen registros para esa fecha, se mostrarán para editar.
@@ -133,7 +133,7 @@
             </table>
         </div>
 
-        <div style="display: flex; gap: 1rem; justify-content: flex-end; padding-top: 1rem; border-top: 2px solid #f1f5f9;">
+        <div class="asistencia-actions" style="display: flex; gap: 1rem; justify-content: flex-end; padding-top: 1rem; border-top: 2px solid #f1f5f9;">
             <a href="{% url 'administracion:panel_asistencia' %}?comision_id={{ comision.id_comision }}" style="padding: 0.9rem 2rem; background: #e2e8f0; color: #334155; text-decoration: none; border-radius: 12px; font-weight: 600;">Cancelar
             </a>
             <button type="submit" style="padding: 0.9rem 2rem; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4);">
@@ -167,6 +167,31 @@
 
     input:checked + .slider:before {
         transform: translateX(26px);
+    }
+
+    @media (max-width: 768px) {
+        .asistencia-fecha-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .asistencia-fecha-ayuda {
+            border-left: 0 !important;
+            padding-left: 0 !important;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 1rem;
+        }
+
+        .asistencia-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .asistencia-actions a,
+        .asistencia-actions button {
+            width: 100%;
+            text-align: center;
+        }
     }
 </style>
 

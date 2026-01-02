@@ -36,7 +36,7 @@
 <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 2.5rem; border-radius: 20px; color: white; margin-bottom: 2rem;">
     <h2 style="font-size: 2.2rem;">🏢 Gestión de Polos Creativos</h2>
     <p>Administra los Polos Creativos donde se dictan las clases presenciales.</p>
-    <div style="margin-top: 1.5rem;">
+    <div class="polos-hero-actions" style="margin-top: 1.5rem;">
         <a href="{% url 'administracion:crear_polo' %}" style="background: white; color: #d97706; padding: 0.8rem 1.5rem; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block;">➕ Crear Nuevo Polo
         </a>
     </div>
@@ -52,40 +52,42 @@
 
 {% if polos %}
 <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
-    <table style="width: 100%; border-collapse: collapse;">
-        <thead style="background: #f8fafc;">
-            <tr>
-                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">ID</th>
-                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Nombre</th>
-                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Ciudad</th>
-                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Dirección</th>
-                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Comisiones</th>
-                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Estado</th>
-                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for polo in polos %}
-            <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td style="padding: 1rem 1.5rem; color: #334155;">{{ polo.id_polo }}</td>
-                <td style="padding: 1rem 1.5rem; color: #334155;"><strong>{{ polo.nombre }}</strong></td>
-                <td style="padding: 1rem 1.5rem; color: #334155;">{{ polo.ciudad }}</td>
-                <td style="padding: 1rem 1.5rem; color: #334155;">{{ polo.direccion }}</td>
-                <td style="padding: 1rem 1.5rem; color: #334155;">{{ polo.total_comisiones }}</td>
-                <td style="padding: 1rem 1.5rem; color: #334155;">
-                    {% if polo.activo %}
-                        <span style="background: #d1fae5; color: #065f46; padding: 0.4rem 0.8rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem;">✅ Activo</span>
-                    {% else %}
-                        <span style="background: #fee2e2; color: #991b1b; padding: 0.4rem 0.8rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem;">❌ Inactivo</span>
-                    {% endif %}
-                </td>
-                <td style="padding: 1rem 1.5rem;">
-                    <a href="#" style="color: #3b82f6; text-decoration: none; font-weight: 600;">Editar</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="polos-table-scroll">
+        <table style="width: 100%; border-collapse: collapse; min-width: 980px;">
+            <thead style="background: #f8fafc;">
+                <tr>
+                    <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">ID</th>
+                    <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Nombre</th>
+                    <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Ciudad</th>
+                    <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Dirección</th>
+                    <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Comisiones</th>
+                    <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Estado</th>
+                    <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for polo in polos %}
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 1rem 1.5rem; color: #334155;">{{ polo.id_polo }}</td>
+                    <td style="padding: 1rem 1.5rem; color: #334155;"><strong>{{ polo.nombre }}</strong></td>
+                    <td style="padding: 1rem 1.5rem; color: #334155;">{{ polo.ciudad }}</td>
+                    <td style="padding: 1rem 1.5rem; color: #334155;">{{ polo.direccion }}</td>
+                    <td style="padding: 1rem 1.5rem; color: #334155;">{{ polo.total_comisiones }}</td>
+                    <td style="padding: 1rem 1.5rem; color: #334155;">
+                        {% if polo.activo %}
+                            <span style="background: #d1fae5; color: #065f46; padding: 0.4rem 0.8rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem;">✅ Activo</span>
+                        {% else %}
+                            <span style="background: #fee2e2; color: #991b1b; padding: 0.4rem 0.8rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem;">❌ Inactivo</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 1rem 1.5rem;">
+                        <a href="#" style="color: #3b82f6; text-decoration: none; font-weight: 600;">Editar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% else %}
 <div class="empty-state">
@@ -130,6 +132,18 @@
     .messages li.error {
         background: #fee2e2;
         color: #991b1b;
+    }
+
+    .polos-table-scroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    @media (max-width: 480px) {
+        .polos-hero-actions a {
+            width: 100%;
+            text-align: center;
+        }
     }
 </style>
 {% endblock %}

@@ -60,13 +60,16 @@
     .cursos-table {
         background: white;
         border-radius: 16px;
-        overflow: hidden;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
     }
     
     .cursos-table table {
         width: 100%;
         border-collapse: collapse;
+        min-width: 980px;
     }
     
     .cursos-table th {
@@ -123,6 +126,23 @@
     
     .btn-edit:hover {
         background: #1e40af;
+    }
+
+    @media (max-width: 768px) {
+        .btn-crear {
+            padding: 0.85rem 1.2rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-header {
+            align-items: stretch;
+        }
+
+        .btn-crear {
+            width: 100%;
+            text-align: center;
+        }
     }
 </style>
 

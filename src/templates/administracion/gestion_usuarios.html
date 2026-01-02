@@ -37,11 +37,12 @@
     <h2 style="font-size: 2.2rem;">Gestión de Usuarios del Sistema</h2>
     <p>Administra, crea, edita o elimina usuarios con buscador en tiempo real.</p>
     
-    <div style="display: flex; gap: 1rem; margin-top: 1.5rem; align-items: center; flex-wrap: wrap;">
+    <div class="usuarios-toolbar" style="display: flex; gap: 1rem; margin-top: 1.5rem; align-items: center; flex-wrap: wrap;">
         <input 
             type="text" 
             id="searchInput" 
             placeholder="Buscar por nombre, apellido, DNI o email..." 
+            class="usuarios-search-input"
             style="flex: 1; min-width: 300px; padding: 1rem; border: none; border-radius: 12px; font-size: 1rem;"
             autocomplete="off"
         >
@@ -77,40 +78,42 @@
     </div>
     
     {% if usuarios %}
-    <table style="width: 100%; border-collapse: collapse;">
-        <thead style="background: #f8fafc;">
-            <tr>
-                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">DNI</th>
-                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Nombre Completo</th>
-                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Email</th>
-                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Roles</th>
-                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Ciudad</th>
-                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user_data in usuarios %}
-            <tr>
-                <td style="padding: 1rem 1.5rem; color: #334155;"><strong>{{ user_data.persona.dni }}</strong></td>
-                <td style="padding: 1rem 1.5rem; color: #334155;">{{ user_data.persona.nombre_completo }}</td>
-                <td style="padding: 1rem 1.5rem; color: #334155;">{{ user_data.persona.correo }}</td>
-                <td style="padding: 1rem 1.5rem;">
-                    <span class="badge-roles">{{ user_data.roles }}</span>
-                </td>
-                <td style="padding: 1rem 1.5rem; color: #334155;">{{ user_data.persona.ciudad_residencia|default:"N/A" }}</td>
-                <td style="padding: 1rem 1.5rem;">
-                    <div style="display: flex; gap: 0.5rem;">
-                        <a href="{% url 'administracion:editar_usuario' user_data.persona.id %}" class="btn btn-editar">Editar
-                        </a>
-                        <button onclick="abrirModalEliminar({{ user_data.persona.id }}, '{{ user_data.persona.nombre_completo }}')" class="btn btn-eliminar">
-                            Eliminar
-                        </button>
-                    </div>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="usuarios-table-scroll">
+        <table class="usuarios-table" style="width: 100%; border-collapse: collapse;">
+            <thead style="background: #f8fafc;">
+                <tr>
+                    <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">DNI</th>
+                    <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Nombre Completo</th>
+                    <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Email</th>
+                    <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Roles</th>
+                    <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Ciudad</th>
+                    <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user_data in usuarios %}
+                <tr>
+                    <td style="padding: 1rem 1.5rem; color: #334155;"><strong>{{ user_data.persona.dni }}</strong></td>
+                    <td style="padding: 1rem 1.5rem; color: #334155;">{{ user_data.persona.nombre_completo }}</td>
+                    <td style="padding: 1rem 1.5rem; color: #334155;">{{ user_data.persona.correo }}</td>
+                    <td style="padding: 1rem 1.5rem;">
+                        <span class="badge-roles">{{ user_data.roles }}</span>
+                    </td>
+                    <td style="padding: 1rem 1.5rem; color: #334155;">{{ user_data.persona.ciudad_residencia|default:"N/A" }}</td>
+                    <td style="padding: 1rem 1.5rem;">
+                        <div class="usuarios-actions">
+                            <a href="{% url 'administracion:editar_usuario' user_data.persona.id %}" class="btn btn-editar">Editar
+                            </a>
+                            <button onclick="abrirModalEliminar({{ user_data.persona.id }}, '{{ user_data.persona.nombre_completo }}')" class="btn btn-eliminar">
+                                Eliminar
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% else %}
     <div class="empty-state">
         <p>No hay usuarios registrados en el sistema.</p>
@@ -128,20 +131,22 @@
             Mostrar Todos
         </button>
     </div>
-    <table style="width: 100%; border-collapse: collapse;">
-        <thead style="background: #f8fafc;">
-            <tr>
-                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">DNI</th>
-                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Nombre Completo</th>
-                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Email</th>
-                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Roles</th>
-                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Ciudad</th>
-                <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Acciones</th>
-            </tr>
-        </thead>
-        <tbody id="resultadosBody">
-        </tbody>
-    </table>
+    <div class="usuarios-table-scroll">
+        <table class="usuarios-table" style="width: 100%; border-collapse: collapse;">
+            <thead style="background: #f8fafc;">
+                <tr>
+                    <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">DNI</th>
+                    <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Nombre Completo</th>
+                    <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Email</th>
+                    <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Roles</th>
+                    <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Ciudad</th>
+                    <th style="padding: 1rem 1.5rem; text-align: left; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="resultadosBody">
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <!-- Modal de confirmación de eliminación -->
@@ -306,7 +311,22 @@
         outline: none;
         box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
     }
-    
+
+    .usuarios-table-scroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .usuarios-table {
+        min-width: 900px;
+    }
+
+    .usuarios-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
     @media (max-width: 768px) {
         tbody td {
             font-size: 0.85rem;
@@ -315,6 +335,28 @@
         .btn {
             padding: 0.5rem 0.8rem;
             font-size: 0.8rem;
+        }
+
+        .usuarios-search-input {
+            min-width: 0 !important;
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .usuarios-toolbar a {
+            width: 100%;
+            text-align: center;
+        }
+
+        .usuarios-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .usuarios-actions .btn {
+            width: 100%;
+            text-align: center;
         }
     }
 </style>
@@ -402,7 +444,7 @@
                     <td><span class="badge-roles">${usuario.roles}</span></td>
                     <td>${usuario.ciudad}</td>
                     <td>
-                        <div style="display: flex; gap: 0.5rem;">
+                        <div class="usuarios-actions">
                             <a href="/panel/usuarios/editar/${usuario.id}/" class="btn btn-editar">Editar
                             </a>
                             <button onclick="abrirModalEliminar(${usuario.id}, '${usuario.nombre_completo}')" class="btn btn-eliminar">

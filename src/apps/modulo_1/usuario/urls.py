@@ -28,7 +28,7 @@ urlpatterns = [
     path('tutores/autorizados/eliminar/<int:autorizado_id>/', eliminar_autorizado_retiro, name='eliminar_autorizado_retiro'),
 
     path('progreso/', mi_progreso, name='mi_progreso'),
-    # path('certificados/', mis_certificados, name='mis_certificados'),
+    path('certificados/', mis_certificados, name='mis_certificados'),
     path('certificados/descargar/<int:inscripcion_id>/', views_progreso.descargar_certificado, name='descargar_certificado'),
     path('materiales/', materiales_estudiante, name='materiales_estudiante'),
     path('materiales/comision/<int:comision_id>/', materiales_comision_estudiante, name='materiales_comision_estudiante'),
@@ -43,4 +43,3 @@ api_urlpatterns = [
 ]
 
 urlpatterns += api_urlpatterns
-
