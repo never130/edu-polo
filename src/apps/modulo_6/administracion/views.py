@@ -21,6 +21,33 @@ from apps.modulo_3.cursos.forms import MaterialForm
 from datetime import date
 
 
+def _safe_xlsx_title(value):
+    if not value:
+        return "Hoja"
+
+    invalid = set('[]:*?/\\')
+    cleaned = ''.join('_' if c in invalid else c for c in str(value))
+    cleaned = cleaned.strip().strip("'")
+
+    if not cleaned:
+        cleaned = "Hoja"
+
+    return cleaned[:31]
+
+
+def _safe_filename_part(value, max_len=50):
+    if not value:
+        return "archivo"
+
+    cleaned = ''.join(c if c.isalnum() or c in (' ', '-', '_') else '_' for c in str(value))
+    cleaned = cleaned.strip().replace(' ', '_')
+
+    if not cleaned:
+        cleaned = "archivo"
+
+    return cleaned[:max_len]
+
+
 def es_admin(user):
     """Verifica si el usuario es administrador, mesa de entrada o docente con cursos asignados"""
     if not user.is_authenticated:
@@ -1844,7 +1871,7 @@ def exportar_asistencias_por_curso(request):
     # Crear workbook
     wb = Workbook()
     ws = wb.active
-    ws.title = f"Asistencias - {curso.nombre[:30]}"
+    ws.title = _safe_xlsx_title(f"Asistencias - {curso.nombre}")
     
     # Estilos
     header_fill = PatternFill(start_color="6366f1", end_color="6366f1", fill_type="solid")
@@ -1899,7 +1926,7 @@ def exportar_asistencias_por_curso(request):
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
-    filename = f"asistencias_curso_{curso.nombre[:20]}_{timezone.localtime(timezone.now()).strftime('%Y%m%d_%H%M%S')}.xlsx"
+    filename = f"asistencias_curso_{_safe_filename_part(curso.nombre, max_len=20)}_{timezone.localtime(timezone.now()).strftime('%Y%m%d_%H%M%S')}.xlsx"
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     
     wb.save(response)
