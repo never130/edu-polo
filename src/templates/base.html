@@ -441,9 +441,16 @@
                 <div class="input-group">
                     <input type="text" name="username" required placeholder="Ingrese su DNI">
                 </div>
-                <div class="input-group">
-                    <input type="password" name="password" required placeholder="Contraseña">
+                <div class="input-group" style="position: relative;">
+                    <input type="password" name="password" required placeholder="Contraseña" id="loginPassword" style="padding-right: 3rem;">
+                    <button type="button" data-toggle-password data-target="loginPassword" aria-label="Mostrar contraseña" style="position: absolute; right: 0.8rem; top: 50%; transform: translateY(-50%); border: none; background: transparent; color: #64748b; cursor: pointer; padding: 0.25rem;">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
                 </div>
+                <label style="display: flex; align-items: center; gap: 0.5rem; margin: -0.5rem 0 1rem; font-size: 0.9rem; color: #64748b; font-weight: 600;">
+                    <input type="checkbox" name="remember_me" style="width: auto; margin: 0;">
+                    Recordarme
+                </label>
                 <a href="{% url 'password_reset_request' %}" class="forgot-password">¿Olvidaste tu contraseña?</a>
                 <button type="submit" class="btn-login">INGRESAR</button>
             </form>
@@ -504,8 +511,8 @@
                     </select>
                 </div>
                 <div class="form-group"><label>Institución</label><input type="text" name="institucion_actual" placeholder="Nombre de la institución" class="form-input"></div>
-                <div class="form-group"><label>Contraseña *</label><input type="password" name="password" required placeholder="Mínimo 6 caracteres" class="form-input"></div>
-                <div class="form-group"><label>Confirmar Contraseña *</label><input type="password" name="password_confirm" required placeholder="Repite la contraseña" class="form-input"></div>
+                <div class="form-group"><label>Contraseña *</label><div style="position: relative;"><input type="password" name="password" required placeholder="Mínimo 6 caracteres" class="form-input" id="registroPassword" style="padding-right: 3rem;"><button type="button" data-toggle-password data-target="registroPassword" aria-label="Mostrar contraseña" style="position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); border: none; background: transparent; color: #64748b; cursor: pointer; padding: 0.25rem;"><i class="fa-solid fa-eye"></i></button></div></div>
+                <div class="form-group"><label>Confirmar Contraseña *</label><div style="position: relative;"><input type="password" name="password_confirm" required placeholder="Repite la contraseña" class="form-input" id="registroPasswordConfirm" style="padding-right: 3rem;"><button type="button" data-toggle-password data-target="registroPasswordConfirm" aria-label="Mostrar contraseña" style="position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); border: none; background: transparent; color: #64748b; cursor: pointer; padding: 0.25rem;"><i class="fa-solid fa-eye"></i></button></div></div>
             </div>
 
             <!-- Health Section -->
@@ -696,6 +703,29 @@
 </div>
 
 <script>
+    function setupPasswordToggles() {
+        document.querySelectorAll('[data-toggle-password]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.getAttribute('data-target');
+                const input = targetId ? document.getElementById(targetId) : null;
+                if (!input) return;
+
+                const wasPassword = input.type === 'password';
+                input.type = wasPassword ? 'text' : 'password';
+
+                const icon = btn.querySelector('i');
+                if (icon) {
+                    icon.classList.remove('fa-eye', 'fa-eye-slash');
+                    icon.classList.add(wasPassword ? 'fa-eye-slash' : 'fa-eye');
+                }
+
+                btn.setAttribute('aria-label', wasPassword ? 'Ocultar contraseña' : 'Mostrar contraseña');
+            });
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', setupPasswordToggles);
+
     // Login Modal
     function openLoginModal() {
         const modal = document.getElementById('loginModal');

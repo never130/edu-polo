@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.db.models import Count, Q, F, Max, Prefetch
 from django.db import transaction, models
 from django.http import HttpResponse
+from django.utils import timezone
 import csv
 from datetime import datetime
 from openpyxl import Workbook
@@ -1216,28 +1217,19 @@ def eliminar_usuario_admin(request, persona_id):
         try:
             persona = get_object_or_404(Persona, id=persona_id)
             nombre_completo = persona.nombre_completo
-            
-            # Obtener el primer usuario asociado
-            usuario = persona.usuario_set.first()
-            
-            # No permitir eliminar al usuario actual
-            if usuario and usuario.persona.dni == request.user.username:
+
+            if persona.dni == request.user.username:
                 messages.error(request, '❌ No puedes eliminar tu propio usuario.')
                 return redirect('administracion:gestion_usuarios')
-            
+
             with transaction.atomic():
-                # Eliminar usuario (cascada eliminará Persona y relaciones)
-                if usuario:
-                    usuario.delete()
-                else:
-                    # Si no hay usuario, eliminar solo la persona
-                    persona.delete()
-            
+                persona.delete()
+
             messages.success(request, f'✅ Usuario {nombre_completo} eliminado exitosamente.')
-            
+
         except Exception as e:
             messages.error(request, f'❌ Error al eliminar usuario: {str(e)}')
-    
+
     return redirect('administracion:gestion_usuarios')
 
 
@@ -1907,7 +1899,7 @@ def exportar_asistencias_por_curso(request):
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
-    filename = f"asistencias_curso_{curso.nombre[:20]}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+    filename = f"asistencias_curso_{curso.nombre[:20]}_{timezone.localtime(timezone.now()).strftime('%Y%m%d_%H%M%S')}.xlsx"
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     
     wb.save(response)
@@ -1979,7 +1971,7 @@ def exportar_asistencias_por_comision(request):
                 'Sí' if asistencia.presente else 'No',
                 asistencia.observaciones or '',
                 asistencia.registrado_por or '',
-                asistencia.fecha_registro.strftime('%d/%m/%Y %H:%M') if asistencia.fecha_registro else ''
+                timezone.localtime(asistencia.fecha_registro).strftime('%d/%m/%Y %H:%M') if asistencia.fecha_registro else ''
             ]
             
             for col_num, value in enumerate(row_data, 1):
@@ -1993,7 +1985,7 @@ def exportar_asistencias_por_comision(request):
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
-    filename = f"asistencias_comision_{comision.id_comision}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+    filename = f"asistencias_comision_{comision.id_comision}_{timezone.localtime(timezone.now()).strftime('%Y%m%d_%H%M%S')}.xlsx"
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     
     wb.save(response)

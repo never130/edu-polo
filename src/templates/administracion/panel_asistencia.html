@@ -53,10 +53,10 @@
         </div>
         {% if comision and not es_docente %}
         <div class="asistencia-header-actions" style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <a href="{% url 'administracion:exportar_asistencias_comision' %}?comision_id={{ comision.id_comision }}" style="padding: 0.8rem 1.5rem; background: #6366f1; color: white; text-decoration: none; border-radius: 12px; font-weight: 600; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2); transition: all 0.3s;">
+            <a href="{% url 'administracion:exportar_asistencias_comision' %}?comision_id={{ comision.id_comision }}" style="padding: 0.8rem 1.5rem; background: #6366f1; color: white; text-decoration: none; border-radius: 12px; font-weight: 600; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2); transition: all 0.3s;" target="_blank">
                 <i class="fas fa-download"></i> Exportar Comisión
             </a>
-            <a href="{% url 'administracion:exportar_asistencias_curso' %}?curso_id={{ comision.fk_id_curso.id_curso }}" style="padding: 0.8rem 1.5rem; background: white; color: #6366f1; text-decoration: none; border-radius: 12px; font-weight: 600; border: 2px solid #6366f1; transition: all 0.3s;">
+            <a href="{% url 'administracion:exportar_asistencias_curso' %}?curso_id={{ comision.fk_id_curso.id_curso }}" style="padding: 0.8rem 1.5rem; background: white; color: #6366f1; text-decoration: none; border-radius: 12px; font-weight: 600; border: 2px solid #6366f1; transition: all 0.3s;" target="_blank">
                 <i class="fas fa-download"></i> Exportar Curso
             </a>
         </div>

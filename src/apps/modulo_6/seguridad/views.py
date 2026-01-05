@@ -24,10 +24,16 @@ def custom_login(request):
         user = authenticate(request, username=username, password=password)
         
         if user is not None:
+            remember_me = request.POST.get('remember_me') == 'on'
+
             login(request, user)
+            if remember_me:
+                request.session.set_expiry(60 * 60 * 24 * 30)
+            else:
+                request.session.set_expiry(0)
+
             messages.success(request, f'¡Bienvenido/a, {user.first_name}!')
-            
-            # Redirigir según el rol del usuario
+
             next_url = request.GET.get('next', 'dashboard')
             return redirect(next_url)
         else:
