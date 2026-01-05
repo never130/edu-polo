@@ -139,7 +139,21 @@ def dashboard_estudiante(request):
         from django.db.models import Count, Q
         
         estudiante = Estudiante.objects.get(usuario__persona__dni=request.user.username)
-        
+
+        inscripciones_pendientes = Inscripcion.objects.filter(
+            estudiante=estudiante,
+        ).exclude(
+            estado__in=['confirmado', 'cancelada'],
+        ).select_related('comision__fk_id_curso', 'comision__fk_id_polo')
+
+        inscripciones_lista_espera = inscripciones_pendientes.filter(
+            estado='lista_espera',
+        ).order_by('orden_lista_espera', 'fecha_hora_inscripcion', 'id')
+
+        inscripciones_preinscriptas = inscripciones_pendientes.filter(
+            estado='pre_inscripto',
+        ).order_by('-fecha_hora_inscripcion', '-id')
+
         # Obtener inscripciones activas (confirmadas)
         inscripciones = Inscripcion.objects.filter(
             estudiante=estudiante,
@@ -207,6 +221,10 @@ def dashboard_estudiante(request):
         context = {
             'estudiante': estudiante,
             'inscripciones_activas': inscripciones_activas_count,
+            'inscripciones_preinscripto': inscripciones_preinscriptas[:5],
+            'inscripciones_lista_espera': inscripciones_lista_espera[:5],
+            'preinscripto_count': inscripciones_preinscriptas.count(),
+            'lista_espera_count': inscripciones_lista_espera.count(),
             'cursos_activos': cursos_activos,
             'promedio_general': promedio_general,
             'certificados': certificados_count,

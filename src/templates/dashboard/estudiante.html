@@ -20,6 +20,33 @@
     <p>Continúa donde lo dejaste y completa tus cursos</p>
 </div>
 
+{% if messages %}
+    <div class="dashboard-alerts">
+        {% for message in messages %}
+            <div class="dashboard-alert dashboard-alert--{{ message.tags|default:'info' }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% if lista_espera_count or preinscripto_count %}
+    <div class="dashboard-alerts">
+        <div class="dashboard-alert dashboard-alert--warning">
+            <div style="font-weight: 800; margin-bottom: 0.25rem;">Estado de tus inscripciones</div>
+            {% if lista_espera_count %}
+                <div>Tenés <strong>{{ lista_espera_count }}</strong> inscripción(es) en <strong>lista de espera</strong>. No estás inscripto/a hasta que sea confirmada.</div>
+            {% endif %}
+            {% if preinscripto_count %}
+                <div style="margin-top: 0.25rem;">Tenés <strong>{{ preinscripto_count }}</strong> pre-inscripción(es) <strong>pendiente(s) de confirmación</strong>. Aún no estás inscripto/a hasta que se confirme.</div>
+            {% endif %}
+            <div style="margin-top: 0.75rem;">
+                <a href="{% url 'cursos:mis_inscripciones' %}" class="dashboard-alert-link">Ver detalle en Mis Inscripciones</a>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
 <div class="dashboard-layout">
     <!-- Left Column: Active Courses -->
     <div class="main-column">
@@ -140,6 +167,38 @@
         color: #1e293b;
         font-weight: 700;
         margin-bottom: 1.5rem;
+    }
+
+    .dashboard-alerts {
+        display: grid;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .dashboard-alert {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 1rem 1.25rem;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+    }
+
+    .dashboard-alert--success { border-left: 6px solid #10b981; }
+    .dashboard-alert--error { border-left: 6px solid #ef4444; }
+    .dashboard-alert--warning { border-left: 6px solid #f59e0b; }
+    .dashboard-alert--info { border-left: 6px solid #3b82f6; }
+
+    .dashboard-alert-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 800;
+        color: #1e40af;
+        text-decoration: none;
+    }
+
+    .dashboard-alert-link:hover {
+        text-decoration: underline;
     }
 
     /* Active Courses List */
