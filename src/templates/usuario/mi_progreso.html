@@ -1,4 +1,5 @@
 {% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
 
 {% block title %}Mi Progreso{% endblock %}
 
@@ -15,187 +16,363 @@
 
 {% block content %}
 <style>
-    .page-header {
-        background: white;
-        padding: 2.5rem;
-        border-radius: 20px;
-        color: #1e293b;
-        margin-bottom: 2rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        border: 1px solid #e2e8f0;
+    .progreso-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
     }
-    
+
+    .page-header {
+        background: transparent;
+        padding: 0;
+        border-radius: 0;
+        color: var(--dark);
+        margin-bottom: 1.25rem;
+        border: 0;
+    }
+
+    .page-header h2 {
+        font-size: 2rem;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.35rem;
+    }
+
+    .page-header p {
+        color: var(--text-light);
+        font-weight: 500;
+    }
+
     .progreso-grid {
         display: grid;
-        gap: 2rem;
+        gap: 1.1rem;
     }
-    
+
     .progreso-card {
+        display: grid;
+        grid-template-columns: minmax(260px, 320px) 1fr;
         background: white;
-        padding: 2.5rem;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        border: 0;
+        overflow: hidden;
     }
-    
+
+    .curso-media {
+        background: #f1f5f9;
+        min-height: 130px;
+        border-right: 1px solid #e2e8f0;
+        padding: 0;
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .curso-media::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: var(--curso-bg);
+        background-size: cover;
+        background-position: center;
+        filter: blur(16px);
+        transform: scale(1.08);
+        opacity: 0.35;
+    }
+
+    .curso-img {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center;
+        display: block;
+    }
+
+    .curso-body {
+        padding: 0.85rem;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    @media (max-width: 900px) {
+        .progreso-card {
+            grid-template-columns: 1fr;
+        }
+
+        .curso-media {
+            height: 140px;
+            min-height: 140px;
+            border-right: 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .curso-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    }
+
     .curso-title {
         display: flex;
-        justify-content: space-between;
-        align-items: start;
-        margin-bottom: 2rem;
+        justify-content: flex-start;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.55rem;
     }
-    
+
     .curso-title h3 {
-        background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        font-size: 1.8rem;
-        font-weight: 700;
+        margin: 0;
+        color: var(--dark);
+        font-size: 1.35rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+        flex: 1;
+        min-width: 0;
     }
-    
+
+    .badge-commission {
+        background: rgba(240, 152, 25, 0.12);
+        color: #92400e;
+        padding: 0.4rem 0.75rem;
+        border-radius: 999px;
+        border: 0;
+        font-weight: 800;
+        white-space: nowrap;
+        margin-left: auto;
+    }
+
     .progreso-info {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 2rem;
+        gap: 0.75rem;
     }
-    
+
     .info-box {
         text-align: center;
-        padding: 1.5rem;
+        padding: 0.75rem;
         background: #f8fafc;
-        border-radius: 12px;
-        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        border: 0;
     }
-    
+
     .info-box .label {
-        font-size: 0.9rem;
-        color: #64748b;
-        margin-bottom: 0.5rem;
+        font-size: 0.8rem;
+        color: var(--text-light);
+        margin-bottom: 0.2rem;
+        font-weight: 600;
     }
-    
+
     .info-box .value {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #1e40af;
+        font-size: 1.45rem;
+        font-weight: 900;
+        color: var(--dark);
+        letter-spacing: -0.02em;
     }
-    
-    /* Barra de Progreso */
+
+    .value--success {
+        color: #059669;
+    }
+
+    .value--accent {
+        color: #92400e;
+    }
+
     .progress-section {
-        margin-top: 2rem;
+        margin-top: 0;
     }
-    
+
     .progress-label {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 0.8rem;
-        font-weight: 600;
-        color: #334155;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+        color: var(--text-main);
     }
-    
+
     .progress-bar-container {
         width: 100%;
-        height: 40px;
+        height: 20px;
         background: #e2e8f0;
-        border-radius: 20px;
+        border-radius: 999px;
         overflow: hidden;
         position: relative;
-        box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
     }
-    
+
     .progress-bar {
         height: 100%;
-        background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
-        border-radius: 20px;
-        transition: width 1s ease-in-out;
+        background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+        border-radius: 999px;
+        transition: width 0.7s ease;
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        font-weight: 700;
-        font-size: 1.1rem;
+        font-weight: 900;
+        font-size: 0.9rem;
         position: relative;
         overflow: hidden;
     }
-    
-    .progress-bar::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
-        animation: shimmer 2s infinite;
-    }
-    
-    @keyframes shimmer {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(100%); }
-    }
-    
+
+
+
     .progress-bar.low {
         background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
     }
-    
+
     .progress-bar.medium {
         background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
     }
-    
+
     .progress-bar.good {
         background: linear-gradient(90deg, #10b981 0%, #059669 100%);
     }
-    
+
+    .progreso-top-badge {
+        margin-bottom: 0;
+    }
+
     .certificado-badge {
-        display: inline-block;
-        padding: 0.6rem 1.2rem;
-        border-radius: 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 999px;
         font-weight: 700;
-        font-size: 0.9rem;
-        margin-top: 1rem;
+        font-size: 0.85rem;
+        line-height: 1.2;
+        margin-top: 0;
+        width: fit-content;
     }
-    
+
     .badge-disponible {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        color: white;
-        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        background: rgba(16, 185, 129, 0.12);
+        color: #065f46;
+        border: 0;
     }
-    
+
     .badge-no-disponible {
-        background: #e2e8f0;
-        color: #64748b;
+        background: #f1f5f9;
+        color: #475569;
+        border: 0;
+    }
+
+    .progreso-footer {
+        margin-top: auto;
+        padding: 0.75rem;
+        background: #f8fafc;
+        border-radius: 16px;
+        border: 0;
+        color: var(--text-light);
+        font-weight: 600;
+        line-height: 1.4;
+        font-size: 0.95rem;
+    }
+
+    .progreso-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        margin-top: 0.75rem;
+    }
+
+    .progreso-actions .btn {
+        border-radius: 12px;
+        padding: 0.7rem 1rem;
+        justify-content: center;
+        white-space: nowrap;
+    }
+
+    @media (max-width: 640px) {
+        .progreso-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .progreso-actions .btn {
+            width: 100%;
+        }
+    }
+
+    .empty-state {
+        background: white;
+        padding: 3.5rem 2.5rem;
+        border-radius: 20px;
+        text-align: center;
+        border: 1px solid #e2e8f0;
+    }
+
+    .empty-state h3 {
+        color: var(--dark);
+        margin: 1rem 0 0.5rem;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+    }
+
+    .empty-state p {
+        color: var(--text-light);
+        font-size: 1.05rem;
+        font-weight: 600;
+    }
+
+    .empty-icon {
+        width: 84px;
+        height: 84px;
+        border-radius: 22px;
+        margin: 0 auto;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, rgba(255, 81, 47, 0.14) 0%, rgba(240, 152, 25, 0.14) 100%);
+        border: 1px solid rgba(240, 152, 25, 0.20);
+        font-size: 2.3rem;
     }
 </style>
 
-<div class="page-header">
-    <h2>Mi Progreso Académico</h2>
-    <p>Seguimiento de tu avance en los cursos</p>
-</div>
+<div class="progreso-wrapper">
+    <div class="page-header">
+        <h2>Mi Progreso Académico</h2>
+        <p>Seguimiento de tu avance en los cursos</p>
+    </div>
 
 {% if inscripciones %}
     <div class="progreso-grid">
         {% for inscripcion in inscripciones %}
+        {% with lower_name=inscripcion.comision.fk_id_curso.nombre|lower %}
         <div class="progreso-card">
-            <div class="curso-title">
-                <h3>{{ inscripcion.comision.fk_id_curso.nombre }}</h3>
-                <span style="background: #e0e7ff; color: #3730a3; padding: 0.5rem 1rem; border-radius: 16px; font-weight: 600;">
-                    Comisión #{{ inscripcion.comision.id_comision }}
-                </span>
+            <div class="curso-media">
+                <img
+                    src="{% if 'program' in lower_name or 'desarrollo' in lower_name or 'videojuego' in lower_name or 'código' in lower_name or 'codigo' in lower_name or 'gamer' in lower_name or 'gaming' in lower_name or 'game' in lower_name or 'inteligencia artificial' in lower_name or ' ai' in lower_name or 'ai ' in lower_name or ' ia' in lower_name or 'ia ' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20cute%20character%20working%20with%20computer%20code%20futuristic%20lab%20colorful%20soft%20lighting?width=600&height=400&nologo=true{% elif 'diseño' in lower_name or 'arte' in lower_name or 'produccion' in lower_name or 'animación' in lower_name or 'animacion' in lower_name or 'stop motion' in lower_name or 'stopmotion' in lower_name or 'motion' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20artist%20character%20painting%20on%20canvas%20creative%20studio%20colorful%20palette?width=600&height=400&nologo=true{% elif 'robot' in lower_name or 'arduino' in lower_name or 'sumo' in lower_name or 'bot' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cute%20robot%20character%20futuristic%20technology%20glowing%20blue%20lights%20sci-fi?width=600&height=400&nologo=true{% elif 'ingl' in lower_name or 'idioma' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20character%20reading%20flying%20books%20learning%20languages%20globe%20travel?width=600&height=400&nologo=true{% elif 'taller' in lower_name or 'explorador' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20young%20maker%20character%20building%20a%20robot%20with%20tools%20and%20electronics%20in%20a%20modern%20technology%20lab%20colorful%20soft%20lighting?width=600&height=400&nologo=true{% else %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20happy%20student%20backpack%20education%20school%20bright?width=600&height=400&nologo=true{% endif %}"
+                    onerror="this.src='{% static 'img/landing5.png' %}';"
+                    alt="{{ inscripcion.comision.fk_id_curso.nombre }}"
+                    class="curso-img">
             </div>
-            
-            <div class="progreso-info">
+            <div class="curso-body">
+                {% if inscripcion.cumple_certificado %}
+                    <div class="progreso-top-badge">
+                        <span class="certificado-badge badge-disponible">✅ Cumples requisito para certificado (80-100%)</span>
+                    </div>
+                {% endif %}
+                <div class="curso-title">
+                    <h3>{{ inscripcion.comision.fk_id_curso.nombre }}</h3>
+                    <span class="badge-commission">Comisión #{{ inscripcion.comision.id_comision }}</span>
+                </div>
+                
+                <div class="progreso-info">
                 <div class="info-box">
                     <div class="label">Total Clases</div>
                     <div class="value">{{ inscripcion.total_clases }}</div>
                 </div>
                 <div class="info-box">
                     <div class="label">Asistencias</div>
-                    <div class="value" style="color: #10b981;">{{ inscripcion.asistencias_count }}</div>
+                    <div class="value value--success">{{ inscripcion.asistencias_count }}</div>
                 </div>
                 <div class="info-box">
                     <div class="label">Progreso</div>
-                    <div class="value" style="color: #8b5cf6;">{{ inscripcion.progreso }}%</div>
+                    <div class="value value--accent">{{ inscripcion.progreso }}%</div>
                 </div>
             </div>
             
@@ -212,13 +389,9 @@
                 </div>
                 
                 {% if inscripcion.cumple_certificado %}
-                    <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
-                        <span class="certificado-badge badge-disponible">
-                            ✅ Cumples requisito para certificado (80-100%)
-                        </span>
-                        <a href="{% url 'usuario:descargar_certificado' inscripcion.id %}" 
-                           style="display: inline-block; padding: 0.8rem 1.5rem; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; text-decoration: none; border-radius: 12px; font-weight: 700; text-align: center; transition: all 0.3s ease;">
-                            📥 Descargar Certificado PDF
+                    <div class="progreso-actions">
+                        <a href="{% url 'usuario:descargar_certificado' inscripcion.id %}" class="btn btn-primary">
+                            <i class="fa-solid fa-file-arrow-down"></i> Descarga tu Certificado!!
                         </a>
                     </div>
                 {% else %}
@@ -228,25 +401,46 @@
                 {% endif %}
             </div>
             
-            <div style="margin-top: 1.5rem; padding: 1rem; background: #f8fafc; border-radius: 10px;">
-                <p style="color: #64748b; margin: 0;">
-                    <strong>Horario:</strong> {{ inscripcion.comision.dias_horarios|default:"Por definir" }}<br>
-                    <strong>Lugar:</strong> {{ inscripcion.comision.lugar|default:"Por definir" }}
-                </p>
+            <div class="progreso-footer">
+                <strong>Horario:</strong> {{ inscripcion.comision.dias_horarios|default:"Por definir" }}<br>
+                <strong>Lugar:</strong> {{ inscripcion.comision.lugar|default:"Por definir" }}
+            </div>
             </div>
         </div>
+        {% endwith %}
         {% endfor %}
     </div>
 {% else %}
-    <div style="background: white; padding: 4rem; border-radius: 20px; text-align: center;">
-        <span style="font-size: 5rem;">📊</span>
-        <h3 style="color: #3b82f6; margin: 1rem 0;">No tienes cursos en progreso</h3>
-        <p style="color: #64748b; font-size: 1.1rem;">Inscríbete a un curso para ver tu progreso</p>
-        <a href="{% url 'cursos:ver_disponibles' %}" style="display: inline-block; margin-top: 1.5rem; padding: 1rem 2rem; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); color: white; text-decoration: none; border-radius: 12px; font-weight: 700;">
+    <div class="empty-state">
+        <div class="empty-icon">📊</div>
+        <h3>No tienes cursos en progreso</h3>
+        <p>Inscríbete a un curso para ver tu progreso</p>
+        <a href="{% url 'cursos:ver_disponibles' %}" class="btn btn-primary" style="margin-top: 1.25rem;">
             Ver Cursos Disponibles
         </a>
     </div>
 {% endif %}
+</div>
+
+<script>
+(function () {
+    function setBg(media) {
+        const img = media.querySelector('img.curso-img');
+        if (!img) return;
+        const src = img.currentSrc || img.src;
+        if (!src) return;
+        media.style.setProperty('--curso-bg', `url("${src}")`);
+    }
+
+    document.querySelectorAll('.curso-media').forEach((media) => {
+        setBg(media);
+        const img = media.querySelector('img.curso-img');
+        if (!img) return;
+        img.addEventListener('load', () => setBg(media));
+        img.addEventListener('error', () => setBg(media));
+    });
+})();
+</script>
 
 {% endblock %}
 

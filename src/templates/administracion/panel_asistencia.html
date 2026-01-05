@@ -119,7 +119,6 @@
             <div>
                 <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #334155;"><i class="fas fa-calendar-alt"></i> Fecha de la Clase</label>
                 <input type="date" name="fecha" value="{{ fecha_seleccionada }}" 
-                       onchange="document.getElementById('form-fecha').submit()"
                        style="padding: 0.8rem; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 1rem; outline: none; transition: all 0.3s;">
             </div>
             <div class="asistencia-fecha-ayuda" style="flex: 1; padding-left: 1rem; border-left: 2px solid #e2e8f0;">
@@ -130,7 +129,7 @@
             </div>
         </form>
 
-        <form method="post">
+        <form method="post" id="form-asistencia">
             {% csrf_token %}
             <input type="hidden" name="guardar_asistencia" value="true">
             <input type="hidden" name="fecha_clase" value="{{ fecha_seleccionada }}">
@@ -287,4 +286,166 @@
         transform: translateX(26px);
     }
 </style>
+
+<script>
+(function () {
+    const fechaForm = document.getElementById('form-fecha');
+    if (!fechaForm) return;
+
+    const comisionIdInput = fechaForm.querySelector('input[name="comision_id"]');
+    const fechaInput = fechaForm.querySelector('input[name="fecha"]');
+    const postForm = document.getElementById('form-asistencia');
+
+    if (!comisionIdInput || !fechaInput || !postForm) return;
+
+    const comisionId = comisionIdInput.value;
+    let fechaActual = fechaInput.value || '';
+    let isDirty = false;
+    let isSubmitting = false;
+    let saveTimer = null;
+
+    function getDraftKey(fecha) {
+        return `asistencia_draft:${comisionId}:${fecha}`;
+    }
+
+    function parseIdFromName(prefix, name) {
+        if (!name || !name.startsWith(prefix)) return null;
+        return name.slice(prefix.length);
+    }
+
+    function collectDraft() {
+        const presentes = {};
+        const observaciones = {};
+
+        postForm.querySelectorAll('input.asistencia-checkbox[type="checkbox"]').forEach((cb) => {
+            const id = parseIdFromName('presente_', cb.name);
+            if (!id) return;
+            presentes[id] = !!cb.checked;
+        });
+
+        postForm.querySelectorAll('input[type="text"][name^="observacion_"]').forEach((inp) => {
+            const id = parseIdFromName('observacion_', inp.name);
+            if (!id) return;
+            observaciones[id] = inp.value || '';
+        });
+
+        return {
+            updatedAt: Date.now(),
+            presentes,
+            observaciones,
+        };
+    }
+
+    function saveDraft() {
+        if (!fechaActual) return;
+        try {
+            localStorage.setItem(getDraftKey(fechaActual), JSON.stringify(collectDraft()));
+        } catch (e) {
+        }
+    }
+
+    function loadDraft() {
+        if (!fechaActual) return null;
+        try {
+            const raw = localStorage.getItem(getDraftKey(fechaActual));
+            if (!raw) return null;
+            return JSON.parse(raw);
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function applyDraft(draft) {
+        if (!draft) return;
+
+        postForm.querySelectorAll('input.asistencia-checkbox[type="checkbox"]').forEach((cb) => {
+            const id = parseIdFromName('presente_', cb.name);
+            if (!id) return;
+            if (Object.prototype.hasOwnProperty.call(draft.presentes || {}, id)) {
+                cb.checked = !!draft.presentes[id];
+            }
+        });
+
+        postForm.querySelectorAll('input[type="text"][name^="observacion_"]').forEach((inp) => {
+            const id = parseIdFromName('observacion_', inp.name);
+            if (!id) return;
+            if (Object.prototype.hasOwnProperty.call(draft.observaciones || {}, id)) {
+                inp.value = draft.observaciones[id] || '';
+            }
+        });
+    }
+
+    function scheduleSave() {
+        if (saveTimer) clearTimeout(saveTimer);
+        saveTimer = setTimeout(saveDraft, 250);
+    }
+
+    function markDirty() {
+        if (isSubmitting) return;
+        isDirty = true;
+        scheduleSave();
+    }
+
+    const successMsg = document.querySelector('.messages li.success');
+    if (successMsg && successMsg.textContent && successMsg.textContent.includes('Asistencia guardada')) {
+        try {
+            localStorage.removeItem(getDraftKey(fechaActual));
+        } catch (e) {
+        }
+        isDirty = false;
+    } else {
+        const existingDraft = loadDraft();
+        if (existingDraft) {
+            applyDraft(existingDraft);
+            isDirty = true;
+        }
+    }
+
+    postForm.addEventListener('change', (e) => {
+        const t = e.target;
+        if (!t) return;
+        if (t.classList && t.classList.contains('asistencia-checkbox')) {
+            markDirty();
+        }
+    });
+
+    postForm.addEventListener('input', (e) => {
+        const t = e.target;
+        if (!t || !t.name) return;
+        if (t.name.startsWith('observacion_')) {
+            markDirty();
+        }
+    });
+
+    postForm.addEventListener('submit', () => {
+        isSubmitting = true;
+        isDirty = false;
+    });
+
+    window.addEventListener('beforeunload', (e) => {
+        if (!isDirty || isSubmitting) return;
+        saveDraft();
+        e.preventDefault();
+        e.returnValue = '';
+    });
+
+    fechaInput.addEventListener('change', () => {
+        const nuevaFecha = fechaInput.value || '';
+        if (!nuevaFecha || nuevaFecha === fechaActual) return;
+
+        if (isDirty && !isSubmitting) {
+            const ok = window.confirm('Tenés cambios sin guardar. Si cambiás la fecha se guardará un borrador local para recuperarlo después. ¿Continuar?');
+            if (!ok) {
+                fechaInput.value = fechaActual;
+                return;
+            }
+            saveDraft();
+        }
+
+        fechaActual = nuevaFecha;
+        fechaForm.submit();
+    });
+})();
+</script>
+
 {% endblock %}

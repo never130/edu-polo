@@ -166,7 +166,8 @@ def dashboard_estudiante(request):
         cursos_activos = []
         asistencia_promedio_total = 0
         cursos_con_asistencia = 0
-        
+        hoy = date.today()
+
         for inscripcion in inscripciones:
             registro, _ = RegistroAsistencia.objects.get_or_create(inscripcion=inscripcion)
             registro.calcular_porcentaje()
@@ -175,15 +176,29 @@ def dashboard_estudiante(request):
             presentes = registro.clases_asistidas
             porcentaje_asistencia = int(registro.porcentaje_asistencia)
 
-            if total_clases > 0:
+            if total_clases and total_clases > 0:
                 asistencia_promedio_total += porcentaje_asistencia
                 cursos_con_asistencia += 1
-            
+
             comision = inscripcion.comision
+
+            es_finalizada = (
+                comision.estado == 'Finalizada'
+                or (comision.fecha_fin and comision.fecha_fin < hoy)
+            )
+            if es_finalizada:
+                continue
+
+            if comision.fecha_inicio and comision.fecha_inicio > hoy:
+                estado_ui = 'Por iniciar'
+            elif comision.estado == 'En proceso':
+                estado_ui = 'En curso'
+            else:
+                estado_ui = 'En curso'
+
             proxima_fecha = None
             try:
                 fechas = comision.get_fechas_clase_programadas(hasta=comision.fecha_fin)
-                hoy = date.today()
                 for f in fechas:
                     if f >= hoy:
                         proxima_fecha = f
@@ -199,7 +214,8 @@ def dashboard_estudiante(request):
                 'proxima_fecha': proxima_fecha,
                 'asistencia': porcentaje_asistencia,
                 'total_clases': total_clases,
-                'presentes': presentes
+                'presentes': presentes,
+                'estado_ui': estado_ui,
             })
             
         # Calcular promedio general
@@ -217,6 +233,8 @@ def dashboard_estudiante(request):
         proxima_clase = None
         if cursos_activos:
             proxima_clase = cursos_activos[0] # Simplificación
+
+        inscripciones_activas_count = len(cursos_activos)
         
         context = {
             'estudiante': estudiante,
@@ -228,7 +246,7 @@ def dashboard_estudiante(request):
             'cursos_activos': cursos_activos,
             'promedio_general': promedio_general,
             'certificados': certificados_count,
-            'proxima_clase': proxima_clase
+            'proxima_clase': proxima_clase,
         }
         return render(request, 'dashboard/estudiante.html', context)
     except Estudiante.DoesNotExist:
