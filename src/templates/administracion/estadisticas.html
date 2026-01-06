@@ -82,8 +82,8 @@
         <div class="stat-card stat-card--attendance">
             <div class="stat-icon"><i class="fa-solid fa-chart-line"></i></div>
             <div class="stat-content">
-                <div class="stat-label">Promedio asistencia</div>
-                <div class="stat-number">{{ promedio_asistencia }}%</div>
+                <div class="stat-label">Cobertura asistencias</div>
+                <div class="stat-number">{{ cobertura_asistencia }}%</div>
             </div>
         </div>
     </div>
@@ -109,7 +109,26 @@
                 <h3 class="card__title">Distribución de estudiantes</h3>
             </div>
             <div class="chart-box">
-                <canvas id="chartTorta"></canvas>
+                <canvas id="chartDistribucion"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card__header card__header--between">
+                <h3 class="card__title">Asistencias (rangos)</h3>
+                <div class="card__subtitle">Global</div>
+            </div>
+            <div class="chart-box">
+                <canvas id="chartAsistenciaRangos"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card__header">
+                <h3 class="card__title">Género (estudiantes)</h3>
+            </div>
+            <div class="chart-box">
+                <canvas id="chartGenero"></canvas>
             </div>
         </div>
     </div>
@@ -484,6 +503,8 @@
 <script>
     // Datos desde Django
     const datosGrafico = {{ datos_grafico_json|safe }};
+    const asistenciaRangos = {{ asistencia_rangos_json|safe }};
+    const datosGenero = {{ genero_grafico_json|safe }};
     
     // Configuración global de fuentes para Chart.js
     Chart.defaults.font.family = "'Be Vietnam Pro', sans-serif";
@@ -504,17 +525,33 @@
         'rgba(251, 146, 60, 0.8)',   // Naranja claro
     ];
     
-    // Gráfico de Barras
+    const normalizarTop = (items, limite, etiquetaOtros) => {
+        const ordenados = [...items].sort((a, b) => b.valor - a.valor);
+        const top = ordenados.slice(0, Math.max(limite, 0));
+        const resto = ordenados.slice(Math.max(limite, 0));
+        const sumaResto = resto.reduce((acc, item) => acc + (item.valor || 0), 0);
+        if (sumaResto > 0) {
+            top.push({ etiqueta: etiquetaOtros, valor: sumaResto });
+        }
+        return top;
+    };
+
+    // Gráfico de Barras (Top cursos por cantidad)
     const ctxBarras = document.getElementById('chartBarras').getContext('2d');
+    const itemsCantidad = labels.map((etiqueta, i) => ({ etiqueta, valor: valores[i] || 0 }));
+    const topCantidad = normalizarTop(itemsCantidad, 15, 'Otros');
+    const labelsCantidad = topCantidad.map(i => i.etiqueta);
+    const valoresCantidad = topCantidad.map(i => i.valor);
+
     new Chart(ctxBarras, {
         type: 'bar',
         data: {
-            labels: labels,
+            labels: labelsCantidad,
             datasets: [{
                 label: 'Cantidad de Estudiantes',
-                data: valores,
-                backgroundColor: colores,
-                borderColor: colores.map(c => c.replace('0.8', '1')),
+                data: valoresCantidad,
+                backgroundColor: labelsCantidad.map((_, i) => colores[i % colores.length]),
+                borderColor: labelsCantidad.map((_, i) => colores[i % colores.length].replace('0.8', '1')),
                 borderWidth: 2,
                 borderRadius: 8,
             }]
@@ -558,22 +595,106 @@
         }
     });
     
-    // Gráfico de Torta
-    const ctxTorta = document.getElementById('chartTorta').getContext('2d');
-    new Chart(ctxTorta, {
+    // Distribución (Top cursos + Otros)
+    const ctxDistribucion = document.getElementById('chartDistribucion').getContext('2d');
+    const totalDistribucion = valores.reduce((a, b) => a + b, 0);
+    const topDistribucion = normalizarTop(itemsCantidad, 12, 'Otros');
+    const labelsDistribucion = topDistribucion.map(i => i.etiqueta);
+    const valoresDistribucion = topDistribucion.map(i => i.valor);
+    const porcentajesDistribucion = valoresDistribucion.map(v => totalDistribucion > 0 ? Number(((v / totalDistribucion) * 100).toFixed(1)) : 0);
+
+    new Chart(ctxDistribucion, {
+        type: 'bar',
+        data: {
+            labels: labelsDistribucion,
+            datasets: [{
+                label: 'Distribución (%)',
+                data: porcentajesDistribucion,
+                backgroundColor: labelsDistribucion.map((_, i) => colores[i % colores.length]),
+                borderColor: labelsDistribucion.map((_, i) => colores[i % colores.length].replace('0.8', '1')),
+                borderWidth: 2,
+                borderRadius: 8,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                    titleFont: { size: 14, weight: 'bold' },
+                    bodyFont: { size: 13 },
+                    borderColor: 'rgba(255, 255, 255, 0.2)',
+                    borderWidth: 1,
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.parsed || 0;
+                            const idx = context.dataIndex;
+                            const cantidad = valoresDistribucion[idx] || 0;
+                            return `${label}: ${cantidad} (${value}%)`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    suggestedMax: 100,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        autoSkip: true,
+                        maxRotation: 60,
+                        minRotation: 60,
+                        font: { size: 11 }
+                    }
+                }
+            }
+        }
+    });
+
+    const ctxAsistenciaRangos = document.getElementById('chartAsistenciaRangos').getContext('2d');
+    const global = (asistenciaRangos && asistenciaRangos.global) ? asistenciaRangos.global : {};
+
+    const labelsAsistencia = ['Sin registro', '0–49%', '50–74%', '75–100%'];
+    const valoresAsistencia = [
+        Number(global.sin_registro || 0),
+        Number(global.rango_0_49 || 0),
+        Number(global.rango_50_74 || 0),
+        Number(global.rango_75_100 || 0),
+    ];
+
+    new Chart(ctxAsistenciaRangos, {
         type: 'pie',
         data: {
-            labels: labels,
+            labels: labelsAsistencia,
             datasets: [{
-                data: valores,
-                backgroundColor: colores,
+                label: 'Inscripciones',
+                data: valoresAsistencia,
+                backgroundColor: [
+                    'rgba(148, 163, 184, 0.85)',
+                    'rgba(239, 68, 68, 0.85)',
+                    'rgba(245, 158, 11, 0.85)',
+                    'rgba(16, 185, 129, 0.85)',
+                ],
                 borderColor: '#ffffff',
                 borderWidth: 3,
             }]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     position: 'bottom',
@@ -596,7 +717,57 @@
                             const label = context.label || '';
                             const value = context.parsed || 0;
                             const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const percentage = ((value / total) * 100).toFixed(1);
+                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                            return `${label}: ${value} (${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    const ctxGenero = document.getElementById('chartGenero').getContext('2d');
+    const labelsGenero = (datosGenero || []).map(d => d.nombre);
+    const valoresGenero = (datosGenero || []).map(d => d.cantidad);
+
+    new Chart(ctxGenero, {
+        type: 'doughnut',
+        data: {
+            labels: labelsGenero,
+            datasets: [{
+                label: 'Estudiantes',
+                data: valoresGenero,
+                backgroundColor: labelsGenero.map((_, i) => colores[i % colores.length]),
+                borderColor: '#ffffff',
+                borderWidth: 3,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 15,
+                        font: { size: 12 },
+                        usePointStyle: true,
+                        pointStyle: 'circle'
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                    titleFont: { size: 14, weight: 'bold' },
+                    bodyFont: { size: 13 },
+                    borderColor: 'rgba(255, 255, 255, 0.2)',
+                    borderWidth: 1,
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.parsed || 0;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
                             return `${label}: ${value} (${percentage}%)`;
                         }
                     }

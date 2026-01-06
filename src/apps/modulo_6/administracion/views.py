@@ -818,7 +818,64 @@ def estadisticas_detalladas(request):
     total_en_proceso = Inscripcion.objects.filter(estado='confirmado').exclude(
         registro_asistencia__cumple_requisito_certificado=True
     ).count()
-    
+
+    total_registros_asistencia = RegistroAsistencia.objects.filter(
+        inscripcion__estado='confirmado',
+    ).count()
+    cobertura_asistencia = (total_registros_asistencia / total_inscripciones * 100) if total_inscripciones > 0 else 0
+
+    rangos_global = RegistroAsistencia.objects.filter(
+        inscripcion__estado='confirmado',
+    ).aggregate(
+        rango_0_49=Count('id', filter=Q(porcentaje_asistencia__lt=50)),
+        rango_50_74=Count('id', filter=Q(porcentaje_asistencia__gte=50, porcentaje_asistencia__lt=75)),
+        rango_75_100=Count('id', filter=Q(porcentaje_asistencia__gte=75)),
+    )
+
+    asistencia_rangos = {
+        'global': {
+            'total_inscripciones': int(total_inscripciones),
+            'sin_registro': int(max(total_inscripciones - total_registros_asistencia, 0)),
+            'rango_0_49': int(rangos_global.get('rango_0_49') or 0),
+            'rango_50_74': int(rangos_global.get('rango_50_74') or 0),
+            'rango_75_100': int(rangos_global.get('rango_75_100') or 0),
+        },
+    }
+
+    generos_raw = list(
+        Estudiante.objects.values('usuario__persona__genero').annotate(
+            total=Count('id'),
+        )
+    )
+
+    etiquetas_genero = {
+        'M': 'Masculino',
+        'F': 'Femenino',
+        'O': 'Otro',
+        'P': 'Prefiero no decirlo',
+    }
+
+    genero_orden = ['M', 'F', 'O', 'P']
+    genero_contadores = {k: 0 for k in genero_orden}
+    sin_dato = 0
+
+    for row in generos_raw:
+        key = row.get('usuario__persona__genero')
+        total = int(row.get('total') or 0)
+        if not key:
+            sin_dato += total
+            continue
+        if key in genero_contadores:
+            genero_contadores[key] += total
+        else:
+            sin_dato += total
+
+    datos_genero = []
+    for key in genero_orden:
+        datos_genero.append({'nombre': etiquetas_genero.get(key, key), 'cantidad': int(genero_contadores.get(key) or 0)})
+    if sin_dato:
+        datos_genero.append({'nombre': 'Sin dato', 'cantidad': int(sin_dato)})
+
     import json
     
     context = {
@@ -827,9 +884,13 @@ def estadisticas_detalladas(request):
         'total_inscripciones': total_inscripciones,
         'cursos_con_alumnos': cursos_con_alumnos,
         'datos_grafico_json': json.dumps(datos_grafico),
-        'promedio_asistencia': round(promedio_asistencia, 2),
         'total_completados': total_completados,
         'total_en_proceso': total_en_proceso,
+        'total_registros_asistencia': total_registros_asistencia,
+        'cobertura_asistencia': round(cobertura_asistencia, 1),
+        'total_sin_registro_asistencia': max(total_inscripciones - total_registros_asistencia, 0),
+        'asistencia_rangos_json': json.dumps(asistencia_rangos),
+        'genero_grafico_json': json.dumps(datos_genero),
     }
     return render(request, 'administracion/estadisticas.html', context)
 
@@ -2463,3 +2524,4 @@ def docentes_cursos(request):
     except Exception as e:
         messages.error(request, f'❌ Error al cargar la información: {str(e)}')
         return redirect('dashboard_admin')
+        
