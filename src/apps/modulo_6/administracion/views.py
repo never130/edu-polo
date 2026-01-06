@@ -964,27 +964,41 @@ def gestion_usuarios(request):
             roles_list.append('Docente')
         return ', '.join(roles_list) if roles_list else 'Sin rol'
     
+    ciudad_mesa_entrada = get_mesa_entrada_ciudad(request.user)
+
+    def aplicar_filtro_ciudad(qs):
+        # Solo aplica a Mesa de Entrada (Admins ven todo)
+        if not ciudad_mesa_entrada:
+            return qs
+
+        return qs.filter(
+            Q(ciudad_residencia__isnull=True) |
+            Q(ciudad_residencia='') |
+            Q(ciudad_residencia=ciudad_mesa_entrada)
+        )
+
     # Si es una petición AJAX, devolver JSON
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         query = request.GET.get('q', '').strip()
-        
-        # Buscar en Personas (si hay query) o mostrar todos
-        if query and len(query) >= 2:
-            personas = Persona.objects.filter(
-                Q(nombre__icontains=query) |
-                Q(apellido__icontains=query) |
-                Q(dni__icontains=query) |
-                Q(correo__icontains=query)
-            ).prefetch_related('usuario_set')[:50]
-        else:
-            # Si no hay búsqueda, devolver lista vacía para AJAX
+
+        if not query or len(query) < 2:
             return JsonResponse({'usuarios': []})
-        
+
+        personas_qs = Persona.objects.filter(usuario__isnull=False).distinct()
+        personas_qs = aplicar_filtro_ciudad(personas_qs)
+
+        personas_qs = personas_qs.filter(
+            Q(nombre__icontains=query) |
+            Q(apellido__icontains=query) |
+            Q(dni__icontains=query) |
+            Q(correo__icontains=query)
+        ).prefetch_related('usuario_set')[:50]
+
         resultados = []
-        for persona in personas:
+        for persona in personas_qs:
             # Obtener el primer usuario asociado (puede haber varios)
             usuario = persona.usuario_set.first()
-            
+
             if usuario:
                 roles = obtener_roles(persona, usuario)
                 resultados.append({
@@ -998,19 +1012,21 @@ def gestion_usuarios(request):
                     'roles': roles,
                     'fecha_nacimiento': persona.fecha_nacimiento.strftime('%Y-%m-%d') if persona.fecha_nacimiento else None,
                 })
-        
+
         return JsonResponse({'usuarios': resultados})
-    
-    # Vista normal - Mostrar todos los usuarios al cargar
-    # Obtener todas las personas que tienen al menos un usuario
-    personas_qs = Persona.objects.filter(usuario__isnull=False).distinct().order_by('apellido', 'nombre')
+
+    # Vista normal - Mostrar usuarios paginados al cargar
+    from django.core.paginator import Paginator
+
+    personas_qs = Persona.objects.filter(usuario__isnull=False).distinct().prefetch_related('usuario_set').order_by('apellido', 'nombre')
+    personas_qs = aplicar_filtro_ciudad(personas_qs)
     total_usuarios = personas_qs.count()
 
-    personas = personas_qs.prefetch_related('usuario_set')
+    paginator = Paginator(personas_qs, 50)
+    page_obj = paginator.get_page(request.GET.get('page'))
 
     usuarios_list = []
-    for persona in personas:
-        # Obtener el primer usuario asociado
+    for persona in page_obj.object_list:
         usuario = persona.usuario_set.first()
 
         if usuario:
@@ -1024,6 +1040,7 @@ def gestion_usuarios(request):
     context = {
         'usuarios': usuarios_list,
         'total_usuarios': total_usuarios,
+        'page_obj': page_obj,
         'puede_crear_usuarios': es_admin_completo(request.user)
     }
     return render(request, 'administracion/gestion_usuarios.html', context)

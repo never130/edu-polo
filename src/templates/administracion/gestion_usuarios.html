@@ -114,6 +114,30 @@
             </tbody>
         </table>
     </div>
+
+    {% if page_obj and page_obj.paginator.num_pages > 1 %}
+    <div style="display:flex; justify-content:center; gap:0.5rem; padding: 1rem; background: white; flex-wrap: wrap;">
+        {% if page_obj.has_previous %}
+            <a class="btn btn-secondary" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+        {% else %}
+            <span class="btn btn-secondary" style="opacity:0.5; pointer-events:none;">Anterior</span>
+        {% endif %}
+
+        {% for p in page_obj.paginator.page_range %}
+            {% if p == page_obj.number %}
+                <span class="btn btn-secondary" style="background:#6366f1; color:white;">{{ p }}</span>
+            {% else %}
+                <a class="btn btn-secondary" href="?page={{ p }}">{{ p }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a class="btn btn-secondary" href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+        {% else %}
+            <span class="btn btn-secondary" style="opacity:0.5; pointer-events:none;">Siguiente</span>
+        {% endif %}
+    </div>
+    {% endif %}
     {% else %}
     <div class="empty-state">
         <p>No hay usuarios registrados en el sistema.</p>
