@@ -1003,13 +1003,16 @@ def gestion_usuarios(request):
     
     # Vista normal - Mostrar todos los usuarios al cargar
     # Obtener todas las personas que tienen al menos un usuario
-    personas = Persona.objects.filter(usuario__isnull=False).distinct().prefetch_related('usuario_set').order_by('apellido', 'nombre')[:100]
-    
+    personas_qs = Persona.objects.filter(usuario__isnull=False).distinct().order_by('apellido', 'nombre')
+    total_usuarios = personas_qs.count()
+
+    personas = personas_qs.prefetch_related('usuario_set')
+
     usuarios_list = []
     for persona in personas:
         # Obtener el primer usuario asociado
         usuario = persona.usuario_set.first()
-        
+
         if usuario:
             roles = obtener_roles(persona, usuario)
             usuarios_list.append({
@@ -1017,10 +1020,10 @@ def gestion_usuarios(request):
                 'usuario': usuario,
                 'roles': roles,
             })
-    
+
     context = {
         'usuarios': usuarios_list,
-        'total_usuarios': len(usuarios_list),
+        'total_usuarios': total_usuarios,
         'puede_crear_usuarios': es_admin_completo(request.user)
     }
     return render(request, 'administracion/gestion_usuarios.html', context)

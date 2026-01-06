@@ -33,30 +33,30 @@
 {% endblock %}
 
 {% block content %}
-<div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 2.5rem; border-radius: 20px; color: white; margin-bottom: 2rem;">
+<div style="background: white; padding: 2.5rem; border-radius: 20px; color: #0f172a; margin-bottom: 2rem;">
     <h2 style="font-size: 2.2rem;">Gestión de Usuarios del Sistema</h2>
-    <p>Administra, crea, edita o elimina usuarios con buscador en tiempo real.</p>
-    
+    <p style="color: #64748b;">Administra, crea, edita o elimina usuarios con buscador en tiempo real.</p>
+
     <div class="usuarios-toolbar" style="display: flex; gap: 1rem; margin-top: 1.5rem; align-items: center; flex-wrap: wrap;">
-        <input 
-            type="text" 
-            id="searchInput" 
-            placeholder="Buscar por nombre, apellido, DNI o email..." 
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Buscar por nombre, apellido, DNI o email..."
             class="usuarios-search-input"
-            style="flex: 1; min-width: 300px; padding: 1rem; border: none; border-radius: 12px; font-size: 1rem;"
+            style="flex: 1; min-width: 300px; padding: 1rem; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 1rem;"
             autocomplete="off"
         >
-        <div id="loadingIndicator" style="display: none; color: white; font-weight: 600;">
+        <div id="loadingIndicator" style="display: none; color: #334155; font-weight: 600;">
             Buscando...
         </div>
         {% if puede_crear_usuarios %}
-        <a href="{% url 'administracion:crear_usuario' %}" style="background: white; color: #6366f1; padding: 1rem 1.5rem; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block; margin-right: 0.5rem;">Crear Nuevo Usuario
+        <a href="{% url 'administracion:crear_usuario' %}" style="background: #6366f1; color: white; padding: 1rem 1.5rem; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block; margin-right: 0.5rem;">Crear Nuevo Usuario
         </a>
         {% endif %}
         <a href="{% url 'administracion:exportar_usuarios_excel' %}" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 1rem 1.5rem; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);" target="_blank">Exportar a Excel
         </a>
     </div>
-    <div style="margin-top: 1rem; color: rgba(255,255,255,0.9); font-size: 0.9rem;">
+    <div style="margin-top: 1rem; color: #64748b; font-size: 0.9rem;">
         Tip: La búsqueda se actualiza automáticamente mientras escribes (mínimo 2 caracteres)
     </div>
 </div>
@@ -70,8 +70,8 @@
 {% endif %}
 
 <!-- Tabla de Usuarios (visible por defecto) -->
-<div id="tablaUsuariosDefault" style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
-    <div style="padding: 1.5rem; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+<div id="tablaUsuariosDefault" style="background: white; border-radius: 16px; overflow: hidden;">
+    <div style="padding: 1.5rem; background: #f8fafc;">
         <h3 style="margin: 0; color: #334155; font-size: 1.2rem;">
             Total: <strong>{{ total_usuarios }}</strong> usuario(s) en el sistema
         </h3>
@@ -122,8 +122,8 @@
 </div>
 
 <!-- Resultados de Búsqueda (ocultos por defecto) -->
-<div id="resultadosTabla" style="display: none; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
-    <div style="padding: 1.5rem; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+<div id="resultadosTabla" style="display: none; background: white; border-radius: 16px; overflow: hidden;">
+    <div style="padding: 1.5rem; background: #f8fafc; display: flex; justify-content: space-between; align-items: center;">
         <h3 style="margin: 0; color: #334155; font-size: 1.2rem;">
             Resultados: <span id="cantidadResultados">0</span> usuario(s) encontrado(s)
         </h3>
@@ -192,7 +192,6 @@
         padding: 3rem;
         background: white;
         border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         margin-top: 2rem;
     }
     .empty-state .icon {
