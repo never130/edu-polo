@@ -941,7 +941,7 @@ def api_detalle_estudiante(request):
 
 
 @login_required
-@user_passes_test(es_admin_completo)
+@user_passes_test(es_admin_o_mesa)
 def gestion_usuarios(request):
     """Panel de gestión completa de usuarios con buscador"""
     from django.http import JsonResponse
@@ -1118,7 +1118,7 @@ def crear_usuario_admin(request):
 
 
 @login_required
-@user_passes_test(es_admin_completo)
+@user_passes_test(es_admin_o_mesa)
 def editar_usuario_admin(request, persona_id):
     """Editar un usuario existente"""
     persona = get_object_or_404(Persona, id=persona_id)
@@ -1178,7 +1178,12 @@ def editar_usuario_admin(request, persona_id):
                     django_user.save()
                 
                 # Gestionar roles
+                puede_cambiar_rol = es_admin_completo(request.user)
                 nuevo_rol = request.POST.get('nuevo_rol')
+                if nuevo_rol and not puede_cambiar_rol:
+                    messages.error(request, ' No tienes permisos para cambiar el rol del usuario.')
+                    nuevo_rol = None
+
                 if nuevo_rol:
                     # Eliminar todos los roles actuales del usuario
                     UsuarioRol.objects.filter(usuario_id=usuario).delete()
@@ -1231,13 +1236,14 @@ def editar_usuario_admin(request, persona_id):
     context = {
         'persona': persona,
         'usuario': usuario,
-        'roles_actuales': ', '.join(roles_actuales) if roles_actuales else 'Sin rol'
+        'roles_actuales': ', '.join(roles_actuales) if roles_actuales else 'Sin rol',
+        'puede_cambiar_rol': es_admin_completo(request.user),
     }
     return render(request, 'administracion/editar_usuario.html', context)
 
 
 @login_required
-@user_passes_test(es_admin_completo)
+@user_passes_test(es_admin_o_mesa)
 def eliminar_usuario_admin(request, persona_id):
     """Eliminar un usuario del sistema"""
     if request.method == 'POST':
@@ -1261,7 +1267,7 @@ def eliminar_usuario_admin(request, persona_id):
 
 
 @login_required
-@user_passes_test(es_admin_completo)
+@user_passes_test(es_admin_o_mesa)
 def exportar_usuarios_excel(request):
     """Exportar usuarios a Excel"""
     # Crear workbook y worksheet

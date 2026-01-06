@@ -336,20 +336,48 @@
 {% endif %}
 
 <style>
+    .dashboard-card,
+    .messages li,
+    .acciones-rapidas {
+        box-shadow: none !important;
+    }
+
+    .dashboard-card:hover,
+    .accion-btn:hover {
+        box-shadow: none !important;
+    }
+
+    div[style*="box-shadow: 0 4px 15px rgba(0,0,0,0.08)"] {
+        box-shadow: none !important;
+    }
+
+    div[style*="box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1)"] {
+        box-shadow: none !important;
+    }
+
+    div[style*="border-top: 4px solid"] {
+        border-top: none !important;
+    }
+
+    div[style*="border: 1px solid #e2e8f0"],
+    div[style*="border: 1px solid #e5e7eb"],
+    div[style*="border: 1px solid #fed7d7"] {
+        border: none !important;
+    }
+
     .acciones-rapidas {
         background: white;
         padding: 2rem;
         border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         margin-top: 2rem;
     }
-    
+
     .acciones-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 1rem;
     }
-    
+
     .accion-btn {
         display: block;
         padding: 1.5rem;
@@ -360,50 +388,49 @@
         font-weight: 600;
         transition: all 0.3s ease;
     }
-    
+
     .accion-btn:hover {
         transform: translateY(-3px);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
     }
-    
+
     .accion-primary {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
-    
+
     .accion-secondary {
         background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
     }
-    
+
     .accion-tertiary {
         background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
     }
-    
+
     @media (max-width: 768px) {
         .acciones-rapidas {
             padding: 1.5rem;
         }
-        
+
         .acciones-grid {
             grid-template-columns: 1fr;
             gap: 0.8rem;
         }
-        
+
         .accion-btn {
             padding: 1.2rem;
             font-size: 0.95rem;
         }
     }
-    
+
     @media (max-width: 480px) {
         .acciones-rapidas {
             padding: 1rem;
         }
-        
+
         .acciones-rapidas h3 {
             font-size: 1.2rem;
             margin-bottom: 1rem;
         }
-        
+
         .accion-btn {
             padding: 1rem;
             font-size: 0.9rem;
