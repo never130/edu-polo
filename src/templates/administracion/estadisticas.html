@@ -106,17 +106,27 @@
 
         <div class="card">
             <div class="card__header">
-                <h3 class="card__title">Distribución de estudiantes</h3>
+                <h3 class="card__title">Inscripciones por estado</h3>
             </div>
             <div class="chart-box">
-                <canvas id="chartDistribucion"></canvas>
+                <canvas id="chartInscripcionesEstado"></canvas>
             </div>
         </div>
 
         <div class="card">
             <div class="card__header card__header--between">
-                <h3 class="card__title">Asistencias (rangos)</h3>
-                <div class="card__subtitle">Global</div>
+                <h3 class="card__title">Asistencia (resumen)</h3>
+                <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+                    <select id="filtroCursoAsistencia" style="padding:0.5rem 0.75rem; border-radius:10px; border:1px solid #e2e8f0; font-weight:700; color:#0f172a; background:white;">
+                        <option value="">Curso (Global)</option>
+                    </select>
+                    <select id="filtroComisionAsistencia" disabled style="padding:0.5rem 0.75rem; border-radius:10px; border:1px solid #e2e8f0; font-weight:700; color:#0f172a; background:white;">
+                        <option value="">Comisión (todas)</option>
+                    </select>
+                </div>
+            </div>
+            <div style="padding: 0 1.25rem; margin: 0.5rem 0 0; color:#64748b; font-size:0.92rem; line-height:1.3; overflow-wrap:anywhere;">
+                Resume la asistencia de estudiantes con inscripción confirmada: Al día (75% o más), En riesgo (menos de 75%) y Sin datos (sin asistencia cargada). Podés ver el total o filtrar por curso/comisión.
             </div>
             <div class="chart-box">
                 <canvas id="chartAsistenciaRangos"></canvas>
@@ -504,6 +514,7 @@
     // Datos desde Django
     const datosGrafico = {{ datos_grafico_json|safe }};
     const asistenciaRangos = {{ asistencia_rangos_json|safe }};
+    const datosInscripcionesEstado = {{ inscripciones_estado_json|safe }};
     const datosGenero = {{ genero_grafico_json|safe }};
     
     // Configuración global de fuentes para Chart.js
@@ -595,99 +606,100 @@
         }
     });
     
-    // Distribución (Top cursos + Otros)
-    const ctxDistribucion = document.getElementById('chartDistribucion').getContext('2d');
-    const totalDistribucion = valores.reduce((a, b) => a + b, 0);
-    const topDistribucion = normalizarTop(itemsCantidad, 12, 'Otros');
-    const labelsDistribucion = topDistribucion.map(i => i.etiqueta);
-    const valoresDistribucion = topDistribucion.map(i => i.valor);
-    const porcentajesDistribucion = valoresDistribucion.map(v => totalDistribucion > 0 ? Number(((v / totalDistribucion) * 100).toFixed(1)) : 0);
+    // Inscripciones por estado
+    const elInscripcionesEstado = document.getElementById('chartInscripcionesEstado');
+    if (elInscripcionesEstado) {
+        const ctxInscripcionesEstado = elInscripcionesEstado.getContext('2d');
+        const labelsEstado = (datosInscripcionesEstado || []).map(d => d.nombre);
+        const valoresEstado = (datosInscripcionesEstado || []).map(d => Number(d.cantidad || 0));
 
-    new Chart(ctxDistribucion, {
-        type: 'bar',
-        data: {
-            labels: labelsDistribucion,
-            datasets: [{
-                label: 'Distribución (%)',
-                data: porcentajesDistribucion,
-                backgroundColor: labelsDistribucion.map((_, i) => colores[i % colores.length]),
-                borderColor: labelsDistribucion.map((_, i) => colores[i % colores.length].replace('0.8', '1')),
-                borderWidth: 2,
-                borderRadius: 8,
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    padding: 12,
-                    titleFont: { size: 14, weight: 'bold' },
-                    bodyFont: { size: 13 },
-                    borderColor: 'rgba(255, 255, 255, 0.2)',
-                    borderWidth: 1,
-                    callbacks: {
-                        label: function(context) {
-                            const label = context.label || '';
-                            const value = context.parsed || 0;
-                            const idx = context.dataIndex;
-                            const cantidad = valoresDistribucion[idx] || 0;
-                            return `${label}: ${cantidad} (${value}%)`;
+        new Chart(ctxInscripcionesEstado, {
+            type: 'doughnut',
+            data: {
+                labels: labelsEstado,
+                datasets: [{
+                    label: 'Inscripciones',
+                    data: valoresEstado,
+                    backgroundColor: labelsEstado.map((_, i) => colores[i % colores.length]),
+                    borderColor: '#ffffff',
+                    borderWidth: 3,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: { size: 12 },
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 13 },
+                        borderColor: 'rgba(255, 255, 255, 0.2)',
+                        borderWidth: 1,
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
                         }
                     }
                 }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    suggestedMax: 100,
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.05)'
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false
-                    },
-                    ticks: {
-                        autoSkip: true,
-                        maxRotation: 60,
-                        minRotation: 60,
-                        font: { size: 11 }
-                    }
-                }
             }
-        }
-    });
+        });
+    }
 
     const ctxAsistenciaRangos = document.getElementById('chartAsistenciaRangos').getContext('2d');
-    const global = (asistenciaRangos && asistenciaRangos.global) ? asistenciaRangos.global : {};
 
-    const labelsAsistencia = ['Sin registro', '0–49%', '50–74%', '75–100%'];
-    const valoresAsistencia = [
-        Number(global.sin_registro || 0),
-        Number(global.rango_0_49 || 0),
-        Number(global.rango_50_74 || 0),
-        Number(global.rango_75_100 || 0),
+    const labelsAsistencia = ['Al día', 'En riesgo', 'Sin datos'];
+    const coloresAsistencia = [
+        'rgba(16, 185, 129, 0.85)',
+        'rgba(245, 158, 11, 0.85)',
+        'rgba(148, 163, 184, 0.85)',
     ];
 
-    new Chart(ctxAsistenciaRangos, {
-        type: 'pie',
+    const getRangosAsistencia = (cursoId, comisionId) => {
+        const global = (asistenciaRangos && asistenciaRangos.global) ? asistenciaRangos.global : {};
+        const porCurso = (asistenciaRangos && asistenciaRangos.por_curso) ? asistenciaRangos.por_curso : {};
+        const porComision = (asistenciaRangos && asistenciaRangos.por_comision) ? asistenciaRangos.por_comision : {};
+
+        if (comisionId && Object.prototype.hasOwnProperty.call(porComision, String(comisionId))) {
+            return porComision[String(comisionId)] || {};
+        }
+
+        if (cursoId && Object.prototype.hasOwnProperty.call(porCurso, String(cursoId))) {
+            return porCurso[String(cursoId)] || {};
+        }
+
+        return global || {};
+    };
+
+    const valoresDesdeRangos = (rangos) => {
+        const sinDatos = Number((rangos && rangos.sin_registro) || 0);
+        const alDia = Number((rangos && rangos.rango_75_100) || 0);
+        const enRiesgo = Number((rangos && rangos.rango_0_49) || 0) + Number((rangos && rangos.rango_50_74) || 0);
+        return [alDia, enRiesgo, sinDatos];
+    };
+
+    const chartAsistenciaRangos = new Chart(ctxAsistenciaRangos, {
+        type: 'doughnut',
         data: {
             labels: labelsAsistencia,
             datasets: [{
                 label: 'Inscripciones',
-                data: valoresAsistencia,
-                backgroundColor: [
-                    'rgba(148, 163, 184, 0.85)',
-                    'rgba(239, 68, 68, 0.85)',
-                    'rgba(245, 158, 11, 0.85)',
-                    'rgba(16, 185, 129, 0.85)',
-                ],
+                data: valoresDesdeRangos(getRangosAsistencia('', '')),
+                backgroundColor: coloresAsistencia,
                 borderColor: '#ffffff',
                 borderWidth: 3,
             }]
@@ -725,6 +737,81 @@
             }
         }
     });
+
+    const elFiltroCursoAsistencia = document.getElementById('filtroCursoAsistencia');
+    const elFiltroComisionAsistencia = document.getElementById('filtroComisionAsistencia');
+
+    const setOptions = (selectEl, options, placeholder) => {
+        if (!selectEl) return;
+        const prev = selectEl.value;
+        selectEl.innerHTML = '';
+        const optPlaceholder = document.createElement('option');
+        optPlaceholder.value = '';
+        optPlaceholder.textContent = placeholder;
+        selectEl.appendChild(optPlaceholder);
+
+        for (const o of options) {
+            const opt = document.createElement('option');
+            opt.value = String(o.value);
+            opt.textContent = o.label;
+            selectEl.appendChild(opt);
+        }
+
+        if (Array.from(selectEl.options).some(o => o.value === prev)) {
+            selectEl.value = prev;
+        }
+    };
+
+    const cargarCursosAsistencia = () => {
+        if (!elFiltroCursoAsistencia) return;
+        const cursos = (asistenciaRangos && asistenciaRangos.cursos) ? asistenciaRangos.cursos : [];
+        const opciones = [...cursos]
+            .map(c => ({ value: c.id, label: c.nombre || `Curso ${c.id}` }))
+            .sort((a, b) => String(a.label).localeCompare(String(b.label)));
+
+        setOptions(elFiltroCursoAsistencia, opciones, 'Curso (Global)');
+    };
+
+    const cargarComisionesAsistencia = (cursoId) => {
+        if (!elFiltroComisionAsistencia) return;
+        const comisiones = (asistenciaRangos && asistenciaRangos.comisiones) ? asistenciaRangos.comisiones : [];
+        const opciones = [...comisiones]
+            .filter(c => String(c.curso_id) === String(cursoId))
+            .map(c => ({ value: c.id, label: c.label || `Comisión ${c.id}` }));
+
+        setOptions(elFiltroComisionAsistencia, opciones, 'Comisión (todas)');
+        elFiltroComisionAsistencia.disabled = opciones.length === 0;
+    };
+
+    const actualizarAsistenciaRangos = () => {
+        const cursoId = elFiltroCursoAsistencia ? elFiltroCursoAsistencia.value : '';
+        const comisionId = elFiltroComisionAsistencia ? elFiltroComisionAsistencia.value : '';
+        const rangos = getRangosAsistencia(cursoId, comisionId);
+
+        chartAsistenciaRangos.data.datasets[0].data = valoresDesdeRangos(rangos);
+        chartAsistenciaRangos.update();
+    };
+
+    cargarCursosAsistencia();
+    if (elFiltroCursoAsistencia && elFiltroComisionAsistencia) {
+        elFiltroCursoAsistencia.addEventListener('change', () => {
+            const cursoId = elFiltroCursoAsistencia.value;
+            elFiltroComisionAsistencia.value = '';
+
+            if (cursoId) {
+                cargarComisionesAsistencia(cursoId);
+            } else {
+                cargarComisionesAsistencia('__none__');
+                elFiltroComisionAsistencia.disabled = true;
+            }
+
+            actualizarAsistenciaRangos();
+        });
+
+        elFiltroComisionAsistencia.addEventListener('change', () => {
+            actualizarAsistenciaRangos();
+        });
+    }
 
     const ctxGenero = document.getElementById('chartGenero').getContext('2d');
     const labelsGenero = (datosGenero || []).map(d => d.nombre);

@@ -824,13 +824,129 @@ def estadisticas_detalladas(request):
     ).count()
     cobertura_asistencia = (total_registros_asistencia / total_inscripciones * 100) if total_inscripciones > 0 else 0
 
-    rangos_global = RegistroAsistencia.objects.filter(
-        inscripcion__estado='confirmado',
-    ).aggregate(
+    inscripciones_confirmadas_qs = Inscripcion.objects.filter(estado='confirmado')
+    registros_confirmados_qs = RegistroAsistencia.objects.filter(inscripcion__estado='confirmado')
+
+    rangos_global = registros_confirmados_qs.aggregate(
         rango_0_49=Count('id', filter=Q(porcentaje_asistencia__lt=50)),
         rango_50_74=Count('id', filter=Q(porcentaje_asistencia__gte=50, porcentaje_asistencia__lt=75)),
         rango_75_100=Count('id', filter=Q(porcentaje_asistencia__gte=75)),
     )
+
+    insc_por_curso = list(
+        inscripciones_confirmadas_qs.values(
+            'comision__fk_id_curso_id',
+            'comision__fk_id_curso__nombre',
+        ).annotate(total_inscripciones=Count('id')).order_by('comision__fk_id_curso__nombre')
+    )
+
+    insc_por_comision = list(
+        inscripciones_confirmadas_qs.values(
+            'comision_id',
+            'comision__fk_id_curso_id',
+        ).annotate(total_inscripciones=Count('id'))
+    )
+
+    regs_por_curso = list(
+        registros_confirmados_qs.values(
+            'inscripcion__comision__fk_id_curso_id',
+        ).annotate(
+            rango_0_49=Count('id', filter=Q(porcentaje_asistencia__lt=50)),
+            rango_50_74=Count('id', filter=Q(porcentaje_asistencia__gte=50, porcentaje_asistencia__lt=75)),
+            rango_75_100=Count('id', filter=Q(porcentaje_asistencia__gte=75)),
+        )
+    )
+
+    regs_por_comision = list(
+        registros_confirmados_qs.values(
+            'inscripcion__comision_id',
+        ).annotate(
+            rango_0_49=Count('id', filter=Q(porcentaje_asistencia__lt=50)),
+            rango_50_74=Count('id', filter=Q(porcentaje_asistencia__gte=50, porcentaje_asistencia__lt=75)),
+            rango_75_100=Count('id', filter=Q(porcentaje_asistencia__gte=75)),
+        )
+    )
+
+    regs_por_curso_map = {
+        row.get('inscripcion__comision__fk_id_curso_id'): row
+        for row in regs_por_curso
+        if row.get('inscripcion__comision__fk_id_curso_id') is not None
+    }
+    regs_por_comision_map = {
+        row.get('inscripcion__comision_id'): row
+        for row in regs_por_comision
+        if row.get('inscripcion__comision_id') is not None
+    }
+
+    por_curso = {}
+    cursos_opciones = []
+    for row in insc_por_curso:
+        curso_id = row.get('comision__fk_id_curso_id')
+        nombre = row.get('comision__fk_id_curso__nombre') or ''
+        total_insc = int(row.get('total_inscripciones') or 0)
+
+        regs = regs_por_curso_map.get(curso_id, {})
+        r0 = int(regs.get('rango_0_49') or 0)
+        r1 = int(regs.get('rango_50_74') or 0)
+        r2 = int(regs.get('rango_75_100') or 0)
+        total_regs = r0 + r1 + r2
+
+        por_curso[str(curso_id)] = {
+            'total_inscripciones': total_insc,
+            'sin_registro': max(total_insc - total_regs, 0),
+            'rango_0_49': r0,
+            'rango_50_74': r1,
+            'rango_75_100': r2,
+        }
+        if curso_id is not None:
+            cursos_opciones.append({'id': int(curso_id), 'nombre': nombre})
+
+    por_comision = {}
+    comision_ids = []
+    for row in insc_por_comision:
+        comision_id = row.get('comision_id')
+        curso_id = row.get('comision__fk_id_curso_id')
+        total_insc = int(row.get('total_inscripciones') or 0)
+
+        regs = regs_por_comision_map.get(comision_id, {})
+        r0 = int(regs.get('rango_0_49') or 0)
+        r1 = int(regs.get('rango_50_74') or 0)
+        r2 = int(regs.get('rango_75_100') or 0)
+        total_regs = r0 + r1 + r2
+
+        por_comision[str(comision_id)] = {
+            'curso_id': int(curso_id) if curso_id is not None else None,
+            'total_inscripciones': total_insc,
+            'sin_registro': max(total_insc - total_regs, 0),
+            'rango_0_49': r0,
+            'rango_50_74': r1,
+            'rango_75_100': r2,
+        }
+
+        if comision_id is not None:
+            comision_ids.append(int(comision_id))
+
+    comisiones_opciones = []
+    if comision_ids:
+        comisiones_qs = Comision.objects.filter(
+            id_comision__in=comision_ids,
+        ).select_related('fk_id_curso', 'fk_id_polo').order_by('fk_id_curso__nombre', 'id_comision')
+
+        for comision in comisiones_qs:
+            curso = getattr(comision, 'fk_id_curso', None)
+            polo = getattr(comision, 'fk_id_polo', None)
+            curso_nombre = getattr(curso, 'nombre', '') or ''
+            ciudad = getattr(polo, 'ciudad', '') or ''
+
+            label = f"{curso_nombre} - Comisión #{comision.id_comision}"
+            if ciudad:
+                label = f"{label} ({ciudad})"
+
+            comisiones_opciones.append({
+                'id': int(comision.id_comision),
+                'curso_id': int(getattr(curso, 'id_curso', None) or 0),
+                'label': label,
+            })
 
     asistencia_rangos = {
         'global': {
@@ -840,7 +956,28 @@ def estadisticas_detalladas(request):
             'rango_50_74': int(rangos_global.get('rango_50_74') or 0),
             'rango_75_100': int(rangos_global.get('rango_75_100') or 0),
         },
+        'por_curso': por_curso,
+        'por_comision': por_comision,
+        'cursos': cursos_opciones,
+        'comisiones': comisiones_opciones,
     }
+
+    inscripciones_estado_raw = list(
+        Inscripcion.objects.values('estado').annotate(total=Count('id')).order_by('estado')
+    )
+    estado_labels = {
+        'confirmado': 'Confirmado',
+        'pre_inscripto': 'Pre-Inscripto',
+        'lista_espera': 'Lista de espera',
+        'cancelada': 'Cancelada',
+    }
+    inscripciones_estado = [
+        {
+            'nombre': estado_labels.get(row.get('estado'), row.get('estado') or 'Sin estado'),
+            'cantidad': int(row.get('total') or 0)
+        }
+        for row in inscripciones_estado_raw
+    ]
 
     generos_raw = list(
         Estudiante.objects.values('usuario__persona__genero').annotate(
@@ -890,6 +1027,7 @@ def estadisticas_detalladas(request):
         'cobertura_asistencia': round(cobertura_asistencia, 1),
         'total_sin_registro_asistencia': max(total_inscripciones - total_registros_asistencia, 0),
         'asistencia_rangos_json': json.dumps(asistencia_rangos),
+        'inscripciones_estado_json': json.dumps(inscripciones_estado),
         'genero_grafico_json': json.dumps(datos_genero),
     }
     return render(request, 'administracion/estadisticas.html', context)
@@ -2524,4 +2662,3 @@ def docentes_cursos(request):
     except Exception as e:
         messages.error(request, f'❌ Error al cargar la información: {str(e)}')
         return redirect('dashboard_admin')
-        
