@@ -967,6 +967,24 @@ def estadisticas_detalladas(request):
     inscripciones_estado_raw = list(
         Inscripcion.objects.values('estado').annotate(total=Count('id')).order_by('estado')
     )
+
+    # ESTIMACIÓN DE ELIMINADOS FÍSICOS (Solicitado por usuario)
+    # Calculamos la diferencia entre el ID máximo y la cantidad de registros
+    # para estimar cuántos registros fueron borrados físicamente.
+    max_id = Inscripcion.objects.aggregate(m=Max('id'))['m'] or 0
+    total_reales = Inscripcion.objects.count()
+    eliminados_estimados = max(0, max_id - total_reales)
+
+    if eliminados_estimados > 0:
+        found_cancelada = False
+        for item in inscripciones_estado_raw:
+            if item['estado'] == 'cancelada':
+                item['total'] += eliminados_estimados
+                found_cancelada = True
+                break
+        if not found_cancelada:
+            inscripciones_estado_raw.append({'estado': 'cancelada', 'total': eliminados_estimados})
+
     estado_labels = {
         'confirmado': 'Confirmado',
         'pre_inscripto': 'Pre-Inscripto',
