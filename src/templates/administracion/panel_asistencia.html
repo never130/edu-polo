@@ -134,6 +134,14 @@
             {% csrf_token %}
             <input type="hidden" name="guardar_asistencia" value="true">
             <input type="hidden" name="fecha_clase" value="{{ fecha_seleccionada }}">
+
+            <div style="margin-bottom: 1rem; display: flex; align-items: flex-end; gap: 1rem;">
+                <div style="flex: 1;">
+                    <label for="buscador-estudiantes" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #334155;">Buscar estudiante</label>
+                    <input id="buscador-estudiantes" type="text" inputmode="search" autocomplete="off" placeholder="Escribí nombre, apellido o DNI..."
+                           style="width: 100%; padding: 0.8rem; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 1rem; outline: none; transition: all 0.3s;">
+                </div>
+            </div>
             
             <div style="overflow-x: auto;">
                 <table style="width: 100%; border-collapse: collapse; margin-bottom: 2rem;">
@@ -286,6 +294,12 @@
     input:checked + .slider:before {
         transform: translateX(26px);
     }
+
+    tr.asistencia-match {
+        background: #fef9c3;
+        outline: 2px solid #f59e0b;
+        outline-offset: -2px;
+    }
 </style>
 
 <script>
@@ -298,6 +312,51 @@
     const postForm = document.getElementById('form-asistencia');
 
     if (!comisionIdInput || !fechaInput || !postForm) return;
+
+    const buscador = document.getElementById('buscador-estudiantes');
+    if (buscador) {
+        const tbody = postForm.querySelector('table tbody');
+        if (tbody) {
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            const normalizar = (s) => (s || '').toString().trim().toLowerCase();
+            let lastAnchor = null;
+
+            const marcar = () => {
+                const q = normalizar(buscador.value);
+
+                rows.forEach((tr) => {
+                    tr.style.display = '';
+
+                    const tds = tr.querySelectorAll('td');
+                    if (!tds || tds.length < 2) return;
+
+                    const nombre = normalizar(tds[0].innerText);
+                    const dni = normalizar(tds[1].innerText);
+
+                    const coincide = !!q && (nombre.includes(q) || dni.includes(q));
+                    tr.classList.toggle('asistencia-match', coincide);
+                });
+
+                if (!q || q.length < 2) {
+                    lastAnchor = null;
+                    return;
+                }
+
+                const firstMatch = rows.find((tr) => tr.classList.contains('asistencia-match'));
+                if (!firstMatch) {
+                    lastAnchor = null;
+                    return;
+                }
+
+                if (firstMatch !== lastAnchor) {
+                    lastAnchor = firstMatch;
+                    firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            };
+
+            buscador.addEventListener('input', marcar);
+        }
+    }
 
     const comisionId = comisionIdInput.value;
     let fechaActual = fechaInput.value || '';
