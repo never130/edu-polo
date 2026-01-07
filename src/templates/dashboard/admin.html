@@ -37,8 +37,14 @@
     <p>Vista general del sistema y estadísticas</p>
 </div>
 
+<style>
+    @media (max-width: 850px) {
+        .agenda-layout { grid-template-columns: 1fr !important; }
+    }
+</style>
+
 {% if es_admin_completo %}
-<div class="dashboard-cards">
+<div class="dashboard-cards" style="margin-top: 1.25rem;">
     <div class="dashboard-card">
         <div class="card-title">Total Cursos</div>
         <div class="card-value">{{ total_cursos }}</div>
@@ -64,10 +70,132 @@
 </div>
 {% endif %}
 
+<div style="margin-top: 1.25rem; width: 100%;">
+    <div style="background: white; padding: 1rem 1.25rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; flex-wrap:wrap;">
+            <div style="display:flex; flex-direction:column; gap:0.25rem; min-width: 240px;">
+                <div style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
+                    <h3 style="color:#0f172a; margin:0; font-size:1.2rem; font-weight:900;">Agenda de comisiones</h3>
+                    <div style="background:#f1f5f9; padding:0.25rem 0.6rem; border-radius:8px; color:#475569; font-weight:800; font-size:0.9rem;">
+                        {{ fecha_hoy|date:"d/m/Y" }}
+                    </div>
+                </div>
+                {% if tipo_usuario == 'Mesa de Entrada' and ciudad_mesa_entrada %}
+                    <div style="color:#64748b; font-weight:700; font-size:0.9rem; display:flex; align-items:center; gap:0.4rem; margin-top:0.1rem;">
+                        <i class="fa-solid fa-location-dot"></i> {{ ciudad_mesa_entrada }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if agenda_timed_items or agenda_untimed_items %}
+            <div class="agenda-layout" style="margin-top: 0.85rem; display:grid; grid-template-columns: 210px 1fr; gap: 1rem; align-items:start;">
+                <div style="border: 1px solid #e2e8f0; background: #f8fafc; border-radius: 14px; padding: 0.75rem;">
+                    <div style="display:flex; justify-content:center; align-items:center; gap:0.75rem;">
+                        <div style="font-weight: 900; color:#0f172a;">{{ mini_calendar_month_label }}</div>
+                    </div>
+
+                    <div style="margin-top:0.75rem; display:grid; grid-template-columns: repeat(7, 1fr); gap: 0.25rem; color:#64748b; font-weight:900; font-size:0.75rem; text-align:center;">
+                        <div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div>
+                    </div>
+
+                    <div style="margin-top:0.4rem; display:grid; grid-template-columns: repeat(7, 1fr); gap: 0.25rem;">
+                        {% for week in mini_calendar_weeks %}
+                            {% for day in week %}
+                                {% if day.month == mini_calendar_month %}
+                                    {% if day == actual_today %}
+                                        <div style="height:24px; border-radius:8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:#ffffff; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:0.8rem; box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);">{{ day.day }}</div>
+                                    {% else %}
+                                        <div style="height:24px; border-radius:8px; background:#ffffff; border:1px solid #e2e8f0; color:#94a3b8; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.8rem;">{{ day.day }}</div>
+                                    {% endif %}
+                                {% else %}
+                                    <div style="height:24px; border-radius:8px; background:transparent; color:#cbd5e1; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.8rem;">{{ day.day }}</div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div style="border: 1px solid #e2e8f0; background: #ffffff; border-radius: 14px; overflow:auto; -webkit-overflow-scrolling: touch;">
+                    {% if agenda_untimed_items %}
+                        <div style="padding: 0.6rem 0.75rem; background:#f8fafc; border-bottom:1px solid #e2e8f0;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; gap:0.75rem;">
+                                <div style="font-weight:900; color:#64748b; font-size:0.85rem;">Horario a confirmar</div>
+                                <div style="font-weight:900; color:#94a3b8; font-size:0.85rem;">{{ agenda_untimed_items|length }}</div>
+                            </div>
+                            <div style="margin-top:0.5rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
+                                {% for item in agenda_untimed_items %}
+                                    <a href="{% url 'administracion:panel_asistencia' %}?comision_id={{ item.comision.id_comision }}" style="text-decoration:none; color:inherit;">
+                                        <div style="display:flex; align-items:center; gap:0.5rem; padding:0.35rem 0.5rem; border-radius: 999px; border:1px solid #e2e8f0; background:#ffffff;">
+                                            <div style="width:8px; height:8px; border-radius:999px; background: {{ item.color }};"></div>
+                                            <div title="{{ item.comision.fk_id_curso.nombre }}" style="font-weight:900; color:#0f172a; font-size:0.85rem; max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ item.comision.fk_id_curso.nombre }}</div>
+                                            <div style="font-weight:900; color:#64748b; font-size:0.8rem;">#{{ item.comision.id_comision }}</div>
+                                        </div>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div style="display:grid; grid-template-columns: 64px 1fr; min-width: 900px;">
+                        <div style="background:#ffffff; border-right:1px solid #e2e8f0;">
+                            {% for h in agenda_hours %}
+                                <div style="height:40px; border-top:1px solid #e2e8f0; display:flex; align-items:flex-start; justify-content:flex-end; padding: 0.25rem 0.5rem; color:#64748b; font-weight:900; font-size:0.78rem;">{{ h }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div style="position:relative; height: {{ agenda_timeline_height }}px; background:#ffffff;">
+                            <div>
+                                {% for h in agenda_hours %}
+                                    <div style="height:40px; border-top:1px solid #e2e8f0;"></div>
+                                {% endfor %}
+                            </div>
+
+                            {% for item in agenda_timed_items %}
+                                <a href="{% url 'administracion:panel_asistencia' %}?comision_id={{ item.comision.id_comision }}" style="text-decoration:none; color:inherit;">
+                                    <div style="position:absolute; top: {{ item.top }}px; left: calc({{ item.left_pct }}% + 8px); width: calc({{ item.width_pct }}% - 12px); height: {{ item.height }}px; border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0; overflow:hidden; z-index:10; transition: z-index 0.2s, transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.zIndex=50; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)';" onmouseout="this.style.zIndex=10; this.style.boxShadow='none';">
+                                        <div style="height:100%; display:flex; gap:0.6rem; align-items:stretch;">
+                                            <div style="width:6px; background: {{ item.color }};"></div>
+                                            <div style="flex:1; min-width:0; padding: 0.25rem 0.4rem; display:flex; flex-direction:column; gap: 0.1rem;">
+                                                <!-- Title: Grows and takes priority -->
+                                                <div style="font-weight:900; color:#0f172a; font-size:0.8rem; line-height:1.2; overflow:hidden; text-overflow:ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; white-space: normal; flex-grow: 1;">{{ item.comision.fk_id_curso.nombre }}</div>
+                                                
+                                                <!-- Footer: Time and ID and Sparkline -->
+                                                <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:0.5rem;">
+                                                    <div style="font-weight:900; color:#64748b; font-size:0.7rem; white-space:nowrap;">
+                                                        #{{ item.comision.id_comision }} · {{ item.start_label }}–{{ item.end_label }}
+                                                    </div>
+
+                                                    {% if item.sparkline_has_data %}
+                                                        <div style="display:flex; align-items:center; gap:0.25rem;">
+                                                            <svg width="60" height="18" viewBox="0 0 120 24" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+                                                                <polyline points="{{ item.sparkline_points }}" fill="none" stroke="{{ item.color }}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                                                            </svg>
+                                                            <div style="font-weight:900; color:#0f172a; font-size:0.75rem; white-space:nowrap;">{{ item.sparkline_value|floatformat:0 }}%</div>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div style="margin-top: 0.75rem; color:#64748b; font-weight:700;">No hay cursos/comisiones activos para hoy.</div>
+        {% endif %}
+    </div>
+</div>
+
+
+
 <!-- Métricas de Hoy -->
 <div style="margin-top: 2rem;">
     <h3 style="color: #4a5568; margin-bottom: 1rem; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
-        📅 Actividad de Hoy
+        📅 Actividad del {{ fecha_hoy|date:"d/m/Y" }}
     </h3>
     <div class="dashboard-cards" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
         <div class="dashboard-card" style="border-left: 4px solid #48bb78; cursor: pointer; transition: transform 0.2s;" onclick="openModal('modalPreInscripciones')" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">

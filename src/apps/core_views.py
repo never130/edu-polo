@@ -294,6 +294,7 @@ def dashboard_admin(request):
     from apps.modulo_1.usuario.models import Usuario
     from apps.modulo_1.roles.models import UsuarioRol
     from django.utils import timezone
+    from datetime import datetime
     
     # Verificar si es staff o superuser (administrador Django)
     es_admin_django = request.user.is_staff or request.user.is_superuser
@@ -315,7 +316,11 @@ def dashboard_admin(request):
     from django.db.models import Count, F, Q
 
     hoy = timezone.now().date()
-    Comision.objects.filter(fecha_fin__lt=hoy).exclude(estado='Finalizada').update(estado='Finalizada')
+    hoy_real = hoy
+
+    fecha_agenda = hoy_real
+
+    Comision.objects.filter(fecha_fin__lt=hoy_real).exclude(estado='Finalizada').update(estado='Finalizada')
     
     # Estadísticas generales
     total_cursos = Curso.objects.count()
@@ -324,9 +329,9 @@ def dashboard_admin(request):
     total_inscripciones = Inscripcion.objects.filter(estado='confirmado').count()
     
     # Métricas de Hoy
-    inscripciones_hoy_qs = Inscripcion.objects.filter(fecha_hora_inscripcion__date=hoy)
+    inscripciones_hoy_qs = Inscripcion.objects.filter(fecha_hora_inscripcion__date=hoy_real)
     inscripciones_hoy = inscripciones_hoy_qs.count()
-    asistencias_hoy = Asistencia.objects.filter(fecha_clase=hoy, presente=True).count()
+    asistencias_hoy = Asistencia.objects.filter(fecha_clase=hoy_real, presente=True).count()
     
     # Cursos más populares (con más inscripciones)
     cursos_populares = Curso.objects.annotate(
@@ -392,6 +397,197 @@ def dashboard_admin(request):
             nuevas_preinscripciones = Inscripcion.objects.none()
             inscripciones_hoy = 0
 
+    dia_semana = fecha_agenda.weekday()
+    dia_variantes = {
+        0: ['lunes', 'lun'],
+        1: ['martes', 'mar'],
+        2: ['miércoles', 'miercoles', 'mié', 'mie', 'mier'],
+        3: ['jueves', 'jue'],
+        4: ['viernes', 'vie'],
+        5: ['sábado', 'sabado', 'sáb', 'sab'],
+        6: ['domingo', 'dom'],
+    }.get(dia_semana, [])
+
+    filtro_dia = Q()
+    for v in dia_variantes:
+        filtro_dia |= Q(dias_horarios__icontains=v)
+
+    comisiones_hoy_qs = Comision.objects.select_related('fk_id_curso', 'fk_id_polo').exclude(
+        estado='Finalizada'
+    ).filter(
+        Q(fecha_inicio__isnull=True) | Q(fecha_inicio__lte=fecha_agenda),
+        Q(fecha_fin__isnull=True) | Q(fecha_fin__gte=fecha_agenda),
+    )
+
+    if filtro_dia:
+        comisiones_hoy_qs = comisiones_hoy_qs.filter(filtro_dia)
+    else:
+        comisiones_hoy_qs = Comision.objects.none()
+
+    comisiones_hoy_qs = comisiones_hoy_qs.order_by('fk_id_curso__nombre', 'id_comision')
+
+    if tipo_usuario == 'Mesa de Entrada':
+        if ciudad_mesa_entrada:
+            comisiones_hoy_qs = comisiones_hoy_qs.filter(fk_id_polo__ciudad=ciudad_mesa_entrada)
+        else:
+            comisiones_hoy_qs = Comision.objects.none()
+
+    comisiones_hoy = list(comisiones_hoy_qs[:50])
+
+    comisiones_hoy_cards = []
+    comision_ids_hoy = [int(c.id_comision) for c in comisiones_hoy]
+
+    series_por_comision = {}
+    if comision_ids_hoy:
+        series_raw = list(
+            Asistencia.objects.filter(
+                inscripcion__estado='confirmado',
+                inscripcion__comision_id__in=comision_ids_hoy,
+            ).values('inscripcion__comision_id', 'fecha_clase').annotate(
+                total=Count('pk'),
+                presentes=Count('pk', filter=Q(presente=True)),
+            ).order_by('fecha_clase')
+        )
+
+        for row in series_raw:
+            com_id = row.get('inscripcion__comision_id')
+            fecha = row.get('fecha_clase')
+            total = int(row.get('total') or 0)
+            presentes = int(row.get('presentes') or 0)
+            if com_id is None or fecha is None or total <= 0:
+                continue
+            porcentaje = round((presentes / total) * 100, 0)
+            series_por_comision.setdefault(int(com_id), []).append({'fecha': fecha, 'valor': max(min(int(porcentaje), 100), 0)})
+
+    def _sparkline_points(valores, width=120, height=24, pad=2):
+        valores = [max(min(int(v), 100), 0) for v in (valores or [])]
+        if not valores:
+            return ''
+        if len(valores) == 1:
+            valores = [valores[0], valores[0]]
+        inner_w = max(width - 2 * pad, 1)
+        inner_h = max(height - 2 * pad, 1)
+        step = inner_w / max(len(valores) - 1, 1)
+        pts = []
+        for i, v in enumerate(valores):
+            x = pad + (step * i)
+            y = pad + (inner_h * (1 - (v / 100)))
+            pts.append(f"{x:.1f},{y:.1f}")
+        return ' '.join(pts)
+
+    def _parse_time_range(texto):
+        import re
+        t = (texto or '').lower()
+        times = re.findall(r"\b([01]?\d|2[0-3])[:\.]([0-5]\d)\b", t)
+        if len(times) >= 2:
+            sh, sm = int(times[0][0]), int(times[0][1])
+            eh, em = int(times[1][0]), int(times[1][1])
+        else:
+            m = re.search(r"\b([01]?\d|2[0-3])\s*(?:hs|h)?\s*(?:a|\-|–|—)\s*([01]?\d|2[0-3])(?:[:\.]([0-5]\d))?\b", t)
+            if not m:
+                return None
+            sh = int(m.group(1))
+            sm = 0
+            eh = int(m.group(2))
+            em = int(m.group(3) or 0)
+        start_min = (sh * 60) + sm
+        end_min = (eh * 60) + em
+        if end_min <= start_min:
+            end_min = start_min + 60
+        return {
+            'start_min': start_min,
+            'end_min': end_min,
+            'start_label': f"{sh:02d}:{sm:02d}",
+            'end_label': f"{eh:02d}:{em:02d}",
+        }
+
+    palette = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4']
+    agenda_row_h = 40
+    agenda_start_min = 8 * 60
+    agenda_end_min = 22 * 60
+
+    agenda_timed_items = []
+    agenda_untimed_items = []
+
+    for comision in comisiones_hoy:
+        com_id = int(comision.id_comision)
+        serie = series_por_comision.get(com_id, [])
+        serie = sorted(serie, key=lambda x: x['fecha'])
+        ultimos = serie[-8:]
+        valores = [int(x['valor']) for x in ultimos]
+        puntos = _sparkline_points(valores)
+        has_data = len(valores) > 0
+
+        color = palette[com_id % len(palette)]
+        time_range = _parse_time_range(comision.dias_horarios or '')
+
+        card = {
+            'comision': comision,
+            'color': color,
+            'sparkline_points': puntos,
+            'sparkline_has_data': has_data,
+            'sparkline_value': (valores[-1] if has_data else 0),
+            'sparkline_count': len(valores),
+        }
+        comisiones_hoy_cards.append(card)
+
+        if time_range:
+            start_min = max(int(time_range['start_min']), agenda_start_min)
+            end_min = min(int(time_range['end_min']), agenda_end_min)
+            if end_min <= start_min:
+                end_min = min(start_min + 60, agenda_end_min)
+
+            top = int(round(((start_min - agenda_start_min) / 60) * agenda_row_h, 0))
+            height = int(max(round(((end_min - start_min) / 60) * agenda_row_h, 0), 30))
+
+            agenda_timed_items.append({
+                **card,
+                'start_min': start_min,
+                'end_min': end_min,
+                'start_label': time_range['start_label'],
+                'end_label': time_range['end_label'],
+                'top': top,
+                'height': height,
+            })
+        else:
+            agenda_untimed_items.append(card)
+
+    agenda_timed_items.sort(key=lambda x: (int(x.get('start_min') or 0), int(x.get('end_min') or 0)))
+    lane_ends = []
+    for ev in agenda_timed_items:
+        placed = False
+        for i, end_min in enumerate(lane_ends):
+            if int(ev['start_min']) >= int(end_min):
+                ev['lane'] = i
+                lane_ends[i] = int(ev['end_min'])
+                placed = True
+                break
+        if not placed:
+            ev['lane'] = len(lane_ends)
+            lane_ends.append(int(ev['end_min']))
+
+    total_lanes = max(len(lane_ends), 1)
+    width_pct = round(100 / total_lanes, 4)
+    for ev in agenda_timed_items:
+        ev['width_pct'] = width_pct
+        ev['left_pct'] = round(int(ev.get('lane') or 0) * width_pct, 4)
+
+    agenda_hours = [f"{h:02d}:00" for h in range(8, 23)]
+    agenda_timeline_height = max((len(agenda_hours) - 1) * agenda_row_h, 1)
+
+    import calendar
+    meses = {
+        1: 'Enero', 2: 'Febrero', 3: 'Marzo', 4: 'Abril', 5: 'Mayo', 6: 'Junio',
+        7: 'Julio', 8: 'Agosto', 9: 'Septiembre', 10: 'Octubre', 11: 'Noviembre', 12: 'Diciembre',
+    }
+    mini_calendar_year = int(fecha_agenda.year)
+    mini_calendar_month = int(fecha_agenda.month)
+
+    cal = calendar.Calendar(firstweekday=0)
+    mini_calendar_weeks = cal.monthdatescalendar(mini_calendar_year, mini_calendar_month)
+    mini_calendar_month_label = f"{meses.get(mini_calendar_month, mini_calendar_month)} de {mini_calendar_year}"
+    actual_today = hoy_real
+
     inscripciones_confirmadas_qs = Inscripcion.objects.filter(estado='confirmado')
     if tipo_usuario == 'Mesa de Entrada':
         if ciudad_mesa_entrada:
@@ -451,6 +647,18 @@ def dashboard_admin(request):
         'total_estudiantes': total_estudiantes,
         'total_docentes': total_docentes,
         'total_inscripciones': total_inscripciones,
+        'fecha_hoy': fecha_agenda,
+        'actual_today': actual_today,
+        'comisiones_hoy': comisiones_hoy,
+        'comisiones_hoy_cards': comisiones_hoy_cards,
+        'agenda_timed_items': agenda_timed_items,
+        'agenda_untimed_items': agenda_untimed_items,
+        'agenda_hours': agenda_hours,
+        'agenda_timeline_height': agenda_timeline_height,
+        'mini_calendar_weeks': mini_calendar_weeks,
+        'mini_calendar_month_label': mini_calendar_month_label,
+        'mini_calendar_year': mini_calendar_year,
+        'mini_calendar_month': mini_calendar_month,
         'inscripciones_hoy': inscripciones_hoy,
         'asistencias_hoy': asistencias_hoy,
         'cursos_populares': cursos_populares,
