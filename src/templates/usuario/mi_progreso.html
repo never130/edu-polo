@@ -1,5 +1,5 @@
 {% extends 'dashboard/base_dashboard.html' %}
-{% load static %}
+{% load static l10n %}
 
 {% block title %}Mi Progreso{% endblock %}
 
@@ -383,7 +383,7 @@
                 </div>
                 <div class="progress-bar-container">
                     <div class="progress-bar {% if inscripcion.progreso < 60 %}low{% elif inscripcion.progreso < 80 %}medium{% else %}good{% endif %}" 
-                         style="width: {{ inscripcion.progreso }}%;">
+                         style="width: {{ inscripcion.progreso|unlocalize }}%;">
                         {{ inscripcion.progreso }}%
                     </div>
                 </div>

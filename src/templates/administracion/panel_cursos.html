@@ -1,4 +1,6 @@
 {% extends 'dashboard/base_dashboard.html' %}
+{% load l10n %}
+{% load static %}
 
 {% block title %}Gestión de Cursos - Panel Administrador{% endblock %}
 
@@ -206,7 +208,7 @@
                     {% endif %}
                 </td>
                 <td>
-                    <a href="{% url 'administracion:editar_curso' curso.id_curso %}" class="btn-action btn-edit">✏️ Editar
+                    <a href="{% url 'administracion:editar_curso' curso.id_curso|unlocalize %}" class="btn-action btn-edit">✏️ Editar
                     </a>
                 </td>
             </tr>

@@ -1,5 +1,6 @@
 {% extends 'dashboard/base_dashboard.html' %}
 {% load static %}
+{% load l10n %}
 
 {% block title %}Editar Perfil{% endblock %}
 
@@ -93,7 +94,7 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="dni">DNI (No editable)</label>
-                    <input type="text" value="{{ persona.dni }}" disabled>
+                    <input type="text" value="{{ persona.dni|unlocalize }}" disabled>
                 </div>
                 <div class="form-group">
                     <label for="correo" class="required">Correo Electrónico</label>
@@ -103,7 +104,7 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="telefono">Teléfono</label>
-                    <input type="tel" name="telefono" id="telefono" value="{{ persona.telefono|default:'' }}" placeholder="+54 2901 123456">
+                    <input type="tel" name="telefono" id="telefono" value="{{ persona.telefono|default:''|unlocalize }}" placeholder="+54 2901 123456">
                 </div>
                 <div class="form-group">
                     <label for="fecha_nacimiento">Fecha de Nacimiento</label>
@@ -187,7 +188,7 @@
                 </div>
                 <div class="form-group">
                     <label for="experiencia_anios">Años de Experiencia</label>
-                    <input type="number" name="experiencia_anios" id="experiencia_anios" value="{{ perfil_adicional.experiencia_anios|default:'' }}" min="0" placeholder="Ej: 5">
+                    <input type="number" name="experiencia_anios" id="experiencia_anios" value="{{ perfil_adicional.experiencia_anios|default:''|unlocalize }}" min="0" placeholder="Ej: 5">
                 </div>
             </div>
         </div>

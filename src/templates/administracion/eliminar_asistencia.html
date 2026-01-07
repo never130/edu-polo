@@ -1,5 +1,6 @@
 {% extends 'dashboard/base_dashboard.html' %}
 {% load static %}
+{% load l10n %}
 
 {% block title %}Eliminar Asistencia{% if es_docente %} - Docente{% else %} - Admin{% endif %}{% endblock %}
 
@@ -86,7 +87,7 @@
     <form method="post">
         {% csrf_token %}
         <div style="display: flex; gap: 1rem; justify-content: flex-end;">
-            <a href="{% url 'administracion:panel_asistencia' %}?comision_id={{ asistencia.inscripcion.comision.id_comision }}" style="padding: 0.9rem 2rem; background: #e2e8f0; color: #334155; text-decoration: none; border-radius: 12px; font-weight: 600;">Cancelar
+            <a href="{% url 'administracion:panel_asistencia' %}?comision_id={{ asistencia.inscripcion.comision.id_comision|unlocalize }}" style="padding: 0.9rem 2rem; background: #e2e8f0; color: #334155; text-decoration: none; border-radius: 12px; font-weight: 600;">Cancelar
             </a>
             <button type="submit" style="padding: 0.9rem 2rem; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;">
                 🗑️ Eliminar Asistencia

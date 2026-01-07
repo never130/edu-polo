@@ -1,4 +1,6 @@
 {% extends 'dashboard/base_dashboard.html' %}
+{% load l10n %}
+{% load static %}
 
 {% block title %}Editar Curso - Panel Administrador{% endblock %}
 
@@ -55,11 +57,11 @@
         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
             <div>
                 <label style="display: block; margin-bottom: 0.6rem; color: #334155; font-weight: 600;">Edad Mínima</label>
-                <input type="number" name="edad_minima" value="{{ curso.edad_minima|default:'' }}" style="width: 100%; padding: 1rem; border: 2px solid #e2e8f0; border-radius: 12px;">
+                <input type="number" name="edad_minima" value="{{ curso.edad_minima|default:''|unlocalize }}" style="width: 100%; padding: 1rem; border: 2px solid #e2e8f0; border-radius: 12px;">
             </div>
             <div>
                 <label style="display: block; margin-bottom: 0.6rem; color: #334155; font-weight: 600;">Edad Máxima</label>
-                <input type="number" name="edad_maxima" value="{{ curso.edad_maxima|default:'' }}" style="width: 100%; padding: 1rem; border: 2px solid #e2e8f0; border-radius: 12px;">
+                <input type="number" name="edad_maxima" value="{{ curso.edad_maxima|default:''|unlocalize }}" style="width: 100%; padding: 1rem; border: 2px solid #e2e8f0; border-radius: 12px;">
             </div>
             <div>
                 <label style="display: block; margin-bottom: 0.6rem; color: #334155; font-weight: 600;">Estado</label>
@@ -72,7 +74,7 @@
         
         <div style="margin-bottom: 1.5rem;">
             <label style="display: block; margin-bottom: 0.6rem; color: #334155; font-weight: 600;">Orden de Visualización</label>
-            <input type="number" name="orden" value="{{ curso.orden|default:0 }}" min="0" style="width: 100%; padding: 1rem; border: 2px solid #e2e8f0; border-radius: 12px;">
+            <input type="number" name="orden" value="{{ curso.orden|default:0|unlocalize }}" min="0" style="width: 100%; padding: 1rem; border: 2px solid #e2e8f0; border-radius: 12px;">
             <small style="color: #64748b; font-size: 0.85rem; display: block; margin-top: 0.3rem;">Número que determina el orden en el index principal (menor = más arriba)</small>
         </div>
         

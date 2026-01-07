@@ -1,4 +1,5 @@
 {% load static %}
+{% load l10n %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1386,7 +1387,7 @@ polo/2/cursos/        @media (max-width: 480px) {
                 <div class="polos-grid">
                     {% if polos %}
                         {% for polo in polos %}
-                        <a href="{% url 'cursos_por_polo' polo.id_polo %}" class="polo-card">
+                        <a href="{% url 'cursos_por_polo' polo.id_polo|unlocalize %}" class="polo-card">
                             {% if polo.id_polo == 1 %}
                                 <img src="{% static 'img/poloush.png' %}" alt="{{ polo.nombre }}" class="polo-img">
                             {% elif polo.id_polo == 2 %}

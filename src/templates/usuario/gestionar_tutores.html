@@ -1,4 +1,5 @@
 {% extends 'dashboard/base_dashboard.html' %}
+{% load l10n %}
 
 {% block title %}Gestionar Tutores{% endblock %}
 
@@ -293,7 +294,7 @@
                     <h3>{{ relacion.tutor.usuario.persona.nombre_completo }}</h3>
                     <span class="parentesco-badge">{{ relacion.get_parentesco_display }}</span>
                 </div>
-                <form method="post" action="{% url 'usuario:eliminar_tutor' relacion.id %}" style="display: inline;" onsubmit="return confirm('¿Seguro que querés eliminar este tutor?');">
+                <form method="post" action="{% url 'usuario:eliminar_tutor' relacion.id|unlocalize %}" style="display: inline;" onsubmit="return confirm('¿Seguro que querés eliminar este tutor?');">
                     {% csrf_token %}
                     <button type="submit" class="btn-eliminar">Eliminar</button>
                 </form>
@@ -430,13 +431,13 @@
 
             <div class="acciones">
                 {% if not autorizado.confirmado and not autorizado.revocado %}
-                <form method="post" action="{% url 'usuario:confirmar_autorizado_retiro' autorizado.id %}" style="display:inline;">
+                <form method="post" action="{% url 'usuario:confirmar_autorizado_retiro' autorizado.id|unlocalize %}" style="display:inline;">
                     {% csrf_token %}
                     <button type="submit" class="btn-secundario">Confirmar autorización</button>
                 </form>
                 {% endif %}
 
-                <form method="post" action="{% url 'usuario:revocar_autorizado_retiro' autorizado.id %}" style="display:inline;" onsubmit="return confirm('¿Seguro que querés cambiar el estado de esta autorización?');">
+                <form method="post" action="{% url 'usuario:revocar_autorizado_retiro' autorizado.id|unlocalize %}" style="display:inline;" onsubmit="return confirm('¿Seguro que querés cambiar el estado de esta autorización?');">
                     {% csrf_token %}
                     {% if autorizado.revocado %}
                     <button type="submit" class="btn-secundario">Reactivar</button>
@@ -445,7 +446,7 @@
                     {% endif %}
                 </form>
 
-                <form method="post" action="{% url 'usuario:eliminar_autorizado_retiro' autorizado.id %}" style="display:inline;" onsubmit="return confirm('¿Seguro que querés eliminar este autorizado?');">
+                <form method="post" action="{% url 'usuario:eliminar_autorizado_retiro' autorizado.id|unlocalize %}" style="display:inline;" onsubmit="return confirm('¿Seguro que querés eliminar este autorizado?');">
                     {% csrf_token %}
                     <button type="submit" class="btn-eliminar">Eliminar</button>
                 </form>

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load l10n %}
 
 {% block title %}Cursos Disponibles{% endblock %}
 
@@ -258,7 +259,7 @@
                                     ⛔ Cupo lleno
                                 </button>
                             {% else %}
-                                <a href="{% url 'inscripciones:formulario' comision.id_comision %}" class="btn-inscribir">
+                                <a href="{% url 'inscripciones:formulario' comision.id_comision|unlocalize %}" class="btn-inscribir">
                                     ✅ Inscribirme
                                 </a>
                             {% endif %}

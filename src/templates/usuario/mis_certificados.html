@@ -1,4 +1,5 @@
 {% extends 'dashboard/base_dashboard.html' %}
+{% load l10n %}
 
 {% block title %}Mis Certificados - Edu-Polo{% endblock %}
 
@@ -128,7 +129,7 @@
                     </div>
                 </div>
                 
-                <a href="{% url 'usuario:descargar_certificado' registro.inscripcion.id %}" class="btn-descargar">
+                <a href="{% url 'usuario:descargar_certificado' registro.inscripcion.id|unlocalize %}" class="btn-descargar">
                     📥 Descargar Certificado PDF
                 </a>
             </div>

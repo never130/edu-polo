@@ -1,4 +1,5 @@
 {% extends 'dashboard/base_dashboard.html' %}
+{% load l10n %}
 
 {% block title %}Crear Comisión - Panel Administrador{% endblock %}
 
@@ -153,7 +154,7 @@
             <select name="curso" required>
                 <option value="">Seleccione un curso...</option>
                 {% for curso in cursos %}
-                <option value="{{ curso.id_curso }}">{{ curso.nombre }}</option>
+                <option value="{{ curso.id_curso|unlocalize }}">{{ curso.nombre }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -164,7 +165,7 @@
                 <select name="polo">
                     <option value="">Virtual (sin polo específico)</option>
                     {% for polo in polos %}
-                    <option value="{{ polo.id_polo }}">{{ polo.nombre }} - {{ polo.ciudad }}</option>
+                    <option value="{{ polo.id_polo|unlocalize }}">{{ polo.nombre }} - {{ polo.ciudad }}</option>
                     {% endfor %}
                 </select>
             </div>

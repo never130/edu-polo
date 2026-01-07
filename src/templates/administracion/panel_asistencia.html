@@ -1,6 +1,7 @@
 {% extends 'dashboard/base_dashboard.html' %}
 {% load static %}
 {% load admin_extras %}
+{% load l10n %}
 
 {% block title %}Panel de Asistencias{% if es_docente %} - Docente{% else %} - Admin{% endif %}{% endblock %}
 
@@ -53,10 +54,10 @@
         </div>
         {% if comision and not es_docente %}
         <div class="asistencia-header-actions" style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <a href="{% url 'administracion:exportar_asistencias_comision' %}?comision_id={{ comision.id_comision }}" style="padding: 0.8rem 1.5rem; background: #6366f1; color: white; text-decoration: none; border-radius: 12px; font-weight: 600; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2); transition: all 0.3s;" target="_blank">
+            <a href="{% url 'administracion:exportar_asistencias_comision' %}?comision_id={{ comision.id_comision|unlocalize }}" style="padding: 0.8rem 1.5rem; background: #6366f1; color: white; text-decoration: none; border-radius: 12px; font-weight: 600; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2); transition: all 0.3s;" target="_blank">
                 <i class="fas fa-download"></i> Exportar Comisión
             </a>
-            <a href="{% url 'administracion:exportar_asistencias_curso' %}?curso_id={{ comision.fk_id_curso.id_curso }}" style="padding: 0.8rem 1.5rem; background: white; color: #6366f1; text-decoration: none; border-radius: 12px; font-weight: 600; border: 2px solid #6366f1; transition: all 0.3s;" target="_blank">
+            <a href="{% url 'administracion:exportar_asistencias_curso' %}?curso_id={{ comision.fk_id_curso.id_curso|unlocalize }}" style="padding: 0.8rem 1.5rem; background: white; color: #6366f1; text-decoration: none; border-radius: 12px; font-weight: 600; border: 2px solid #6366f1; transition: all 0.3s;" target="_blank">
                 <i class="fas fa-download"></i> Exportar Curso
             </a>
         </div>
@@ -83,7 +84,7 @@
             <select name="comision_id" required style="width: 100%; padding: 0.9rem; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 1rem;">
                 <option value="">Selecciona una comisión...</option>
                 {% for com in comisiones %}
-                <option value="{{ com.id_comision }}" {% if comision and com.id_comision == comision.id_comision %}selected{% endif %}>
+                <option value="{{ com.id_comision|unlocalize }}" {% if comision and com.id_comision == comision.id_comision %}selected{% endif %}>
                     {{ com.fk_id_curso.nombre }} - Comisión #{{ com.id_comision }}
                     {% if com.fk_id_polo %} - {{ com.fk_id_polo.nombre }}{% endif %}
                 </option>
@@ -115,7 +116,7 @@
         <h4 style="margin-bottom: 1rem; color: #334155;"><i class="fas fa-edit"></i> Registrar Asistencia del Día</h4>
         
         <form method="get" id="form-fecha" style="margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0;">
-            <input type="hidden" name="comision_id" value="{{ comision.id_comision }}">
+            <input type="hidden" name="comision_id" value="{{ comision.id_comision|unlocalize }}">
             <div>
                 <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #334155;"><i class="fas fa-calendar-alt"></i> Fecha de la Clase</label>
                 <input type="date" name="fecha" value="{{ fecha_seleccionada }}" 
@@ -158,13 +159,13 @@
                                 <td style="padding: 1rem; color: #64748b;">{{ inscripcion.estudiante.usuario.persona.dni }}</td>
                                 <td style="padding: 1rem; text-align: center;">
                                     <label class="switch">
-                                        <input type="checkbox" name="presente_{{ inscripcion.id }}" class="asistencia-checkbox"
+                                        <input type="checkbox" name="presente_{{ inscripcion.id|unlocalize }}" class="asistencia-checkbox"
                                                {% if asistencia and asistencia.presente %}checked{% endif %}>
                                         <span class="slider"></span>
                                     </label>
                                 </td>
                                 <td style="padding: 1rem;">
-                                    <input type="text" name="observacion_{{ inscripcion.id }}" 
+                                    <input type="text" name="observacion_{{ inscripcion.id|unlocalize }}" 
                                            value="{% if asistencia %}{{ asistencia.observaciones }}{% endif %}"
                                            placeholder="Observación opcional..."
                                            style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">

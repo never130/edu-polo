@@ -1,5 +1,6 @@
 {% extends 'dashboard/base_dashboard.html' %}
 {% load static %}
+{% load l10n %}
 
 {% block title %}Docentes y Cursos Asignados - Edu-Polo{% endblock %}
 
@@ -128,10 +129,10 @@
                                         {{ estudiante.nombre_completo }}
                                     </div>
                                     <div style="display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.85rem; color: #64748b;">
-                                        <span>🆔 DNI: {{ estudiante.dni }}</span>
+                                        <span>🆔 DNI: {{ estudiante.dni|unlocalize }}</span>
                                         <span>📧 {{ estudiante.correo }}</span>
                                         {% if estudiante.telefono != 'No especificado' %}
-                                        <span>📞 {{ estudiante.telefono }}</span>
+                                        <span>📞 {{ estudiante.telefono|unlocalize }}</span>
                                         {% endif %}
                                     </div>
                                 </div>

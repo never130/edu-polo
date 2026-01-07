@@ -1,5 +1,6 @@
 {% extends 'dashboard/base_dashboard.html' %}
 {% load static %}
+{% load l10n %}
 
 {% block title %}Inscripciones - Gestión{% endblock %}
 
@@ -158,21 +159,21 @@
                                 {% if inscripcion.estado == 'pre_inscripto' or inscripcion.estado == 'lista_espera' %}
                                     <form method="post" action="{% url 'administracion:inscribir_estudiante' %}" style="display: inline;">
                                         {% csrf_token %}
-                                        <input type="hidden" name="estudiante_id" value="{{ inscripcion.estudiante.id }}">
-                                        <input type="hidden" name="comision_id" value="{{ inscripcion.comision.id_comision }}">
+                                        <input type="hidden" name="estudiante_id" value="{{ inscripcion.estudiante.id|unlocalize }}">
+                                        <input type="hidden" name="comision_id" value="{{ inscripcion.comision.id_comision|unlocalize }}">
                                         <input type="hidden" name="next" value="{% url 'administracion:panel_inscripciones' %}">
                                         <button type="submit" style="background-color: #16a34a; color: white; border: none; padding: 0.5rem 0.9rem; border-radius: 0.5rem; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: background-color 0.2s;">
                                             ✓ Confirmar
                                         </button>
                                     </form>
                                 {% endif %}
-                                <button type="button" onclick="toggleDetalles('{{ inscripcion.id }}')" class="btn-ver-detalles" style="background-color: white; color: #374151; border: 1px solid #e5e7eb; padding: 0.5rem 0.9rem; border-radius: 0.5rem; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: background-color 0.2s; margin-left: 0.4rem;">
+                                <button type="button" onclick="toggleDetalles('{{ inscripcion.id|unlocalize }}')" class="btn-ver-detalles" style="background-color: white; color: #374151; border: 1px solid #e5e7eb; padding: 0.5rem 0.9rem; border-radius: 0.5rem; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: background-color 0.2s; margin-left: 0.4rem;">
                                     Ver
                                 </button>
                             </div>
                         </td>
                     </tr>
-                    <tr id="detalles-{{ inscripcion.id }}" style="display: none; background: #f9fafb; border-bottom: 1px solid #f3f4f6;">
+                    <tr id="detalles-{{ inscripcion.id|unlocalize }}" style="display: none; background: #f9fafb; border-bottom: 1px solid #f3f4f6;">
                         <td colspan="8" style="padding: 1rem 1.5rem; color: #374151;">
                             <div class="inscripcion-detalles-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
                                 <div>
@@ -218,7 +219,7 @@
                 <select id="inscribirEstudianteSelect" name="estudiante_id" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; outline: none; transition: border-color 0.2s;">
                     <option value="">Selecciona un estudiante...</option>
                     {% for estudiante in estudiantes %}
-                    <option value="{{ estudiante.id }}" data-comisiones="{% if estudiante.pre_inscripciones_list %}{% for insc in estudiante.pre_inscripciones_list %}{{ insc.comision.id_comision }}{% if not forloop.last %},{% endif %}{% endfor %}{% endif %}">
+                    <option value="{{ estudiante.id|unlocalize }}" data-comisiones="{% if estudiante.pre_inscripciones_list %}{% for insc in estudiante.pre_inscripciones_list %}{{ insc.comision.id_comision|unlocalize }}{% if not forloop.last %},{% endif %}{% endfor %}{% endif %}">
                         {{ estudiante.usuario.persona.nombre_completo }} - DNI: {{ estudiante.usuario.persona.dni }}
                         {% if estudiante.pre_inscripciones_list %}
                             ➡️ (Preinscripto en: {% for insc in estudiante.pre_inscripciones_list %}{{ insc.comision.fk_id_curso.nombre }} #{{ insc.comision.id_comision }}{% if not forloop.last %}, {% endif %}{% endfor %})
@@ -233,7 +234,7 @@
                 <select id="inscribirComisionSelect" name="comision_id" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; outline: none; transition: border-color 0.2s;">
                     <option value="">Selecciona una comisión...</option>
                     {% for comision in comisiones_disponibles %}
-                    <option value="{{ comision.id_comision }}" data-comision-id="{{ comision.id_comision }}">
+                    <option value="{{ comision.id_comision|unlocalize }}" data-comision-id="{{ comision.id_comision|unlocalize }}">
                         {{ comision.fk_id_curso.nombre }} - Comisión #{{ comision.id_comision }} 
                         ({{ comision.cupos_disponibles_calc }} cupos disponibles)
                         {% if comision.fk_id_polo %} - {{ comision.fk_id_polo.nombre }}{% endif %}

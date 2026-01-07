@@ -21,7 +21,7 @@
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div>
             <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem;">📁 Materiales</h2>
-            <p style="opacity: 0.9;">{{ curso.nombre }} - Comisión #{{ comision.id_comision }}</p>
+            <p style="opacity: 0.9;">{{ curso.nombre }} - Comisión #{{ comision.id_comision|unlocalize }}</p>
             {% if comision.fk_id_polo %}
             <p style="opacity: 0.8; font-size: 0.9rem; margin-top: 0.3rem;">📍 {{ comision.fk_id_polo.nombre }}</p>
             {% endif %}

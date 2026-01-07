@@ -1,5 +1,6 @@
 {% extends 'dashboard/base_dashboard.html' %}
 {% load static %}
+{% load l10n %}
 
 {% block title %}Estudiantes - {{ comision.fk_id_curso.nombre }}{% endblock %}
 
@@ -10,7 +11,7 @@
 <li><a href="{% url 'administracion:mis_cursos_docente' %}"><i class="fa-solid fa-chalkboard"></i> Mis Cursos</a></li>
 <li><a href="{% url 'administracion:panel_asistencia' %}"><i class="fa-solid fa-calendar-check"></i> Asistencias</a></li>
 <li><a href="{% url 'administracion:materiales_docente' %}"><i class="fa-solid fa-folder-open"></i> Materiales</a></li>
-<li><a href="{% url 'administracion:estudiantes_comision' comision.id_comision %}" class="active"><i class="fa-solid fa-users"></i> Estudiantes</a></li>
+<li><a href="{% url 'administracion:estudiantes_comision' comision.id_comision|unlocalize %}" class="active"><i class="fa-solid fa-users"></i> Estudiantes</a></li>
 <li><a href="{% url 'usuario:mi_perfil' %}"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
 {% endblock %}
 
@@ -53,7 +54,7 @@
                             </span>
                         </div>
                     </div>
-                    <a href="{% url 'administracion:panel_asistencia' %}?comision_id={{ comision.id_comision }}" style="padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;">📝 Ver Asistencias
+                    <a href="{% url 'administracion:panel_asistencia' %}?comision_id={{ comision.id_comision|unlocalize }}" style="padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;">📝 Ver Asistencias
                     </a>
                 </div>
                 {% endfor %}

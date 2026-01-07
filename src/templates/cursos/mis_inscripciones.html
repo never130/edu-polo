@@ -1,5 +1,6 @@
 {% extends 'dashboard/base_dashboard.html' %}
 {% load static %}
+{% load l10n %}
 
 {% block title %}Mis Inscripciones{% endblock %}
 
@@ -308,7 +309,7 @@
             {% endif %}
 
             <div style="margin-top: 1.5rem; text-align: right; border-top: 1px solid #eee; padding-top: 1.5rem;">
-                <form action="{% url 'inscripciones:cancelar' inscripcion.pk %}" method="post" onsubmit="return confirm('{% if inscripcion.estado == 'confirmado' %}¿Estás seguro que deseas darte de baja de este curso? Esta acción liberará tu cupo inmediatamente.{% else %}¿Estás seguro que deseas cancelar esta solicitud?{% endif %}');" style="display: inline;">
+                <form action="{% url 'inscripciones:cancelar' inscripcion.pk|unlocalize %}" method="post" onsubmit="return confirm('{% if inscripcion.estado == 'confirmado' %}¿Estás seguro que deseas darte de baja de este curso? Esta acción liberará tu cupo inmediatamente.{% else %}¿Estás seguro que deseas cancelar esta solicitud?{% endif %}');" style="display: inline;">
                     {% csrf_token %}
                     <button type="submit" style="background: white; color: #ef4444; border: 2px solid #ef4444; padding: 0.7rem 1.2rem; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 0.5rem;">
                         🗑️ {% if inscripcion.estado == 'confirmado' %}Darse de Baja{% else %}Cancelar solicitud{% endif %}

@@ -61,6 +61,8 @@ def es_admin(user):
     try:
         usuario = Usuario.objects.get(persona__dni=user.username)
         roles = UsuarioRol.objects.filter(usuario_id=usuario).values_list('rol_id__nombre', flat=True)
+        # DEBUG
+        # print(f"DEBUG es_admin: User={user.username}, Roles={list(roles)}")
         if 'Administrador' in roles or 'Mesa de Entrada' in roles:
             return True
         
@@ -1686,6 +1688,7 @@ def panel_asistencia(request):
                     return redirect(reverse('administracion:panel_asistencia') + f'?comision_id={comision.id_comision}&fecha={fecha_clase}')
                     
                 except Exception as e:
+                    print(f"DEBUG: Error en POST asistencia: {e}")
                     messages.error(request, f'❌ Error al guardar asistencia: {str(e)}')
         
         # Obtener asistencias existentes para la fecha seleccionada (para el formulario)

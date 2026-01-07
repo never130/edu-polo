@@ -1,5 +1,6 @@
 {% extends 'dashboard/base_dashboard.html' %}
 {% load static %}
+{% load l10n %}
 
 {% block title %}Materiales - Estudiante{% endblock %}
 
@@ -36,7 +37,7 @@
         <div style="padding: 2rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                 <p style="color: #64748b; margin: 0;">Total de materiales: {{ item.total_materiales }}</p>
-                <a href="{% url 'usuario:materiales_comision_estudiante' item.comision.id_comision %}" style="padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;">
+                <a href="{% url 'usuario:materiales_comision_estudiante' item.comision.id_comision|unlocalize %}" style="padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;">
                     Ver Todos los Materiales
                 </a>
             </div>
@@ -77,7 +78,7 @@
                 
                 {% if item.total_materiales > 3 %}
                 <div style="text-align: center; margin-top: 1rem;">
-                    <a href="{% url 'usuario:materiales_comision_estudiante' item.comision.id_comision %}" style="display: inline-block; padding: 0.8rem 1.5rem; background: #f8fafc; color: #f093fb; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600; border: 2px solid #f093fb;">
+                    <a href="{% url 'usuario:materiales_comision_estudiante' item.comision.id_comision|unlocalize %}" style="display: inline-block; padding: 0.8rem 1.5rem; background: #f8fafc; color: #f093fb; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600; border: 2px solid #f093fb;">
                         Ver {{ item.total_materiales|add:"-3" }} material{{ item.total_materiales|add:"-3"|pluralize:"es" }} más →
                     </a>
                 </div>

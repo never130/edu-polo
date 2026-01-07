@@ -1,4 +1,5 @@
 {% extends 'dashboard/base_dashboard.html' %}
+{% load l10n %}
 
 {% block title %}Dashboard {{ tipo_usuario|default:"Administrador" }} {% endblock %}
 
@@ -125,7 +126,7 @@
                             </div>
                             <div style="margin-top:0.5rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
                                 {% for item in agenda_untimed_items %}
-                                    <a href="{% url 'administracion:panel_asistencia' %}?comision_id={{ item.comision.id_comision }}" style="text-decoration:none; color:inherit;">
+                                    <a href="{% url 'administracion:panel_asistencia' %}?comision_id={{ item.comision.id_comision|unlocalize }}" style="text-decoration:none; color:inherit;">
                                         <div style="display:flex; align-items:center; gap:0.5rem; padding:0.35rem 0.5rem; border-radius: 999px; border:1px solid #e2e8f0; background:#ffffff;">
                                             <div style="width:8px; height:8px; border-radius:999px; background: {{ item.color }};"></div>
                                             <div title="{{ item.comision.fk_id_curso.nombre }}" style="font-weight:900; color:#0f172a; font-size:0.85rem; max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ item.comision.fk_id_curso.nombre }}</div>
@@ -144,7 +145,7 @@
                             {% endfor %}
                         </div>
 
-                        <div style="position:relative; height: {{ agenda_timeline_height }}px; background:#ffffff;">
+                        <div style="position:relative; height: {{ agenda_timeline_height|unlocalize }}px; background:#ffffff;">
                             <div>
                                 {% for h in agenda_hours %}
                                     <div style="height:40px; border-top:1px solid #e2e8f0;"></div>
@@ -152,8 +153,8 @@
                             </div>
 
                             {% for item in agenda_timed_items %}
-                                <a href="{% url 'administracion:panel_asistencia' %}?comision_id={{ item.comision.id_comision }}" style="text-decoration:none; color:inherit;">
-                                    <div style="position:absolute; top: {{ item.top }}px; left: calc({{ item.left_pct }}% + 8px); width: calc({{ item.width_pct }}% - 12px); height: {{ item.height }}px; border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0; overflow:hidden; z-index:10; transition: z-index 0.2s, transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.zIndex=50; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)';" onmouseout="this.style.zIndex=10; this.style.boxShadow='none';">
+                                <a href="{% url 'administracion:panel_asistencia' %}?comision_id={{ item.comision.id_comision|unlocalize }}" style="text-decoration:none; color:inherit;">
+                                    <div style="position:absolute; top: {{ item.top|unlocalize }}px; left: calc({{ item.left_pct|unlocalize }}% + 8px); width: calc({{ item.width_pct|unlocalize }}% - 12px); height: {{ item.height|unlocalize }}px; border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0; overflow:hidden; z-index:10; transition: z-index 0.2s, transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.zIndex=50; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)';" onmouseout="this.style.zIndex=10; this.style.boxShadow='none';">
                                         <div style="height:100%; display:flex; gap:0.6rem; align-items:stretch;">
                                             <div style="width:6px; background: {{ item.color }};"></div>
                                             <div style="flex:1; min-width:0; padding: 0.25rem 0.4rem; display:flex; flex-direction:column; gap: 0.1rem;">
@@ -257,7 +258,7 @@
                                 </td>
                                 <td style="padding:0.85rem 1rem; color:#334155; font-weight:700;">{{ c.total_estudiantes }}</td>
                                 <td style="padding:0.85rem 1rem; text-align:right;">
-                                    <button type="button" onclick="openEstudiantesCursoModal('{{ c.comision__fk_id_curso_id }}', '{{ c.comision__fk_id_curso__nombre|escapejs }}')" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 0.55rem 1rem; border-radius: 10px; font-weight: 800; cursor: pointer;">
+                                    <button type="button" onclick="openEstudiantesCursoModal('{{ c.comision__fk_id_curso_id|unlocalize }}', '{{ c.comision__fk_id_curso__nombre|escapejs }}')" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 0.55rem 1rem; border-radius: 10px; font-weight: 800; cursor: pointer;">
                                         Ver estudiantes
                                     </button>
                                 </td>
@@ -291,7 +292,7 @@
                     </span>
                 </div>
                 <div style="width: 100%; height: 6px; background: #fed7d7; border-radius: 3px; overflow: hidden;">
-                    <div style="height: 100%; background: #f56565; width: {{ alerta.porcentaje }}%;"></div>
+                    <div style="height: 100%; background: #f56565; width: {{ alerta.porcentaje|unlocalize }}%;"></div>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-top: 0.3rem; font-size: 0.8rem; color: #742a2a;">
                     <span>Ocupación: {{ alerta.porcentaje }}%</span>

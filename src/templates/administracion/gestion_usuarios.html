@@ -1,5 +1,6 @@
 {% extends 'dashboard/base_dashboard.html' %}
 {% load static %}
+{% load l10n %}
 
 {% block title %}Gestión de Usuarios - Admin{% endblock %}
 
@@ -102,9 +103,9 @@
                     <td style="padding: 1rem 1.5rem; color: #334155;">{{ user_data.persona.ciudad_residencia|default:"N/A" }}</td>
                     <td style="padding: 1rem 1.5rem;">
                         <div class="usuarios-actions">
-                            <a href="{% url 'administracion:editar_usuario' user_data.persona.id %}" class="btn btn-editar">Editar
+                            <a href="{% url 'administracion:editar_usuario' user_data.persona.id|unlocalize %}" class="btn btn-editar">Editar
                             </a>
-                            <button onclick="abrirModalEliminar({{ user_data.persona.id }}, '{{ user_data.persona.nombre_completo }}')" class="btn btn-eliminar">
+                            <button onclick="abrirModalEliminar({{ user_data.persona.id|unlocalize }}, '{{ user_data.persona.nombre_completo }}')" class="btn btn-eliminar">
                                 Eliminar
                             </button>
                         </div>

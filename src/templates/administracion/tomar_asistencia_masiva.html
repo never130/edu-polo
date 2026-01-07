@@ -1,6 +1,7 @@
 {% extends 'dashboard/base_dashboard.html' %}
 {% load static %}
 {% load admin_extras %}
+{% load l10n %}
 
 
 {% block title %}Tomar Asistencia{% endblock %}
@@ -108,14 +109,14 @@
                             <td style="padding: 1rem; color: #64748b;">{{ inscripcion.estudiante.usuario.persona.dni }}</td>
                             <td style="padding: 1rem; text-align: center;">
                                 <label class="switch" style="position: relative; display: inline-block; width: 60px; height: 34px;">
-                                    <input type="checkbox" name="presente_{{ inscripcion.id }}" class="asistencia-checkbox"
+                                    <input type="checkbox" name="presente_{{ inscripcion.id|unlocalize }}" class="asistencia-checkbox"
                                            {% if asistencia and asistencia.presente %}checked{% endif %}
                                            style="opacity: 0; width: 0; height: 0;">
                                     <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px;"></span>
                                 </label>
                             </td>
                             <td style="padding: 1rem;">
-                                <input type="text" name="observacion_{{ inscripcion.id }}" 
+                                <input type="text" name="observacion_{{ inscripcion.id|unlocalize }}" 
                                        value="{% if asistencia %}{{ asistencia.observaciones }}{% endif %}"
                                        placeholder="Observación opcional..."
                                        style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
@@ -134,7 +135,7 @@
         </div>
 
         <div class="asistencia-actions" style="display: flex; gap: 1rem; justify-content: flex-end; padding-top: 1rem; border-top: 2px solid #f1f5f9;">
-            <a href="{% url 'administracion:panel_asistencia' %}?comision_id={{ comision.id_comision }}" style="padding: 0.9rem 2rem; background: #e2e8f0; color: #334155; text-decoration: none; border-radius: 12px; font-weight: 600;">Cancelar
+            <a href="{% url 'administracion:panel_asistencia' %}?comision_id={{ comision.id_comision|unlocalize }}" style="padding: 0.9rem 2rem; background: #e2e8f0; color: #334155; text-decoration: none; border-radius: 12px; font-weight: 600;">Cancelar
             </a>
             <button type="submit" style="padding: 0.9rem 2rem; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4);">
                 Guardar Asistencias

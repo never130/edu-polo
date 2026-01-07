@@ -1,5 +1,6 @@
 {% extends 'dashboard/base_dashboard.html' %}
 {% load static %}
+{% load l10n %}
 
 {% block title %}Dashboard Estudiante{% endblock %}
 
@@ -75,7 +76,7 @@
                                 <span>{{ curso.asistencia }}%</span>
                             </div>
                             <div class="progress-track">
-                                <div class="progress-fill" style="width: {{ curso.asistencia }}%;"></div>
+                                <div class="progress-fill" style="width: {{ curso.asistencia|unlocalize }}%;"></div>
                             </div>
                             <div class="course-meta">
                                 <span><i class="fa-regular fa-file-alt"></i> {{ curso.total_clases }} clases</span>

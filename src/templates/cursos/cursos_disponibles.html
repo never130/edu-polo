@@ -1,5 +1,6 @@
 {% extends 'dashboard/base_dashboard.html' %}
 {% load static %}
+{% load l10n %}
 
 {% block title %}Cursos Disponibles{% endblock %}
 
@@ -422,7 +423,7 @@
                         </div>
                         
                         {% if comision.estado == 'Abierta' and not comision.cupo_lleno %}
-                            <a href="{% url 'inscripciones:formulario' comision.id_comision %}" class="btn-inscribir-sm">
+                            <a href="{% url 'inscripciones:formulario' comision.id_comision|unlocalize %}" class="btn-inscribir-sm">
                                 Inscribirme
                             </a>
                         {% else %}

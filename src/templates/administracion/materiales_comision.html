@@ -1,5 +1,6 @@
 {% extends 'dashboard/base_dashboard.html' %}
 {% load static %}
+{% load l10n %}
 
 {% block title %}Materiales - {{ comision.fk_id_curso.nombre }}{% endblock %}
 
@@ -9,8 +10,8 @@
 <li><a href="{% url 'dashboard_docente' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
 <li><a href="{% url 'administracion:mis_cursos_docente' %}"><i class="fa-solid fa-chalkboard"></i> Mis Cursos</a></li>
 <li><a href="{% url 'administracion:panel_asistencia' %}"><i class="fa-solid fa-calendar-check"></i> Asistencias</a></li>
-<li><a href="{% url 'administracion:materiales_comision' comision.id_comision %}" class="active"><i class="fa-solid fa-folder-open"></i> Materiales</a></li>
-<li><a href="{% url 'administracion:estudiantes_comision' comision.id_comision %}"><i class="fa-solid fa-users"></i> Estudiantes</a></li>
+<li><a href="{% url 'administracion:materiales_comision' comision.id_comision|unlocalize %}" class="active"><i class="fa-solid fa-folder-open"></i> Materiales</a></li>
+<li><a href="{% url 'administracion:estudiantes_comision' comision.id_comision|unlocalize %}"><i class="fa-solid fa-users"></i> Estudiantes</a></li>
 <li><a href="{% url 'usuario:mi_perfil' %}"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
 {% endblock %}
 
@@ -22,7 +23,7 @@
             <p style="opacity: 0.9;">{{ comision.fk_id_curso.nombre }} - Comisión #{{ comision.id_comision }}</p>
         </div>
         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <a href="{% url 'administracion:subir_material' comision.id_comision %}" style="padding: 0.8rem 1.5rem; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; border: 2px solid rgba(255,255,255,0.3);">➕ Subir Material
+            <a href="{% url 'administracion:subir_material' comision.id_comision|unlocalize %}" style="padding: 0.8rem 1.5rem; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; border: 2px solid rgba(255,255,255,0.3);">➕ Subir Material
             </a>
             <a href="{% url 'administracion:mis_cursos_docente' %}" style="padding: 0.8rem 1.5rem; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; border: 2px solid rgba(255,255,255,0.3);">← Volver
             </a>
@@ -75,7 +76,7 @@
                             <a href="{{ material.enlace }}" target="_blank" style="padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;">🔗 Abrir Enlace
                             </a>
                         {% endif %}
-                        <a href="{% url 'administracion:eliminar_material' material.id_material %}" style="padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;" onclick="return confirm('¿Estás seguro de eliminar este material?')">🗑️ Eliminar
+                        <a href="{% url 'administracion:eliminar_material' material.id_material|unlocalize %}" style="padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;" onclick="return confirm('¿Estás seguro de eliminar este material?')">🗑️ Eliminar
                         </a>
                     </div>
                 </div>
@@ -86,7 +87,7 @@
 {% else %}
     <div style="background: white; padding: 3rem; border-radius: 16px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
         <p style="color: #64748b; font-size: 1.1rem; margin: 0 0 1rem 0;">No hay materiales subidos para esta comisión.</p>
-        <a href="{% url 'administracion:subir_material' comision.id_comision %}" style="display: inline-block; padding: 0.8rem 1.5rem; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; text-decoration: none; border-radius: 12px; font-weight: 600;">➕ Subir Primer Material
+        <a href="{% url 'administracion:subir_material' comision.id_comision|unlocalize %}" style="display: inline-block; padding: 0.8rem 1.5rem; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; text-decoration: none; border-radius: 12px; font-weight: 600;">➕ Subir Primer Material
         </a>
     </div>
 {% endif %}

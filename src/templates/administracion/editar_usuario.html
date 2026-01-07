@@ -1,5 +1,6 @@
 {% extends 'dashboard/base_dashboard.html' %}
 {% load static %}
+{% load l10n %}
 
 {% block title %}Editar Usuario - Admin{% endblock %}
 
@@ -62,7 +63,7 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="dni">DNI (No editable)</label>
-                    <input type="text" value="{{ persona.dni }}" disabled>
+                    <input type="text" value="{{ persona.dni|unlocalize }}" disabled>
                 </div>
                 <div class="form-group">
                     <label for="contrasena">Nueva Contraseña (Dejar vacío para no cambiar)</label>
@@ -86,7 +87,7 @@
                 </div>
                 <div class="form-group">
                     <label for="telefono">Teléfono</label>
-                    <input type="tel" name="telefono" id="telefono" value="{{ persona.telefono|default:'' }}">
+                    <input type="tel" name="telefono" id="telefono" value="{{ persona.telefono|default:''|unlocalize }}">
                 </div>
             </div>
             <div class="form-row">

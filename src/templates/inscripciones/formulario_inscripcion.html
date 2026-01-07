@@ -1,5 +1,6 @@
 {% extends 'dashboard/base_dashboard.html' %}
 {% load static %}
+{% load l10n %}
 
 {% block title %}Inscripción a {{ comision.fk_id_curso.nombre }} - Edu-Polo{% endblock %}
 
@@ -288,7 +289,7 @@
                 </div>
                 <div class="form-group">
                     <label>Teléfono</label>
-                    <input type="tel" name="telefono" id="telefono" readonly value="{{ persona.telefono|default:'' }}" style="background-color: #f1f5f9; color: #64748b;">
+                    <input type="tel" name="telefono" id="telefono" readonly value="{{ persona.telefono|default:''|unlocalize }}" style="background-color: #f1f5f9; color: #64748b;">
                 </div>
             </div>
         </div>
