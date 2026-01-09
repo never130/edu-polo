@@ -739,13 +739,21 @@
 
                     const rows = sorted.map(e => {
                         const comisionLabel = e.comision_id == null ? '' : `#${e.comision_id}`;
+                        const salud = e.condiciones_medicas ? 
+                            `<span title="${escapeHtml(e.condiciones_medicas)}" style="color:#ef4444; font-weight:800; cursor:help;">⚠ Info</span>` : 
+                            '<span style="color:#10b981;">✓</span>';
+                        
+                        const imgAuth = e.autorizacion_imagen ? '<span title="Imagen Autorizada" style="color:#10b981;">📷</span>' : '<span title="Imagen NO Autorizada" style="color:#ef4444;">📷</span>';
+                        const vozAuth = e.autorizacion_voz ? '<span title="Voz Autorizada" style="color:#10b981;">🎤</span>' : '<span title="Voz NO Autorizada" style="color:#ef4444;">🎤</span>';
+
                         return `<tr style="border-bottom: 1px solid #f3f4f6;">
                             <td style="padding: 0.85rem 1rem; font-weight: 800; color: #111827;">${escapeHtml(e.dni)}</td>
                             <td style="padding: 0.85rem 1rem; color: #374151; font-weight: 700;">${escapeHtml(e.nombre_completo)}</td>
                             <td style="padding: 0.85rem 1rem; color: #6b7280;">${escapeHtml(comisionLabel)}</td>
                             <td style="padding: 0.85rem 1rem; color: #6b7280;">${escapeHtml(e.correo)}</td>
                             <td style="padding: 0.85rem 1rem; color: #6b7280;">${escapeHtml(e.telefono)}</td>
-                            <td style="padding: 0.85rem 1rem; color: #6b7280;">${escapeHtml(e.ciudad_residencia)}</td>
+                            <td style="padding: 0.85rem 1rem; color: #6b7280; text-align:center;">${salud}</td>
+                            <td style="padding: 0.85rem 1rem; color: #6b7280; text-align:center;">${imgAuth} ${vozAuth}</td>
                         </tr>`;
                     }).join('');
 
@@ -771,13 +779,20 @@
                         </div>
                     ` : '';
 
+                    const exportHtml = `
+                        <button id="btnExportarEstudiantes" style="padding:0.5rem 0.75rem; background:#10b981; color:white; border:none; border-radius:8px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.5rem;">
+                            <i class="fa-solid fa-file-excel"></i> Exportar
+                        </button>
+                    `;
+
                     body.innerHTML = `
-                        ${state.comisiones.length ? `
-                            <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; margin-bottom:0.75rem;">
-                                <div style="display:flex; flex-wrap:wrap; gap:0.35rem;">${comisionesBadges}</div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; margin-bottom:0.75rem;">
+                            <div style="display:flex; flex-wrap:wrap; gap:0.35rem;">${comisionesBadges}</div>
+                            <div style="display:flex; gap:1rem; align-items:center;">
                                 ${filterHtml}
+                                ${exportHtml}
                             </div>
-                        ` : ''}
+                        </div>
                         <div style="overflow-x:auto; border: 1px solid #e5e7eb; border-radius: 12px;">
                             <table style="width: 100%; border-collapse: collapse; text-align: left;">
                                 <thead>
@@ -787,7 +802,8 @@
                                         <th data-sort-key="comision" style="${thStyle}">Comisión${arrow('comision')}</th>
                                         <th data-sort-key="correo" style="${thStyle}">Email${arrow('correo')}</th>
                                         <th data-sort-key="telefono" style="${thStyle}">Teléfono${arrow('telefono')}</th>
-                                        <th data-sort-key="ciudad_residencia" style="${thStyle}">Ciudad${arrow('ciudad_residencia')}</th>
+                                        <th data-sort-key="condiciones_medicas" style="${thStyle}">Salud${arrow('condiciones_medicas')}</th>
+                                        <th style="${thStyle}">Políticas</th>
                                     </tr>
                                 </thead>
                                 <tbody>${rows}</tbody>
@@ -815,6 +831,47 @@
                             const v = ev && ev.target ? ev.target.value : 'todas';
                             state.filterComision = v || 'todas';
                             render();
+                        });
+                    }
+
+                    const btnExport = body.querySelector('#btnExportarEstudiantes');
+                    if (btnExport) {
+                        btnExport.addEventListener('click', () => {
+                            const dataToExport = state.filterComision === 'todas'
+                                ? state.estudiantes
+                                : state.estudiantes.filter(e => String(e.comision_id ?? '') === state.filterComision);
+
+                            if (!dataToExport.length) {
+                                alert('No hay datos para exportar.');
+                                return;
+                            }
+
+                            const headers = ['DNI', 'Nombre Completo', 'Comisión', 'Email', 'Teléfono', 'Ciudad', 'Salud', 'Imagen', 'Voz'];
+                            const csvContent = [
+                                headers.join(';'),
+                                ...dataToExport.map(e => [
+                                    e.dni,
+                                    e.nombre_completo,
+                                    e.comision_id || '',
+                                    e.correo,
+                                    e.telefono,
+                                    e.ciudad_residencia,
+                                    (e.condiciones_medicas || '').replace(/;/g, ','),
+                                    e.autorizacion_imagen ? 'SI' : 'NO',
+                                    e.autorizacion_voz ? 'SI' : 'NO'
+                                ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(';'))
+                            ].join('\n');
+
+                            const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
+                            const url = URL.createObjectURL(blob);
+                            const link = document.createElement("a");
+                            link.setAttribute("href", url);
+                            const now = new Date();
+                            const timestamp = now.toISOString().replace(/[:.]/g, '-').slice(0, 19);
+                            link.setAttribute("download", `estudiantes_curso_${state.filterComision}_${timestamp}.csv`);
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
                         });
                     }
                 }

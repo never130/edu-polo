@@ -747,6 +747,9 @@ def api_estudiantes_por_curso(request):
             'telefono': (persona.telefono or '').strip(),
             'ciudad_residencia': (persona.ciudad_residencia or '').strip(),
             'comision_id': getattr(ins.comision, 'id_comision', None),
+            'condiciones_medicas': (persona.condiciones_medicas or '').strip(),
+            'autorizacion_imagen': bool(persona.autorizacion_imagen),
+            'autorizacion_voz': bool(persona.autorizacion_voz),
         })
 
     from apps.modulo_3.cursos.models import Comision
