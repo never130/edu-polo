@@ -1,0 +1,151 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Equipo - Mi Empresa{% endblock %}
+
+{% block user_role %}{{ tipo_usuario|default:"Usuario" }}{% endblock %}
+
+{% block sidebar_menu %}
+    <li><a href="{% url 'dashboard' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
+    <li><a href="{% url 'empresas:mi_empresa' %}" class="active"><i class="fa-solid fa-building"></i> Mi Empresa / Startup</a></li>
+{% endblock %}
+
+{% block content %}
+<style>
+    .main-content .btn-secondary {
+        background: #e2e8f0;
+        color: #334155;
+        border: 1px solid #cbd5e1;
+        backdrop-filter: none;
+    }
+    .main-content .btn-secondary:hover {
+        background: #cbd5e1;
+    }
+</style>
+<div class="page-header">
+    <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
+        <div style="width: 84px; height: 84px; border-radius: 18px; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); display:flex; align-items:center; justify-content:center; overflow:hidden; box-shadow: 0 8px 25px rgba(59, 130, 246, 0.18);">
+            {% if empresa.logo %}
+                <img src="{{ empresa.logo.url }}" alt="Logo de {{ empresa.nombre }}" style="width: 100%; height: 100%; object-fit: contain; background: white;">
+            {% else %}
+                <div style="font-size: 1.75rem; font-weight: 900; color: white; letter-spacing: 0.02em;">
+                    {{ empresa.nombre|cut:" "|slice:":2"|upper }}
+                </div>
+            {% endif %}
+        </div>
+        <div style="display:flex; flex-direction:column; gap:0.15rem;">
+            <h2 style="margin:0; line-height:1.1;">{{ empresa.nombre }}</h2>
+            <div style="color:#64748b;">Gestión de equipo</div>
+        </div>
+    </div>
+</div>
+
+{% if messages %}
+    <div class="dashboard-alerts">
+        {% for message in messages %}
+            <div class="dashboard-alert dashboard-alert--{{ message.tags|default:'info' }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div style="max-width: 760px;">
+    <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; margin-bottom: 0.75rem;">
+        <div style="font-weight:900; color:#0f172a;">Estado:</div>
+        <div style="padding:0.25rem 0.6rem; border-radius:999px; font-weight:800; background:#f1f5f9; color:#334155;">
+            {{ empresa.get_estado_display }}
+        </div>
+    </div>
+
+    <div style="display:grid; gap:1.5rem;">
+        <div style="background:#f8fafc; border-radius:12px; padding:1rem;">
+            <h3 style="margin:0 0 0.75rem;">Agregar miembro por DNI</h3>
+            <form method="post" style="margin:0;">
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="miembro">
+                <div style="display:grid; gap:0.75rem; max-width: 520px;">
+                    <div>
+                        <div style="font-weight:800; margin-bottom:0.25rem;">DNI</div>
+                        {{ form.dni_usuario }}
+                        {% if form.dni_usuario.errors %}<div style="color:#b91c1c; font-weight:700;">{{ form.dni_usuario.errors|striptags }}</div>{% endif %}
+                    </div>
+                    <div>
+                        <div style="font-weight:800; margin-bottom:0.25rem;">Rol (opcional)</div>
+                        {{ form.rol }}
+                        {% if form.rol.errors %}<div style="color:#b91c1c; font-weight:700;">{{ form.rol.errors|striptags }}</div>{% endif %}
+                    </div>
+                    <div style="display:flex; align-items:center; gap:0.5rem;">
+                        {{ form.es_socio }}
+                        <div>Es socio</div>
+                    </div>
+                </div>
+                <div style="margin-top: 1rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+
+        <div style="background:#f8fafc; border-radius:12px; padding:1rem;">
+            <h3 style="margin:0 0 0.75rem;">Miembros</h3>
+            {% if miembros %}
+                <div style="overflow:auto;">
+                    <table style="width:100%; border-collapse:collapse;">
+                        <thead>
+                            <tr style="text-align:left; border-bottom:1px solid #e2e8f0;">
+                                <th style="padding:0.5rem 0.25rem;">DNI</th>
+                                <th style="padding:0.5rem 0.25rem;">Nombre</th>
+                                <th style="padding:0.5rem 0.25rem;">Rol</th>
+                                <th style="padding:0.5rem 0.25rem;">Socio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for m in miembros %}
+                                <tr style="border-bottom:1px solid #f1f5f9;">
+                                    <td style="padding:0.5rem 0.25rem;">{{ m.usuario.persona.dni }}</td>
+                                    <td style="padding:0.5rem 0.25rem;">{{ m.usuario.persona.nombre_completo }}</td>
+                                    <td style="padding:0.5rem 0.25rem;">{{ m.rol|default:"-" }}</td>
+                                    <td style="padding:0.5rem 0.25rem;">{% if m.es_socio %}Sí{% else %}No{% endif %}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div>No hay miembros cargados.</div>
+            {% endif %}
+        </div>
+
+        <div style="padding:0; margin-top: 1rem;">
+            <details style="background: transparent;">
+                <summary style="cursor:pointer; font-weight:900; color:#0f172a;">Cambiar logo</summary>
+                <div style="margin-top: 0.75rem;">
+                    {% if empresa.logo %}
+                        <div style="margin-bottom: 0.75rem; color:#334155;">
+                            <div style="font-weight:800; margin-bottom:0.25rem;">Archivo actual</div>
+                            <div style="font-size: 0.95rem;">{{ empresa.logo.name|cut:"empresas/logos/" }}</div>
+                        </div>
+                    {% endif %}
+                    <form method="post" enctype="multipart/form-data" style="margin:0;">
+                        {% csrf_token %}
+                        <input type="hidden" name="accion" value="logo">
+                        <div style="max-width: 520px;">
+                            {{ logo_form.logo }}
+                            {% if logo_form.logo.errors %}<div style="color:#b91c1c; font-weight:700;">{{ logo_form.logo.errors|striptags }}</div>{% endif %}
+                            <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">Formatos recomendados: PNG, JPG. Tamaño máx: 2MB.</div>
+                        </div>
+                        <div style="margin-top: 1rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+                            <button type="submit" class="btn btn-primary">Guardar logo</button>
+                        </div>
+                    </form>
+                </div>
+            </details>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; margin-top: 1.25rem;">
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Volver</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

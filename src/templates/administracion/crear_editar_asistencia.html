@@ -22,11 +22,13 @@
     {% if es_admin_completo %}
     <li><a href="{% url 'administracion:panel_cursos' %}"><i class="fa-solid fa-book"></i> Gestión Cursos</a></li>
     <li><a href="{% url 'administracion:panel_comisiones' %}"><i class="fa-solid fa-users-rectangle"></i> Gestión Comisiones</a></li>
-    {% endif %}
-    <li><a href="{% url 'administracion:panel_inscripciones' %}"><i class="fa-solid fa-clipboard-list"></i> Inscripciones</a></li>
-    {% if es_admin_completo %}
-    <li><a href="{% url 'administracion:gestion_usuarios' %}"><i class="fa-solid fa-users-cog"></i> Gestión Usuarios</a></li>
-    {% endif %}
+{% endif %}
+<li><a href="{% url 'administracion:panel_inscripciones' %}"><i class="fa-solid fa-clipboard-list"></i> Inscripciones</a></li>
+<li><a href="{% url 'empresas:mesa_entrada_list' %}"><i class="fa-solid fa-building"></i> Solicitudes Empresas</a></li>
+<li><a href="{% url 'empresas:gestion_empresas' %}"><i class="fa-solid fa-building"></i> Gestión Empresas</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:gestion_usuarios' %}"><i class="fa-solid fa-users-cog"></i> Gestión Usuarios</a></li>
+{% endif %}
     <li><a href="{% url 'administracion:buscador_estudiantes' %}"><i class="fa-solid fa-search"></i> Buscar Estudiantes</a></li>
     {% if es_admin_completo %}
     <li><a href="{% url 'administracion:panel_polos' %}"><i class="fa-solid fa-map-marker-alt"></i> Polos</a></li>

@@ -1,0 +1,266 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Mi Empresa / Startup{% endblock %}
+
+{% block user_role %}{{ tipo_usuario|default:"Usuario" }}{% endblock %}
+
+{% block sidebar_menu %}
+{% if tipo_usuario == 'Administrador' or tipo_usuario == 'Mesa de Entrada' %}
+    <li><a href="{% url 'dashboard_admin' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
+    <li><a href="{% url 'administracion:panel_inscripciones' %}"><i class="fa-solid fa-clipboard-list"></i> Inscripciones</a></li>
+    <li><a href="{% url 'empresas:mesa_entrada_list' %}"><i class="fa-solid fa-building"></i> Solicitudes Empresas</a></li>
+    <li><a href="{% url 'empresas:gestion_empresas' %}"><i class="fa-solid fa-building"></i> Gestión Empresas</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
+{% elif es_docente %}
+    <li><a href="{% url 'dashboard_docente' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
+    <li><a href="{% url 'administracion:mis_cursos_docente' %}"><i class="fa-solid fa-chalkboard"></i> Mis Cursos</a></li>
+    <li><a href="{% url 'administracion:panel_asistencia' %}"><i class="fa-solid fa-calendar-check"></i> Asistencias</a></li>
+    <li><a href="{% url 'administracion:materiales_docente' %}"><i class="fa-solid fa-folder-open"></i> Materiales</a></li>
+    <li><a href="{% url 'administracion:estudiantes_docente' %}"><i class="fa-solid fa-users"></i> Estudiantes</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
+    <li><a href="{% url 'empresas:mi_empresa' %}" class="active"><i class="fa-solid fa-building"></i> Mi Empresa / Startup</a></li>
+{% else %}
+    <li><a href="{% url 'dashboard_estudiante' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
+    <li><a href="{% url 'cursos:ver_disponibles' %}"><i class="fa-solid fa-book-open"></i> Cursos Disponibles</a></li>
+    <li><a href="{% url 'cursos:mis_inscripciones' %}"><i class="fa-solid fa-graduation-cap"></i> Mis Inscripciones</a></li>
+    <li><a href="{% url 'usuario:gestionar_tutores' %}"><i class="fa-solid fa-chalkboard-teacher"></i> Mis Tutores</a></li>
+    <li><a href="{% url 'usuario:mi_progreso' %}"><i class="fa-solid fa-chart-line"></i> Mi Progreso</a></li>
+    <li><a href="{% url 'usuario:mi_perfil' %}"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
+    <li><a href="{% url 'empresas:mi_empresa' %}" class="active"><i class="fa-solid fa-building"></i> Mi Empresa / Startup</a></li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<style>
+    .main-content .btn-secondary {
+        background: #e2e8f0;
+        color: #334155;
+        border: 1px solid #cbd5e1;
+        backdrop-filter: none;
+    }
+    .main-content .btn-secondary:hover {
+        background: #cbd5e1;
+    }
+</style>
+<div class="page-header">
+    <h2>Mi Empresa / Startup</h2>
+    <p>Creá tu solicitud y seguí su estado</p>
+</div>
+
+{% if messages %}
+    <div class="dashboard-alerts">
+        {% for message in messages %}
+            <div class="dashboard-alert dashboard-alert--{{ message.tags|default:'info' }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div style="max-width: 760px;">
+    {% if empresa %}
+        <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; margin-bottom: 0.75rem;">
+            <div style="font-weight:900; color:#0f172a;">Estado:</div>
+            <div style="padding:0.25rem 0.6rem; border-radius:999px; font-weight:800; background:#f1f5f9; color:#334155;">
+                {{ empresa.get_estado_display }}
+            </div>
+            {% if empresa.estado == 'aprobada' %}
+                <a class="btn btn-primary" href="{% url 'empresas:equipo' %}">Gestionar equipo</a>
+            {% endif %}
+        </div>
+        {% if empresa.estado == 'pendiente' %}
+            <div style="background:#eff6ff; border:1px solid #bfdbfe; color:#1e3a8a; border-radius:12px; padding:0.75rem 1rem; margin-bottom: 1rem;">
+                <div style="font-weight:900; margin-bottom:0.25rem;">Tu solicitud está en revisión</div>
+                <div>Cuando sea aprobada, se habilitará la gestión de equipo.</div>
+            </div>
+        {% endif %}
+        {% if empresa.estado == 'rechazada' and empresa.motivo_rechazo %}
+            <div style="background:#fff7ed; border:1px solid #fed7aa; color:#9a3412; border-radius:12px; padding:0.75rem 1rem; margin-bottom: 1rem;">
+                <div style="font-weight:900; margin-bottom:0.25rem;">Motivo principal</div>
+                <div>{{ empresa.motivo_rechazo }}</div>
+            </div>
+        {% endif %}
+    {% endif %}
+
+    <form id="empresaForm" method="post" enctype="multipart/form-data" style="margin-top: 1.5rem;">
+        {% csrf_token %}
+        <div style="display:grid; gap:1.5rem;">
+            <div>
+                <label for="{{ form.nombre.id_for_label }}" style="display:block; font-weight:700; color:#334155; margin-bottom:0.5rem; font-size: 0.95rem;">
+                    Nombre de la Empresa
+                </label>
+                {{ form.nombre }}
+                {% if form.nombre.errors %}
+                    <div style="color:#ef4444; font-size: 0.875rem; margin-top: 0.25rem; font-weight:600;">
+                        {{ form.nombre.errors|striptags }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="{{ form.logo.id_for_label }}" style="display:block; font-weight:700; color:#334155; margin-bottom:0.5rem; font-size: 0.95rem;">
+                    Logo de la Empresa <span style="font-weight:400; color:#64748b; font-size:0.85rem;">(Opcional)</span>
+                </label>
+                
+                {% if empresa and empresa.logo %}
+                    <div style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem; background: white; padding: 0.75rem; border-radius: 6px; border: 1px dashed #cbd5e1;">
+                        <img src="{{ empresa.logo.url }}" alt="Logo de {{ empresa.nombre }}" style="height: 60px; width: auto; object-fit: contain;">
+                        <div style="font-size: 0.85rem; color: #64748b;">Logo actual</div>
+                    </div>
+                {% endif %}
+                
+                {{ form.logo }}
+                <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">
+                    Formatos recomendados: PNG, JPG. Tamaño máx: 2MB.
+                </div>
+                {% if form.logo.errors %}
+                    <div style="color:#ef4444; font-size: 0.875rem; margin-top: 0.25rem; font-weight:600;">
+                        {{ form.logo.errors|striptags }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="{{ form.rubro.id_for_label }}" style="display:block; font-weight:700; color:#334155; margin-bottom:0.5rem; font-size: 0.95rem;">
+                    Rubro de Software / Tecnología
+                </label>
+                {{ form.rubro }}
+                <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">
+                    Ejemplos: Desarrollo web • Apps móviles • SaaS • IA • Datos • Ciberseguridad • Videojuegos, etc.
+                </div>
+                {% if form.rubro.errors %}
+                    <div style="color:#ef4444; font-size: 0.875rem; margin-top: 0.25rem; font-weight:600;">
+                        {{ form.rubro.errors|striptags }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="{{ form.descripcion.id_for_label }}" style="display:block; font-weight:700; color:#334155; margin-bottom:0.5rem; font-size: 0.95rem;">
+                    Descripción
+                </label>
+                {{ form.descripcion }}
+                <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">
+                    Breve descripción de la actividad principal y objetivos de la empresa.
+                </div>
+                {% if form.descripcion.errors %}
+                    <div style="color:#ef4444; font-size: 0.875rem; margin-top: 0.25rem; font-weight:600;">
+                        {{ form.descripcion.errors|striptags }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div style="display:flex; align-items:flex-start; gap:0.75rem; padding: 0.5rem 0;">
+                <div style="padding-top: 0.15rem;">
+                    {{ form.acepto_terminos }}
+                </div>
+                <div>
+                    <label for="{{ form.acepto_terminos.id_for_label }}" style="font-size: 0.95rem; color: #334155; cursor: pointer;">
+                        Confirmo que los datos ingresados son verídicos y acepto los <a href="#" onclick="openTerminosEmpresaModal(); return false;" style="color: #F09819; text-decoration: underline; font-weight: 700;">términos y condiciones del programa</a>.
+                    </label>
+                    {% if form.acepto_terminos.errors %}
+                        <div style="color:#ef4444; font-size: 0.875rem; margin-top: 0.25rem; font-weight:600;">
+                            {{ form.acepto_terminos.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {% if puede_editar %}
+            <div style="margin-top: 1.25rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+                <button type="submit" class="btn btn-primary">
+                    {% if empresa and empresa.estado == 'rechazada' %}Reenviar solicitud{% elif empresa and empresa.estado == 'pendiente' %}Actualizar solicitud{% else %}Enviar solicitud{% endif %}
+                </button>
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary">Volver</a>
+            </div>
+        {% else %}
+            <div style="margin-top: 1.25rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary">Volver</a>
+            </div>
+        {% endif %}
+    </form>
+
+    <div id="terminosEmpresaModal" class="modal-overlay" style="z-index: 10002;">
+        <div class="modal-container"
+            style="max-width: 700px; background: white; color: #333; padding: 0; border: none; border-top: 5px solid #F09819; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+            <button class="modal-close" onclick="closeTerminosEmpresaModal()"
+                style="color: #666; background: transparent; top: 1rem; right: 1rem; border: none; font-size: 2rem; transition: color 0.2s;"
+                onmouseover="this.style.color='#F09819'" onmouseout="this.style.color='#666'">×</button>
+
+            <div style="padding: 1.5rem;">
+                <div style="text-align: center; margin-bottom: 1.25rem;">
+                    <div style="width: 60px; height: 60px; background: rgba(240, 152, 25, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem;">
+                        <i class="fa-solid fa-file-signature" style="font-size: 1.8rem; color: #F09819;"></i>
+                    </div>
+                    <h3 style="color: #F09819; font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">Términos y Condiciones</h3>
+                    <p style="color: #64748b; font-size: 0.95rem; margin: 0 auto; line-height: 1.5;">
+                        Para enviar tu solicitud, tené en cuenta los requisitos del programa.
+                    </p>
+                </div>
+
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; margin-bottom: 1rem;">
+                    <div style="font-weight: 800; color: #0f172a; margin-bottom: 0.5rem;">Requisito principal</div>
+                    <div style="color: #334155; line-height: 1.6;">
+                        La empresa debe ser una <strong>startup exclusivamente de Software / Tecnología</strong>. Solicitudes de otros rubros pueden ser rechazadas.
+                    </div>
+                </div>
+
+                <div style="display: grid; gap: 0.75rem; color: #334155; line-height: 1.6;">
+                    <div style="display:flex; gap:0.75rem;">
+                        <div style="flex:0 0 auto; width: 28px; height: 28px; border-radius: 8px; background: rgba(240, 152, 25, 0.12); display:flex; align-items:center; justify-content:center; color:#F09819; font-weight: 900;">1</div>
+                        <div>La información declarada debe ser verídica y comprobable.</div>
+                    </div>
+                    <div style="display:flex; gap:0.75rem;">
+                        <div style="flex:0 0 auto; width: 28px; height: 28px; border-radius: 8px; background: rgba(240, 152, 25, 0.12); display:flex; align-items:center; justify-content:center; color:#F09819; font-weight: 900;">2</div>
+                        <div>El logo es opcional; si lo subís, debe ser una imagen (PNG/JPG).</div>
+                    </div>
+                    <div style="display:flex; gap:0.75rem;">
+                        <div style="flex:0 0 auto; width: 28px; height: 28px; border-radius: 8px; background: rgba(240, 152, 25, 0.12); display:flex; align-items:center; justify-content:center; color:#F09819; font-weight: 900;">3</div>
+                        <div>La solicitud quedará sujeta a evaluación y aprobación.</div>
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top: 1.25rem;">
+                    <button type="button" class="btn btn-secondary" onclick="closeTerminosEmpresaModal()">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    #empresaForm .form-input::placeholder {
+        color: rgba(100, 116, 139, 0.55);
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function openTerminosEmpresaModal() {
+        const modal = document.getElementById('terminosEmpresaModal');
+        modal.style.display = 'flex'; modal.offsetHeight; modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeTerminosEmpresaModal() {
+        const modal = document.getElementById('terminosEmpresaModal');
+        modal.classList.remove('show');
+        setTimeout(() => { modal.style.display = 'none'; document.body.style.overflow = ''; }, 300);
+    }
+
+    document.addEventListener('click', function (event) {
+        const modal = document.getElementById('terminosEmpresaModal');
+        if (modal && event.target === modal) closeTerminosEmpresaModal();
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key !== 'Escape') return;
+        const modal = document.getElementById('terminosEmpresaModal');
+        if (modal && modal.classList.contains('show')) closeTerminosEmpresaModal();
+    });
+</script>
+{% endblock %}

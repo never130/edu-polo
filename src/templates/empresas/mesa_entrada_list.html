@@ -1,0 +1,93 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Solicitudes de Empresas{% endblock %}
+
+{% block user_role %}{{ tipo_usuario|default:"Mesa de Entrada" }}{% endblock %}
+
+{% block sidebar_menu %}
+{% if tipo_usuario == 'Administrador' %}
+<li><a href="{% url 'dashboard_admin' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:panel_cursos' %}"><i class="fa-solid fa-book"></i> Gestión Cursos</a></li>
+<li><a href="{% url 'administracion:panel_comisiones' %}"><i class="fa-solid fa-users-rectangle"></i> Gestión Comisiones</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:panel_inscripciones' %}"><i class="fa-solid fa-clipboard-list"></i> Inscripciones</a></li>
+<li><a href="{% url 'empresas:mesa_entrada_list' %}" class="active"><i class="fa-solid fa-building"></i> Solicitudes Empresas</a></li>
+<li><a href="{% url 'empresas:gestion_empresas' %}"><i class="fa-solid fa-building"></i> Gestión Empresas</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:gestion_usuarios' %}"><i class="fa-solid fa-users-cog"></i> Gestión Usuarios</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:buscador_estudiantes' %}"><i class="fa-solid fa-search"></i> Buscar Estudiantes</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:panel_polos' %}"><i class="fa-solid fa-map-marker-alt"></i> Polos</a></li>
+{% endif %}
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:estadisticas' %}"><i class="fa-solid fa-chart-pie"></i> Estadísticas</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:panel_asistencia' %}"><i class="fa-solid fa-calendar-check"></i> Asistencias</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:docentes_cursos' %}"><i class="fa-solid fa-chalkboard-teacher"></i> Docentes y Cursos</a></li>
+{% endif %}
+<li><a href="{% url 'usuario:mi_perfil' %}"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'admin:index' %}"><i class="fa-solid fa-cogs"></i> Django Admin</a></li>
+{% endif %}
+{% else %}
+<li><a href="{% url 'dashboard_admin' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
+<li><a href="{% url 'administracion:panel_inscripciones' %}"><i class="fa-solid fa-clipboard-list"></i> Inscripciones</a></li>
+<li><a href="{% url 'empresas:mesa_entrada_list' %}" class="active"><i class="fa-solid fa-building"></i> Solicitudes Empresas</a></li>
+<li><a href="{% url 'empresas:gestion_empresas' %}"><i class="fa-solid fa-building"></i> Gestión Empresas</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Solicitudes de Empresas</h2>
+    <p>Pendientes de revisión</p>
+</div>
+
+{% if messages %}
+    <div class="dashboard-alerts">
+        {% for message in messages %}
+            <div class="dashboard-alert dashboard-alert--{{ message.tags|default:'info' }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div style="background:white; border:1px solid #e2e8f0; border-radius:14px; padding:1.25rem; box-shadow:0 4px 16px rgba(15, 23, 42, 0.06);">
+    {% if pendientes %}
+        <div style="overflow:auto;">
+            <table style="width:100%; border-collapse:collapse;">
+                <thead>
+                    <tr style="text-align:left; border-bottom:1px solid #e2e8f0;">
+                        <th style="padding:0.5rem 0.25rem;">Empresa</th>
+                        <th style="padding:0.5rem 0.25rem;">Responsable</th>
+                        <th style="padding:0.5rem 0.25rem;">DNI</th>
+                        <th style="padding:0.5rem 0.25rem;">Actualizado</th>
+                        <th style="padding:0.5rem 0.25rem;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for e in pendientes %}
+                        <tr style="border-bottom:1px solid #f1f5f9;">
+                            <td style="padding:0.5rem 0.25rem;">{{ e.nombre }}</td>
+                            <td style="padding:0.5rem 0.25rem;">{{ e.responsable.persona.nombre_completo }}</td>
+                            <td style="padding:0.5rem 0.25rem;">{{ e.responsable.persona.dni }}</td>
+                            <td style="padding:0.5rem 0.25rem;">{{ e.actualizado|date:"d/m/Y H:i" }}</td>
+                            <td style="padding:0.5rem 0.25rem;">
+                                <a class="btn btn-primary" href="{% url 'empresas:mesa_entrada_detalle' e.id %}">Revisar</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div>No hay solicitudes pendientes.</div>
+    {% endif %}
+</div>
+{% endblock %}
+

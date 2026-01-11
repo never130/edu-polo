@@ -41,6 +41,7 @@ urlpatterns = [
     path('cursos/', include('apps.modulo_3.cursos.urls')),
     path('inscripciones/', include('apps.modulo_2.inscripciones.urls')),
     path('panel/', include('apps.modulo_6.administracion.urls')),
+    path('empresas/', include('apps.modulo_7.empresas.urls')),
     # API
     path('api/buscar-estudiante/<str:dni>/', buscar_estudiante_por_dni, name='api_buscar_estudiante'),
     path('api/estudiantes-por-curso/', core_views.api_estudiantes_por_curso, name='api_estudiantes_por_curso'),

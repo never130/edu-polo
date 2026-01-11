@@ -1,0 +1,477 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Gestión de Empresas{% endblock %}
+
+{% block user_role %}{{ tipo_usuario|default:"Mesa de Entrada" }}{% endblock %}
+
+{% block sidebar_menu %}
+{% if tipo_usuario == 'Administrador' %}
+<li><a href="{% url 'dashboard_admin' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:panel_cursos' %}"><i class="fa-solid fa-book"></i> Gestión Cursos</a></li>
+<li><a href="{% url 'administracion:panel_comisiones' %}"><i class="fa-solid fa-users-rectangle"></i> Gestión Comisiones</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:panel_inscripciones' %}"><i class="fa-solid fa-clipboard-list"></i> Inscripciones</a></li>
+<li><a href="{% url 'empresas:mesa_entrada_list' %}"><i class="fa-solid fa-building"></i> Solicitudes Empresas</a></li>
+<li><a href="{% url 'empresas:gestion_empresas' %}" class="active"><i class="fa-solid fa-building"></i> Gestión Empresas</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:gestion_usuarios' %}"><i class="fa-solid fa-users-cog"></i> Gestión Usuarios</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:buscador_estudiantes' %}"><i class="fa-solid fa-search"></i> Buscar Estudiantes</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:panel_polos' %}"><i class="fa-solid fa-map-marker-alt"></i> Polos</a></li>
+{% endif %}
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:estadisticas' %}"><i class="fa-solid fa-chart-pie"></i> Estadísticas</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:panel_asistencia' %}"><i class="fa-solid fa-calendar-check"></i> Asistencias</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:docentes_cursos' %}"><i class="fa-solid fa-chalkboard-teacher"></i> Docentes y Cursos</a></li>
+{% endif %}
+<li><a href="{% url 'usuario:mi_perfil' %}"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'admin:index' %}"><i class="fa-solid fa-cogs"></i> Django Admin</a></li>
+{% endif %}
+{% else %}
+<li><a href="{% url 'dashboard_admin' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
+<li><a href="{% url 'administracion:panel_inscripciones' %}"><i class="fa-solid fa-clipboard-list"></i> Inscripciones</a></li>
+<li><a href="{% url 'empresas:mesa_entrada_list' %}"><i class="fa-solid fa-building"></i> Solicitudes Empresas</a></li>
+<li><a href="{% url 'empresas:gestion_empresas' %}" class="active"><i class="fa-solid fa-building"></i> Gestión Empresas</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<style>
+    .empresas-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+        overflow: hidden;
+    }
+
+    .empresas-card__header {
+        padding: 1.25rem 1.5rem;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .empresas-card__title {
+        font-size: 1.05rem;
+        font-weight: 900;
+        color: #0f172a;
+        margin: 0;
+    }
+
+    .empresas-card__subtitle {
+        color: #64748b;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .empresas-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .empresas-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1080px;
+    }
+
+    .empresas-table thead {
+        background: #f8fafc;
+    }
+
+    .empresas-table th {
+        padding: 1rem 1.25rem;
+        text-align: left;
+        color: #64748b;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        border-bottom: 2px solid #e2e8f0;
+        white-space: nowrap;
+    }
+
+    .empresas-table td {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid #e2e8f0;
+        color: #334155;
+        vertical-align: top;
+    }
+
+    .empresas-table tbody tr:hover td {
+        background: #f8fafc;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        font-weight: 800;
+        font-size: 0.82rem;
+        border: 1px solid transparent;
+        white-space: nowrap;
+    }
+
+    .status-badge--aprobada {
+        background: #dcfce7;
+        color: #065f46;
+        border-color: #86efac;
+    }
+
+    .status-badge--pendiente {
+        background: #fffbeb;
+        color: #92400e;
+        border-color: #fcd34d;
+    }
+
+    .status-badge--rechazada {
+        background: #fee2e2;
+        color: #991b1b;
+        border-color: #fca5a5;
+    }
+
+    .count-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 34px;
+        padding: 0.3rem 0.6rem;
+        border-radius: 999px;
+        background: #f1f5f9;
+        color: #0f172a;
+        font-weight: 900;
+        border: 1px solid #e2e8f0;
+    }
+
+    .members-title {
+        font-weight: 900;
+        color: #0f172a;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .members-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .member-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        border: 1px solid #e2e8f0;
+        background: white;
+        border-radius: 999px;
+        padding: 0.25rem 0.75rem;
+        color: #334155;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    .empresa-name {
+        font-weight: 900;
+        color: #0f172a;
+    }
+
+    .muted {
+        color: #64748b;
+        font-weight: 600;
+    }
+
+    .actions {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .main-content .btn-secondary {
+        background: #e2e8f0;
+        color: #334155;
+        border: 1px solid #cbd5e1;
+        backdrop-filter: none;
+    }
+
+    .main-content .btn-secondary:hover {
+        background: #cbd5e1;
+        transform: translateY(-1px);
+    }
+
+    .empty-state {
+        padding: 2rem 1.5rem;
+        color: #64748b;
+        font-weight: 700;
+    }
+
+    .modal-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+        background: #f8fafc;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .modal-title {
+        margin: 0;
+        font-size: 1.15rem;
+        font-weight: 900;
+        color: #0f172a;
+    }
+
+    .modal-subtitle {
+        margin-top: 0.35rem;
+        color: #64748b;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .modal-body {
+        padding: 1.25rem 1.5rem 1.5rem;
+    }
+
+    .modal-close {
+        border: 1px solid #e2e8f0;
+        background: white;
+        color: #334155;
+        width: 40px;
+        height: 40px;
+        border-radius: 999px;
+        font-size: 1.5rem;
+        line-height: 1;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+    }
+
+    .modal-close:hover {
+        background: #f1f5f9;
+    }
+
+    .empresa-info {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        background: #f8fafc;
+        padding: 1rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .empresa-info__row {
+        display: flex;
+        gap: 1rem;
+        align-items: baseline;
+        margin-bottom: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .empresa-info__row:last-child {
+        margin-bottom: 0;
+    }
+
+    .empresa-info__label {
+        color: #64748b;
+        font-weight: 800;
+        font-size: 0.78rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        min-width: 90px;
+    }
+
+    .empresa-info__value {
+        color: #0f172a;
+        font-weight: 800;
+        flex: 1 1 240px;
+        min-width: 0;
+    }
+
+    .empresa-info__desc {
+        color: #334155;
+        font-weight: 700;
+        line-height: 1.55;
+        white-space: pre-wrap;
+    }
+</style>
+
+<div class="page-header">
+    <h2>Gestión de Empresas</h2>
+    <p>Listado completo de empresas, responsables y miembros</p>
+</div>
+
+{% if messages %}
+    <div class="dashboard-alerts">
+        {% for message in messages %}
+            <div class="dashboard-alert dashboard-alert--{{ message.tags|default:'info' }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="empresas-card">
+    <div class="empresas-card__header">
+        <div>
+            <div class="empresas-card__title">Empresas</div>
+            <div class="empresas-card__subtitle">Total: {{ empresas|length }}</div>
+        </div>
+    </div>
+
+    {% if empresas %}
+        <div class="empresas-table-wrapper">
+            <table class="empresas-table">
+                <thead>
+                    <tr>
+                        <th>Empresa</th>
+                        <th>Responsable</th>
+                        <th>DNI</th>
+                        <th>Ciudad</th>
+                        <th>Estado</th>
+                        <th>Miembros</th>
+                        <th>Actualizado</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for e in empresas %}
+                        <tr>
+                            <td><span class="empresa-name">{{ e.nombre }}</span></td>
+                            <td>{{ e.responsable.persona.nombre_completo }}</td>
+                            <td class="muted">{{ e.responsable.persona.dni }}</td>
+                            <td class="muted">
+                                {% if e.responsable.persona.ciudad_residencia %}{{ e.responsable.persona.get_ciudad_residencia_display }}{% else %}Sin ciudad{% endif %}
+                            </td>
+                            <td>
+                                <span class="status-badge status-badge--{{ e.estado }}">{{ e.get_estado_display }}</span>
+                            </td>
+                            <td><span class="count-badge">{{ e.miembros.count }}</span></td>
+                            <td class="muted">{{ e.actualizado|date:"d/m/Y H:i" }}</td>
+                            <td>
+                                <div class="actions">
+                                    {% if e.estado == 'pendiente' %}
+                                        <a class="btn btn-secondary" href="{% url 'empresas:mesa_entrada_detalle' e.id %}">Revisar</a>
+                                    {% else %}
+                                        <button type="button" class="btn btn-secondary" onclick="openEmpresaMiembrosModal('{{ e.id }}')">Ver</button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div style="display:none;">
+            {% for e in empresas %}
+                <div id="empresa-miembros-content-{{ e.id }}" data-empresa-nombre="{{ e.nombre }}">
+                    <div class="empresa-info">
+                        <div class="empresa-info__row">
+                            <div class="empresa-info__label">Ciudad</div>
+                            <div class="empresa-info__value">
+                                {% if e.responsable.persona.ciudad_residencia %}{{ e.responsable.persona.get_ciudad_residencia_display }}{% else %}Sin ciudad{% endif %}
+                            </div>
+                        </div>
+                        <div class="empresa-info__row">
+                            <div class="empresa-info__label">Rubro</div>
+                            <div class="empresa-info__value">
+                                {% if e.rubro %}{{ e.rubro }}{% else %}Sin rubro{% endif %}
+                            </div>
+                        </div>
+                        <div class="empresa-info__row">
+                            <div class="empresa-info__label">Descripción</div>
+                            <div class="empresa-info__value empresa-info__desc">
+                                {% if e.descripcion %}{{ e.descripcion }}{% else %}Sin descripción{% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="members-title">
+                        Miembros
+                        <span class="count-badge">{{ e.miembros.count }}</span>
+                    </div>
+
+                    {% if e.miembros.all %}
+                        <div class="members-chips">
+                            {% for m in e.miembros.all %}
+                                <span class="member-chip">
+                                    {{ m.usuario.persona.nombre_completo }}{% if m.rol %} · {{ m.rol }}{% endif %}{% if m.es_socio %} · Socio{% endif %}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="muted">Sin miembros registrados.</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">No hay empresas registradas.</div>
+    {% endif %}
+</div>
+
+<div id="empresaMiembrosModal" class="modal-overlay" style="z-index: 10001;">
+    <div class="modal-container" style="max-width: 780px;">
+        <div class="modal-header">
+            <div>
+                <h3 id="empresaMiembrosModalTitle" class="modal-title">Empresa</h3>
+                <div class="modal-subtitle">Rubro, descripción y miembros</div>
+            </div>
+            <button type="button" class="modal-close" onclick="closeEmpresaMiembrosModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <div id="empresaMiembrosModalBody"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openEmpresaMiembrosModal(empresaId) {
+        const modal = document.getElementById('empresaMiembrosModal');
+        const body = document.getElementById('empresaMiembrosModalBody');
+        const title = document.getElementById('empresaMiembrosModalTitle');
+        const source = document.getElementById('empresa-miembros-content-' + empresaId);
+
+        body.innerHTML = source ? source.innerHTML : '<div class="muted">No se pudo cargar la información.</div>';
+        title.textContent = source && source.dataset && source.dataset.empresaNombre ? source.dataset.empresaNombre : 'Empresa';
+
+        modal.style.display = 'flex';
+        modal.offsetHeight;
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeEmpresaMiembrosModal() {
+        const modal = document.getElementById('empresaMiembrosModal');
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }, 300);
+    }
+
+    document.addEventListener('click', function (event) {
+        const modal = document.getElementById('empresaMiembrosModal');
+        if (modal && event.target === modal) closeEmpresaMiembrosModal();
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key !== 'Escape') return;
+        const modal = document.getElementById('empresaMiembrosModal');
+        if (modal && modal.classList.contains('show')) closeEmpresaMiembrosModal();
+    });
+</script>
+{% endblock %}

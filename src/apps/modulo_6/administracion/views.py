@@ -2314,6 +2314,7 @@ def mis_cursos_docente(request):
         context = {
             'cursos_dict': cursos_dict,
             'es_docente': True,
+            'persona': usuario.persona,
         }
         return render(request, 'administracion/mis_cursos_docente.html', context)
     except Usuario.DoesNotExist:
@@ -2367,6 +2368,7 @@ def estudiantes_comision(request, comision_id):
             'comision': comision,
             'estudiantes': estudiantes_con_asistencia,
             'es_docente': True,
+            'persona': usuario.persona,
         }
         return render(request, 'administracion/estudiantes_comision.html', context)
     except Usuario.DoesNotExist:
@@ -2405,6 +2407,7 @@ def materiales_comision(request, comision_id):
             'comision': comision,
             'materiales': materiales,
             'es_docente': True,
+            'persona': usuario.persona,
         }
         return render(request, 'administracion/materiales_comision.html', context)
     except Usuario.DoesNotExist:
@@ -2450,6 +2453,7 @@ def subir_material(request, comision_id):
             'comision': comision,
             'form': form,
             'es_docente': True,
+            'persona': usuario.persona,
         }
         return render(request, 'administracion/subir_material.html', context)
     except Usuario.DoesNotExist:
@@ -2489,6 +2493,7 @@ def eliminar_material(request, material_id):
         context = {
             'material': material,
             'es_docente': True,
+            'persona': usuario.persona,
         }
         return render(request, 'administracion/eliminar_material.html', context)
     except Usuario.DoesNotExist:
@@ -2544,6 +2549,7 @@ def estudiantes_docente(request):
             'cursos_dict': cursos_dict,
             'es_docente': True,
             'vista_estudiantes': True,  # Flag para identificar que es la vista de estudiantes
+            'persona': usuario.persona,
         }
         return render(request, 'administracion/estudiantes_docente.html', context)
     except Usuario.DoesNotExist:
@@ -2598,6 +2604,7 @@ def materiales_docente(request):
             'cursos_dict': cursos_dict,
             'es_docente': True,
             'vista_materiales': True,  # Flag para identificar que es la vista de materiales
+            'persona': usuario.persona,
         }
         return render(request, 'administracion/materiales_docente.html', context)
     except Usuario.DoesNotExist:

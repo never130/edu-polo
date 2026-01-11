@@ -110,6 +110,7 @@ INSTALLED_APPS = [
     'apps.modulo_6.administracion',
     'apps.modulo_6.seguridad',
     'apps.modulo_6.validacion',
+    'apps.modulo_7.empresas',
 ]
 
 MIDDLEWARE = [

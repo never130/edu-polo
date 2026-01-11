@@ -54,8 +54,14 @@ class Persona(models.Model):
     @property
     def es_menor_edad(self):
         """Verifica si es menor de 16 años (requiere tutor)"""
-        if self.edad:
+        if self.edad is not None:
             return self.edad < 16
+        return False
+
+    @property
+    def es_mayor_de_edad(self):
+        if self.edad is not None:
+            return self.edad >= 18
         return False
     
     @property

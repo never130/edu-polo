@@ -13,6 +13,9 @@
 <li><a href="{% url 'administracion:materiales_comision' comision.id_comision|unlocalize %}" class="active"><i class="fa-solid fa-folder-open"></i> Materiales</a></li>
 <li><a href="{% url 'administracion:estudiantes_comision' comision.id_comision|unlocalize %}"><i class="fa-solid fa-users"></i> Estudiantes</a></li>
 <li><a href="{% url 'usuario:mi_perfil' %}"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
+{% if persona.es_mayor_de_edad %}
+<li><a href="{% url 'empresas:mi_empresa' %}"><i class="fa-solid fa-building"></i> Mi Empresa / Startup</a></li>
+{% endif %}
 {% endblock %}
 
 {% block content %}

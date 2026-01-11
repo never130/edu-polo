@@ -235,9 +235,12 @@ def dashboard_estudiante(request):
             proxima_clase = cursos_activos[0] # Simplificación
 
         inscripciones_activas_count = len(cursos_activos)
+        persona = estudiante.usuario.persona
         
         context = {
             'estudiante': estudiante,
+            'persona': persona,
+            'es_mayor_de_edad': bool(getattr(persona, 'es_mayor_de_edad', False)),
             'inscripciones_activas': inscripciones_activas_count,
             'inscripciones_preinscripto': inscripciones_preinscriptas[:5],
             'inscripciones_lista_espera': inscripciones_lista_espera[:5],

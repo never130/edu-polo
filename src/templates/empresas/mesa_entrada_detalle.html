@@ -1,0 +1,137 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Revisión de Empresa{% endblock %}
+
+{% block user_role %}{{ tipo_usuario|default:"Mesa de Entrada" }}{% endblock %}
+
+{% block sidebar_menu %}
+{% if tipo_usuario == 'Administrador' %}
+<li><a href="{% url 'dashboard_admin' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:panel_cursos' %}"><i class="fa-solid fa-book"></i> Gestión Cursos</a></li>
+<li><a href="{% url 'administracion:panel_comisiones' %}"><i class="fa-solid fa-users-rectangle"></i> Gestión Comisiones</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:panel_inscripciones' %}"><i class="fa-solid fa-clipboard-list"></i> Inscripciones</a></li>
+<li><a href="{% url 'empresas:mesa_entrada_list' %}" class="active"><i class="fa-solid fa-building"></i> Solicitudes Empresas</a></li>
+<li><a href="{% url 'empresas:gestion_empresas' %}"><i class="fa-solid fa-building"></i> Gestión Empresas</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:gestion_usuarios' %}"><i class="fa-solid fa-users-cog"></i> Gestión Usuarios</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:buscador_estudiantes' %}"><i class="fa-solid fa-search"></i> Buscar Estudiantes</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:panel_polos' %}"><i class="fa-solid fa-map-marker-alt"></i> Polos</a></li>
+{% endif %}
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:estadisticas' %}"><i class="fa-solid fa-chart-pie"></i> Estadísticas</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:panel_asistencia' %}"><i class="fa-solid fa-calendar-check"></i> Asistencias</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:docentes_cursos' %}"><i class="fa-solid fa-chalkboard-teacher"></i> Docentes y Cursos</a></li>
+{% endif %}
+<li><a href="{% url 'usuario:mi_perfil' %}"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'admin:index' %}"><i class="fa-solid fa-cogs"></i> Django Admin</a></li>
+{% endif %}
+{% else %}
+<li><a href="{% url 'dashboard_admin' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
+<li><a href="{% url 'administracion:panel_inscripciones' %}"><i class="fa-solid fa-clipboard-list"></i> Inscripciones</a></li>
+<li><a href="{% url 'empresas:mesa_entrada_list' %}" class="active"><i class="fa-solid fa-building"></i> Solicitudes Empresas</a></li>
+<li><a href="{% url 'empresas:gestion_empresas' %}"><i class="fa-solid fa-building"></i> Gestión Empresas</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<style>
+    .main-content .btn-secondary {
+        background: #e2e8f0;
+        color: #334155;
+        border: 1px solid #cbd5e1;
+        backdrop-filter: none;
+    }
+    .main-content .btn-secondary:hover {
+        background: #cbd5e1;
+    }
+    .main-content .btn-danger {
+        background: #ef4444;
+        color: white;
+        border: 1px solid #dc2626;
+    }
+    .main-content .btn-danger:hover {
+        background: #dc2626;
+    }
+</style>
+<div class="page-header">
+    <h2>Revisión</h2>
+    <p>{{ empresa.nombre }}</p>
+</div>
+
+{% if messages %}
+    <div class="dashboard-alerts">
+        {% for message in messages %}
+            <div class="dashboard-alert dashboard-alert--{{ message.tags|default:'info' }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div style="display:grid; gap:1rem;">
+    <div style="background:white; border:1px solid #e2e8f0; border-radius:14px; padding:1.25rem; box-shadow:0 4px 16px rgba(15, 23, 42, 0.06);">
+        <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; margin-bottom: 0.75rem;">
+            <div style="font-weight:900; color:#0f172a;">Estado:</div>
+            <div style="padding:0.25rem 0.6rem; border-radius:999px; font-weight:800; background:#f1f5f9; color:#334155;">
+                {{ empresa.get_estado_display }}
+            </div>
+        </div>
+
+        <h3 style="margin-bottom: 0.5rem;">Responsable</h3>
+        <div style="display:grid; gap:0.25rem;">
+            <div><strong>Nombre:</strong> {{ persona_responsable.nombre_completo }}</div>
+            <div><strong>DNI:</strong> {{ persona_responsable.dni }}</div>
+            <div><strong>Teléfono:</strong> {{ persona_responsable.telefono|default:"-" }}</div>
+            <div><strong>Correo:</strong> {{ persona_responsable.correo|default:"-" }}</div>
+            <div><strong>Fecha nacimiento:</strong> {{ persona_responsable.fecha_nacimiento|date:"d/m/Y"|default:"-" }}</div>
+        </div>
+
+        <h3 style="margin: 1rem 0 0.5rem;">Detalle</h3>
+        <div style="display:grid; gap:0.25rem;">
+            <div><strong>Rubro:</strong> {{ empresa.rubro|default:"-" }}</div>
+            <div><strong>Descripción:</strong> {{ empresa.descripcion|default:"-" }}</div>
+            <div><strong>Aceptó términos:</strong> {% if empresa.acepto_terminos %}Sí{% else %}No{% endif %}</div>
+        </div>
+
+        <div style="margin-top: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem;">
+            <div style="font-weight: 800; color: #0f172a; margin-bottom: 0.5rem;">Requisito principal</div>
+            <div style="color: #334155; line-height: 1.6;">
+                La empresa debe ser una <strong>startup exclusivamente de Software / Tecnología</strong>. Solicitudes de otros rubros pueden ser rechazadas.
+            </div>
+        </div>
+
+        <div style="margin-top: 1rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+            <form method="post" style="margin:0;">
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="aprobar">
+                <button type="submit" class="btn btn-primary">Aprobar</button>
+            </form>
+            <a href="{% url 'empresas:mesa_entrada_list' %}" class="btn btn-secondary">Volver</a>
+        </div>
+    </div>
+
+    <div style="background:white; border:1px solid #e2e8f0; border-radius:14px; padding:1.25rem; box-shadow:0 4px 16px rgba(15, 23, 42, 0.06);">
+        <h3 style="margin-bottom: 0.75rem;">Rechazar</h3>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="accion" value="rechazar">
+            <div style="max-width: 760px;">
+                <div style="font-weight:800; margin-bottom:0.25rem;">Motivo principal</div>
+                {{ form_rechazo.motivo_rechazo }}
+                {% if form_rechazo.motivo_rechazo.errors %}<div style="color:#b91c1c; font-weight:700;">{{ form_rechazo.motivo_rechazo.errors|striptags }}</div>{% endif %}
+            </div>
+            <div style="margin-top: 1rem;">
+                <button type="submit" class="btn btn-danger">Rechazar</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

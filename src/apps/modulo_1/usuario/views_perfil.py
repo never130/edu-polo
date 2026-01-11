@@ -254,6 +254,7 @@ def cambiar_contrasena(request):
             if usuario.contrasena != contrasena_actual:
                 messages.error(request, '❌ La contraseña actual es incorrecta.')
                 context = {
+                    'persona': persona,
                     'tipo_usuario': tipo_usuario,
                     'es_admin': es_admin,
                     'es_mesa_entrada': es_mesa_entrada,
@@ -266,6 +267,7 @@ def cambiar_contrasena(request):
             if contrasena_nueva != contrasena_confirmar:
                 messages.error(request, '❌ Las contraseñas nuevas no coinciden.')
                 context = {
+                    'persona': persona,
                     'tipo_usuario': tipo_usuario,
                     'es_admin': es_admin,
                     'es_mesa_entrada': es_mesa_entrada,
@@ -278,6 +280,7 @@ def cambiar_contrasena(request):
             if len(contrasena_nueva) < 6:
                 messages.error(request, '❌ La contraseña debe tener al menos 6 caracteres.')
                 context = {
+                    'persona': persona,
                     'tipo_usuario': tipo_usuario,
                     'es_admin': es_admin,
                     'es_mesa_entrada': es_mesa_entrada,
@@ -298,6 +301,7 @@ def cambiar_contrasena(request):
             return redirect('usuario:mi_perfil')
         
         context = {
+            'persona': persona,
             'tipo_usuario': tipo_usuario,
             'es_admin': es_admin,
             'es_mesa_entrada': es_mesa_entrada,
