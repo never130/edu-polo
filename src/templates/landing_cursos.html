@@ -1347,6 +1347,9 @@ polo/2/cursos/        @media (max-width: 480px) {
             <div class="navbar-links">
                 <a href="{% url 'landing' %}" class="navbar-link">Inicio</a>
                 <a href="{% url 'lista_polos' %}" class="navbar-link">Cursos</a>
+                {% if user.is_authenticated and es_empresa %}
+                <a href="{% url 'empresas:mi_empresa' %}" class="navbar-link">Punto Empresarial</a>
+                {% endif %}
                 <a href="#" class="navbar-link" onclick="openContactoModal(); return false;">Contacto</a>
                 <a href="#" class="navbar-link" onclick="openAcercaDeModal(); return false;">Acerca de</a>
             </div>

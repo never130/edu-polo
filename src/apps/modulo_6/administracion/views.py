@@ -1172,6 +1172,12 @@ def gestion_usuarios(request):
             # Verificar Estudiante
             if Estudiante.objects.filter(usuario=usuario).exists():
                 roles_list.append('Estudiante')
+            # Verificar Empresa
+            if (
+                UsuarioRol.objects.filter(usuario_id=usuario, rol_id__nombre='Empresa').exists()
+                or hasattr(usuario, 'empresa')
+            ):
+                roles_list.append('Empresa')
             # Verificar Administrador
             if UsuarioRol.objects.filter(usuario_id=usuario, rol_id__nombre='Administrador').exists():
                 roles_list.append('Administrador')
@@ -1345,6 +1351,9 @@ def crear_usuario_admin(request):
                 elif tipo_usuario == 'mesa_entrada':
                     rol, _ = Rol.objects.get_or_create(nombre='Mesa de Entrada', defaults={'descripcion': 'Rol para personal de mesa de entrada. Puede gestionar cursos, comisiones, inscripciones y usuarios (excepto crear nuevos usuarios).', 'jerarquia': 2})
                     UsuarioRol.objects.get_or_create(usuario_id=usuario, rol_id=rol)
+                elif tipo_usuario == 'empresa':
+                    rol, _ = Rol.objects.get_or_create(nombre='Empresa', defaults={'descripcion': 'Rol para empresas', 'jerarquia': 3})
+                    UsuarioRol.objects.get_or_create(usuario_id=usuario, rol_id=rol)
                 
                 messages.success(request, f'✅ Usuario {nombre} {apellido} creado exitosamente.')
                 return redirect('administracion:gestion_usuarios')
@@ -1430,6 +1439,10 @@ def editar_usuario_admin(request, persona_id):
                     # Eliminar perfiles existentes
                     Estudiante.objects.filter(usuario=usuario).delete()
                     Docente.objects.filter(id_persona=persona).delete()
+                    if nuevo_rol != 'empresa':
+                        from apps.modulo_7.empresas.models import Empresa, MiembroEmpresa
+                        Empresa.objects.filter(responsable=usuario).delete()
+                        MiembroEmpresa.objects.filter(usuario=usuario).delete()
                     
                     # Asignar nuevo rol y crear perfil correspondiente
                     if nuevo_rol == 'estudiante':
@@ -1454,6 +1467,9 @@ def editar_usuario_admin(request, persona_id):
                     elif nuevo_rol == 'mesa_entrada':
                         rol, _ = Rol.objects.get_or_create(nombre='Mesa de Entrada', defaults={'descripcion': 'Rol para personal de mesa de entrada', 'jerarquia': 2})
                         UsuarioRol.objects.get_or_create(usuario_id=usuario, rol_id=rol)
+                    elif nuevo_rol == 'empresa':
+                        rol, _ = Rol.objects.get_or_create(nombre='Empresa', defaults={'descripcion': 'Rol para empresas', 'jerarquia': 3})
+                        UsuarioRol.objects.get_or_create(usuario_id=usuario, rol_id=rol)
                 
                 messages.success(request, f'✅ Usuario {persona.nombre_completo} actualizado exitosamente.')
                 return redirect('administracion:gestion_usuarios')
@@ -1467,6 +1483,11 @@ def editar_usuario_admin(request, persona_id):
         roles_actuales.append('Estudiante')
     if Docente.objects.filter(id_persona=persona).exists():
         roles_actuales.append('Docente')
+    if (
+        UsuarioRol.objects.filter(usuario_id=usuario, rol_id__nombre='Empresa').exists()
+        or hasattr(usuario, 'empresa')
+    ):
+        roles_actuales.append('Empresa')
     if UsuarioRol.objects.filter(usuario_id=usuario, rol_id__nombre='Administrador').exists():
         roles_actuales.append('Administrador')
     if UsuarioRol.objects.filter(usuario_id=usuario, rol_id__nombre='Mesa de Entrada').exists():
@@ -1541,8 +1562,15 @@ def exportar_usuarios_excel(request):
         if usuario:
             if Estudiante.objects.filter(usuario=usuario).exists():
                 roles_list.append('Estudiante')
+            if (
+                UsuarioRol.objects.filter(usuario_id=usuario, rol_id__nombre='Empresa').exists()
+                or hasattr(usuario, 'empresa')
+            ):
+                roles_list.append('Empresa')
             if UsuarioRol.objects.filter(usuario_id=usuario, rol_id__nombre='Administrador').exists():
                 roles_list.append('Administrador')
+            if UsuarioRol.objects.filter(usuario_id=usuario, rol_id__nombre='Mesa de Entrada').exists():
+                roles_list.append('Mesa de Entrada')
         if Docente.objects.filter(id_persona=persona).exists():
             roles_list.append('Docente')
         return ', '.join(roles_list) if roles_list else 'Sin rol'

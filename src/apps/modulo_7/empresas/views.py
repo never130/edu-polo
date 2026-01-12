@@ -1,9 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.views.generic import ListView
 
 from apps.modulo_1.usuario.models import Usuario
+from apps.modulo_1.roles.models import Estudiante
 from apps.modulo_6.administracion.views import es_admin_o_mesa
 
 from .forms import AgregarMiembroForm, ActualizarLogoEmpresaForm, EmpresaForm, RechazarEmpresaForm
@@ -29,6 +33,10 @@ def mi_empresa(request):
     usuario = _obtener_usuario_app(request)
     if not usuario:
         messages.error(request, 'No se encontró tu perfil de usuario.')
+        return redirect('dashboard')
+
+    if Estudiante.objects.filter(usuario=usuario).exists() and not hasattr(usuario, 'empresa'):
+        messages.error(request, 'Esta sección no está disponible para estudiantes.')
         return redirect('dashboard')
 
     if not _es_mayor_de_edad(usuario):
@@ -141,21 +149,32 @@ def equipo(request):
     return render(request, 'empresas/equipo.html', context)
 
 
-@login_required
-@user_passes_test(es_admin_o_mesa)
-def gestion_empresas(request):
-    empresas = Empresa.objects.select_related(
-        'responsable__persona',
-        'aprobado_por',
-        'rechazado_por',
-    ).prefetch_related(
-        'miembros__usuario__persona',
-    ).order_by('-actualizado')
+class EmpresaListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = Empresa
+    template_name = 'empresas/gestion_empresas.html'
+    context_object_name = 'empresas'
 
-    context = {
-        'empresas': empresas,
-    }
-    return render(request, 'empresas/gestion_empresas.html', context)
+    def test_func(self):
+        return es_admin_o_mesa(self.request.user)
+
+    def get_queryset(self):
+        queryset = Empresa.objects.select_related(
+            'responsable__persona',
+            'aprobado_por',
+            'rechazado_por',
+        ).prefetch_related(
+            'miembros__usuario__persona',
+        ).order_by('-actualizado')
+
+        search_query = self.request.GET.get('q')
+        if search_query:
+            queryset = queryset.filter(
+                Q(nombre__icontains=search_query) |
+                Q(responsable__persona__dni__icontains=search_query) |
+                Q(responsable__persona__nombre__icontains=search_query) |
+                Q(responsable__persona__apellido__icontains=search_query)
+            )
+        return queryset
 
 
 @login_required
@@ -215,4 +234,3 @@ def mesa_entrada_detalle(request, empresa_id):
         'form_rechazo': form_rechazo,
     }
     return render(request, 'empresas/mesa_entrada_detalle.html', context)
-

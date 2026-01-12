@@ -1,0 +1,63 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Dashboard Empresa{% endblock %}
+
+{% block user_role %}{{ tipo_usuario|default:"Empresa" }}{% endblock %}
+
+{% block sidebar_menu %}
+<li><a href="{% url 'dashboard_empresa' %}" class="active"><i class="fa-solid fa-home"></i> Inicio</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
+<li><a href="{% url 'empresas:mi_empresa' %}"><i class="fa-solid fa-building"></i> Mi Empresa / Startup</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Panel Empresa</h2>
+    <p>Accesos rápidos para tu gestión</p>
+</div>
+
+{% if messages %}
+    <div class="dashboard-alerts">
+        {% for message in messages %}
+            <div class="dashboard-alert dashboard-alert--{{ message.tags|default:'info' }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div style="display:grid; gap: 1rem; max-width: 820px;">
+    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06); padding: 1.25rem 1.5rem;">
+        <div style="display:flex; justify-content:space-between; gap:1rem; align-items:flex-start; flex-wrap:wrap;">
+            <div>
+                <div style="font-weight:900; color:#0f172a; font-size: 1.05rem;">Mi Empresa / Startup</div>
+                {% if empresa %}
+                    <div style="margin-top:0.35rem; color:#334155;">Estado: <strong>{{ empresa.get_estado_display }}</strong></div>
+                {% else %}
+                    <div style="margin-top:0.35rem; color:#334155;">Todavía no enviaste una solicitud.</div>
+                {% endif %}
+            </div>
+            <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                {% if empresa and empresa.estado == 'aprobada' %}
+                    <a class="btn btn-primary" href="{% url 'empresas:equipo' %}">Gestionar equipo</a>
+                {% else %}
+                    <a class="btn btn-primary" href="{% url 'empresas:mi_empresa' %}">Ir a solicitud</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06); padding: 1.25rem 1.5rem;">
+        <div style="display:flex; justify-content:space-between; gap:1rem; align-items:flex-start; flex-wrap:wrap;">
+            <div>
+                <div style="font-weight:900; color:#0f172a; font-size: 1.05rem;">Mi Perfil</div>
+                <div style="margin-top:0.35rem; color:#334155;">Actualizá tus datos y credenciales.</div>
+            </div>
+            <div>
+                <a class="btn btn-secondary" href="{% url 'usuario:mi_perfil' %}">Ver perfil</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

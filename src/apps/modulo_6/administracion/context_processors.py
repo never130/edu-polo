@@ -10,6 +10,7 @@ def admin_context(request):
         'puede_ver_asistencias': False,
         'es_docente': False,
         'es_estudiante': False,
+        'es_empresa': False,
     }
     
     if request.user.is_authenticated:
@@ -24,10 +25,14 @@ def admin_context(request):
                 usuario = Usuario.objects.get(persona__dni=request.user.username)
                 roles = UsuarioRol.objects.filter(usuario_id=usuario).values_list('rol_id__nombre', flat=True)
                 
+                if 'Empresa' in roles:
+                    context['es_empresa'] = True
+
                 # Verificar si es estudiante
                 if Estudiante.objects.filter(usuario=usuario).exists():
                     context['es_estudiante'] = True
-                    context['tipo_usuario'] = 'Estudiante'
+                    if not context['tipo_usuario']:
+                        context['tipo_usuario'] = 'Estudiante'
                 
                 # Verificar si es docente
                 if Docente.objects.filter(id_persona=usuario.persona).exists():
@@ -37,6 +42,13 @@ def admin_context(request):
                     if tiene_comisiones:
                         context['tipo_usuario'] = 'Docente'
                         context['puede_ver_asistencias'] = True
+
+                # Verificar si es empresa (Responsable)
+                if hasattr(usuario, 'empresa'):
+                    context['es_empresa'] = True
+                
+                if context['es_empresa'] and not context['tipo_usuario']:
+                    context['tipo_usuario'] = 'Empresa'
                 
                 if 'Mesa de Entrada' in roles:
                     context['tipo_usuario'] = 'Mesa de Entrada'
@@ -50,4 +62,3 @@ def admin_context(request):
                 pass
     
     return context
-

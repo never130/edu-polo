@@ -30,6 +30,7 @@ urlpatterns = [
     path('polos/', core_views.lista_polos, name='lista_polos'),
     path('dashboard/', core_views.dashboard, name='dashboard'),
     path('dashboard/estudiante/', core_views.dashboard_estudiante, name='dashboard_estudiante'),
+    path('dashboard/empresa/', core_views.dashboard_empresa, name='dashboard_empresa'),
     path('dashboard/docente/', core_views.dashboard_docente, name='dashboard_docente'),
     path('dashboard/admin/', core_views.dashboard_admin, name='dashboard_admin'),
     path('polo/<int:polo_id>/cursos/', core_views.cursos_por_polo, name='cursos_por_polo'),

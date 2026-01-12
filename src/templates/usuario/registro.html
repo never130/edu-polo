@@ -283,8 +283,13 @@
             <form method="post" id="registroForm">
                 {% csrf_token %}
                 
-                <!-- Solo estudiantes pueden registrarse -->
-                <input type="hidden" name="tipo_usuario" value="estudiante">
+                <div class="form-group">
+                    <label for="tipo_usuario">Registrarme como *</label>
+                    <select id="tipo_usuario" name="tipo_usuario" required>
+                        <option value="estudiante" selected>Estudiante</option>
+                        <option value="empresa">Empresa / Emprendedor</option>
+                    </select>
+                </div>
                 
                 <div class="form-row">
                     <div class="form-group">
@@ -437,6 +442,23 @@
                 
                 <button type="submit" class="btn-submit">Crear Cuenta</button>
             </form>
+
+            <script>
+                (function () {
+                    const tipoUsuarioSelect = document.getElementById('tipo_usuario');
+                    const camposEstudiante = document.getElementById('campos_estudiante');
+                    function sync() {
+                        const isEstudiante = (tipoUsuarioSelect && tipoUsuarioSelect.value === 'estudiante');
+                        if (camposEstudiante) {
+                            camposEstudiante.classList.toggle('active', isEstudiante);
+                        }
+                    }
+                    if (tipoUsuarioSelect) {
+                        tipoUsuarioSelect.addEventListener('change', sync);
+                        sync();
+                    }
+                })();
+            </script>
         </div>
     </div>
 

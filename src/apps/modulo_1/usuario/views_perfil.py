@@ -24,19 +24,22 @@ def mi_perfil(request):
         roles = UsuarioRol.objects.filter(usuario_id=usuario).values_list('rol_id__nombre', flat=True)
         es_admin = 'Administrador' in roles or request.user.is_staff
         es_mesa_entrada = 'Mesa de Entrada' in roles
+        es_empresa = hasattr(usuario, 'empresa') or 'Empresa' in roles
         
         # Obtener información adicional según el tipo
         perfil_adicional = None
-        if es_estudiante:
+        if es_admin:
+            tipo_usuario = 'Administrador'
+        elif es_mesa_entrada:
+            tipo_usuario = 'Mesa de Entrada'
+        elif es_empresa:
+            tipo_usuario = 'Empresa'
+        elif es_estudiante:
             perfil_adicional = Estudiante.objects.get(usuario=usuario)
             tipo_usuario = 'Estudiante'
         elif es_docente:
             perfil_adicional = Docente.objects.get(id_persona=persona)
             tipo_usuario = 'Docente'
-        elif es_admin:
-            tipo_usuario = 'Administrador'
-        elif es_mesa_entrada:
-            tipo_usuario = 'Mesa de Entrada'
         else:
             tipo_usuario = 'Usuario'
         
@@ -45,6 +48,7 @@ def mi_perfil(request):
             'usuario': usuario,
             'perfil_adicional': perfil_adicional,
             'tipo_usuario': tipo_usuario,
+            'es_empresa': es_empresa,
             'es_estudiante': es_estudiante,
             'es_docente': es_docente,
             'es_admin': es_admin,
@@ -123,9 +127,10 @@ def editar_perfil(request):
         roles = UsuarioRol.objects.filter(usuario_id=usuario).values_list('rol_id__nombre', flat=True)
         es_admin = 'Administrador' in roles or request.user.is_staff
         es_mesa_entrada = 'Mesa de Entrada' in roles
+        es_empresa = hasattr(usuario, 'empresa') or 'Empresa' in roles
         
         perfil_adicional = None
-        if es_estudiante:
+        if es_estudiante and not es_empresa:
             perfil_adicional = Estudiante.objects.get(usuario=usuario)
         elif es_docente:
             perfil_adicional = Docente.objects.get(id_persona=persona)
@@ -189,14 +194,16 @@ def editar_perfil(request):
                 messages.error(request, f'❌ Error al actualizar el perfil: {str(e)}')
         
         # Determinar tipo de usuario para el template
-        if es_estudiante:
-            tipo_usuario = 'Estudiante'
-        elif es_docente:
-            tipo_usuario = 'Docente'
-        elif es_admin:
+        if es_admin:
             tipo_usuario = 'Administrador'
         elif es_mesa_entrada:
             tipo_usuario = 'Mesa de Entrada'
+        elif es_empresa:
+            tipo_usuario = 'Empresa'
+        elif es_estudiante:
+            tipo_usuario = 'Estudiante'
+        elif es_docente:
+            tipo_usuario = 'Docente'
         else:
             tipo_usuario = 'Usuario'
         
@@ -204,6 +211,7 @@ def editar_perfil(request):
             'persona': persona,
             'usuario': usuario,
             'perfil_adicional': perfil_adicional,
+            'es_empresa': es_empresa,
             'es_estudiante': es_estudiante,
             'es_docente': es_docente,
             'es_admin': es_admin,
@@ -227,6 +235,7 @@ def cambiar_contrasena(request):
         persona = usuario.persona
         
         # Verificar roles para el template
+        es_empresa = hasattr(usuario, 'empresa')
         es_estudiante = Estudiante.objects.filter(usuario=usuario).exists()
         es_docente = Docente.objects.filter(id_persona=persona).exists()
         roles = UsuarioRol.objects.filter(usuario_id=usuario).values_list('rol_id__nombre', flat=True)
@@ -234,14 +243,16 @@ def cambiar_contrasena(request):
         es_mesa_entrada = 'Mesa de Entrada' in roles
         
         # Determinar tipo de usuario
-        if es_estudiante:
-            tipo_usuario = 'Estudiante'
-        elif es_docente:
-            tipo_usuario = 'Docente'
-        elif es_admin:
+        if es_admin:
             tipo_usuario = 'Administrador'
         elif es_mesa_entrada:
             tipo_usuario = 'Mesa de Entrada'
+        elif es_empresa:
+            tipo_usuario = 'Empresa'
+        elif es_estudiante:
+            tipo_usuario = 'Estudiante'
+        elif es_docente:
+            tipo_usuario = 'Docente'
         else:
             tipo_usuario = 'Usuario'
         
@@ -259,6 +270,7 @@ def cambiar_contrasena(request):
                     'es_admin': es_admin,
                     'es_mesa_entrada': es_mesa_entrada,
                     'es_docente': es_docente,
+                    'es_empresa': es_empresa,
                     'es_estudiante': es_estudiante,
                 }
                 return render(request, 'usuario/cambiar_contrasena.html', context)
@@ -272,6 +284,7 @@ def cambiar_contrasena(request):
                     'es_admin': es_admin,
                     'es_mesa_entrada': es_mesa_entrada,
                     'es_docente': es_docente,
+                    'es_empresa': es_empresa,
                     'es_estudiante': es_estudiante,
                 }
                 return render(request, 'usuario/cambiar_contrasena.html', context)
@@ -285,6 +298,7 @@ def cambiar_contrasena(request):
                     'es_admin': es_admin,
                     'es_mesa_entrada': es_mesa_entrada,
                     'es_docente': es_docente,
+                    'es_empresa': es_empresa,
                     'es_estudiante': es_estudiante,
                 }
                 return render(request, 'usuario/cambiar_contrasena.html', context)

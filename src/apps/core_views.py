@@ -107,6 +107,11 @@ def dashboard(request):
     try:
         usuario = Usuario.objects.get(persona__dni=request.user.username)
         roles = UsuarioRol.objects.filter(usuario_id=usuario).values_list('rol_id__nombre', flat=True)
+        
+        # Verificar si es empresa (Prioridad sobre estudiante)
+        if hasattr(usuario, 'empresa') or 'Empresa' in roles:
+            return redirect('dashboard_empresa')
+
         if 'Administrador' in roles or 'Mesa de Entrada' in roles:
             return redirect('dashboard_admin')
     except Usuario.DoesNotExist:
@@ -126,8 +131,31 @@ def dashboard(request):
     # except Docente.DoesNotExist:
     #     pass
     
-    # Si no tiene rol específico, ir a admin
-    return redirect('admin:index')
+    # Si no tiene rol específico, enviar a cursos/landing (usuario general)
+    return redirect('lista_polos')
+
+
+@login_required
+def dashboard_empresa(request):
+    from apps.modulo_1.usuario.models import Usuario
+    from apps.modulo_1.roles.models import UsuarioRol
+    from apps.modulo_7.empresas.models import Empresa
+
+    try:
+        usuario = Usuario.objects.get(persona__dni=request.user.username)
+    except Usuario.DoesNotExist:
+        return redirect('dashboard')
+
+    roles = UsuarioRol.objects.filter(usuario_id=usuario).values_list('rol_id__nombre', flat=True)
+    if not (hasattr(usuario, 'empresa') or 'Empresa' in roles):
+        return redirect('dashboard')
+
+    empresa = Empresa.objects.filter(responsable=usuario).first()
+    context = {
+        'persona': usuario.persona,
+        'empresa': empresa,
+    }
+    return render(request, 'dashboard/empresa.html', context)
 
 
 @login_required

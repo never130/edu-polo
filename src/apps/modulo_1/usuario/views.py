@@ -8,7 +8,7 @@ from django.db import transaction
 from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
 from .models import Persona, Usuario
-from apps.modulo_1.roles.models import Estudiante, Docente, Rol
+from apps.modulo_1.roles.models import Estudiante, Docente, Rol, UsuarioRol
 from datetime import date
 
 # Create your views here.
@@ -91,6 +91,11 @@ class RegistroView(View):
                 autorizacion_imagen = request.POST.get('autorizacion_imagen') == 'on'
                 autorizacion_voz = request.POST.get('autorizacion_voz') == 'on'
 
+                tipo_usuario = (request.POST.get('tipo_usuario') or 'estudiante').strip().lower()
+                if tipo_usuario not in {'estudiante', 'empresa'}:
+                    messages.error(request, 'El tipo de usuario seleccionado no es válido.')
+                    return render(request, 'usuario/registro.html')
+
                 # Combinar observaciones en condiciones_medicas
                 condiciones_medicas_list = []
                 if observaciones_discapacidad:
@@ -101,9 +106,6 @@ class RegistroView(View):
                     condiciones_medicas_list.append(f"Otras Observaciones: {observaciones_generales}")
                 
                 condiciones_medicas = "\n".join(condiciones_medicas_list)
-
-                # Solo estudiantes pueden registrarse desde el formulario público
-                tipo_usuario = 'estudiante'
                 
                 # Validaciones
                 if not politica_datos:
@@ -170,21 +172,26 @@ class RegistroView(View):
                     contrasena=password,  # En producción debería hashearse
                     activo=True
                 )
-                
-                # Crear perfil de estudiante (solo estudiantes pueden registrarse)
-                nivel = request.POST.get('nivel_estudios', 'OT')
-                institucion = request.POST.get('institucion_actual', '')
-                
-                Estudiante.objects.create(
-                    usuario=usuario,
-                    nivel_estudios=nivel,
-                    institucion_actual=institucion
-                )
-                
-                # Asignar rol de Estudiante
-                from apps.modulo_1.roles.models import Rol, UsuarioRol
-                rol, _ = Rol.objects.get_or_create(nombre='Estudiante', defaults={'descripcion': 'Rol para estudiantes', 'jerarquia': 3})
-                UsuarioRol.objects.get_or_create(usuario_id=usuario, rol_id=rol)
+
+                if tipo_usuario == 'estudiante':
+                    nivel_estudios = (request.POST.get('nivel_estudios') or '').strip() or 'OT'
+                    institucion_actual = (request.POST.get('institucion_actual') or '').strip() or 'Por definir'
+                    Estudiante.objects.create(
+                        usuario=usuario,
+                        nivel_estudios=nivel_estudios,
+                        institucion_actual=institucion_actual,
+                    )
+                    rol_estudiante, _ = Rol.objects.get_or_create(
+                        nombre='Estudiante',
+                        defaults={'descripcion': 'Rol para estudiantes', 'jerarquia': 3},
+                    )
+                    UsuarioRol.objects.get_or_create(usuario_id=usuario, rol_id=rol_estudiante)
+                else:
+                    rol_empresa, _ = Rol.objects.get_or_create(
+                        nombre='Empresa',
+                        defaults={'descripcion': 'Rol para empresas', 'jerarquia': 3},
+                    )
+                    UsuarioRol.objects.get_or_create(usuario_id=usuario, rol_id=rol_empresa)
                 
                 # Redirigir a login
                 messages.success(request, f'¡Registro exitoso! Usuario: {dni}. Ahora puedes iniciar sesión.')

@@ -20,8 +20,8 @@ class SidebarEmpresasLinksTests(TestCase):
         )
         usuario = Usuario.objects.create(persona=persona, contrasena=password)
         return usuario
-
-    def test_dashboard_estudiante_muestra_link_empresas_si_es_mayor(self):
+    
+    def test_dashboard_estudiante_no_muestra_link_empresas_aunque_sea_mayor(self):
         password = 'pw'
         dni = '80000000'
         usuario = self._crear_usuario(dni, password, date(2000, 1, 1))
@@ -30,8 +30,8 @@ class SidebarEmpresasLinksTests(TestCase):
         self.assertTrue(self.client.login(username=dni, password=password))
         response = self.client.get(reverse('dashboard_estudiante'), secure=True)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, reverse('empresas:mi_empresa'))
-        self.assertContains(response, 'Mi Empresa / Startup')
+        self.assertNotContains(response, reverse('empresas:mi_empresa'))
+        self.assertNotContains(response, 'Mi Empresa / Startup')
 
     def test_dashboard_estudiante_no_muestra_link_empresas_si_es_menor(self):
         password = 'pw'
@@ -45,25 +45,27 @@ class SidebarEmpresasLinksTests(TestCase):
         self.assertNotContains(response, reverse('empresas:mi_empresa'))
         self.assertNotContains(response, 'Mi Empresa / Startup')
 
-    def test_mi_perfil_muestra_link_empresas_si_es_mayor(self):
+    def test_mi_perfil_no_muestra_link_empresas_sin_rol_empresa(self):
         password = 'pw'
         dni = '80000002'
-        usuario = self._crear_usuario(dni, password, date(1999, 6, 1))
-
-        self.assertTrue(self.client.login(username=dni, password=password))
-        response = self.client.get(reverse('usuario:mi_perfil'), secure=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, reverse('empresas:mi_empresa'))
-
-    def test_mi_perfil_no_muestra_link_empresas_si_es_menor(self):
-        password = 'pw'
-        dni = '80000003'
-        self._crear_usuario(dni, password, date(2014, 6, 1))
+        self._crear_usuario(dni, password, date(1999, 6, 1))
 
         self.assertTrue(self.client.login(username=dni, password=password))
         response = self.client.get(reverse('usuario:mi_perfil'), secure=True)
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, reverse('empresas:mi_empresa'))
+
+    def test_mi_perfil_muestra_link_empresas_con_rol_empresa(self):
+        password = 'pw'
+        dni = '80000003'
+        usuario = self._crear_usuario(dni, password, date(2014, 6, 1))
+        rol_empresa = Rol.objects.create(nombre='Empresa', descripcion='Empresa', jerarquia=3)
+        UsuarioRol.objects.create(usuario_id=usuario, rol_id=rol_empresa)
+
+        self.assertTrue(self.client.login(username=dni, password=password))
+        response = self.client.get(reverse('usuario:mi_perfil'), secure=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, reverse('empresas:mi_empresa'))
 
     def test_dashboard_admin_muestra_link_solicitudes_empresas(self):
         password = 'pw'
@@ -213,3 +215,28 @@ class EmpresaFlowTests(TestCase):
         empresa.refresh_from_db()
         self.assertEqual(empresa.estado, 'rechazada')
         self.assertEqual(empresa.motivo_rechazo, 'No cumple requisitos')
+
+
+class DashboardEmpresaTests(TestCase):
+    def test_dashboard_redirige_a_dashboard_empresa_si_tiene_rol_empresa(self):
+        password = 'pw'
+        dni = '81111111'
+        persona = Persona.objects.create(
+            dni=dni,
+            nombre='Ana',
+            apellido='Empresa',
+            correo=f'{dni}@test.com',
+            fecha_nacimiento=date(1990, 1, 1),
+        )
+        usuario = Usuario.objects.create(persona=persona, contrasena=password)
+        rol_empresa = Rol.objects.create(nombre='Empresa', descripcion='Empresa', jerarquia=3)
+        UsuarioRol.objects.create(usuario_id=usuario, rol_id=rol_empresa)
+
+        self.assertTrue(self.client.login(username=dni, password=password))
+        response = self.client.get(reverse('dashboard'), secure=True)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse('dashboard_empresa'), response.url)
+
+        response = self.client.get(reverse('dashboard_empresa'), secure=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, reverse('dashboard_empresa'))

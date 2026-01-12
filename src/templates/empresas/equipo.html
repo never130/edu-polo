@@ -5,7 +5,7 @@
 {% block user_role %}{{ tipo_usuario|default:"Usuario" }}{% endblock %}
 
 {% block sidebar_menu %}
-    <li><a href="{% url 'dashboard' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
+    <li><a href="{% url 'dashboard_empresa' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
     <li><a href="{% url 'usuario:mi_perfil' %}"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
     <li><a href="{% url 'empresas:mi_empresa' %}" class="active"><i class="fa-solid fa-building"></i> Mi Empresa / Startup</a></li>
 {% endblock %}
@@ -143,9 +143,8 @@
         </div>
 
         <div style="display:flex; justify-content:flex-end; margin-top: 1.25rem;">
-            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Volver</a>
+            <a href="{% url 'empresas:mi_empresa' %}" class="btn btn-secondary">Volver</a>
         </div>
     </div>
 </div>
 {% endblock %}
-

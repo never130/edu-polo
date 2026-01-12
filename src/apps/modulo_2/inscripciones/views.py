@@ -72,7 +72,13 @@ def formulario_inscripcion(request, comision_id):
                 
                 # 4. Obtener usuario y estudiante
                 usuario = Usuario.objects.get(persona=persona)
-                estudiante = Estudiante.objects.get(usuario=usuario)
+                estudiante, _ = Estudiante.objects.get_or_create(
+                    usuario=usuario,
+                    defaults={
+                        'nivel_estudios': (request.POST.get('nivel_estudios') or 'OT'),
+                        'institucion_actual': (request.POST.get('institucion_actual') or ''),
+                    },
+                )
                 
                 # 5. Calcular edad y Validar Rango Etario
                 edad_real = persona.edad
