@@ -1491,12 +1491,30 @@
         }
 
         // Registro Modal
-        function openRegistroModal() {
+        function setRegistroTipoUsuario(tipoUsuario) {
+            const modal = document.getElementById('registroModal');
+            if (!modal) return;
+            const select = modal.querySelector('select[name="tipo_usuario"]');
+            if (!select) return;
+            if (![...select.options].some((opt) => opt.value === tipoUsuario)) return;
+            select.value = tipoUsuario;
+            select.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+
+        function openRegistroModal(tipoUsuario) {
             closeLoginModal();
             const modal = document.getElementById('registroModal');
             modal.style.display = 'flex'; modal.offsetHeight; modal.classList.add('show');
             document.body.style.overflow = 'hidden';
             setTimeout(() => { document.body.style.overflow = 'hidden'; }, 350);
+
+            const tipo = tipoUsuario || window.__registroTipoUsuarioDefault;
+            if (tipo) {
+                setRegistroTipoUsuario(tipo);
+                window.__registroTipoUsuarioDefault = null;
+            } else {
+                setRegistroTipoUsuario('estudiante');
+            }
         }
         function closeRegistroModal() {
             const modal = document.getElementById('registroModal');
@@ -1506,6 +1524,7 @@
         document.getElementById('registroModal').addEventListener('click', function (e) { if (e.target === this) closeRegistroModal(); });
 
         function openPuntoEmpresarialModal() {
+            window.__registroTipoUsuarioDefault = 'empresa';
             const modal = document.getElementById('puntoEmpresarialModal');
             modal.style.display = 'flex';
             modal.offsetHeight;
