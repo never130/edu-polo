@@ -1077,13 +1077,7 @@
                             placeholder="Nombres" class="form-input"></div>
                     <div class="form-group"><label>Apellidos *</label><input type="text" name="apellido" required
                             placeholder="Apellidos" class="form-input"></div>
-                    <div class="form-group">
-                        <label>Registrarme como *</label>
-                        <select name="tipo_usuario" class="form-input" required>
-                            <option value="estudiante" selected>Estudiante</option>
-                            <option value="empresa">Empresa / Emprendedor</option>
-                        </select>
-                    </div>
+                    <input type="hidden" name="tipo_usuario" value="estudiante">
                     <div class="form-group"><label>Teléfono de contacto *</label><input type="text" name="telefono"
                             required placeholder="+ 54 2964 999999" class="form-input"></div>
                     <div class="form-group"><label>Fecha de Nacimiento</label><input type="date" name="fecha_nacimiento"
@@ -1696,11 +1690,11 @@
         function setRegistroTipoUsuario(tipoUsuario) {
             const modal = document.getElementById('registroModal');
             if (!modal) return;
-            const select = modal.querySelector('select[name="tipo_usuario"]');
-            if (!select) return;
-            if (![...select.options].some((opt) => opt.value === tipoUsuario)) return;
-            select.value = tipoUsuario;
-            select.dispatchEvent(new Event('change', { bubbles: true }));
+            const field = modal.querySelector('select[name="tipo_usuario"], input[name="tipo_usuario"]');
+            if (!field) return;
+            if (field.tagName === 'SELECT' && ![...field.options].some((opt) => opt.value === tipoUsuario)) return;
+            field.value = tipoUsuario;
+            field.dispatchEvent(new Event('change', { bubbles: true }));
         }
 
         function openRegistroModal(tipoUsuario) {

@@ -1817,13 +1817,7 @@ polo/2/cursos/        @media (max-width: 480px) {
                     <input type="text" name="apellido" required placeholder="Apellidos" class="form-input">
                 </div>
 
-                <div class="form-group">
-                    <label>Registrarme como *</label>
-                    <select name="tipo_usuario" class="form-input" required>
-                        <option value="estudiante" selected>Estudiante</option>
-                        <option value="empresa">Empresa / Emprendedor</option>
-                    </select>
-                </div>
+                <input type="hidden" name="tipo_usuario" value="estudiante">
 
                 <!-- Teléfono -->
                 <div class="form-group">
@@ -2157,11 +2151,11 @@ polo/2/cursos/        @media (max-width: 480px) {
     function setRegistroTipoUsuario(tipoUsuario) {
         const modal = document.getElementById('registroModal');
         if (!modal) return;
-        const select = modal.querySelector('select[name="tipo_usuario"]');
-        if (!select) return;
-        if (![...select.options].some((opt) => opt.value === tipoUsuario)) return;
-        select.value = tipoUsuario;
-        select.dispatchEvent(new Event('change', { bubbles: true }));
+        const field = modal.querySelector('select[name="tipo_usuario"], input[name="tipo_usuario"]');
+        if (!field) return;
+        if (field.tagName === 'SELECT' && ![...field.options].some((opt) => opt.value === tipoUsuario)) return;
+        field.value = tipoUsuario;
+        field.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
     function openRegistroModal(tipoUsuario) {
@@ -2254,7 +2248,7 @@ polo/2/cursos/        @media (max-width: 480px) {
         const modal = document.getElementById('registroModal');
         if (!modal) return;
 
-        const selectTipo = modal.querySelector('select[name="tipo_usuario"]');
+        const selectTipo = modal.querySelector('select[name="tipo_usuario"], input[name="tipo_usuario"]');
         const camposEstudiante = document.getElementById('campos_estudiante');
         const camposEmpresa = document.getElementById('campos_empresa');
 
