@@ -8,7 +8,7 @@ from django.views.generic import ListView
 
 from apps.modulo_1.usuario.models import Usuario
 from apps.modulo_1.roles.models import Estudiante
-from apps.modulo_6.administracion.views import es_admin_o_mesa
+from apps.modulo_6.administracion.views import es_admin_completo
 
 from .forms import AgregarMiembroForm, ActualizarLogoEmpresaForm, EmpresaForm, RechazarEmpresaForm
 from .models import Empresa, MiembroEmpresa
@@ -155,7 +155,7 @@ class EmpresaListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     context_object_name = 'empresas'
 
     def test_func(self):
-        return es_admin_o_mesa(self.request.user)
+        return es_admin_completo(self.request.user)
 
     def get_queryset(self):
         queryset = Empresa.objects.select_related(
@@ -178,7 +178,7 @@ class EmpresaListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
 
 @login_required
-@user_passes_test(es_admin_o_mesa)
+@user_passes_test(es_admin_completo)
 def mesa_entrada_list(request):
     pendientes = Empresa.objects.filter(estado='pendiente').select_related('responsable__persona').order_by('-actualizado')
     context = {
@@ -188,7 +188,7 @@ def mesa_entrada_list(request):
 
 
 @login_required
-@user_passes_test(es_admin_o_mesa)
+@user_passes_test(es_admin_completo)
 def mesa_entrada_detalle(request, empresa_id):
     empresa = get_object_or_404(Empresa.objects.select_related('responsable__persona'), pk=empresa_id)
 

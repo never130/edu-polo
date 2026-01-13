@@ -12,8 +12,10 @@
 <li><a href="{% url 'administracion:panel_comisiones' %}"><i class="fa-solid fa-users-rectangle"></i> Gestión Comisiones</a></li>
 {% endif %}
 <li><a href="{% url 'administracion:panel_inscripciones' %}"><i class="fa-solid fa-clipboard-list"></i> Inscripciones</a></li>
+{% if es_admin_completo %}
 <li><a href="{% url 'empresas:mesa_entrada_list' %}"><i class="fa-solid fa-building"></i> Solicitudes Empresas</a></li>
 <li><a href="{% url 'empresas:gestion_empresas' %}" class="active"><i class="fa-solid fa-building"></i> Gestión Empresas</a></li>
+{% endif %}
 {% if es_admin_completo %}
 <li><a href="{% url 'administracion:gestion_usuarios' %}"><i class="fa-solid fa-users-cog"></i> Gestión Usuarios</a></li>
 {% endif %}
@@ -35,8 +37,10 @@
 {% else %}
 <li><a href="{% url 'dashboard_admin' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
 <li><a href="{% url 'administracion:panel_inscripciones' %}"><i class="fa-solid fa-clipboard-list"></i> Inscripciones</a></li>
+{% if es_admin_completo %}
 <li><a href="{% url 'empresas:mesa_entrada_list' %}"><i class="fa-solid fa-building"></i> Solicitudes Empresas</a></li>
 <li><a href="{% url 'empresas:gestion_empresas' %}" class="active"><i class="fa-solid fa-building"></i> Gestión Empresas</a></li>
+{% endif %}
 <li><a href="{% url 'usuario:mi_perfil' %}"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
 {% endif %}
 {% endblock %}
