@@ -826,7 +826,9 @@ def estadisticas_detalladas(request):
     ).count()
     cobertura_asistencia = (total_registros_asistencia / total_inscripciones * 100) if total_inscripciones > 0 else 0
 
-    inscripciones_confirmadas_qs = Inscripcion.objects.filter(estado='confirmado')
+    inscripciones_confirmadas_qs = Inscripcion.objects.filter(
+        estado='confirmado'
+    )
     registros_confirmados_qs = RegistroAsistencia.objects.filter(inscripcion__estado='confirmado')
 
     rangos_global = registros_confirmados_qs.aggregate(
@@ -964,6 +966,76 @@ def estadisticas_detalladas(request):
         'comisiones': comisiones_opciones,
     }
 
+    from datetime import date as dt_date
+
+    def nuevo_contador_edad():
+        return {
+            'menor_6': 0,
+            'rango_6_9': 0,
+            'rango_10_12': 0,
+            'rango_13_16': 0,
+            'rango_17_18': 0,
+            'rango_19_24': 0,
+            'rango_25_34': 0,
+            'rango_35_plus': 0,
+            'no_informada': 0,
+        }
+
+    edad_global = nuevo_contador_edad()
+    edad_por_curso = {}
+    edad_por_comision = {}
+
+    hoy = dt_date.today()
+    filas_edad = inscripciones_confirmadas_qs.values_list(
+        'estudiante__usuario__persona__fecha_nacimiento',
+        'comision__fk_id_curso_id',
+        'comision_id',
+    )
+
+    for fecha_nac, curso_id, comision_id in filas_edad:
+        if not fecha_nac:
+            bucket = 'no_informada'
+        else:
+            edad = hoy.year - fecha_nac.year - ((hoy.month, hoy.day) < (fecha_nac.month, fecha_nac.day))
+            if edad < 6:
+                bucket = 'menor_6'
+            elif edad <= 9:
+                bucket = 'rango_6_9'
+            elif edad <= 12:
+                bucket = 'rango_10_12'
+            elif edad <= 16:
+                bucket = 'rango_13_16'
+            elif edad <= 18:
+                bucket = 'rango_17_18'
+            elif edad <= 24:
+                bucket = 'rango_19_24'
+            elif edad <= 34:
+                bucket = 'rango_25_34'
+            else:
+                bucket = 'rango_35_plus'
+
+        edad_global[bucket] = int(edad_global.get(bucket) or 0) + 1
+
+        if curso_id is not None:
+            key_curso = str(curso_id)
+            if key_curso not in edad_por_curso:
+                edad_por_curso[key_curso] = nuevo_contador_edad()
+            edad_por_curso[key_curso][bucket] = int(edad_por_curso[key_curso].get(bucket) or 0) + 1
+
+        if comision_id is not None:
+            key_comision = str(comision_id)
+            if key_comision not in edad_por_comision:
+                edad_por_comision[key_comision] = nuevo_contador_edad()
+            edad_por_comision[key_comision][bucket] = int(edad_por_comision[key_comision].get(bucket) or 0) + 1
+
+    edad_rangos = {
+        'global': edad_global,
+        'por_curso': edad_por_curso,
+        'por_comision': edad_por_comision,
+        'cursos': cursos_opciones,
+        'comisiones': comisiones_opciones,
+    }
+
     inscripciones_estado_raw = list(
         Inscripcion.objects.values('estado').annotate(total=Count('id')).order_by('estado')
     )
@@ -1047,6 +1119,7 @@ def estadisticas_detalladas(request):
         'cobertura_asistencia': round(cobertura_asistencia, 1),
         'total_sin_registro_asistencia': max(total_inscripciones - total_registros_asistencia, 0),
         'asistencia_rangos_json': json.dumps(asistencia_rangos),
+        'edad_rangos_json': json.dumps(edad_rangos),
         'inscripciones_estado_json': json.dumps(inscripciones_estado),
         'genero_grafico_json': json.dumps(datos_genero),
     }

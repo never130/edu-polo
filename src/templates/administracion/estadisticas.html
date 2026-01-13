@@ -118,21 +118,41 @@
 
         <div class="card">
             <div class="card__header card__header--between">
-                <h3 class="card__title">Asistencia (resumen)</h3>
+                <h3 class="card__title">Estado de asistencia</h3>
                 <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
                     <select id="filtroCursoAsistencia" style="padding:0.5rem 0.75rem; border-radius:10px; border:1px solid #e2e8f0; font-weight:700; color:#0f172a; background:white;">
-                        <option value="">Curso (Global)</option>
+                        <option value="">Todos los cursos</option>
                     </select>
                     <select id="filtroComisionAsistencia" disabled style="padding:0.5rem 0.75rem; border-radius:10px; border:1px solid #e2e8f0; font-weight:700; color:#0f172a; background:white;">
-                        <option value="">Comisión (todas)</option>
+                        <option value="">Todas las comisiones</option>
                     </select>
                 </div>
             </div>
             <div style="padding: 0 1.25rem; margin: 0.5rem 0 0; color:#64748b; font-size:0.92rem; line-height:1.3; overflow-wrap:anywhere;">
-                Resume la asistencia de estudiantes con inscripción confirmada: Al día (75% o más), En riesgo (menos de 75%) y Sin datos (sin asistencia cargada). Podés ver el total o filtrar por curso/comisión.
+                Muestra el estado de asistencia de inscripciones confirmadas: Al día (≥ 75%), En riesgo (&lt; 75%) y Pendiente de carga (sin asistencia registrada). Filtrá por curso y comisión.
             </div>
             <div class="chart-box">
                 <canvas id="chartAsistenciaRangos"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card__header card__header--between">
+                <h3 class="card__title">Edad (rangos)</h3>
+                <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+                    <select id="filtroCursoEdad" style="padding:0.5rem 0.75rem; border-radius:10px; border:1px solid #e2e8f0; font-weight:700; color:#0f172a; background:white;">
+                        <option value="">Todos los cursos</option>
+                    </select>
+                    <select id="filtroComisionEdad" disabled style="padding:0.5rem 0.75rem; border-radius:10px; border:1px solid #e2e8f0; font-weight:700; color:#0f172a; background:white;">
+                        <option value="">Todas las comisiones</option>
+                    </select>
+                </div>
+            </div>
+            <div style="padding: 0 1.25rem; margin: 0.5rem 0 0; color:#64748b; font-size:0.92rem; line-height:1.3; overflow-wrap:anywhere;">
+                Distribución por rangos de edad (según fecha de nacimiento) para inscripciones confirmadas. Filtrá por curso y comisión.
+            </div>
+            <div class="chart-box">
+                <canvas id="chartEdadRangos"></canvas>
             </div>
         </div>
 
@@ -517,6 +537,7 @@
     // Datos desde Django
     const datosGrafico = {{ datos_grafico_json|safe }};
     const asistenciaRangos = {{ asistencia_rangos_json|safe }};
+    const edadRangos = {{ edad_rangos_json|safe }};
     const datosInscripcionesEstado = {{ inscripciones_estado_json|safe }};
     const datosGenero = {{ genero_grafico_json|safe }};
     
@@ -665,7 +686,7 @@
 
     const ctxAsistenciaRangos = document.getElementById('chartAsistenciaRangos').getContext('2d');
 
-    const labelsAsistencia = ['Al día', 'En riesgo', 'Sin datos'];
+    const labelsAsistencia = ['Al día', 'En riesgo', 'Pendiente de carga'];
     const coloresAsistencia = [
         'rgba(16, 185, 129, 0.85)',
         'rgba(245, 158, 11, 0.85)',
@@ -772,7 +793,7 @@
             .map(c => ({ value: c.id, label: c.nombre || `Curso ${c.id}` }))
             .sort((a, b) => String(a.label).localeCompare(String(b.label)));
 
-        setOptions(elFiltroCursoAsistencia, opciones, 'Curso (Global)');
+        setOptions(elFiltroCursoAsistencia, opciones, 'Todos los cursos');
     };
 
     const cargarComisionesAsistencia = (cursoId) => {
@@ -782,7 +803,7 @@
             .filter(c => String(c.curso_id) === String(cursoId))
             .map(c => ({ value: c.id, label: c.label || `Comisión ${c.id}` }));
 
-        setOptions(elFiltroComisionAsistencia, opciones, 'Comisión (todas)');
+        setOptions(elFiltroComisionAsistencia, opciones, 'Todas las comisiones');
         elFiltroComisionAsistencia.disabled = opciones.length === 0;
     };
 
@@ -813,6 +834,151 @@
 
         elFiltroComisionAsistencia.addEventListener('change', () => {
             actualizarAsistenciaRangos();
+        });
+    }
+
+    const elFiltroCursoEdad = document.getElementById('filtroCursoEdad');
+    const elFiltroComisionEdad = document.getElementById('filtroComisionEdad');
+
+    const ctxEdadRangos = document.getElementById('chartEdadRangos').getContext('2d');
+
+    const getRangosEdad = (cursoId, comisionId) => {
+        const global = (edadRangos && edadRangos.global) ? edadRangos.global : {};
+        const porCurso = (edadRangos && edadRangos.por_curso) ? edadRangos.por_curso : {};
+        const porComision = (edadRangos && edadRangos.por_comision) ? edadRangos.por_comision : {};
+
+        if (comisionId && Object.prototype.hasOwnProperty.call(porComision, String(comisionId))) {
+            return porComision[String(comisionId)] || {};
+        }
+
+        if (cursoId && Object.prototype.hasOwnProperty.call(porCurso, String(cursoId))) {
+            return porCurso[String(cursoId)] || {};
+        }
+
+        return global || {};
+    };
+
+    const construirEdadDataset = (rangos) => {
+        const base = [
+            { key: 'rango_6_9', label: '6–9', color: 'rgba(59, 130, 246, 0.85)' },
+            { key: 'rango_10_12', label: '10–12', color: 'rgba(16, 185, 129, 0.85)' },
+            { key: 'rango_13_16', label: '13–16', color: 'rgba(245, 158, 11, 0.85)' },
+            { key: 'rango_17_18', label: '17–18', color: 'rgba(139, 92, 246, 0.85)' },
+            { key: 'rango_19_24', label: '19–24', color: 'rgba(236, 72, 153, 0.85)' },
+            { key: 'rango_25_34', label: '25–34', color: 'rgba(251, 146, 60, 0.85)' },
+            { key: 'rango_35_plus', label: '35+', color: 'rgba(239, 68, 68, 0.85)' },
+        ];
+
+        const items = [...base];
+        const menor6 = Number((rangos && rangos.menor_6) || 0);
+        const noInformada = Number((rangos && rangos.no_informada) || 0);
+
+        if (menor6 > 0) {
+            items.unshift({ key: 'menor_6', label: '< 6', color: 'rgba(148, 163, 184, 0.85)' });
+        }
+        if (noInformada > 0) {
+            items.push({ key: 'no_informada', label: 'No informada', color: 'rgba(100, 116, 139, 0.85)' });
+        }
+
+        return {
+            labels: items.map(i => i.label),
+            data: items.map(i => Number((rangos && rangos[i.key]) || 0)),
+            colors: items.map(i => i.color),
+        };
+    };
+
+    const inicialEdad = construirEdadDataset(getRangosEdad('', ''));
+
+    const chartEdadRangos = new Chart(ctxEdadRangos, {
+        type: 'bar',
+        data: {
+            labels: inicialEdad.labels,
+            datasets: [{
+                label: 'Inscripciones confirmadas',
+                data: inicialEdad.data,
+                backgroundColor: inicialEdad.colors,
+                borderRadius: 10,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                    titleFont: { size: 14, weight: 'bold' },
+                    bodyFont: { size: 13 },
+                    borderColor: 'rgba(255, 255, 255, 0.2)',
+                    borderWidth: 1,
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#334155', font: { weight: '700' } },
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(148, 163, 184, 0.25)' },
+                    ticks: { color: '#64748b', precision: 0 },
+                }
+            }
+        }
+    });
+
+    const cargarCursosEdad = () => {
+        if (!elFiltroCursoEdad) return;
+        const cursos = (edadRangos && edadRangos.cursos) ? edadRangos.cursos : [];
+        const opciones = [...cursos]
+            .map(c => ({ value: c.id, label: c.nombre || `Curso ${c.id}` }))
+            .sort((a, b) => String(a.label).localeCompare(String(b.label)));
+
+        setOptions(elFiltroCursoEdad, opciones, 'Todos los cursos');
+    };
+
+    const cargarComisionesEdad = (cursoId) => {
+        if (!elFiltroComisionEdad) return;
+        const comisiones = (edadRangos && edadRangos.comisiones) ? edadRangos.comisiones : [];
+        const opciones = [...comisiones]
+            .filter(c => String(c.curso_id) === String(cursoId))
+            .map(c => ({ value: c.id, label: c.label || `Comisión ${c.id}` }));
+
+        setOptions(elFiltroComisionEdad, opciones, 'Todas las comisiones');
+        elFiltroComisionEdad.disabled = opciones.length === 0;
+    };
+
+    const actualizarEdadRangos = () => {
+        const cursoId = elFiltroCursoEdad ? elFiltroCursoEdad.value : '';
+        const comisionId = elFiltroComisionEdad ? elFiltroComisionEdad.value : '';
+        const rangos = getRangosEdad(cursoId, comisionId);
+        const dataset = construirEdadDataset(rangos);
+
+        chartEdadRangos.data.labels = dataset.labels;
+        chartEdadRangos.data.datasets[0].data = dataset.data;
+        chartEdadRangos.data.datasets[0].backgroundColor = dataset.colors;
+        chartEdadRangos.update();
+    };
+
+    cargarCursosEdad();
+    if (elFiltroCursoEdad && elFiltroComisionEdad) {
+        elFiltroCursoEdad.addEventListener('change', () => {
+            const cursoId = elFiltroCursoEdad.value;
+            elFiltroComisionEdad.value = '';
+
+            if (cursoId) {
+                cargarComisionesEdad(cursoId);
+            } else {
+                cargarComisionesEdad('__none__');
+                elFiltroComisionEdad.disabled = true;
+            }
+
+            actualizarEdadRangos();
+        });
+
+        elFiltroComisionEdad.addEventListener('change', () => {
+            actualizarEdadRangos();
         });
     }
 
@@ -917,4 +1083,3 @@
     });
 </script>
 {% endblock %}
-
