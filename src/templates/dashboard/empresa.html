@@ -46,14 +46,14 @@
                 {% if empresa %}
                     <div style="margin-top:0.35rem; color:#334155;">Estado: <strong>{{ empresa.get_estado_display }}</strong></div>
                 {% else %}
-                    <div style="margin-top:0.35rem; color:#334155;">Todavía no enviaste una solicitud.</div>
+                    <div style="margin-top:0.35rem; color:#334155;">Todavía no enviaste una postulación.</div>
                 {% endif %}
             </div>
             <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
                 {% if empresa and empresa.estado == 'aprobada' %}
                     <a class="btn btn-primary" href="{% url 'empresas:equipo' %}">Gestionar equipo</a>
                 {% else %}
-                    <a class="btn btn-primary" href="{% url 'empresas:mi_empresa' %}">Ir a solicitud</a>
+                    <a class="btn btn-primary" href="{% url 'empresas:mi_empresa' %}">Ir a mi empresa</a>
                 {% endif %}
             </div>
         </div>

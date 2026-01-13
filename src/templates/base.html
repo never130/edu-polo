@@ -484,7 +484,7 @@
             <p style="color: #718096; font-size: 0.85rem; margin-bottom: 0.5rem;">Ingrese sus datos personales para inscribirse</p>
         </div>
 
-        <form method="post" action="{% url 'usuario:registro' %}" class="registro-form">
+        <form method="post" action="{% url 'usuario:registro' %}" class="registro-form" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-grid">
                 <!-- Basic Fields -->
@@ -518,13 +518,41 @@
                     <input type="text" name="zona_residencia" placeholder="Ej: Centro, Chacra II" class="form-input">
                 </div>
                 <div class="form-group"><label>Domicilio</label><input type="text" name="domicilio" placeholder="Calle 123, Ciudad" class="form-input"></div>
-                <div class="form-group">
-                    <label>Nivel de estudios</label>
-                    <select name="nivel_estudios" class="form-input">
-                        <option value="">Seleccione...</option><option value="PI">Primaria Incompleto</option><option value="PR">Primaria Completo</option><option value="SI">Secundaria Incompleto</option><option value="SE">Secundaria Completo</option><option value="UI">Universidad Incompleto</option><option value="UN">Universidad Completo</option><option value="OT">Otro</option>
-                    </select>
+                <div id="campos_estudiante" style="display: contents;">
+                    <div class="form-group">
+                        <label>Nivel de estudios</label>
+                        <select name="nivel_estudios" class="form-input">
+                            <option value="">Seleccione...</option><option value="PI">Primaria Incompleto</option><option value="PR">Primaria Completo</option><option value="SI">Secundaria Incompleto</option><option value="SE">Secundaria Completo</option><option value="UI">Universidad Incompleto</option><option value="UN">Universidad Completo</option><option value="OT">Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Institución</label><input type="text" name="institucion_actual" placeholder="Nombre de la institución" class="form-input"></div>
                 </div>
-                <div class="form-group"><label>Institución</label><input type="text" name="institucion_actual" placeholder="Nombre de la institución" class="form-input"></div>
+                <div id="campos_empresa" style="display: none;">
+                    <div class="form-group">
+                        <label>Nombre de la empresa *</label>
+                        <input type="text" name="empresa_nombre" placeholder="Nombre de la empresa" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Logo de la empresa (opcional)</label>
+                        <input type="file" name="logo" accept=".png,.jpg,.jpeg" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Rubro (Software / Tecnología) *</label>
+                        <input type="text" name="empresa_rubro" placeholder="Ej: Desarrollo web • Apps móviles • SaaS • IA • Datos • Ciberseguridad • Videojuegos" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción *</label>
+                        <textarea name="empresa_descripcion" rows="3" class="form-input" placeholder="Ej: Qué software desarrollan, para quién y objetivo"></textarea>
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <div style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                            <input type="checkbox" id="empresa_acepto_terminos" name="empresa_acepto_terminos" style="margin-top: 0.3rem;">
+                            <label for="empresa_acepto_terminos" style="display: inline; font-weight: 400; font-size: 0.9rem;">
+                                Acepto los términos y condiciones del programa. La solicitud quedará sujeta a evaluación y aprobación.
+                            </label>
+                        </div>
+                    </div>
+                </div>
                 <div class="form-group"><label>Contraseña *</label><div style="position: relative;"><input type="password" name="password" required placeholder="Mínimo 6 caracteres" class="form-input" id="registroPassword" style="padding-right: 3rem;"><button type="button" data-toggle-password data-target="registroPassword" aria-label="Mostrar contraseña" style="position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); border: none; background: transparent; color: #64748b; cursor: pointer; padding: 0.25rem;"><i class="fa-solid fa-eye"></i></button></div></div>
                 <div class="form-group"><label>Confirmar Contraseña *</label><div style="position: relative;"><input type="password" name="password_confirm" required placeholder="Repite la contraseña" class="form-input" id="registroPasswordConfirm" style="padding-right: 3rem;"><button type="button" data-toggle-password data-target="registroPasswordConfirm" aria-label="Mostrar contraseña" style="position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); border: none; background: transparent; color: #64748b; cursor: pointer; padding: 0.25rem;"><i class="fa-solid fa-eye"></i></button></div></div>
             </div>
@@ -551,6 +579,13 @@
                     <input type="checkbox" id="politica_datos" name="politica_datos" required style="margin-top: 0.3rem;">
                     <label for="politica_datos" style="display: inline; font-weight: 400; font-size: 0.9rem;">
                         Acepto la <strong>Política de Uso de Datos Personales</strong> y autorizo el tratamiento de mi información conforme a la Ley Nº 25.326.
+                    </label>
+                </div>
+
+                <div style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem;">
+                    <input type="checkbox" id="datos_veridicos" name="datos_veridicos" required style="margin-top: 0.3rem;">
+                    <label for="datos_veridicos" style="display: inline; font-weight: 400; font-size: 0.9rem;">
+                        Confirmo que los datos ingresados son verídicos.
                     </label>
                 </div>
 
@@ -803,6 +838,36 @@
     }
 
     document.addEventListener('DOMContentLoaded', setupPasswordToggles);
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('registroModal');
+        if (!modal) return;
+        const selectTipo = modal.querySelector('select[name="tipo_usuario"]');
+        const camposEstudiante = document.getElementById('campos_estudiante');
+        const camposEmpresa = document.getElementById('campos_empresa');
+        const inputFechaNac = modal.querySelector('input[name="fecha_nacimiento"]');
+
+        const empresaNombre = modal.querySelector('input[name="empresa_nombre"]');
+        const empresaRubro = modal.querySelector('input[name="empresa_rubro"]');
+        const empresaDescripcion = modal.querySelector('textarea[name="empresa_descripcion"]');
+        const empresaAcepto = modal.querySelector('input[name="empresa_acepto_terminos"]');
+
+        const toggle = () => {
+            const esEmpresa = selectTipo && selectTipo.value === 'empresa';
+
+            if (camposEstudiante) camposEstudiante.style.display = esEmpresa ? 'none' : 'contents';
+            if (camposEmpresa) camposEmpresa.style.display = esEmpresa ? 'contents' : 'none';
+
+            if (inputFechaNac) inputFechaNac.required = !!esEmpresa;
+
+            if (empresaNombre) empresaNombre.required = !!esEmpresa;
+            if (empresaRubro) empresaRubro.required = !!esEmpresa;
+            if (empresaDescripcion) empresaDescripcion.required = !!esEmpresa;
+            if (empresaAcepto) empresaAcepto.required = !!esEmpresa;
+        };
+
+        if (selectTipo) selectTipo.addEventListener('change', toggle);
+        toggle();
+    });
 
     // Login Modal
     function openLoginModal() {

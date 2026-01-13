@@ -280,7 +280,7 @@
                 </ul>
             {% endif %}
             
-            <form method="post" id="registroForm">
+            <form method="post" action="{% url 'usuario:registro' %}" id="registroForm" enctype="multipart/form-data">
                 {% csrf_token %}
                 
                 <div class="form-group">
@@ -378,6 +378,37 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Campos específicos para empresa -->
+                <div id="campos_empresa" class="campos-condicionales">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="empresa_nombre">Nombre de la empresa *</label>
+                            <input type="text" id="empresa_nombre" name="empresa_nombre" placeholder="Nombre de la empresa">
+                        </div>
+                        <div class="form-group">
+                            <label for="logo">Logo de la empresa (opcional)</label>
+                            <input type="file" id="logo" name="logo" accept=".png,.jpg,.jpeg">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="empresa_rubro">Rubro (Software / Tecnología) *</label>
+                        <input type="text" id="empresa_rubro" name="empresa_rubro" placeholder="Ej: Desarrollo web • Apps móviles • SaaS • IA • Datos • Ciberseguridad • Videojuegos">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="empresa_descripcion">Descripción *</label>
+                        <textarea id="empresa_descripcion" name="empresa_descripcion" rows="3" placeholder="Ej: Qué software desarrollan, para quién y objetivo"></textarea>
+                    </div>
+
+                    <div style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem;">
+                        <input type="checkbox" id="empresa_acepto_terminos" name="empresa_acepto_terminos" style="margin-top: 0.3rem;">
+                        <label for="empresa_acepto_terminos" style="display: inline; font-weight: 400; font-size: 0.9rem;">
+                            Acepto los términos y condiciones del programa. La postulación quedará sujeta a evaluación y aprobación.
+                        </label>
+                    </div>
+                </div>
                 
                 <div class="form-row">
                     <div class="form-group">
@@ -424,6 +455,13 @@
                             Acepto la <strong>Política de Uso de Datos Personales</strong> y autorizo el tratamiento de mi información conforme a la Ley Nº 25.326.
                         </label>
                     </div>
+
+                    <div style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem;">
+                        <input type="checkbox" id="datos_veridicos" name="datos_veridicos" required style="margin-top: 0.3rem;">
+                        <label for="datos_veridicos" style="display: inline; font-weight: 400; font-size: 0.9rem;">
+                            Confirmo que los datos ingresados son verídicos.
+                        </label>
+                    </div>
                     
                     <div style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem;">
                         <input type="checkbox" id="autorizacion_imagen" name="autorizacion_imagen" style="margin-top: 0.3rem;">
@@ -447,11 +485,29 @@
                 (function () {
                     const tipoUsuarioSelect = document.getElementById('tipo_usuario');
                     const camposEstudiante = document.getElementById('campos_estudiante');
+                    const camposEmpresa = document.getElementById('campos_empresa');
+                    const inputFechaNac = document.getElementById('fecha_nacimiento');
+
+                    const empresaNombre = document.getElementById('empresa_nombre');
+                    const empresaRubro = document.getElementById('empresa_rubro');
+                    const empresaDescripcion = document.getElementById('empresa_descripcion');
+                    const empresaAcepto = document.getElementById('empresa_acepto_terminos');
+
                     function sync() {
-                        const isEstudiante = (tipoUsuarioSelect && tipoUsuarioSelect.value === 'estudiante');
+                        const isEmpresa = (tipoUsuarioSelect && tipoUsuarioSelect.value === 'empresa');
+                        const isEstudiante = !isEmpresa;
                         if (camposEstudiante) {
                             camposEstudiante.classList.toggle('active', isEstudiante);
                         }
+                        if (camposEmpresa) {
+                            camposEmpresa.classList.toggle('active', isEmpresa);
+                        }
+
+                        if (inputFechaNac) inputFechaNac.required = isEmpresa;
+                        if (empresaNombre) empresaNombre.required = isEmpresa;
+                        if (empresaRubro) empresaRubro.required = isEmpresa;
+                        if (empresaDescripcion) empresaDescripcion.required = isEmpresa;
+                        if (empresaAcepto) empresaAcepto.required = isEmpresa;
                     }
                     if (tipoUsuarioSelect) {
                         tipoUsuarioSelect.addEventListener('change', sync);

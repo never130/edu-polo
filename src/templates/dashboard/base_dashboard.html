@@ -896,6 +896,11 @@
         <aside class="sidebar" id="sidebar">
             <ul class="sidebar-menu">
                 {% block sidebar_menu %}{% endblock %}
+                {% if user.is_authenticated and es_empresa %}
+                    {% if tipo_usuario == 'Administrador' or tipo_usuario == 'Mesa de Entrada' %}
+                    <li><a href="{% url 'empresas:mi_empresa' %}"><i class="fa-solid fa-building"></i> Mi Empresa / Startup</a></li>
+                    {% endif %}
+                {% endif %}
             </ul>
         </aside>
 

@@ -1215,6 +1215,154 @@
         </div>
     </div>
 
+    <!-- Modal Registro Empresa -->
+    <div id="registroEmpresaModal" class="modal-overlay">
+        <div class="modal-container" style="max-width: 950px; padding: 1.5rem; max-height: 85vh; overflow-y: auto;">
+            <button class="modal-close" onclick="closeRegistroEmpresaModal()">×</button>
+
+            <div class="registro-header" style="text-align: center; margin-bottom: 0.5rem;">
+                <div style="text-align: center; margin-bottom: 0.5rem;">
+                    <img src="{% static 'img/logosregister.png' %}" alt="Logo Registro"
+                        style="height: 50px; width: auto;">
+                </div>
+                <h2 style="color: #4a5568; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.1rem;">Postulación Punto Empresarial</h2>
+                <p style="color: #718096; font-size: 0.85rem; margin-bottom: 0.5rem;">Creá tu cuenta y cargá los datos de tu startup</p>
+            </div>
+
+            <form method="post" action="{% url 'usuario:registro' %}" class="registro-form" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="tipo_usuario" value="empresa">
+
+                <div class="form-grid">
+                    <div class="form-group"><label>DNI</label><input type="text" name="dni" required
+                            placeholder="Número de documento" class="form-input"></div>
+                    <div class="form-group"><label>Correo Electrónico *</label><input type="email" name="correo"
+                            required placeholder="Correo electrónico" class="form-input"></div>
+                    <div class="form-group"><label>Nombres *</label><input type="text" name="nombre" required
+                            placeholder="Nombres" class="form-input"></div>
+                    <div class="form-group"><label>Apellidos *</label><input type="text" name="apellido" required
+                            placeholder="Apellidos" class="form-input"></div>
+                    <div class="form-group"><label>Teléfono de contacto *</label><input type="text" name="telefono"
+                            required placeholder="+ 54 2964 999999" class="form-input"></div>
+                    <div class="form-group"><label>Fecha de Nacimiento *</label><input type="date" name="fecha_nacimiento"
+                            required class="form-input"></div>
+                    <div class="form-group">
+                        <label>Género</label>
+                        <select name="genero" class="form-input">
+                            <option value="">Seleccione...</option>
+                            <option value="M">Masculino</option>
+                            <option value="F">Femenino</option>
+                            <option value="O">Otro</option>
+                            <option value="P">Prefiero no decirlo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Ciudad *</label>
+                        <select name="ciudad" class="form-input" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Ushuaia">Ushuaia</option>
+                            <option value="Rio Grande">Río Grande</option>
+                            <option value="Tolhuin">Tolhuin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Zona/Barrio</label>
+                        <input type="text" name="zona_residencia" placeholder="Ej: Centro, Chacra II"
+                            class="form-input">
+                    </div>
+                    <div class="form-group"><label>Domicilio</label><input type="text" name="domicilio"
+                            placeholder="Calle 123, Ciudad" class="form-input"></div>
+                    <div class="form-group"><label>Contraseña *</label>
+                        <div style="position: relative;">
+                            <input type="password" name="password" required placeholder="Mínimo 6 caracteres" class="form-input" id="registroEmpresaPassword" style="padding-right: 3rem;">
+                            <button type="button" data-toggle-password data-target="registroEmpresaPassword" aria-label="Mostrar contraseña" style="position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); border: none; background: transparent; color: #64748b; cursor: pointer; padding: 0.25rem;">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group"><label>Confirmar Contraseña *</label>
+                        <div style="position: relative;">
+                            <input type="password" name="password_confirm" required placeholder="Repite la contraseña" class="form-input" id="registroEmpresaPasswordConfirm" style="padding-right: 3rem;">
+                            <button type="button" data-toggle-password data-target="registroEmpresaPasswordConfirm" aria-label="Mostrar contraseña" style="position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); border: none; background: transparent; color: #64748b; cursor: pointer; padding: 0.25rem;">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-section" style="border-top: none;">
+                    <h3 style="color: #4a5568; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-align: center;">
+                        Datos de la Startup
+                    </h3>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Nombre de la empresa *</label><input type="text" name="empresa_nombre" required
+                                placeholder="Nombre de la empresa" class="form-input"></div>
+                        <div class="form-group"><label>Logo (opcional)</label><input type="file" name="logo" accept="image/*"
+                                class="form-input"></div>
+                        <div class="form-group"><label>Rubro (Software / Tecnología) *</label><input type="text" name="empresa_rubro" required
+                                placeholder="Ej: Software, SaaS, IA, Desarrollo Web" class="form-input"></div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Descripción *</label>
+                            <textarea name="empresa_descripcion" rows="4" required class="form-input"
+                                placeholder="Ej: Qué software desarrollan, para quién y objetivo"></textarea>
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <div style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                                <input type="checkbox" id="empresa_acepto_terminos" name="empresa_acepto_terminos" required style="margin-top: 0.3rem;">
+                                <label for="empresa_acepto_terminos" style="display: inline; font-weight: 400; font-size: 0.9rem;">
+                                    Acepto los términos y condiciones del programa Punto Empresarial.
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-section" style="border-top: none;">
+                    <h3 style="color: #4a5568; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-align: center;">
+                        Políticas y Confirmaciones
+                    </h3>
+
+                    <div style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem;">
+                        <input type="checkbox" id="politica_datos_empresa" name="politica_datos" required style="margin-top: 0.3rem;">
+                        <label for="politica_datos_empresa" style="display: inline; font-weight: 400; font-size: 0.9rem;">
+                            Acepto la <strong>Política de Uso de Datos Personales</strong> y autorizo el tratamiento de mi información conforme a la Ley Nº 25.326.
+                        </label>
+                    </div>
+
+                    <div style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem;">
+                        <input type="checkbox" id="datos_veridicos_empresa" name="datos_veridicos" required style="margin-top: 0.3rem;">
+                        <label for="datos_veridicos_empresa" style="display: inline; font-weight: 400; font-size: 0.9rem;">
+                            Confirmo que los datos ingresados son verídicos.
+                        </label>
+                    </div>
+
+                    <div style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem;">
+                        <input type="checkbox" id="autorizacion_imagen_empresa" name="autorizacion_imagen" style="margin-top: 0.3rem;">
+                        <label for="autorizacion_imagen_empresa" style="display: inline; font-weight: 400; font-size: 0.9rem;">
+                            Autorizo el uso de mi imagen y voz (fotografías, videos y grabaciones) con fines educativos e institucionales.
+                        </label>
+                    </div>
+
+                    <div style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem;">
+                        <input type="checkbox" id="autorizacion_voz_empresa" name="autorizacion_voz" style="margin-top: 0.3rem;">
+                        <label for="autorizacion_voz_empresa" style="display: inline; font-weight: 400; font-size: 0.9rem;">
+                            Autorizo el uso de mi imagen y voz con fines publicitarios y promocionales.
+                        </label>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <button type="submit" class="btn-guardar">Enviar Solicitud</button>
+                </div>
+                <div style="text-align: right; margin-top: 1rem;">
+                    <p style="font-size: 0.9rem;">¿Ya sos miembro? <a href="#"
+                            onclick="closeRegistroEmpresaModal(); openLoginModal(); return false;"
+                            style="color: #F09819; font-weight: bold;">Ingresar</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="puntoEmpresarialModal" class="modal-overlay" style="z-index: 10002;">
         <div class="modal-container"
             style="max-width: 700px; background: white; color: #333; padding: 0; border: none; border-top: 5px solid #F09819; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
@@ -1272,7 +1420,7 @@
                         onclick="closePuntoEmpresarialModal(); openLoginModal(); return false;">Iniciar Sesión</a>
                     <a href="#" class="btn btn-secondary"
                         style="background: #e2e8f0; color: #334155; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 700; text-decoration: none; transition: background 0.2s;"
-                        onclick="closePuntoEmpresarialModal(); openRegistroModal(); return false;">Registrarse</a>
+                        onclick="closePuntoEmpresarialModal(); openRegistroEmpresaModal(); return false;">Registrarse</a>
                 </div>
             </div>
         </div>
@@ -1523,8 +1671,23 @@
         }
         document.getElementById('registroModal').addEventListener('click', function (e) { if (e.target === this) closeRegistroModal(); });
 
+        function openRegistroEmpresaModal() {
+            closeLoginModal();
+            const modal = document.getElementById('registroEmpresaModal');
+            if (!modal) return;
+            modal.style.display = 'flex'; modal.offsetHeight; modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => { document.body.style.overflow = 'hidden'; }, 350);
+        }
+        function closeRegistroEmpresaModal() {
+            const modal = document.getElementById('registroEmpresaModal');
+            if (!modal) return;
+            modal.classList.remove('show');
+            setTimeout(() => { modal.style.display = 'none'; document.body.style.overflow = ''; }, 300);
+        }
+        document.getElementById('registroEmpresaModal').addEventListener('click', function (e) { if (e.target === this) closeRegistroEmpresaModal(); });
+
         function openPuntoEmpresarialModal() {
-            window.__registroTipoUsuarioDefault = 'empresa';
             const modal = document.getElementById('puntoEmpresarialModal');
             modal.style.display = 'flex';
             modal.offsetHeight;
@@ -1597,12 +1760,14 @@
             if (event.key === 'Escape') {
                 const loginModal = document.getElementById('loginModal');
                 const registroModal = document.getElementById('registroModal');
+                const registroEmpresaModal = document.getElementById('registroEmpresaModal');
                 const puntoEmpresarialModal = document.getElementById('puntoEmpresarialModal');
                 const contactoModal = document.getElementById('contactoModal');
                 const acercaDeModal = document.getElementById('acercaDeModal');
 
                 if (loginModal && loginModal.classList.contains('show')) closeLoginModal();
                 if (registroModal && registroModal.classList.contains('show')) closeRegistroModal();
+                if (registroEmpresaModal && registroEmpresaModal.classList.contains('show')) closeRegistroEmpresaModal();
                 if (puntoEmpresarialModal && puntoEmpresarialModal.classList.contains('show')) closePuntoEmpresarialModal();
                 if (contactoModal && contactoModal.classList.contains('show')) closeContactoModal();
                 if (acercaDeModal && acercaDeModal.classList.contains('show')) closeAcercaDeModal();

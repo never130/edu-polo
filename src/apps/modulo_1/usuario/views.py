@@ -90,6 +90,7 @@ class RegistroView(View):
                 politica_datos = request.POST.get('politica_datos')
                 autorizacion_imagen = request.POST.get('autorizacion_imagen') == 'on'
                 autorizacion_voz = request.POST.get('autorizacion_voz') == 'on'
+                datos_veridicos = request.POST.get('datos_veridicos')
 
                 tipo_usuario = (request.POST.get('tipo_usuario') or 'estudiante').strip().lower()
                 if tipo_usuario not in {'estudiante', 'empresa'}:
@@ -110,6 +111,10 @@ class RegistroView(View):
                 # Validaciones
                 if not politica_datos:
                     messages.error(request, 'Debes aceptar la política de uso de datos personales.')
+                    return render(request, 'usuario/registro.html')
+
+                if not datos_veridicos:
+                    messages.error(request, 'Debes confirmar que los datos ingresados son verídicos.')
                     return render(request, 'usuario/registro.html')
 
                 if password != password_confirm:
@@ -138,6 +143,37 @@ class RegistroView(View):
 
                     if fecha_nacimiento_date > date.today():
                         messages.error(request, 'La fecha de nacimiento no puede ser futura.')
+                        return render(request, 'usuario/registro.html')
+
+                empresa_form = None
+                if tipo_usuario == 'empresa':
+                    if not fecha_nacimiento_date:
+                        messages.error(request, 'Para registrarte como empresa, la fecha de nacimiento es obligatoria.')
+                        return render(request, 'usuario/registro.html')
+
+                    hoy = date.today()
+                    edad = hoy.year - fecha_nacimiento_date.year - (
+                        (hoy.month, hoy.day) < (fecha_nacimiento_date.month, fecha_nacimiento_date.day)
+                    )
+                    if edad < 18:
+                        messages.error(request, 'El Punto Empresarial está disponible solo para mayores de 18 años.')
+                        return render(request, 'usuario/registro.html')
+
+                    from apps.modulo_7.empresas.forms import EmpresaForm
+
+                    empresa_form = EmpresaForm(
+                        data={
+                            'nombre': (request.POST.get('empresa_nombre') or '').strip(),
+                            'rubro': (request.POST.get('empresa_rubro') or '').strip(),
+                            'descripcion': (request.POST.get('empresa_descripcion') or '').strip(),
+                            'acepto_terminos': request.POST.get('empresa_acepto_terminos') == 'on',
+                        },
+                        files=request.FILES,
+                    )
+                    if not empresa_form.is_valid():
+                        for _, errs in empresa_form.errors.items():
+                            for err in errs:
+                                messages.error(request, str(err))
                         return render(request, 'usuario/registro.html')
                 
                 # Crear Persona
@@ -192,6 +228,12 @@ class RegistroView(View):
                         defaults={'descripcion': 'Rol para empresas', 'jerarquia': 3},
                     )
                     UsuarioRol.objects.get_or_create(usuario_id=usuario, rol_id=rol_empresa)
+
+                    if empresa_form is not None:
+                        empresa_obj = empresa_form.save(commit=False)
+                        empresa_obj.responsable = usuario
+                        empresa_obj.estado = 'pendiente'
+                        empresa_obj.save()
                 
                 # Redirigir a login
                 messages.success(request, f'¡Registro exitoso! Usuario: {dni}. Ahora puedes iniciar sesión.')
