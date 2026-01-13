@@ -96,9 +96,39 @@
 
         <h3 style="margin: 1rem 0 0.5rem;">Detalle</h3>
         <div style="display:grid; gap:0.25rem;">
+            <div><strong>Condición fiscal / tipo societario:</strong> {{ empresa.get_condicion_fiscal_display|default:"-" }}</div>
+            <div><strong>CUIT:</strong> {{ empresa.cuit|default:"-" }}</div>
+            <div><strong>Cantidad de miembros/socios:</strong> {{ empresa.cantidad_miembros|default:"-" }}</div>
             <div><strong>Rubro:</strong> {{ empresa.rubro|default:"-" }}</div>
             <div><strong>Descripción:</strong> {{ empresa.descripcion|default:"-" }}</div>
+            <div>
+                <strong>Logo:</strong>
+                {% if empresa.logo %}
+                    <a href="{{ empresa.logo.url }}" target="_blank" rel="noopener">
+                        <img src="{{ empresa.logo.url }}" alt="Logo de {{ empresa.nombre }}" style="height: 44px; width: auto; object-fit: contain; vertical-align: middle;">
+                    </a>
+                {% else %}
+                    -
+                {% endif %}
+            </div>
             <div><strong>Aceptó términos:</strong> {% if empresa.acepto_terminos %}Sí{% else %}No{% endif %}</div>
+            <div>
+                <strong>DNI adjunto:</strong>
+                {% if empresa.dni_responsable_archivo %}
+                    <a href="{{ empresa.dni_responsable_archivo.url }}" target="_blank" rel="noopener">Ver</a>
+                {% else %}
+                    -
+                {% endif %}
+            </div>
+            <div>
+                <strong>Nómina adjunta:</strong>
+                {% if empresa.nomina_socios_archivo %}
+                    <a href="{{ empresa.nomina_socios_archivo.url }}" target="_blank" rel="noopener">Ver</a>
+                {% else %}
+                    -
+                {% endif %}
+            </div>
+            <div><strong>Link nómina:</strong> {% if empresa.nomina_socios_link %}<a href="{{ empresa.nomina_socios_link }}" target="_blank" rel="noopener">{{ empresa.nomina_socios_link }}</a>{% else %}-{% endif %}</div>
         </div>
 
         <div style="margin-top: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem;">

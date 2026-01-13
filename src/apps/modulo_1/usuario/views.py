@@ -164,6 +164,10 @@ class RegistroView(View):
                     empresa_form = EmpresaForm(
                         data={
                             'nombre': (request.POST.get('empresa_nombre') or '').strip(),
+                            'condicion_fiscal': (request.POST.get('condicion_fiscal') or '').strip(),
+                            'cuit': (request.POST.get('cuit') or '').strip(),
+                            'cantidad_miembros': (request.POST.get('cantidad_miembros') or '').strip(),
+                            'nomina_socios_link': (request.POST.get('nomina_socios_link') or '').strip(),
                             'rubro': (request.POST.get('empresa_rubro') or '').strip(),
                             'descripcion': (request.POST.get('empresa_descripcion') or '').strip(),
                             'acepto_terminos': request.POST.get('empresa_acepto_terminos') == 'on',

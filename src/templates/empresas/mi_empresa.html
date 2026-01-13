@@ -98,6 +98,97 @@
             </div>
 
             <div>
+                <label for="{{ form.condicion_fiscal.id_for_label }}" style="display:block; font-weight:700; color:#334155; margin-bottom:0.5rem; font-size: 0.95rem;">
+                    Condición Fiscal / Tipo Societario
+                </label>
+                {{ form.condicion_fiscal }}
+                {% if form.condicion_fiscal.errors %}
+                    <div style="color:#ef4444; font-size: 0.875rem; margin-top: 0.25rem; font-weight:600;">
+                        {{ form.condicion_fiscal.errors|striptags }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div id="cuitFieldGroup">
+                <label for="{{ form.cuit.id_for_label }}" style="display:block; font-weight:700; color:#334155; margin-bottom:0.5rem; font-size: 0.95rem;">
+                    CUIT (del proyecto)
+                </label>
+                {{ form.cuit }}
+                <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">
+                    Si elegís "En formación / No constituida aún", el CUIT no es obligatorio.
+                </div>
+                {% if form.cuit.errors %}
+                    <div style="color:#ef4444; font-size: 0.875rem; margin-top: 0.25rem; font-weight:600;">
+                        {{ form.cuit.errors|striptags }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="{{ form.cantidad_miembros.id_for_label }}" style="display:block; font-weight:700; color:#334155; margin-bottom:0.5rem; font-size: 0.95rem;">
+                    Cantidad de miembros / socios
+                </label>
+                {{ form.cantidad_miembros }}
+                {% if form.cantidad_miembros.errors %}
+                    <div style="color:#ef4444; font-size: 0.875rem; margin-top: 0.25rem; font-weight:600;">
+                        {{ form.cantidad_miembros.errors|striptags }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="{{ form.dni_responsable_archivo.id_for_label }}" style="display:block; font-weight:700; color:#334155; margin-bottom:0.5rem; font-size: 0.95rem;">
+                    Adjuntar DNI del responsable <span style="font-weight:400; color:#64748b; font-size:0.85rem;">(PDF o imagen · Opcional)</span>
+                </label>
+                {% if empresa and empresa.dni_responsable_archivo %}
+                    <div style="margin-bottom: 0.75rem; display:flex; align-items:center; gap:0.75rem; background: white; padding: 0.75rem; border-radius: 6px; border: 1px dashed #cbd5e1;">
+                        <a href="{{ empresa.dni_responsable_archivo.url }}" target="_blank" rel="noopener" style="font-weight:800; color:#0f172a; text-decoration: underline;">
+                            Ver archivo actual
+                        </a>
+                        <div style="font-size: 0.85rem; color: #64748b;">{{ empresa.dni_responsable_archivo.name|cut:"empresas/documentos/dni/" }}</div>
+                    </div>
+                {% endif %}
+                {{ form.dni_responsable_archivo }}
+                {% if form.dni_responsable_archivo.errors %}
+                    <div style="color:#ef4444; font-size: 0.875rem; margin-top: 0.25rem; font-weight:600;">
+                        {{ form.dni_responsable_archivo.errors|striptags }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="{{ form.nomina_socios_archivo.id_for_label }}" style="display:block; font-weight:700; color:#334155; margin-bottom:0.5rem; font-size: 0.95rem;">
+                    Adjuntar nómina de miembros/socios <span style="font-weight:400; color:#64748b; font-size:0.85rem;">(PDF o imagen · Opcional)</span>
+                </label>
+                {% if empresa and empresa.nomina_socios_archivo %}
+                    <div style="margin-bottom: 0.75rem; display:flex; align-items:center; gap:0.75rem; background: white; padding: 0.75rem; border-radius: 6px; border: 1px dashed #cbd5e1;">
+                        <a href="{{ empresa.nomina_socios_archivo.url }}" target="_blank" rel="noopener" style="font-weight:800; color:#0f172a; text-decoration: underline;">
+                            Ver archivo actual
+                        </a>
+                        <div style="font-size: 0.85rem; color: #64748b;">{{ empresa.nomina_socios_archivo.name|cut:"empresas/documentos/nomina/" }}</div>
+                    </div>
+                {% endif %}
+                {{ form.nomina_socios_archivo }}
+                {% if form.nomina_socios_archivo.errors %}
+                    <div style="color:#ef4444; font-size: 0.875rem; margin-top: 0.25rem; font-weight:600;">
+                        {{ form.nomina_socios_archivo.errors|striptags }}
+                    </div>
+                {% endif %}
+
+                <div style="margin-top: 0.75rem;">
+                    <label for="{{ form.nomina_socios_link.id_for_label }}" style="display:block; font-weight:700; color:#334155; margin-bottom:0.5rem; font-size: 0.95rem;">
+                        Link a nómina <span style="font-weight:400; color:#64748b; font-size:0.85rem;">(Opcional)</span>
+                    </label>
+                    {{ form.nomina_socios_link }}
+                    {% if form.nomina_socios_link.errors %}
+                        <div style="color:#ef4444; font-size: 0.875rem; margin-top: 0.25rem; font-weight:600;">
+                            {{ form.nomina_socios_link.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div>
                 <label for="{{ form.logo.id_for_label }}" style="display:block; font-weight:700; color:#334155; margin-bottom:0.5rem; font-size: 0.95rem;">
                     Logo de la Empresa <span style="font-weight:400; color:#64748b; font-size:0.85rem;">(Opcional)</span>
                 </label>
@@ -180,6 +271,27 @@
             </div>
         {% endif %}
     </form>
+
+    <script>
+        (function () {
+            const condicion = document.getElementById('{{ form.condicion_fiscal.id_for_label }}');
+            const cuitInput = document.getElementById('{{ form.cuit.id_for_label }}');
+            const cuitGroup = document.getElementById('cuitFieldGroup');
+            if (!condicion || !cuitGroup || !cuitInput) return;
+
+            function updateCuit() {
+                if (condicion.disabled) return;
+                const isEnFormacion = (condicion.value || '') === 'en_formacion';
+                cuitGroup.style.display = isEnFormacion ? 'none' : '';
+                if (isEnFormacion) {
+                    cuitInput.value = '';
+                }
+            }
+
+            condicion.addEventListener('change', updateCuit);
+            updateCuit();
+        })();
+    </script>
 
     <div id="terminosEmpresaModal" class="modal-overlay" style="z-index: 10002;">
         <div class="modal-container"

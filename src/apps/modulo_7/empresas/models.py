@@ -11,8 +11,24 @@ class Empresa(models.Model):
         ('rechazada', 'Rechazada'),
     ]
 
+    CONDICIONES_FISCALES = [
+        ('monotributo', 'Monotributo'),
+        ('responsable_inscripto', 'Responsable Inscripto (Unipersonal)'),
+        ('sas', 'S.A.S. (Sociedad por Acciones Simplificada)'),
+        ('srl', 'S.R.L. (Sociedad de Responsabilidad Limitada)'),
+        ('sa', 'S.A. (Sociedad Anónima)'),
+        ('cooperativa', 'Cooperativa'),
+        ('en_formacion', 'En formación / No constituida aún'),
+    ]
+
     responsable = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name='empresa')
     nombre = models.CharField(max_length=150)
+    condicion_fiscal = models.CharField(max_length=40, choices=CONDICIONES_FISCALES, blank=True, default='')
+    cuit = models.CharField(max_length=15, blank=True, default='')
+    cantidad_miembros = models.PositiveSmallIntegerField(blank=True, null=True)
+    dni_responsable_archivo = models.FileField(upload_to='empresas/documentos/dni/', blank=True, null=True)
+    nomina_socios_archivo = models.FileField(upload_to='empresas/documentos/nomina/', blank=True, null=True)
+    nomina_socios_link = models.URLField(blank=True, default='')
     logo = models.ImageField(upload_to='empresas/logos/', blank=True, null=True)
     rubro = models.CharField(max_length=120, default="")
     descripcion = models.TextField(default="")
@@ -65,4 +81,3 @@ class MiembroEmpresa(models.Model):
 
     def __str__(self):
         return f'{self.empresa} - {self.usuario}'
-

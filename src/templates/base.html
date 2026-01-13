@@ -533,6 +533,39 @@
                         <input type="text" name="empresa_nombre" placeholder="Nombre de la empresa" class="form-input">
                     </div>
                     <div class="form-group">
+                        <label>Condición Fiscal / Tipo Societario *</label>
+                        <select name="condicion_fiscal" class="form-input">
+                            <option value="">Seleccioná una opción</option>
+                            <option value="monotributo">Monotributo</option>
+                            <option value="responsable_inscripto">Responsable Inscripto (Unipersonal)</option>
+                            <option value="sas">S.A.S. (Sociedad por Acciones Simplificada)</option>
+                            <option value="srl">S.R.L. (Sociedad de Responsabilidad Limitada)</option>
+                            <option value="sa">S.A. (Sociedad Anónima)</option>
+                            <option value="cooperativa">Cooperativa</option>
+                            <option value="en_formacion">En formación / No constituida aún</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>CUIT (del proyecto)</label>
+                        <input type="text" name="cuit" placeholder="CUIT (11 dígitos)" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Cantidad de miembros / socios *</label>
+                        <input type="number" name="cantidad_miembros" min="1" max="500" placeholder="Ej: 3" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Adjuntar DNI del responsable (opcional)</label>
+                        <input type="file" name="dni_responsable_archivo" accept="application/pdf,image/png,image/jpeg" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Adjuntar nómina de miembros/socios (opcional)</label>
+                        <input type="file" name="nomina_socios_archivo" accept="application/pdf,image/png,image/jpeg" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Link a nómina (opcional)</label>
+                        <input type="url" name="nomina_socios_link" placeholder="https://..." class="form-input">
+                    </div>
+                    <div class="form-group">
                         <label>Logo de la empresa (opcional)</label>
                         <input type="file" name="logo" accept=".png,.jpg,.jpeg" class="form-input">
                     </div>
@@ -548,7 +581,7 @@
                         <div style="display: flex; align-items: flex-start; gap: 0.5rem;">
                             <input type="checkbox" id="empresa_acepto_terminos" name="empresa_acepto_terminos" style="margin-top: 0.3rem;">
                             <label for="empresa_acepto_terminos" style="display: inline; font-weight: 400; font-size: 0.9rem;">
-                                Acepto los términos y condiciones del programa. La solicitud quedará sujeta a evaluación y aprobación.
+                                Acepto los <a href="#" onclick="openTerminosEmpresaModal(); return false;" style="color: #F09819; text-decoration: underline; font-weight: 700;">términos y condiciones del programa</a>. La solicitud quedará sujeta a evaluación y aprobación.
                             </label>
                         </div>
                     </div>
@@ -815,6 +848,53 @@
     </div>
 </div>
 
+<div id="terminosEmpresaModal" class="modal-overlay" style="z-index: 10002;">
+    <div class="modal-container"
+        style="max-width: 700px; background: white; color: #333; padding: 0; border: none; border-top: 5px solid #F09819; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+        <button class="modal-close" onclick="closeTerminosEmpresaModal()"
+            style="color: #666; background: transparent; top: 1rem; right: 1rem; border: none; font-size: 2rem; transition: color 0.2s;"
+            onmouseover="this.style.color='#F09819'" onmouseout="this.style.color='#666'">×</button>
+
+        <div style="padding: 1.5rem;">
+            <div style="text-align: center; margin-bottom: 1.25rem;">
+                <div style="width: 60px; height: 60px; background: rgba(240, 152, 25, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem;">
+                    <i class="fa-solid fa-file-signature" style="font-size: 1.8rem; color: #F09819;"></i>
+                </div>
+                <h3 style="color: #F09819; font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">Términos y Condiciones</h3>
+                <p style="color: #64748b; font-size: 0.95rem; margin: 0 auto; line-height: 1.5;">
+                    Para enviar tu solicitud, tené en cuenta los requisitos del programa.
+                </p>
+            </div>
+
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; margin-bottom: 1rem;">
+                <div style="font-weight: 800; color: #0f172a; margin-bottom: 0.5rem;">Requisito principal</div>
+                <div style="color: #334155; line-height: 1.6;">
+                    La empresa debe ser una <strong>startup exclusivamente de Software / Tecnología</strong>. Solicitudes de otros rubros pueden ser rechazadas.
+                </div>
+            </div>
+
+            <div style="display: grid; gap: 0.75rem; color: #334155; line-height: 1.6;">
+                <div style="display:flex; gap:0.75rem;">
+                    <div style="flex:0 0 auto; width: 28px; height: 28px; border-radius: 8px; background: rgba(240, 152, 25, 0.12); display:flex; align-items:center; justify-content:center; color:#F09819; font-weight: 900;">1</div>
+                    <div>La información declarada debe ser verídica y comprobable.</div>
+                </div>
+                <div style="display:flex; gap:0.75rem;">
+                    <div style="flex:0 0 auto; width: 28px; height: 28px; border-radius: 8px; background: rgba(240, 152, 25, 0.12); display:flex; align-items:center; justify-content:center; color:#F09819; font-weight: 900;">2</div>
+                    <div>El logo es opcional; si lo subís, debe ser una imagen (PNG/JPG).</div>
+                </div>
+                <div style="display:flex; gap:0.75rem;">
+                    <div style="flex:0 0 auto; width: 28px; height: 28px; border-radius: 8px; background: rgba(240, 152, 25, 0.12); display:flex; align-items:center; justify-content:center; color:#F09819; font-weight: 900;">3</div>
+                    <div>Debés aceptar los términos y condiciones del programa. La solicitud quedará sujeta a evaluación y aprobación.</div>
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top: 1.25rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeTerminosEmpresaModal()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     function setupPasswordToggles() {
         document.querySelectorAll('[data-toggle-password]').forEach((btn) => {
@@ -847,6 +927,8 @@
         const inputFechaNac = modal.querySelector('input[name="fecha_nacimiento"]');
 
         const empresaNombre = modal.querySelector('input[name="empresa_nombre"]');
+        const empresaCondicionFiscal = modal.querySelector('select[name="condicion_fiscal"]');
+        const empresaCantidadMiembros = modal.querySelector('input[name="cantidad_miembros"]');
         const empresaRubro = modal.querySelector('input[name="empresa_rubro"]');
         const empresaDescripcion = modal.querySelector('textarea[name="empresa_descripcion"]');
         const empresaAcepto = modal.querySelector('input[name="empresa_acepto_terminos"]');
@@ -860,6 +942,8 @@
             if (inputFechaNac) inputFechaNac.required = !!esEmpresa;
 
             if (empresaNombre) empresaNombre.required = !!esEmpresa;
+            if (empresaCondicionFiscal) empresaCondicionFiscal.required = !!esEmpresa;
+            if (empresaCantidadMiembros) empresaCantidadMiembros.required = !!esEmpresa;
             if (empresaRubro) empresaRubro.required = !!esEmpresa;
             if (empresaDescripcion) empresaDescripcion.required = !!esEmpresa;
             if (empresaAcepto) empresaAcepto.required = !!esEmpresa;
@@ -984,6 +1068,34 @@
         }
     });
 
+    function openTerminosEmpresaModal() {
+        const modal = document.getElementById('terminosEmpresaModal');
+        if (!modal) return;
+        modal.style.display = 'flex';
+        modal.offsetHeight;
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeTerminosEmpresaModal() {
+        const modal = document.getElementById('terminosEmpresaModal');
+        if (!modal) return;
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }, 300);
+    }
+
+    const terminosEmpresaModal = document.getElementById('terminosEmpresaModal');
+    if (terminosEmpresaModal) {
+        terminosEmpresaModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeTerminosEmpresaModal();
+            }
+        });
+    }
+
     // Close on Escape key (Enhanced for all modals)
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape') {
@@ -992,12 +1104,14 @@
             const puntoEmpresarialModal = document.getElementById('puntoEmpresarialModal');
             const contactoModal = document.getElementById('contactoModal');
             const acercaDeModal = document.getElementById('acercaDeModal');
+            const terminosEmpresaModal = document.getElementById('terminosEmpresaModal');
             
             if (loginModal && loginModal.classList.contains('show')) closeLoginModal();
             if (registroModal && registroModal.classList.contains('show')) closeRegistroModal();
             if (puntoEmpresarialModal && puntoEmpresarialModal.classList.contains('show')) closePuntoEmpresarialModal();
             if (contactoModal && contactoModal.classList.contains('show')) closeContactoModal();
             if (acercaDeModal && acercaDeModal.classList.contains('show')) closeAcercaDeModal();
+            if (terminosEmpresaModal && terminosEmpresaModal.classList.contains('show')) closeTerminosEmpresaModal();
         }
     });
 

@@ -1226,7 +1226,7 @@
                         style="height: 50px; width: auto;">
                 </div>
                 <h2 style="color: #4a5568; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.1rem;">Postulación Punto Empresarial</h2>
-                <p style="color: #718096; font-size: 0.85rem; margin-bottom: 0.5rem;">Creá tu cuenta y cargá los datos de tu startup</p>
+                <p style="color: #718096; font-size: 0.85rem; margin-bottom: 0.5rem;">Creá tu cuenta y cargá los datos de tu empresa</p>
             </div>
 
             <form method="post" action="{% url 'usuario:registro' %}" class="registro-form" enctype="multipart/form-data">
@@ -1292,12 +1292,35 @@
 
                 <div class="modal-section" style="border-top: none;">
                     <h3 style="color: #4a5568; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-align: center;">
-                        Datos de la Startup
+                        Datos de la empresa
                     </h3>
                     <div class="form-grid">
                         <div class="form-group"><label>Nombre de la empresa *</label><input type="text" name="empresa_nombre" required
                                 placeholder="Nombre de la empresa" class="form-input"></div>
-                        <div class="form-group"><label>Logo (opcional)</label><input type="file" name="logo" accept="image/*"
+                        <div class="form-group">
+                            <label>Condición Fiscal / Tipo Societario *</label>
+                            <select name="condicion_fiscal" class="form-input" required>
+                                <option value="">Seleccioná una opción</option>
+                                <option value="monotributo">Monotributo</option>
+                                <option value="responsable_inscripto">Responsable Inscripto (Unipersonal)</option>
+                                <option value="sas">S.A.S. (Sociedad por Acciones Simplificada)</option>
+                                <option value="srl">S.R.L. (Sociedad de Responsabilidad Limitada)</option>
+                                <option value="sa">S.A. (Sociedad Anónima)</option>
+                                <option value="cooperativa">Cooperativa</option>
+                                <option value="en_formacion">En formación / No constituida aún</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>CUIT (del proyecto)</label><input type="text" name="cuit"
+                                placeholder="CUIT (11 dígitos)" class="form-input"></div>
+                        <div class="form-group"><label>Cantidad de miembros / socios *</label><input type="number" name="cantidad_miembros" required min="1" max="500"
+                                placeholder="Ej: 3" class="form-input"></div>
+                        <div class="form-group"><label>Adjuntar DNI del responsable (opcional)</label><input type="file" name="dni_responsable_archivo"
+                                accept="application/pdf,image/png,image/jpeg" class="form-input"></div>
+                        <div class="form-group"><label>Adjuntar nómina de miembros/socios (opcional)</label><input type="file" name="nomina_socios_archivo"
+                                accept="application/pdf,image/png,image/jpeg" class="form-input"></div>
+                        <div class="form-group"><label>Link a nómina (opcional)</label><input type="url" name="nomina_socios_link"
+                                placeholder="https://..." class="form-input"></div>
+                        <div class="form-group"><label>Logo (opcional)</label><input type="file" name="logo" accept="image/png,image/jpeg"
                                 class="form-input"></div>
                         <div class="form-group"><label>Rubro (Software / Tecnología) *</label><input type="text" name="empresa_rubro" required
                                 placeholder="Ej: Software, SaaS, IA, Desarrollo Web" class="form-input"></div>
@@ -1310,7 +1333,7 @@
                             <div style="display: flex; align-items: flex-start; gap: 0.5rem;">
                                 <input type="checkbox" id="empresa_acepto_terminos" name="empresa_acepto_terminos" required style="margin-top: 0.3rem;">
                                 <label for="empresa_acepto_terminos" style="display: inline; font-weight: 400; font-size: 0.9rem;">
-                                    Acepto los términos y condiciones del programa Punto Empresarial.
+                                    Acepto los <a href="#" onclick="openTerminosEmpresaModal(); return false;" style="color: #F09819; text-decoration: underline; font-weight: 700;">términos y condiciones del programa</a> Punto Empresarial.
                                 </label>
                             </div>
                         </div>
@@ -1360,6 +1383,37 @@
                             style="color: #F09819; font-weight: bold;">Ingresar</a></p>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <div id="terminosEmpresaModal" class="modal-overlay" style="z-index: 10002;">
+        <div class="modal-container" style="max-width: 700px; background: white; color: #333; padding: 0; border: none; border-top: 5px solid #F09819; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+            <button class="modal-close" onclick="closeTerminosEmpresaModal()" style="color: #666; background: transparent; top: 1rem; right: 1rem; border: none; font-size: 2rem; transition: color 0.2s;" onmouseover="this.style.color='#F09819'" onmouseout="this.style.color='#666'">×</button>
+
+            <div style="padding: 1.5rem;">
+                <div style="text-align: center; margin-bottom: 1.25rem;">
+                    <div style="width: 60px; height: 60px; background: rgba(240, 152, 25, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem;">
+                        <i class="fa-solid fa-file-signature" style="font-size: 1.8rem; color: #F09819;"></i>
+                    </div>
+                    <h3 style="color: #F09819; font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">Términos y Condiciones</h3>
+                    <p style="color: #64748b; font-size: 0.95rem; margin: 0 auto; line-height: 1.5;">Para enviar tu solicitud, tené en cuenta los requisitos del programa.</p>
+                </div>
+
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; margin-bottom: 1rem;">
+                    <div style="font-weight: 800; color: #0f172a; margin-bottom: 0.5rem;">Requisito principal</div>
+                    <div style="color: #334155; line-height: 1.6;">La empresa debe ser una <strong>startup exclusivamente de Software / Tecnología</strong>. Solicitudes de otros rubros pueden ser rechazadas.</div>
+                </div>
+
+                <div style="display: grid; gap: 0.75rem; color: #334155; line-height: 1.6;">
+                    <div style="display:flex; gap:0.75rem;"><div style="flex:0 0 auto; width: 28px; height: 28px; border-radius: 8px; background: rgba(240, 152, 25, 0.12); display:flex; align-items:center; justify-content:center; color:#F09819; font-weight: 900;">1</div><div>La información declarada debe ser verídica y comprobable.</div></div>
+                    <div style="display:flex; gap:0.75rem;"><div style="flex:0 0 auto; width: 28px; height: 28px; border-radius: 8px; background: rgba(240, 152, 25, 0.12); display:flex; align-items:center; justify-content:center; color:#F09819; font-weight: 900;">2</div><div>El logo es opcional; si lo subís, debe ser una imagen (PNG/JPG).</div></div>
+                    <div style="display:flex; gap:0.75rem;"><div style="flex:0 0 auto; width: 28px; height: 28px; border-radius: 8px; background: rgba(240, 152, 25, 0.12); display:flex; align-items:center; justify-content:center; color:#F09819; font-weight: 900;">3</div><div>Debés aceptar los términos y condiciones del programa. La solicitud quedará sujeta a evaluación y aprobación.</div></div>
+                </div>
+
+                <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top: 1.25rem;">
+                    <button type="button" class="btn btn-secondary" onclick="closeTerminosEmpresaModal()">Cerrar</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1695,11 +1749,40 @@
             document.body.style.overflow = 'hidden';
         }
 
-        function closePuntoEmpresarialModal() {
-            const modal = document.getElementById('puntoEmpresarialModal');
-            modal.classList.remove('show');
-            setTimeout(() => { modal.style.display = 'none'; document.body.style.overflow = ''; }, 300);
-        }
+        function openTerminosEmpresaModal() {
+        const modal = document.getElementById('terminosEmpresaModal');
+        if (!modal) return;
+        modal.style.display = 'flex';
+        modal.offsetHeight;
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeTerminosEmpresaModal() {
+        const modal = document.getElementById('terminosEmpresaModal');
+        if (!modal) return;
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }, 300);
+    }
+
+    const terminosEmpresaModal = document.getElementById('terminosEmpresaModal');
+    if (terminosEmpresaModal) {
+        terminosEmpresaModal.addEventListener('click', function (e) {
+            if (e.target === this) closeTerminosEmpresaModal();
+        });
+    }
+
+    function closePuntoEmpresarialModal() {
+        const modal = document.getElementById('puntoEmpresarialModal');
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }, 300);
+    }
 
         document.getElementById('puntoEmpresarialModal').addEventListener('click', function (e) {
             if (e.target === this) {

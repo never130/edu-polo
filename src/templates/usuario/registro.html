@@ -405,7 +405,7 @@
                     <div style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem;">
                         <input type="checkbox" id="empresa_acepto_terminos" name="empresa_acepto_terminos" style="margin-top: 0.3rem;">
                         <label for="empresa_acepto_terminos" style="display: inline; font-weight: 400; font-size: 0.9rem;">
-                            Acepto los términos y condiciones del programa. La postulación quedará sujeta a evaluación y aprobación.
+                            Acepto los <a href="#" onclick="openTerminosEmpresaModal(); return false;" style="color: #F09819; text-decoration: underline; font-weight: 700;">términos y condiciones del programa</a>. La postulación quedará sujeta a evaluación y aprobación.
                         </label>
                     </div>
                 </div>
@@ -481,6 +481,33 @@
                 <button type="submit" class="btn-submit">Crear Cuenta</button>
             </form>
 
+            <div id="terminosEmpresaModal" class="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.55); align-items:center; justify-content:center; padding:1rem; z-index:10002;">
+                <div class="modal-container" style="max-width: 700px; width: 100%; background: white; color: #333; padding: 0; border: none; border-top: 5px solid #F09819; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: relative;">
+                    <button class="modal-close" onclick="closeTerminosEmpresaModal()" style="color: #666; background: transparent; position:absolute; top: 1rem; right: 1rem; border: none; font-size: 2rem; line-height: 1; cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#F09819'" onmouseout="this.style.color='#666'">×</button>
+                    <div style="padding: 1.5rem;">
+                        <div style="text-align: center; margin-bottom: 1.25rem;">
+                            <div style="width: 60px; height: 60px; background: rgba(240, 152, 25, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem;">
+                                <i class="fa-solid fa-file-signature" style="font-size: 1.8rem; color: #F09819;"></i>
+                            </div>
+                            <h3 style="color: #F09819; font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">Términos y Condiciones</h3>
+                            <p style="color: #64748b; font-size: 0.95rem; margin: 0 auto; line-height: 1.5;">Para enviar tu solicitud, tené en cuenta los requisitos del programa.</p>
+                        </div>
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; margin-bottom: 1rem;">
+                            <div style="font-weight: 800; color: #0f172a; margin-bottom: 0.5rem;">Requisito principal</div>
+                            <div style="color: #334155; line-height: 1.6;">La empresa debe ser una <strong>startup exclusivamente de Software / Tecnología</strong>. Solicitudes de otros rubros pueden ser rechazadas.</div>
+                        </div>
+                        <div style="display: grid; gap: 0.75rem; color: #334155; line-height: 1.6;">
+                            <div style="display:flex; gap:0.75rem;"><div style="flex:0 0 auto; width: 28px; height: 28px; border-radius: 8px; background: rgba(240, 152, 25, 0.12); display:flex; align-items:center; justify-content:center; color:#F09819; font-weight: 900;">1</div><div>La información declarada debe ser verídica y comprobable.</div></div>
+                            <div style="display:flex; gap:0.75rem;"><div style="flex:0 0 auto; width: 28px; height: 28px; border-radius: 8px; background: rgba(240, 152, 25, 0.12); display:flex; align-items:center; justify-content:center; color:#F09819; font-weight: 900;">2</div><div>El logo es opcional; si lo subís, debe ser una imagen (PNG/JPG).</div></div>
+                            <div style="display:flex; gap:0.75rem;"><div style="flex:0 0 auto; width: 28px; height: 28px; border-radius: 8px; background: rgba(240, 152, 25, 0.12); display:flex; align-items:center; justify-content:center; color:#F09819; font-weight: 900;">3</div><div>Debés aceptar los términos y condiciones del programa. La solicitud quedará sujeta a evaluación y aprobación.</div></div>
+                        </div>
+                        <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top: 1.25rem;">
+                            <button type="button" class="btn btn-secondary" onclick="closeTerminosEmpresaModal()">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <script>
                 (function () {
                     const tipoUsuarioSelect = document.getElementById('tipo_usuario');
@@ -513,6 +540,34 @@
                         tipoUsuarioSelect.addEventListener('change', sync);
                         sync();
                     }
+
+                    // Modal Términos Empresa
+                    window.openTerminosEmpresaModal = function () {
+                        const modal = document.getElementById('terminosEmpresaModal');
+                        if (!modal) return;
+                        modal.style.display = 'flex';
+                        document.body.style.overflow = 'hidden';
+                    };
+
+                    window.closeTerminosEmpresaModal = function () {
+                        const modal = document.getElementById('terminosEmpresaModal');
+                        if (!modal) return;
+                        modal.style.display = 'none';
+                        document.body.style.overflow = '';
+                    };
+
+                    const terminosEmpresaModal = document.getElementById('terminosEmpresaModal');
+                    if (terminosEmpresaModal) {
+                        terminosEmpresaModal.addEventListener('click', function (e) {
+                            if (e.target === this) window.closeTerminosEmpresaModal();
+                        });
+                    }
+
+                    document.addEventListener('keydown', function (event) {
+                        if (event.key !== 'Escape') return;
+                        const modal = document.getElementById('terminosEmpresaModal');
+                        if (modal && modal.style.display === 'flex') window.closeTerminosEmpresaModal();
+                    });
                 })();
             </script>
         </div>
