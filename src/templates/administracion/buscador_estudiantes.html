@@ -317,6 +317,7 @@
                 detalleSub.textContent = `DNI: ${data.dni || ''} • Email: ${data.correo || ''}`;
 
                 const inscripciones = Array.isArray(data.inscripciones) ? data.inscripciones : [];
+                const tutores = Array.isArray(data.tutores) ? data.tutores : [];
                 const rows = inscripciones.map(i => {
                     return `<tr>
                         <td style="padding:0.6rem 0.75rem; border-bottom:1px solid #f1f5f9;"><strong>${escapeHtml(i.curso || '')}</strong></td>
@@ -344,6 +345,51 @@
                     </div>
                 ` : '<div style="color:#64748b; font-weight:700;">Sin inscripciones.</div>';
 
+                const rowsTutores = tutores.map(t => {
+                    const nombre = escapeHtml(t.nombre_completo || '');
+                    const parentesco = escapeHtml(t.parentesco || '');
+                    const tipo = escapeHtml(t.tipo_tutor || '');
+                    const telefono = escapeHtml(t.telefono_contacto || '');
+                    const correo = escapeHtml(t.correo || '');
+                    const dniTutor = escapeHtml(t.dni || '');
+                    const disponibilidad = escapeHtml(t.disponibilidad_horaria || '');
+                    const fechaAsignacion = escapeHtml(t.fecha_asignacion || '');
+                    const observaciones = escapeHtml(t.observaciones || '');
+
+                    return `<tr>
+                        <td style="padding:0.6rem 0.75rem; border-bottom:1px solid #f1f5f9;"><strong>${nombre}</strong></td>
+                        <td style="padding:0.6rem 0.75rem; border-bottom:1px solid #f1f5f9;">${parentesco}</td>
+                        <td style="padding:0.6rem 0.75rem; border-bottom:1px solid #f1f5f9;">${tipo}</td>
+                        <td style="padding:0.6rem 0.75rem; border-bottom:1px solid #f1f5f9;">${telefono}</td>
+                        <td style="padding:0.6rem 0.75rem; border-bottom:1px solid #f1f5f9;">${correo}</td>
+                        <td style="padding:0.6rem 0.75rem; border-bottom:1px solid #f1f5f9;">${dniTutor}</td>
+                        <td style="padding:0.6rem 0.75rem; border-bottom:1px solid #f1f5f9;">${disponibilidad}</td>
+                        <td style="padding:0.6rem 0.75rem; border-bottom:1px solid #f1f5f9;">${fechaAsignacion}</td>
+                        <td style="padding:0.6rem 0.75rem; border-bottom:1px solid #f1f5f9;">${observaciones}</td>
+                    </tr>`;
+                }).join('');
+
+                const tablaTutores = tutores.length ? `
+                    <div style="overflow:auto; border:1px solid #e2e8f0; border-radius:12px;">
+                        <table style="width:100%; border-collapse:collapse; background:#fff;">
+                            <thead style="background:#f8fafc;">
+                                <tr>
+                                    <th style="padding:0.6rem 0.75rem; text-align:left; color:#64748b; font-weight:800; border-bottom:1px solid #e2e8f0;">Nombre</th>
+                                    <th style="padding:0.6rem 0.75rem; text-align:left; color:#64748b; font-weight:800; border-bottom:1px solid #e2e8f0;">Parentesco</th>
+                                    <th style="padding:0.6rem 0.75rem; text-align:left; color:#64748b; font-weight:800; border-bottom:1px solid #e2e8f0;">Tipo</th>
+                                    <th style="padding:0.6rem 0.75rem; text-align:left; color:#64748b; font-weight:800; border-bottom:1px solid #e2e8f0;">Teléfono</th>
+                                    <th style="padding:0.6rem 0.75rem; text-align:left; color:#64748b; font-weight:800; border-bottom:1px solid #e2e8f0;">Correo</th>
+                                    <th style="padding:0.6rem 0.75rem; text-align:left; color:#64748b; font-weight:800; border-bottom:1px solid #e2e8f0;">DNI</th>
+                                    <th style="padding:0.6rem 0.75rem; text-align:left; color:#64748b; font-weight:800; border-bottom:1px solid #e2e8f0;">Disponibilidad</th>
+                                    <th style="padding:0.6rem 0.75rem; text-align:left; color:#64748b; font-weight:800; border-bottom:1px solid #e2e8f0;">Asignación</th>
+                                    <th style="padding:0.6rem 0.75rem; text-align:left; color:#64748b; font-weight:800; border-bottom:1px solid #e2e8f0;">Observaciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rowsTutores}</tbody>
+                        </table>
+                    </div>
+                ` : '<div style="color:#64748b; font-weight:700;">Sin tutores registrados.</div>';
+
                 detalleBody.innerHTML = `
                     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:1rem;">
                         <div style="border:1px solid #e2e8f0; border-radius:12px; padding:1rem; background:#fff;">
@@ -364,6 +410,10 @@
                                 <div><strong>Institución:</strong> ${escapeHtml(data.institucion_actual || '')}</div>
                             </div>
                         </div>
+                    </div>
+                    <div style="margin-top:1.25rem;">
+                        <div style="font-weight:900; color:#0f172a; margin-bottom:0.75rem;">Tutores (${escapeHtml(data.total_tutores || tutores.length || 0)})</div>
+                        ${tablaTutores}
                     </div>
                     <div style="margin-top:1.25rem;">
                         <div style="font-weight:900; color:#0f172a; margin-bottom:0.75rem;">Cursos inscriptos (${escapeHtml(data.total_inscripciones || 0)})</div>

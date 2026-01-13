@@ -1133,6 +1133,23 @@ def api_detalle_estudiante(request):
             'ciudad_polo': polo.ciudad if polo else None,
         })
 
+    tutores_qs = estudiante.tutores.select_related('tutor__usuario__persona').order_by('-fecha_asignacion')
+    tutores = []
+    for relacion in tutores_qs:
+        tutor = relacion.tutor
+        tutor_persona = tutor.usuario.persona if tutor and tutor.usuario_id else None
+        tutores.append({
+            'nombre_completo': getattr(tutor_persona, 'nombre_completo', '') if tutor_persona else '',
+            'dni': getattr(tutor_persona, 'dni', '') if tutor_persona else '',
+            'correo': getattr(tutor_persona, 'correo', '') if tutor_persona else '',
+            'tipo_tutor': tutor.get_tipo_tutor_display() if tutor and tutor.tipo_tutor else '',
+            'telefono_contacto': getattr(tutor, 'telefono_contacto', '') if tutor else '',
+            'disponibilidad_horaria': getattr(tutor, 'disponibilidad_horaria', '') if tutor else '',
+            'parentesco': relacion.get_parentesco_display() if relacion.parentesco else '',
+            'observaciones': relacion.observaciones or '',
+            'fecha_asignacion': relacion.fecha_asignacion.strftime('%d/%m/%Y') if relacion.fecha_asignacion else '',
+        })
+
     data = {
         'dni': persona.dni,
         'nombre': persona.nombre,
@@ -1152,6 +1169,8 @@ def api_detalle_estudiante(request):
         'nivel_estudios': estudiante.get_nivel_estudios_display(),
         'institucion_actual': estudiante.institucion_actual,
         'experiencia_laboral': estudiante.experiencia_laboral or '',
+        'tutores': tutores,
+        'total_tutores': len(tutores),
         'inscripciones': inscripciones,
         'total_inscripciones': len(inscripciones),
     }
