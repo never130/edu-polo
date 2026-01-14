@@ -69,7 +69,8 @@ class RegistroView(View):
         try:
             with transaction.atomic():
                 # Obtener datos del formulario
-                dni = request.POST.get('dni')
+                dni_raw = (request.POST.get('dni') or '').strip()
+                dni = Persona.limpiar_dni(dni_raw)
                 nombre = request.POST.get('nombre')
                 apellido = request.POST.get('apellido')
                 correo = request.POST.get('correo')
@@ -117,11 +118,19 @@ class RegistroView(View):
                     messages.error(request, 'Debes confirmar que los datos ingresados son verídicos.')
                     return render(request, 'usuario/registro.html')
 
+                if not dni:
+                    messages.error(request, 'Ingresá un DNI válido.')
+                    return render(request, 'usuario/registro.html')
+
                 if password != password_confirm:
                     messages.error(request, 'Las contraseñas no coinciden.')
                     return render(request, 'usuario/registro.html')
                 
-                if Persona.objects.filter(dni=dni).exists():
+                dni_candidates = {dni}
+                if dni_raw and dni_raw != dni:
+                    dni_candidates.add(dni_raw)
+
+                if Persona.objects.filter(dni__in=dni_candidates).exists():
                     messages.error(request, 'Ya existe una persona con ese DNI.')
                     return render(request, 'usuario/registro.html')
                 
@@ -129,7 +138,7 @@ class RegistroView(View):
                     messages.error(request, 'El teléfono es obligatorio.')
                     return render(request, 'usuario/registro.html')
                 
-                if User.objects.filter(username=dni).exists():
+                if User.objects.filter(username__in=dni_candidates).exists():
                     messages.error(request, 'Ya existe un usuario con ese DNI.')
                     return render(request, 'usuario/registro.html')
 
