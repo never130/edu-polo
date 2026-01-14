@@ -38,8 +38,13 @@ def formulario_inscripcion(request, comision_id):
                 return redirect('landing')
             
             # Verificar inscripción en otra comisión del mismo curso
+            # Permitimos múltiples comisiones si las inscripciones previas están en lista de espera o canceladas.
             curso = comision.fk_id_curso
-            if Inscripcion.objects.filter(estudiante=estudiante_check, comision__fk_id_curso=curso).exists():
+            if Inscripcion.objects.filter(
+                estudiante=estudiante_check,
+                comision__fk_id_curso=curso,
+                estado__in=['pre_inscripto', 'confirmado'],
+            ).exists():
                 messages.warning(request, f'⚠️ Ya estás inscrito en el curso "{curso.nombre}" (en esta u otra comisión). No se permiten inscripciones múltiples al mismo curso.')
                 return redirect('landing')
             
@@ -162,8 +167,13 @@ def formulario_inscripcion(request, comision_id):
                     return redirect('landing')
 
                 # Verificar inscripción en otra comisión del mismo curso
+                # Permitimos múltiples comisiones si las inscripciones previas están en lista de espera o canceladas.
                 curso = comision.fk_id_curso
-                if Inscripcion.objects.filter(estudiante=estudiante, comision__fk_id_curso=curso).exists():
+                if Inscripcion.objects.filter(
+                    estudiante=estudiante,
+                    comision__fk_id_curso=curso,
+                    estado__in=['pre_inscripto', 'confirmado'],
+                ).exists():
                     messages.warning(request, f'⚠️ Ya estás inscrito en el curso "{curso.nombre}" (en esta u otra comisión). No se permiten inscripciones múltiples al mismo curso.')
                     return redirect('landing')
                 
