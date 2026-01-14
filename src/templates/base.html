@@ -260,6 +260,52 @@
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             overflow: hidden;
         }
+
+        .modal-container.form-modal {
+            max-width: 950px;
+            padding: 1.5rem;
+            max-height: 85vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .modal-container.punto-empresarial-modal {
+            max-width: 700px;
+            background: #1e293b;
+            color: white;
+            padding: 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 5px solid #F09819;
+            max-height: 85vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .punto-empresarial-body {
+            padding: 2rem;
+        }
+
+        .modal-container.terminos-empresa-modal {
+            max-width: 700px;
+            background: white;
+            color: #333;
+            padding: 0;
+            border: none;
+            border-top: 5px solid #F09819;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-height: 85vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .terminos-empresa-body {
+            padding: 1.5rem;
+        }
+
         .modal-overlay.show .modal-container { transform: scale(1); }
 
         /* Split Login Modal Styles */
@@ -340,7 +386,7 @@
         .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
         
         @media (max-width: 900px) { .form-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } .modal-container { padding: 1rem; width: 95%; } }
+        @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } .modal-container { padding: 1rem; width: 95%; } .modal-container.form-modal { padding: 1rem; width: 95%; max-height: calc(100vh - 2rem); } .punto-empresarial-body { padding: 1.25rem; } .terminos-empresa-body { padding: 1.25rem; } }
         
         .modal-section {
             margin-top: 2rem; border-top: 1px solid #e2e8f0; padding-top: 1.5rem; grid-column: 1 / -1;
@@ -375,6 +421,8 @@
                 {% if user.is_authenticated %}
                 {% if es_empresa %}
                 <a href="{% url 'empresas:mi_empresa' %}" class="navbar-link">Punto Empresarial</a>
+                {% elif user.is_staff or user.is_superuser %}
+                <a href="{% url 'empresas:gestion_empresas' %}" class="navbar-link">Punto Empresarial</a>
                 {% endif %}
                 {% else %}
                 <a href="#" class="navbar-link" onclick="openPuntoEmpresarialModal(); return false;">Punto Empresarial</a>
@@ -473,7 +521,7 @@
 
 <!-- Modal Registro -->
 <div id="registroModal" class="modal-overlay">
-    <div class="modal-container" style="max-width: 950px; padding: 1.5rem; max-height: 85vh; overflow-y: auto;">
+    <div class="modal-container form-modal">
         <button class="modal-close" onclick="closeRegistroModal()">×</button>
         
         <div class="registro-header" style="text-align: center; margin-bottom: 0.5rem;">
@@ -779,13 +827,12 @@
 </div>
 
 <div id="puntoEmpresarialModal" class="modal-overlay" style="z-index: 10002;">
-    <div class="modal-container"
-        style="max-width: 700px; background: #1e293b; color: white; padding: 0; border: 1px solid rgba(255, 255, 255, 0.1); border-top: 5px solid #F09819;">
+    <div class="modal-container punto-empresarial-modal">
         <button class="modal-close" onclick="closePuntoEmpresarialModal()"
             style="color: white; background: rgba(255,255,255,0.1); top: 1rem; right: 1rem; border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s;"
             onmouseover="this.style.background='#F09819'; this.style.borderColor='#F09819'"
             onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'">×</button>
-        <div style="padding: 2rem;">
+        <div class="punto-empresarial-body">
             <div style="text-align: center; margin-bottom: 1.25rem;">
                 <div
                     style="width: 60px; height: 60px; background: rgba(240, 152, 25, 0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem;">
@@ -843,13 +890,12 @@
 </div>
 
 <div id="terminosEmpresaModal" class="modal-overlay" style="z-index: 10002;">
-    <div class="modal-container"
-        style="max-width: 700px; background: white; color: #333; padding: 0; border: none; border-top: 5px solid #F09819; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+    <div class="modal-container terminos-empresa-modal">
         <button class="modal-close" onclick="closeTerminosEmpresaModal()"
             style="color: #666; background: transparent; top: 1rem; right: 1rem; border: none; font-size: 2rem; transition: color 0.2s;"
             onmouseover="this.style.color='#F09819'" onmouseout="this.style.color='#666'">×</button>
 
-        <div style="padding: 1.5rem;">
+        <div class="terminos-empresa-body">
             <div style="text-align: center; margin-bottom: 1.25rem;">
                 <div style="width: 60px; height: 60px; background: rgba(240, 152, 25, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem;">
                     <i class="fa-solid fa-file-signature" style="font-size: 1.8rem; color: #F09819;"></i>
