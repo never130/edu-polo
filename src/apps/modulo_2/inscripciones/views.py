@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.db import transaction
 from django.db.models import Max
 from datetime import date
@@ -38,14 +37,38 @@ def formulario_inscripcion(request, comision_id):
                 return redirect('landing')
             
             # Verificar inscripción en otra comisión del mismo curso
-            # Permitimos múltiples comisiones si las inscripciones previas están en lista de espera o canceladas.
             curso = comision.fk_id_curso
-            if Inscripcion.objects.filter(
-                estudiante=estudiante_check,
-                comision__fk_id_curso=curso,
-                estado__in=['pre_inscripto', 'confirmado'],
-            ).exists():
-                messages.warning(request, f'⚠️ Ya estás inscrito en el curso "{curso.nombre}" (en esta u otra comisión). No se permiten inscripciones múltiples al mismo curso.')
+            hoy = date.today()
+            existentes = list(
+                Inscripcion.objects.filter(
+                    estudiante=estudiante_check,
+                    comision__fk_id_curso=curso,
+                    estado__in=['pre_inscripto', 'confirmado'],
+                ).exclude(comision=comision).select_related('comision')
+            )
+
+            def solapa(rango_a, rango_b):
+                a_ini, a_fin = rango_a
+                b_ini, b_fin = rango_b
+                if not a_ini or not a_fin or not b_ini or not b_fin:
+                    return True
+                return not (a_fin < b_ini or a_ini > b_fin)
+
+            rango_objetivo = (comision.fecha_inicio, comision.fecha_fin)
+            bloquea = False
+            for insc in existentes:
+                com = insc.comision
+                if com.estado == 'Finalizada' or (com.fecha_fin and com.fecha_fin < hoy):
+                    continue
+                if solapa((com.fecha_inicio, com.fecha_fin), rango_objetivo):
+                    bloquea = True
+                    break
+
+            if bloquea:
+                messages.warning(
+                    request,
+                    f'⚠️ Ya estás inscrito en una comisión del curso "{curso.nombre}" que se solapa con esta.',
+                )
                 return redirect('landing')
             
             # Verificar rango etario (validación previa)
@@ -167,14 +190,38 @@ def formulario_inscripcion(request, comision_id):
                     return redirect('landing')
 
                 # Verificar inscripción en otra comisión del mismo curso
-                # Permitimos múltiples comisiones si las inscripciones previas están en lista de espera o canceladas.
                 curso = comision.fk_id_curso
-                if Inscripcion.objects.filter(
-                    estudiante=estudiante,
-                    comision__fk_id_curso=curso,
-                    estado__in=['pre_inscripto', 'confirmado'],
-                ).exists():
-                    messages.warning(request, f'⚠️ Ya estás inscrito en el curso "{curso.nombre}" (en esta u otra comisión). No se permiten inscripciones múltiples al mismo curso.')
+                hoy = date.today()
+                existentes = list(
+                    Inscripcion.objects.filter(
+                        estudiante=estudiante,
+                        comision__fk_id_curso=curso,
+                        estado__in=['pre_inscripto', 'confirmado'],
+                    ).exclude(comision=comision).select_related('comision')
+                )
+
+                def solapa(rango_a, rango_b):
+                    a_ini, a_fin = rango_a
+                    b_ini, b_fin = rango_b
+                    if not a_ini or not a_fin or not b_ini or not b_fin:
+                        return True
+                    return not (a_fin < b_ini or a_ini > b_fin)
+
+                rango_objetivo = (comision.fecha_inicio, comision.fecha_fin)
+                bloquea = False
+                for insc in existentes:
+                    com = insc.comision
+                    if com.estado == 'Finalizada' or (com.fecha_fin and com.fecha_fin < hoy):
+                        continue
+                    if solapa((com.fecha_inicio, com.fecha_fin), rango_objetivo):
+                        bloquea = True
+                        break
+
+                if bloquea:
+                    messages.warning(
+                        request,
+                        f'⚠️ Ya estás inscrito en una comisión del curso "{curso.nombre}" que se solapa con esta.',
+                    )
                     return redirect('landing')
                 
                 # 8. Crear inscripción con observaciones
