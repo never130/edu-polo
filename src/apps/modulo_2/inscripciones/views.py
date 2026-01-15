@@ -51,7 +51,7 @@ def formulario_inscripcion(request, comision_id):
                 a_ini, a_fin = rango_a
                 b_ini, b_fin = rango_b
                 if not a_ini or not a_fin or not b_ini or not b_fin:
-                    return True
+                    return False
                 return not (a_fin < b_ini or a_ini > b_fin)
 
             rango_objetivo = (comision.fecha_inicio, comision.fecha_fin)
@@ -204,7 +204,7 @@ def formulario_inscripcion(request, comision_id):
                     a_ini, a_fin = rango_a
                     b_ini, b_fin = rango_b
                     if not a_ini or not a_fin or not b_ini or not b_fin:
-                        return True
+                        return False
                     return not (a_fin < b_ini or a_ini > b_fin)
 
                 rango_objetivo = (comision.fecha_inicio, comision.fecha_fin)

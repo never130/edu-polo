@@ -143,6 +143,34 @@ class InscripcionesFlowTests(TestCase):
         self.assertRedirects(response, reverse('cursos:mis_inscripciones'))
         self.assertTrue(Inscripcion.objects.filter(estudiante=self.estudiante, comision=comision_nueva).exists())
 
+    def test_confirmado_en_comision_sin_fechas_puede_inscribirse_a_otra_mismo_curso(self):
+        comision_sin_fechas = Comision.objects.create(
+            fk_id_curso=self.curso,
+            fk_id_polo=self.polo,
+            dias_horarios='Miércoles 10:00 - 12:00',
+            estado='En proceso',
+            cupo_maximo=2,
+        )
+        comision_nueva = Comision.objects.create(
+            fk_id_curso=self.curso,
+            fk_id_polo=self.polo,
+            dias_horarios='Miércoles 10:00 - 12:00',
+            fecha_inicio=date(2099, 1, 19),
+            fecha_fin=date(2099, 1, 30),
+            estado='Abierta',
+            cupo_maximo=2,
+        )
+        Inscripcion.objects.create(estudiante=self.estudiante, comision=comision_sin_fechas, estado='confirmado')
+
+        response = self.client.post(
+            reverse('inscripciones:formulario', args=[comision_nueva.id_comision]),
+            data={},
+            secure=True,
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('cursos:mis_inscripciones'))
+        self.assertTrue(Inscripcion.objects.filter(estudiante=self.estudiante, comision=comision_nueva).exists())
+
     def test_confirmado_en_comision_que_se_solapa_no_puede_inscribirse_a_otra_mismo_curso(self):
         comision_a = Comision.objects.create(
             fk_id_curso=self.curso,
