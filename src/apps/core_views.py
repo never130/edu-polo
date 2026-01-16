@@ -370,9 +370,13 @@ def dashboard_admin(request):
     ).filter(total_inscripciones__gt=0).order_by('-total_inscripciones')[:5]
     
     # Estado de comisiones y Alertas de Cupo
-    comisiones_abiertas = Comision.objects.filter(estado='Abierta').count()
-    comisiones_cerradas = Comision.objects.filter(estado='Cerrada').count()
-    comisiones_finalizadas = Comision.objects.filter(estado='Finalizada').count()
+    # Para el dashboard, consideramos "Finalizada" también cuando ya pasó (o llegó) la fecha_fin,
+    # aunque el campo estado todavía no haya sido actualizado.
+    finalizadas_q = Q(estado='Finalizada') | Q(fecha_fin__isnull=False, fecha_fin__lte=hoy_real)
+
+    comisiones_finalizadas = Comision.objects.filter(finalizadas_q).count()
+    comisiones_abiertas = Comision.objects.filter(estado='Abierta').exclude(finalizadas_q).count()
+    comisiones_cerradas = Comision.objects.filter(estado='Cerrada').exclude(finalizadas_q).count()
     
     # Alertas de Cupo (Comisiones abiertas con 5 o menos lugares)
     alertas_cupo = []
