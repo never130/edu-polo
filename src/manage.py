@@ -2,6 +2,7 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+from pathlib import Path
 
 
 def main():
@@ -9,7 +10,12 @@ def main():
     # Cargar variables de entorno desde .env si existe
     try:
         from dotenv import load_dotenv
-        load_dotenv()
+        repo_root_env = Path(__file__).resolve().parent.parent / ".env"
+        src_env = Path(__file__).resolve().parent / ".env"
+        if repo_root_env.exists():
+            load_dotenv(dotenv_path=repo_root_env)
+        if src_env.exists():
+            load_dotenv(dotenv_path=src_env, override=False)
     except ImportError:
         pass
 

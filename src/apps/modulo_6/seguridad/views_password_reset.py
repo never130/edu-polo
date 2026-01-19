@@ -5,9 +5,8 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
-from django.utils.crypto import get_random_string
-from django.utils import timezone
-from datetime import timedelta
+from django.core.signing import BadSignature, SignatureExpired, TimestampSigner
+from urllib.parse import urlencode
 from apps.modulo_1.usuario.models import Usuario, Persona
 
 User = get_user_model()
@@ -42,19 +41,12 @@ def password_reset_request(request):
                  messages.error(request, '❌ El correo electrónico no coincide con el registrado para este DNI.')
                  return render(request, 'registration/password_reset_request.html')
             
-            # Generar token único
-            token = get_random_string(length=32)
-            
-            # Guardar el token en la sesión (en producción, usar base de datos)
-            request.session[f'password_reset_token_{dni}'] = {
-                'token': token,
-                'timestamp': timezone.now().isoformat(),
-                'dni': dni
-            }
-            
             # Crear el enlace de reseteo
+            signer = TimestampSigner(salt='password-reset')
+            token = signer.sign(dni)
+            query = urlencode({'token': token})
             reset_link = request.build_absolute_uri(
-                f'/accounts/password-reset-confirm/?dni={dni}&token={token}'
+                f'/accounts/password-reset-confirm/?{query}'
             )
             
             # Enviar email
@@ -90,29 +82,22 @@ def password_reset_request(request):
 
 def password_reset_confirm(request):
     """Vista para confirmar y cambiar la contraseña"""
-    dni = request.GET.get('dni', '')
-    token = request.GET.get('token', '')
-    
-    if not dni or not token:
+    token = request.GET.get('token') or request.POST.get('token') or ''
+    if not token:
         messages.error(request, '❌ Enlace inválido o expirado.')
         return redirect('password_reset_request')
-    
-    # Verificar el token en la sesión
-    session_key = f'password_reset_token_{dni}'
-    token_data = request.session.get(session_key)
-    
-    if not token_data or token_data.get('token') != token:
+
+    signer = TimestampSigner(salt='password-reset')
+    max_age_seconds = int(getattr(settings, 'PASSWORD_RESET_TOKEN_MAX_AGE', 60 * 60 * 24))
+    try:
+        dni = signer.unsign(token, max_age=max_age_seconds)
+    except SignatureExpired:
+        messages.error(request, '❌ El enlace ha expirado. Por favor, solicita uno nuevo.')
+        return redirect('password_reset_request')
+    except BadSignature:
         messages.error(request, '❌ Token inválido o expirado.')
         return redirect('password_reset_request')
-    
-    # Verificar que el token no haya expirado (24 horas)
-    try:
-        timestamp = timezone.datetime.fromisoformat(token_data['timestamp'])
-        if timezone.now() - timestamp > timedelta(hours=24):
-            messages.error(request, '❌ El enlace ha expirado. Por favor, solicita uno nuevo.')
-            del request.session[session_key]
-            return redirect('password_reset_request')
-    except:
+    except Exception:
         messages.error(request, '❌ Error al verificar el token.')
         return redirect('password_reset_request')
     
@@ -150,9 +135,6 @@ def password_reset_confirm(request):
             django_user.last_name = usuario.persona.apellido
             django_user.set_password(password)
             django_user.save()
-            
-            # Eliminar el token de la sesión
-            del request.session[session_key]
             
             messages.success(request, '✅ Tu contraseña ha sido actualizada exitosamente. Ahora puedes iniciar sesión.')
             return redirect('login')

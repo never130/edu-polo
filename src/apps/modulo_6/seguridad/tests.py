@@ -1,10 +1,11 @@
-from datetime import timedelta
+import time
 
 from django.contrib.messages import get_messages
 from django.core import mail
+from django.core.signing import TimestampSigner
 from django.test import TestCase, override_settings
 from django.urls import reverse
-from django.utils import timezone
+from urllib.parse import unquote
 
 from apps.modulo_1.usuario.models import Persona, Usuario
 from apps.modulo_6.seguridad.backends import DNIAuthenticationBackend
@@ -82,6 +83,12 @@ class PasswordResetTests(TestCase):
         mensajes = [m.message for m in get_messages(response.wsgi_request)]
         self.assertIn('❌ Por favor, ingresa tu DNI.', mensajes)
 
+    def test_password_reset_request_get_renderiza_formulario(self):
+        response = self.client.get(reverse('password_reset_request'), secure=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'name="dni"')
+        self.assertContains(response, 'name="email"')
+
     def test_password_reset_request_rechaza_email_distinto(self):
         response = self.client.post(
             reverse('password_reset_request'),
@@ -103,11 +110,13 @@ class PasswordResetTests(TestCase):
         self.assertEqual(response.url, reverse('login'))
         self.assertEqual(len(mail.outbox), 1)
 
-        session_key = f'password_reset_token_{self.dni}'
-        token_data = self.client.session.get(session_key)
-        self.assertIsNotNone(token_data)
-        self.assertEqual(token_data.get('dni'), self.dni)
-        self.assertTrue(token_data.get('token'))
+        email = mail.outbox[0]
+        self.assertIn(f"https://testserver{reverse('password_reset_confirm')}?token=", email.body)
+        token = email.body.split("token=", 1)[1].split()[0].strip()
+        token = token.replace("&amp;", "&")
+        token = unquote(token)
+        signer = TimestampSigner(salt="password-reset")
+        self.assertEqual(signer.unsign(token, max_age=60 * 60 * 24), self.dni)
 
     def test_password_reset_confirm_sin_params_redirige(self):
         response = self.client.get(reverse('password_reset_confirm'), secure=True)
@@ -115,51 +124,34 @@ class PasswordResetTests(TestCase):
         self.assertEqual(response.url, reverse('password_reset_request'))
 
     def test_password_reset_confirm_token_invalido_redirige(self):
-        session = self.client.session
-        session[f'password_reset_token_{self.dni}'] = {
-            'token': 'otro',
-            'timestamp': timezone.now().isoformat(),
-            'dni': self.dni,
-        }
-        session.save()
-
         response = self.client.get(
-            f"{reverse('password_reset_confirm')}?dni={self.dni}&token=bad",
+            f"{reverse('password_reset_confirm')}?token=bad",
             secure=True,
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('password_reset_request'))
 
-    def test_password_reset_confirm_expirado_redirige_y_elimina_token(self):
-        session_key = f'password_reset_token_{self.dni}'
-        session = self.client.session
-        session[session_key] = {
-            'token': 'tok',
-            'timestamp': (timezone.now() - timedelta(hours=25)).isoformat(),
-            'dni': self.dni,
-        }
-        session.save()
+    @override_settings(PASSWORD_RESET_TOKEN_MAX_AGE=1)
+    def test_password_reset_confirm_expirado_redirige(self):
+        signer = TimestampSigner(salt="password-reset")
+        token = signer.sign(self.dni)
+        time.sleep(2)
 
         response = self.client.get(
-            f"{reverse('password_reset_confirm')}?dni={self.dni}&token=tok",
+            f"{reverse('password_reset_confirm')}?token={token}",
+            follow=True,
             secure=True,
         )
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, reverse('password_reset_request'))
-        self.assertIsNone(self.client.session.get(session_key))
+        self.assertEqual(response.status_code, 200)
+        mensajes = [m.message for m in get_messages(response.wsgi_request)]
+        self.assertIn('❌ El enlace ha expirado. Por favor, solicita uno nuevo.', mensajes)
 
-    @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
     def test_password_reset_confirm_post_valida_y_actualiza(self):
-        self.client.post(
-            reverse('password_reset_request'),
-            data={'dni': self.dni, 'email': self.persona.correo},
-            secure=True,
-        )
-        session_key = f'password_reset_token_{self.dni}'
-        token = self.client.session[session_key]['token']
+        signer = TimestampSigner(salt="password-reset")
+        token = signer.sign(self.dni)
 
         response = self.client.post(
-            f"{reverse('password_reset_confirm')}?dni={self.dni}&token={token}",
+            f"{reverse('password_reset_confirm')}?token={token}",
             data={'password': 'nueva123', 'password_confirm': 'nueva123'},
             secure=True,
         )
@@ -168,19 +160,13 @@ class PasswordResetTests(TestCase):
 
         self.usuario.refresh_from_db()
         self.assertEqual(self.usuario.contrasena, 'nueva123')
-        self.assertIsNone(self.client.session.get(session_key))
 
     def test_password_reset_confirm_post_rechaza_passwords_distintas(self):
-        self.client.post(
-            reverse('password_reset_request'),
-            data={'dni': self.dni, 'email': self.persona.correo},
-            secure=True,
-        )
-        session_key = f'password_reset_token_{self.dni}'
-        token = self.client.session[session_key]['token']
+        signer = TimestampSigner(salt="password-reset")
+        token = signer.sign(self.dni)
 
         response = self.client.post(
-            f"{reverse('password_reset_confirm')}?dni={self.dni}&token={token}",
+            f"{reverse('password_reset_confirm')}?token={token}",
             data={'password': 'abc123', 'password_confirm': 'zzz999'},
             follow=True,
             secure=True,
@@ -190,16 +176,11 @@ class PasswordResetTests(TestCase):
         self.assertIn('❌ Las contraseñas no coinciden.', mensajes)
 
     def test_password_reset_confirm_post_rechaza_password_corta(self):
-        self.client.post(
-            reverse('password_reset_request'),
-            data={'dni': self.dni, 'email': self.persona.correo},
-            secure=True,
-        )
-        session_key = f'password_reset_token_{self.dni}'
-        token = self.client.session[session_key]['token']
+        signer = TimestampSigner(salt="password-reset")
+        token = signer.sign(self.dni)
 
         response = self.client.post(
-            f"{reverse('password_reset_confirm')}?dni={self.dni}&token={token}",
+            f"{reverse('password_reset_confirm')}?token={token}",
             data={'password': '123', 'password_confirm': '123'},
             follow=True,
             secure=True,
