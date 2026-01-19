@@ -216,22 +216,6 @@
     {% endif %}
 </div>
 
-<div class="section">
-    <div class="section__header">
-        <h2 class="section__title">Completitud</h2>
-    </div>
-
-    <div class="charts-container charts-container--single">
-        <div class="card">
-            <div class="card__header">
-                <h3 class="card__title">Cursos completados vs en proceso</h3>
-            </div>
-            <div class="chart-box">
-                <canvas id="chartCompletitud"></canvas>
-            </div>
-        </div>
-    </div>
-</div>
 
 <style>
     .page-hero {
@@ -1023,56 +1007,6 @@
                             const label = context.label || '';
                             const value = context.parsed || 0;
                             const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                            return `${label}: ${value} (${percentage}%)`;
-                        }
-                    }
-                }
-            }
-        }
-    });
-    
-    // Gráfico de Completitud (Cursos Completados vs En Proceso)
-    const ctxCompletitud = document.getElementById('chartCompletitud').getContext('2d');
-    new Chart(ctxCompletitud, {
-        type: 'doughnut',
-        data: {
-            labels: ['Completados', 'En Proceso'],
-            datasets: [{
-                data: [{{ total_completados }}, {{ total_en_proceso }}],
-                backgroundColor: [
-                    'rgba(16, 185, 129, 0.8)',  // Verde
-                    'rgba(245, 158, 11, 0.8)'   // Naranja
-                ],
-                borderColor: '#ffffff',
-                borderWidth: 3,
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        padding: 15,
-                        font: { size: 13, weight: 'bold' },
-                        usePointStyle: true,
-                        pointStyle: 'circle'
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    padding: 12,
-                    titleFont: { size: 14, weight: 'bold' },
-                    bodyFont: { size: 13 },
-                    borderColor: 'rgba(255, 255, 255, 0.2)',
-                    borderWidth: 1,
-                    callbacks: {
-                        label: function(context) {
-                            const label = context.label || '';
-                            const value = context.parsed || 0;
-                            const total = {{ total_inscripciones|unlocalize }};
                             const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
                             return `${label}: ${value} (${percentage}%)`;
                         }
