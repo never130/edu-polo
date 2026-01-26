@@ -59,35 +59,53 @@ def cursos_por_polo(request, polo_id):
     from apps.modulo_3.cursos.models import Curso, PoloCreativo
     from django.shortcuts import get_object_or_404
     from django.db.models import Count, F, Q
-    
+
     polo_seleccionado = get_object_or_404(PoloCreativo, id_polo=polo_id)
-    
-    # Obtener cursos disponibles con comisiones abiertas en este polo
-    cursos = Curso.objects.filter(estado='Abierto').prefetch_related('comision_set__inscripciones').order_by('orden', 'id_curso')
-    
-    # Filtrar cursos que tengan comisiones en este polo
-    cursos = cursos.filter(comision__fk_id_polo=polo_seleccionado).distinct()
-            
-    # Agregar comisiones abiertas a cada curso para este polo
+
+    hoy_real = date.today()
+
+    cursos = (
+        Curso.objects.filter(estado='Abierto')
+        .prefetch_related('comision_set__inscripciones')
+        .order_by('orden', 'id_curso')
+        .filter(comision__fk_id_polo=polo_seleccionado)
+        .distinct()
+    )
+
+    cursos_visibles = []
+
     for curso in cursos:
-        curso.comisiones_abiertas = curso.comision_set.filter(
-            estado='Abierta',
-            fk_id_polo=polo_seleccionado,
-        ).annotate(
-            inscritos_count_annotated=Count(
-                'inscripciones',
-                filter=~Q(inscripciones__estado__in=['lista_espera', 'cancelada']),
+        curso.comisiones_abiertas = (
+            curso.comision_set.filter(
+                estado='Abierta',
+                fk_id_polo=polo_seleccionado,
             )
-        ).filter(
-            inscritos_count_annotated__lt=F('cupo_maximo')
-        ).order_by('id_comision')
-        curso.comisiones_polo = curso.comision_set.filter(
-            fk_id_polo=polo_seleccionado,
-        ).order_by('id_comision')
-    
+            .exclude(Q(fecha_fin__isnull=False, fecha_fin__lte=hoy_real))
+            .annotate(
+                inscritos_count_annotated=Count(
+                    'inscripciones',
+                    filter=~Q(inscripciones__estado__in=['lista_espera', 'cancelada']),
+                )
+            )
+            .filter(inscritos_count_annotated__lt=F('cupo_maximo'))
+            .order_by('id_comision')
+        )
+
+        curso.comisiones_polo = list(
+            curso.comision_set.filter(
+                fk_id_polo=polo_seleccionado,
+            )
+            .exclude(estado__in=['Cerrada', 'Finalizada'])
+            .exclude(Q(fecha_fin__isnull=False, fecha_fin__lte=hoy_real))
+            .order_by('id_comision')
+        )
+
+        if curso.comisiones_polo:
+            cursos_visibles.append(curso)
+
     context = {
         'polo_seleccionado': polo_seleccionado,
-        'cursos': cursos,
+        'cursos': cursos_visibles,
         'user_authenticated': request.user.is_authenticated
     }
     return render(request, 'cursos_por_polo.html', context)
