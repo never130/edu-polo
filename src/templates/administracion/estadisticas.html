@@ -137,6 +137,47 @@
         </div>
 
         <div class="card">
+            <div class="card__header">
+                <h3 class="card__title">Asistencia semanal (por polo)</h3>
+            </div>
+            <div class="chart-box">
+                <canvas id="chartAsistenciaSemanal"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card__header">
+                <h3 class="card__title">Demanda vs oferta (polo × franja)</h3>
+            </div>
+            <div class="chart-box">
+                <canvas id="chartDemandaOferta"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card__header card__header--between">
+                <h3 class="card__title">Ocupación vs asistencia (por comisión)</h3>
+                <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+                    <select id="filtroPoloOcupacion" style="padding:0.5rem 0.75rem; border-radius:10px; border:1px solid #e2e8f0; font-weight:700; color:#0f172a; background:white;">
+                        <option value="">Todos los polos</option>
+                    </select>
+                    <select id="filtroCursoOcupacion" style="padding:0.5rem 0.75rem; border-radius:10px; border:1px solid #e2e8f0; font-weight:700; color:#0f172a; background:white;">
+                        <option value="">Todos los cursos</option>
+                    </select>
+                    <select id="filtroFranjaOcupacion" style="padding:0.5rem 0.75rem; border-radius:10px; border:1px solid #e2e8f0; font-weight:700; color:#0f172a; background:white;">
+                        <option value="">Todas las franjas</option>
+                    </select>
+                </div>
+            </div>
+            <div style="padding: 0 1.25rem; margin: 0.5rem 0 0; color:#64748b; font-size:0.92rem; line-height:1.3; overflow-wrap:anywhere;">
+                Eje X: % ocupación (confirmados / cupo). Eje Y: % asistencia promedio. Las comisiones sin registro aparecen separadas.
+            </div>
+            <div class="chart-box">
+                <canvas id="chartOcupacionVsAsistencia"></canvas>
+            </div>
+        </div>
+        
+        <div class="card">
             <div class="card__header card__header--between">
                 <h3 class="card__title">Edad (rangos)</h3>
                 <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
@@ -524,6 +565,9 @@
     const edadRangos = {{ edad_rangos_json|safe }};
     const datosInscripcionesEstado = {{ inscripciones_estado_json|safe }};
     const datosGenero = {{ genero_grafico_json|safe }};
+    const asistenciaSemanal = {{ asistencia_semanal_json|safe }};
+    const demandaOferta = {{ demanda_oferta_json|safe }};
+    const ocupacionAsistencia = {{ ocupacion_asistencia_json|safe }};
     
     // Configuración global de fuentes para Chart.js
     Chart.defaults.font.family = "'Be Vietnam Pro', sans-serif";
@@ -663,6 +707,40 @@
                             }
                         }
                     }
+                }
+            }
+        });
+    }
+
+    const elChartAsistenciaSemanal = document.getElementById('chartAsistenciaSemanal');
+    if (elChartAsistenciaSemanal && asistenciaSemanal && Array.isArray(asistenciaSemanal.series)) {
+        const ctx = elChartAsistenciaSemanal.getContext('2d');
+        const weeks = (asistenciaSemanal.weeks || []).map(w => {
+            if (!w || typeof w !== 'string' || w.length < 10) return String(w || '');
+            return `${w.slice(8, 10)}/${w.slice(5, 7)}`;
+        });
+        const datasets = (asistenciaSemanal.series || []).map((s, i) => ({
+            label: s.polo || `Polo ${i + 1}`,
+            data: (s.data || []).map(v => Number(v || 0)),
+            borderColor: colores[i % colores.length].replace('0.8', '1'),
+            backgroundColor: colores[i % colores.length],
+            pointRadius: 3,
+            tension: 0.25,
+        }));
+
+        new Chart(ctx, {
+            type: 'line',
+            data: { labels: weeks, datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${Number(c.parsed.y || 0).toFixed(1)}%` } }
+                },
+                scales: {
+                    y: { beginAtZero: true, max: 100, ticks: { callback: (v) => `${v}%` } },
+                    x: { grid: { display: false } },
                 }
             }
         });
@@ -964,6 +1042,162 @@
         elFiltroComisionEdad.addEventListener('change', () => {
             actualizarEdadRangos();
         });
+    }
+
+    const elChartDemandaOferta = document.getElementById('chartDemandaOferta');
+    if (elChartDemandaOferta && demandaOferta) {
+        const ctx = elChartDemandaOferta.getContext('2d');
+        const polos = demandaOferta.polos || [];
+        const franjas = demandaOferta.franjas || [];
+        const base = demandaOferta.points || [];
+
+        const colorRatio = (ratio) => {
+            if (ratio >= 1) return 'rgba(239, 68, 68, 0.80)';
+            if (ratio >= 0.75) return 'rgba(245, 158, 11, 0.80)';
+            return 'rgba(16, 185, 129, 0.80)';
+        };
+
+        const points = base.map(p => {
+            const cupo = Number(p.cupo || 0);
+            const demanda = Number(p.demanda || 0);
+            const ratio = cupo > 0 ? (demanda / cupo) : 0;
+            return {
+                x: franjas.indexOf(p.franja),
+                y: polos.indexOf(p.polo),
+                r: Math.max(4, Math.min(18, ratio * 10)),
+                _meta: { polo: p.polo, franja: p.franja, demanda, cupo, ratio },
+                _color: colorRatio(ratio),
+            };
+        }).filter(p => p.x >= 0 && p.y >= 0);
+
+        new Chart(ctx, {
+            type: 'bubble',
+            data: {
+                datasets: [{
+                    data: points,
+                    backgroundColor: points.map(p => p._color),
+                    borderColor: 'rgba(255, 255, 255, 0.9)',
+                    borderWidth: 2,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            title: (items) => {
+                                const m = items[0]?.raw?._meta;
+                                return m ? `${m.polo} · ${m.franja}` : '';
+                            },
+                            label: (c) => {
+                                const m = c.raw?._meta;
+                                if (!m) return '';
+                                return `Demanda/Cupo: ${m.demanda}/${m.cupo} (${(m.ratio * 100).toFixed(0)}%)`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        min: -0.5,
+                        max: Math.max(franjas.length - 0.5, 0.5),
+                        ticks: { stepSize: 1, callback: (v) => franjas[v] || '' },
+                        grid: { display: false },
+                    },
+                    y: {
+                        min: -0.5,
+                        max: Math.max(polos.length - 0.5, 0.5),
+                        ticks: { stepSize: 1, callback: (v) => polos[v] || '' },
+                        grid: { color: 'rgba(148, 163, 184, 0.18)' },
+                    }
+                }
+            }
+        });
+    }
+
+    const elChartOcupacionVsAsistencia = document.getElementById('chartOcupacionVsAsistencia');
+    const elFiltroPoloOcupacion = document.getElementById('filtroPoloOcupacion');
+    const elFiltroCursoOcupacion = document.getElementById('filtroCursoOcupacion');
+    const elFiltroFranjaOcupacion = document.getElementById('filtroFranjaOcupacion');
+
+    if (ocupacionAsistencia) {
+        setOptions(elFiltroPoloOcupacion, ocupacionAsistencia.polos || [], 'Todos los polos');
+        setOptions(elFiltroCursoOcupacion, ocupacionAsistencia.cursos || [], 'Todos los cursos');
+        setOptions(elFiltroFranjaOcupacion, (ocupacionAsistencia.franjas || []).map(f => ({ value: f, label: f })), 'Todas las franjas');
+    }
+
+    if (elChartOcupacionVsAsistencia && ocupacionAsistencia) {
+        const ctx = elChartOcupacionVsAsistencia.getContext('2d');
+        const base = ocupacionAsistencia.puntos || [];
+
+        const filtrar = () => {
+            const poloId = elFiltroPoloOcupacion ? (elFiltroPoloOcupacion.value || '') : '';
+            const cursoId = elFiltroCursoOcupacion ? (elFiltroCursoOcupacion.value || '') : '';
+            const franja = elFiltroFranjaOcupacion ? (elFiltroFranjaOcupacion.value || '') : '';
+            return base.filter(p => {
+                if (poloId && String(p.polo_id) !== String(poloId)) return false;
+                if (cursoId && String(p.curso_id) !== String(cursoId)) return false;
+                if (franja && String(p.franja) !== String(franja)) return false;
+                return true;
+            });
+        };
+
+        const build = () => {
+            const con = [];
+            const sin = [];
+            for (const p of filtrar()) {
+                const x = Number(p.ocupacion_pct || 0);
+                const yRaw = (p.asistencia_pct === null || typeof p.asistencia_pct === 'undefined') ? null : Number(p.asistencia_pct || 0);
+                const row = { x, y: (yRaw === null ? 0 : yRaw), _meta: p };
+                if (yRaw === null) sin.push(row); else con.push(row);
+            }
+            return [
+                { label: 'Con asistencia', data: con, backgroundColor: 'rgba(59, 130, 246, 0.70)' },
+                { label: 'Sin registro', data: sin, backgroundColor: 'rgba(148, 163, 184, 0.70)' },
+            ];
+        };
+
+        const chart = new Chart(ctx, {
+            type: 'scatter',
+            data: { datasets: build() },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            title: (items) => {
+                                const m = items[0]?.raw?._meta;
+                                if (!m) return '';
+                                return `${m.curso || 'Curso'} · Comisión #${m.comision_id || ''}`;
+                            },
+                            label: (c) => {
+                                const m = c.raw?._meta;
+                                if (!m) return '';
+                                const asis = (m.asistencia_pct === null || typeof m.asistencia_pct === 'undefined') ? 'Sin registro' : `${Number(m.asistencia_pct || 0).toFixed(1)}%`;
+                                return [`Ocupación: ${Number(m.ocupacion_pct || 0).toFixed(1)}% · Asistencia: ${asis}`, `${m.polo || ''} · ${m.franja || ''}`];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: { beginAtZero: true, max: 100, ticks: { callback: (v) => `${v}%` } },
+                    y: { beginAtZero: true, max: 100, ticks: { callback: (v) => `${v}%` } },
+                }
+            }
+        });
+
+        const actualizar = () => {
+            chart.data.datasets = build();
+            chart.update();
+        };
+
+        if (elFiltroPoloOcupacion) elFiltroPoloOcupacion.addEventListener('change', actualizar);
+        if (elFiltroCursoOcupacion) elFiltroCursoOcupacion.addEventListener('change', actualizar);
+        if (elFiltroFranjaOcupacion) elFiltroFranjaOcupacion.addEventListener('change', actualizar);
     }
 
     const ctxGenero = document.getElementById('chartGenero').getContext('2d');

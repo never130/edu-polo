@@ -1105,6 +1105,182 @@ def estadisticas_detalladas(request):
     if sin_dato:
         datos_genero.append({'nombre': 'Sin dato', 'cantidad': int(sin_dato)})
 
+    from apps.modulo_4.asistencia.models import Asistencia
+    from datetime import timedelta as dt_timedelta
+    import re
+
+    def _franja_horaria(dias_horarios):
+        m = re.search(r'(\d{1,2})\s*:\s*(\d{2})', dias_horarios or '')
+        if not m:
+            return 'Sin horario'
+        h = int(m.group(1))
+        if 6 <= h < 12:
+            return 'Mañana'
+        if 12 <= h < 18:
+            return 'Tarde'
+        return 'Noche'
+
+    hoy = dt_date.today()
+
+    semanas_atras = 16
+    inicio_series = hoy - dt_timedelta(days=7 * semanas_atras)
+
+    filas_asistencia = list(
+        Asistencia.objects.filter(
+            fecha_clase__gte=inicio_series,
+            inscripcion__estado__in=['confirmado', 'aprobada'],
+        ).values(
+            'fecha_clase',
+            'inscripcion__comision__fk_id_polo__ciudad',
+        ).annotate(
+            presentes=Count('id', filter=Q(presente=True)),
+            total=Count('id'),
+        ).order_by('fecha_clase')
+    )
+
+    semanas_set = set()
+    polos_set = set()
+    acumulado_semanal = {}
+
+    for row in filas_asistencia:
+        fecha = row.get('fecha_clase')
+        if not fecha:
+            continue
+        semana_inicio = fecha - dt_timedelta(days=fecha.weekday())
+        polo_ciudad = row.get('inscripcion__comision__fk_id_polo__ciudad') or 'Sin polo'
+        key = (polo_ciudad, semana_inicio)
+
+        presentes = int(row.get('presentes') or 0)
+        total = int(row.get('total') or 0)
+
+        prev = acumulado_semanal.get(key) or {'presentes': 0, 'total': 0}
+        prev['presentes'] += presentes
+        prev['total'] += total
+        acumulado_semanal[key] = prev
+
+        semanas_set.add(semana_inicio)
+        polos_set.add(polo_ciudad)
+
+    semanas_ordenadas = sorted(semanas_set)
+    polos_ordenados = sorted(polos_set)
+
+    asistencia_semanal = {
+        'weeks': [d.isoformat() for d in semanas_ordenadas],
+        'series': [
+            {
+                'polo': polo,
+                'data': [
+                    round(((acumulado_semanal.get((polo, w)) or {}).get('presentes', 0) / (acumulado_semanal.get((polo, w)) or {}).get('total', 0) * 100), 1)
+                    if (acumulado_semanal.get((polo, w)) or {}).get('total', 0) else 0
+                    for w in semanas_ordenadas
+                ],
+            }
+            for polo in polos_ordenados
+        ],
+    }
+
+    estados_no_demanda = ['cancelada', 'rechazada']
+
+    comisiones_stats = Comision.objects.select_related('fk_id_curso', 'fk_id_polo').annotate(
+        confirmados_count=Count('inscripciones', filter=Q(inscripciones__estado__in=['confirmado', 'aprobada']), distinct=True),
+        demanda_count=Count('inscripciones', filter=~Q(inscripciones__estado__in=estados_no_demanda), distinct=True),
+        asistencia_promedio=Avg(
+            'inscripciones__registro_asistencia__porcentaje_asistencia',
+            filter=Q(inscripciones__estado__in=['confirmado', 'aprobada']),
+        ),
+        registros_count=Count(
+            'inscripciones__registro_asistencia',
+            filter=Q(inscripciones__estado__in=['confirmado', 'aprobada']),
+            distinct=True,
+        ),
+    )
+
+    puntos_ocupacion_asistencia = []
+    polos_opciones = {}
+    cursos_opciones_scatter = {}
+
+    for com in comisiones_stats:
+        cupo = int(getattr(com, 'cupo_maximo', 0) or 0)
+        if cupo <= 0:
+            continue
+
+        confirmados = int(getattr(com, 'confirmados_count', 0) or 0)
+        demanda = int(getattr(com, 'demanda_count', 0) or 0)
+
+        ocupacion_pct = round((confirmados / cupo) * 100, 1) if cupo else 0
+
+        asistencia_avg = getattr(com, 'asistencia_promedio', None)
+        asistencia_pct = round(float(asistencia_avg), 1) if asistencia_avg is not None else None
+
+        polo = getattr(com, 'fk_id_polo', None)
+        curso = getattr(com, 'fk_id_curso', None)
+
+        polo_id = getattr(polo, 'id_polo', None)
+        polo_label = (getattr(polo, 'ciudad', '') or getattr(polo, 'nombre', '') or 'Sin polo')
+        curso_id = getattr(curso, 'id_curso', None)
+        curso_label = (getattr(curso, 'nombre', '') or '')
+
+        franja = _franja_horaria(getattr(com, 'dias_horarios', None))
+
+        polos_opciones[str(polo_id)] = polo_label
+        cursos_opciones_scatter[str(curso_id)] = curso_label
+
+        puntos_ocupacion_asistencia.append({
+            'comision_id': int(getattr(com, 'id_comision', 0) or 0),
+            'polo_id': int(polo_id) if polo_id is not None else None,
+            'polo': polo_label,
+            'curso_id': int(curso_id) if curso_id is not None else None,
+            'curso': curso_label,
+            'franja': franja,
+            'cupo': cupo,
+            'confirmados': confirmados,
+            'demanda': demanda,
+            'ocupacion_pct': ocupacion_pct,
+            'asistencia_pct': asistencia_pct,
+            'registros_asistencia': int(getattr(com, 'registros_count', 0) or 0),
+        })
+
+    franjas_orden = ['Mañana', 'Tarde', 'Noche', 'Sin horario']
+
+    agregados = {}
+    for p in puntos_ocupacion_asistencia:
+        key = (p.get('polo') or 'Sin polo', p.get('franja') or 'Sin horario')
+        prev = agregados.get(key) or {'demanda': 0, 'cupo': 0}
+        prev['demanda'] += int(p.get('demanda') or 0)
+        prev['cupo'] += int(p.get('cupo') or 0)
+        agregados[key] = prev
+
+    polos_heatmap = sorted({k[0] for k in agregados.keys()})
+
+    demanda_oferta = {
+        'polos': polos_heatmap,
+        'franjas': franjas_orden,
+        'points': [
+            {
+                'polo': polo,
+                'franja': franja,
+                'demanda': int((agregados.get((polo, franja)) or {}).get('demanda', 0)),
+                'cupo': int((agregados.get((polo, franja)) or {}).get('cupo', 0)),
+            }
+            for polo in polos_heatmap
+            for franja in franjas_orden
+        ],
+    }
+
+    ocupacion_asistencia = {
+        'puntos': puntos_ocupacion_asistencia,
+        'polos': [
+            {'value': k if k != 'None' else '', 'label': v}
+            for k, v in sorted(polos_opciones.items(), key=lambda kv: str(kv[1]))
+        ],
+        'cursos': [
+            {'value': k if k != 'None' else '', 'label': v}
+            for k, v in sorted(cursos_opciones_scatter.items(), key=lambda kv: str(kv[1]))
+            if v
+        ],
+        'franjas': franjas_orden,
+    }
+
     import json
     
     context = {
@@ -1122,6 +1298,9 @@ def estadisticas_detalladas(request):
         'edad_rangos_json': json.dumps(edad_rangos),
         'inscripciones_estado_json': json.dumps(inscripciones_estado),
         'genero_grafico_json': json.dumps(datos_genero),
+        'asistencia_semanal_json': json.dumps(asistencia_semanal),
+        'demanda_oferta_json': json.dumps(demanda_oferta),
+        'ocupacion_asistencia_json': json.dumps(ocupacion_asistencia),
     }
     return render(request, 'administracion/estadisticas.html', context)
 
