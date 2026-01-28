@@ -24,6 +24,18 @@ def password_reset_request(request):
         if not email_confirm:
             messages.error(request, '❌ Por favor, confirma tu correo electrónico.')
             return render(request, 'registration/password_reset_request.html')
+
+        email_backend = (getattr(settings, 'EMAIL_BACKEND', '') or '').lower()
+        if (not getattr(settings, 'DEBUG', True)) and (
+            'django.core.mail.backends.console.emailbackend' in email_backend
+            or 'django.core.mail.backends.locmem.emailbackend' in email_backend
+        ):
+            messages.error(
+                request,
+                '❌ El servidor no tiene configurado un backend de email para envíos reales. '
+                'Contactá al administrador.',
+            )
+            return render(request, 'registration/password_reset_request.html')
         
         try:
             # Buscar el usuario por DNI
@@ -68,7 +80,11 @@ def password_reset_request(request):
                     [persona.correo],
                     fail_silently=False,
                 )
-                messages.success(request, f'✅ Se ha enviado un email a {persona.correo} con las instrucciones para recuperar tu contraseña.')
+                messages.success(
+                    request,
+                    f'✅ Se ha enviado un email a {persona.correo} con las instrucciones para recuperar tu contraseña. '
+                    'Puede demorar algunos minutos. Revisá también spam/no deseados.',
+                )
                 return redirect('login')
             except Exception as e:
                 messages.error(request, f'❌ Error al enviar el email: {str(e)}. Por favor, contacta al administrador.')
