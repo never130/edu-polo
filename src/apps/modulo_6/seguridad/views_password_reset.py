@@ -2,8 +2,6 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
 from django.conf import settings
 from django.core.signing import BadSignature, SignatureExpired, TimestampSigner
 from urllib.parse import urlencode
@@ -51,12 +49,12 @@ def password_reset_request(request):
             
             # Enviar email
             subject = 'Recuperación de Contraseña - Edu-Polo'
-            html_message = render_to_string('registration/password_reset_email.html', {
-                'nombre': persona.nombre,
-                'reset_link': reset_link,
-                'dni': dni,
-            })
-            plain_message = strip_tags(html_message)
+            plain_message = (
+                f"Hola {persona.nombre},\n\n"
+                "Recibimos una solicitud para restablecer tu contraseña.\n\n"
+                f"Enlace para restablecerla:\n{reset_link}\n\n"
+                "Si no solicitaste este cambio, ignorá este email.\n"
+            )
             
             try:
                 send_mail(
@@ -64,7 +62,6 @@ def password_reset_request(request):
                     plain_message,
                     settings.DEFAULT_FROM_EMAIL,
                     [persona.correo],
-                    html_message=html_message,
                     fail_silently=False,
                 )
                 messages.success(request, f'✅ Se ha enviado un email a {persona.correo} con las instrucciones para recuperar tu contraseña.')
