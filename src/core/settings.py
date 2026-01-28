@@ -257,3 +257,9 @@ else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@edupolo.com')
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+PUBLIC_BASE_URL = (os.environ.get('PUBLIC_BASE_URL') or '').strip().rstrip('/')
+if IS_PRODUCTION and not PUBLIC_BASE_URL:
+    _public_host = next((h.strip() for h in ALLOWED_HOSTS if h.strip() and h.strip() != '*'), '')
+    if _public_host:
+        PUBLIC_BASE_URL = f'https://{_public_host}'

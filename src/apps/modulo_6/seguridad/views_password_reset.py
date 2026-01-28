@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.conf import settings
+from django.urls import reverse
 from django.core.signing import BadSignature, SignatureExpired, TimestampSigner
 from urllib.parse import urlencode
 from apps.modulo_1.usuario.models import Usuario, Persona
@@ -43,9 +44,12 @@ def password_reset_request(request):
             signer = TimestampSigner(salt='password-reset')
             token = signer.sign(dni)
             query = urlencode({'token': token})
-            reset_link = request.build_absolute_uri(
-                f'/accounts/password-reset-confirm/?{query}'
-            )
+            confirm_path = reverse('password_reset_confirm')
+            base_url = (getattr(settings, 'PUBLIC_BASE_URL', '') or '').rstrip('/')
+            if base_url:
+                reset_link = f"{base_url}{confirm_path}?{query}"
+            else:
+                reset_link = request.build_absolute_uri(f"{confirm_path}?{query}")
             
             # Enviar email
             subject = 'Recuperación de Contraseña - Edu-Polo'
