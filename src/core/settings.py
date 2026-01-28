@@ -20,6 +20,18 @@ except ImportError:
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+try:
+    from dotenv import load_dotenv
+
+    repo_root_env = BASE_DIR.parent / '.env'
+    src_env = BASE_DIR / '.env'
+    if repo_root_env.exists():
+        load_dotenv(dotenv_path=repo_root_env, override=False)
+    if src_env.exists():
+        load_dotenv(dotenv_path=src_env, override=False)
+except ImportError:
+    pass
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
