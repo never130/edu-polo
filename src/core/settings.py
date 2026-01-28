@@ -233,11 +233,15 @@ EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-EMAIL_BACKEND = os.environ.get(
-    'EMAIL_BACKEND',
-    'django.core.mail.backends.smtp.EmailBackend'
-    if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD
-    else 'django.core.mail.backends.console.EmailBackend',
-)
+
+AIF_EMAIL_CLIENT_ID = os.environ.get('AIF_EMAIL_CLIENT_ID', '')
+AIF_EMAIL_CLIENT_SECRET = os.environ.get('AIF_EMAIL_CLIENT_SECRET', '')
+_ENV_EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', '').strip()
+if AIF_EMAIL_CLIENT_ID and AIF_EMAIL_CLIENT_SECRET:
+    EMAIL_BACKEND = 'core.aif_email_backend.AIFEmailBackend'
+elif _ENV_EMAIL_BACKEND:
+    EMAIL_BACKEND = _ENV_EMAIL_BACKEND
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@edupolo.com')
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
