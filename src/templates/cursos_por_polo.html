@@ -367,6 +367,8 @@
             left: 0;
             right: 0;
             bottom: 0;
+            height: 100vh;
+            height: 100dvh;
             background: rgba(15, 23, 42, 0.8);
             backdrop-filter: blur(8px);
             z-index: 10000;
@@ -374,8 +376,21 @@
             align-items: center;
             justify-content: center;
             padding: 1rem;
+            overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
             opacity: 0;
             transition: opacity 0.3s ease;
+        }
+
+        @supports (padding: max(0px, 0px)) {
+            .modal-overlay {
+                padding-top: max(1rem, env(safe-area-inset-top));
+                padding-right: max(1rem, env(safe-area-inset-right));
+                padding-bottom: max(1rem, env(safe-area-inset-bottom));
+                padding-left: max(1rem, env(safe-area-inset-left));
+            }
         }
 
         .modal-overlay.show {
