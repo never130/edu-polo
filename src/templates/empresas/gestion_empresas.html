@@ -248,6 +248,22 @@
         padding: 1.25rem 1.5rem 1.5rem;
     }
 
+    #empresaMiembrosModal .modal-container {
+        max-height: 85vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #empresaMiembrosModal .modal-body {
+        overflow-y: auto;
+    }
+
+    @media (max-width: 640px) {
+        #empresaMiembrosModal .modal-container {
+            max-height: calc(100vh - 2rem);
+        }
+    }
+
     .modal-close {
         border: 1px solid #e2e8f0;
         background: white;

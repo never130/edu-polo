@@ -248,6 +248,16 @@
             opacity: 0;
             transition: opacity 0.3s ease;
         }
+
+        @supports (padding: max(0px, 0px)) {
+            .modal-overlay {
+                padding-top: max(1rem, env(safe-area-inset-top));
+                padding-right: max(1rem, env(safe-area-inset-right));
+                padding-bottom: max(1rem, env(safe-area-inset-bottom));
+                padding-left: max(1rem, env(safe-area-inset-left));
+            }
+        }
+
         .modal-overlay.show { display: flex; opacity: 1; }
         
         .modal-container {
@@ -386,7 +396,54 @@
         .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
         
         @media (max-width: 900px) { .form-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } .modal-container { padding: 1rem; width: 95%; } .modal-container.form-modal { padding: 1rem; width: 95%; max-height: calc(100vh - 2rem); } .punto-empresarial-body { padding: 1.25rem; } .terminos-empresa-body { padding: 1.25rem; } }
+        @media (max-width: 600px) {
+            .modal-overlay {
+                align-items: flex-start;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-container {
+                padding: 1rem;
+                width: 95%;
+                border-radius: 16px;
+            }
+
+            .modal-container.form-modal {
+                padding: 1rem;
+                width: 95%;
+                max-height: calc(100dvh - 2rem);
+            }
+
+            .modal-container.split-design {
+                max-height: calc(100dvh - 2rem);
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .input-group input,
+            .form-input {
+                font-size: 16px;
+            }
+
+            .login-right h2 {
+                font-size: 2rem !important;
+            }
+
+            .login-right p {
+                font-size: 1rem !important;
+            }
+
+            .punto-empresarial-body {
+                padding: 1.25rem;
+            }
+
+            .terminos-empresa-body {
+                padding: 1.25rem;
+            }
+        }
         
         .modal-section {
             margin-top: 2rem; border-top: 1px solid #e2e8f0; padding-top: 1.5rem; grid-column: 1 / -1;

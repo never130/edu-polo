@@ -1167,8 +1167,8 @@ def estadisticas_detalladas(request):
                 'fecha_clase',
                 'inscripcion__comision__fk_id_polo__ciudad',
             ).annotate(
-                presentes=Count('id', filter=Q(presente=True)),
-                total=Count('id'),
+                presentes=Count('pk', filter=Q(presente=True)),
+                total=Count('pk'),
             ).order_by('fecha_clase')
         )
 

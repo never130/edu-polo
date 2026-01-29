@@ -608,6 +608,15 @@
             transition: opacity 0.3s ease;
         }
 
+        @supports (padding: max(0px, 0px)) {
+            .modal-overlay {
+                padding-top: max(1rem, env(safe-area-inset-top));
+                padding-right: max(1rem, env(safe-area-inset-right));
+                padding-bottom: max(1rem, env(safe-area-inset-bottom));
+                padding-left: max(1rem, env(safe-area-inset-left));
+            }
+        }
+
         .modal-overlay.show {
             display: flex;
             opacity: 1;
@@ -870,6 +879,10 @@
         }
 
         @media (max-width: 600px) {
+            .modal-overlay {
+                align-items: flex-start;
+            }
+
             .form-grid {
                 grid-template-columns: 1fr;
             }
@@ -877,12 +890,32 @@
             .modal-container {
                 padding: 1rem;
                 width: 95%;
+                border-radius: 16px;
             }
 
             .modal-container.form-modal {
                 padding: 1rem;
                 width: 95%;
-                max-height: calc(100vh - 2rem);
+                max-height: calc(100dvh - 2rem);
+            }
+
+            .modal-container.split-design {
+                max-height: calc(100dvh - 2rem);
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .input-group input,
+            .form-input {
+                font-size: 16px;
+            }
+
+            .login-right h2 {
+                font-size: 2rem !important;
+            }
+
+            .login-right p {
+                font-size: 1rem !important;
             }
 
             .punto-empresarial-body {
