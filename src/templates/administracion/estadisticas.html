@@ -82,13 +82,7 @@
             </div>
         </div>
 
-        <div class="stat-card stat-card--attendance">
-            <div class="stat-icon"><i class="fa-solid fa-chart-line"></i></div>
-            <div class="stat-content">
-                <div class="stat-label">Cobertura asistencias</div>
-                <div class="stat-number">{{ cobertura_asistencia }}%</div>
-            </div>
-        </div>
+
     </div>
 </div>
 
@@ -1048,8 +1042,8 @@
     if (elChartDemandaOferta && demandaOferta) {
         const ctx = elChartDemandaOferta.getContext('2d');
         const polos = demandaOferta.polos || [];
-        const franjas = demandaOferta.franjas || [];
-        const base = demandaOferta.points || [];
+        const franjas = (demandaOferta.franjas || []).filter(f => String(f) !== 'Sin horario');
+        const base = (demandaOferta.points || []).filter(p => String(p.franja) !== 'Sin horario');
 
         const colorRatio = (ratio) => {
             if (ratio >= 1) return 'rgba(239, 68, 68, 0.80)';
@@ -1123,14 +1117,15 @@
     const elFiltroFranjaOcupacion = document.getElementById('filtroFranjaOcupacion');
 
     if (ocupacionAsistencia) {
+        const franjasOcupacion = (ocupacionAsistencia.franjas || []).filter(f => String(f) !== 'Sin horario');
         setOptions(elFiltroPoloOcupacion, ocupacionAsistencia.polos || [], 'Todos los polos');
         setOptions(elFiltroCursoOcupacion, ocupacionAsistencia.cursos || [], 'Todos los cursos');
-        setOptions(elFiltroFranjaOcupacion, (ocupacionAsistencia.franjas || []).map(f => ({ value: f, label: f })), 'Todas las franjas');
+        setOptions(elFiltroFranjaOcupacion, franjasOcupacion.map(f => ({ value: f, label: f })), 'Todas las franjas');
     }
 
     if (elChartOcupacionVsAsistencia && ocupacionAsistencia) {
         const ctx = elChartOcupacionVsAsistencia.getContext('2d');
-        const base = ocupacionAsistencia.puntos || [];
+        const base = (ocupacionAsistencia.puntos || []).filter(p => String(p.franja) !== 'Sin horario');
 
         const filtrar = () => {
             const poloId = elFiltroPoloOcupacion ? (elFiltroPoloOcupacion.value || '') : '';

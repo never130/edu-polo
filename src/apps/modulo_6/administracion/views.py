@@ -1124,7 +1124,7 @@ def estadisticas_detalladas(request):
     from datetime import timedelta as dt_timedelta
     import re
 
-    franjas_orden = ['Mañana', 'Tarde', 'Noche', 'Sin horario']
+    franjas_orden = ['Mañana', 'Tarde', 'Noche']
 
     asistencia_semanal = {
         'weeks': [],
@@ -1255,6 +1255,8 @@ def estadisticas_detalladas(request):
             curso_label = (getattr(curso, 'nombre', '') or '')
 
             franja = _franja_horaria(getattr(com, 'dias_horarios', None))
+            if franja == 'Sin horario':
+                continue
 
             polos_opciones[str(polo_id)] = polo_label
             cursos_opciones_scatter[str(curso_id)] = curso_label
