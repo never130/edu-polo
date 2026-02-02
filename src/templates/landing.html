@@ -1083,7 +1083,15 @@
                 Certificación oficial del Gobierno de Tierra del Fuego para potenciar tu perfil profesional
             </p>
             <div class="hero-buttons">
-                <a href="{% url 'lista_polos' %}" class="btn btn-primary btn-lg">Explorar Cursos</a>
+                <a href="{% url 'lista_polos' %}" class="btn btn-primary btn-lg">Explorar Cursos</a                {% if user.is_authenticated %}
+                    {% if es_empresa %}
+                        <a href="{% url 'empresas:mi_empresa' %}" class="btn btn-secondary btn-lg"><i class="fa-solid fa-building"></i> Punto Empresarial</a>
+                    {% elif user.is_staff or user.is_superuser %}
+                        <a href="{% url 'empresas:gestion_empresas' %}" class="btn btn-secondary btn-lg"><i class="fa-solid fa-building"></i> Punto Empresarial</a>
+                    {% endif %}
+                {% else %}
+                    <a href="#" class="btn btn-secondary btn-lg" onclick="openPuntoEmpresarialModal(); return false;"><i class="fa-solid fa-building"></i> Punto Empresarial</a>
+                {% endif %}
             </div>
         </div>
     </section>
