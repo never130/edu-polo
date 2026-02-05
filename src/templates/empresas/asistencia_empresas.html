@@ -67,29 +67,6 @@
 {% endif %}
 
 <div style="display:grid; gap: 1rem; max-width: 900px;">
-    <div class="card">
-        <div style="display:flex; justify-content:space-between; gap:1rem; align-items:flex-start; flex-wrap:wrap;">
-            <div>
-                <div style="font-weight:900; color:#0f172a; font-size: 1.05rem;">Tu empresa</div>
-                {% if empresa %}
-                    <div style="margin-top:0.35rem; color:#334155;">Empresa: <strong>{{ empresa.nombre }}</strong></div>
-                    <div style="margin-top:0.2rem; color:#334155;">Estado: <strong>{{ empresa.get_estado_display }}</strong></div>
-                {% else %}
-                    <div style="margin-top:0.35rem; color:#334155;">Todavía no tenés una empresa registrada.</div>
-                {% endif %}
-            </div>
-            <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
-                <a class="btn btn-secondary" href="{% url 'empresas:mi_empresa' %}">Ver mi empresa</a>
-            </div>
-        </div>
-
-        {% if empresa and empresa.estado != 'aprobada' %}
-            <div style="margin-top: 1rem; background:#eff6ff; border:1px solid #bfdbfe; color:#1e3a8a; border-radius:12px; padding:0.75rem 1rem;">
-                La asistencia se habilita cuando la empresa está <strong>aprobada</strong>.
-            </div>
-        {% endif %}
-    </div>
-
     {% if empresa %}
         <div class="card">
             <div style="display:flex; justify-content:space-between; gap:1rem; align-items:flex-end; flex-wrap:wrap;">
@@ -134,13 +111,13 @@
     {% endif %}
 
     <div class="card">
-        <div style="font-weight:900; color:#0f172a; font-size: 1.05rem;">Tus turnos</div>
-        <div style="margin-top:0.25rem; color:#475569;">Ventana: 30 días atrás y 30 días adelante.</div>
+        <h3 style="font-weight:900; color:#0f172a; font-size: 1.05rem; margin:0;">Tus turnos</h3>
+        <p style="margin:0.25rem 0 0; color:#475569;">Últimos 30 días y próximos 30.</p>
 
         {% if not empresa %}
-            <div style="margin-top:0.85rem; color:#475569;">Registrá tu empresa para ver turnos.</div>
+            <p style="margin:0.85rem 0 0; color:#475569;">Registrá tu empresa para ver turnos.</p>
         {% elif not turnos %}
-            <div style="margin-top:0.85rem; color:#475569;">No tenés turnos asignados en esta ventana.</div>
+            <p style="margin:0.85rem 0 0; color:#475569;">No tenés turnos asignados en esta ventana.</p>
         {% else %}
             <div class="table-wrap" style="margin-top:0.85rem;">
                 <table>
