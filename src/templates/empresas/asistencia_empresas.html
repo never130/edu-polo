@@ -1,0 +1,180 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Asistencia Empresas{% endblock %}
+
+{% block user_role %}{{ tipo_usuario|default:"Empresa" }}{% endblock %}
+
+{% block sidebar_menu %}
+<li><a href="{% url 'dashboard_empresa' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
+<li><a href="{% url 'empresas:asistencia_empresas' %}" class="active"><i class="fa-solid fa-calendar-check"></i> Asistencia Empresas</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
+<li><a href="{% url 'empresas:mi_empresa' %}"><i class="fa-solid fa-building"></i> Mi Empresa / Startup</a></li>
+{% endblock %}
+
+{% block content %}
+<style>
+    .main-content .btn-secondary {
+        background: #e2e8f0;
+        color: #334155;
+        border: 1px solid #cbd5e1;
+        backdrop-filter: none;
+    }
+    .main-content .btn-secondary:hover {
+        background: #cbd5e1;
+        transform: translateY(-1px);
+    }
+    .card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+        padding: 1.25rem 1.5rem;
+    }
+    .table-wrap { overflow:auto; }
+    table { width:100%; border-collapse:collapse; }
+    th, td { padding: 0.55rem 0.4rem; border-bottom: 1px solid #f1f5f9; text-align:left; vertical-align:top; }
+    th { border-bottom: 1px solid #e2e8f0; color:#0f172a; font-weight:900; }
+    .badge {
+        display:inline-block;
+        padding: 0.2rem 0.55rem;
+        border-radius: 999px;
+        font-weight: 900;
+        background:#f1f5f9;
+        color:#334155;
+        font-size: 0.8rem;
+        white-space:nowrap;
+    }
+    .resumen-grid { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; margin-top: 0.85rem; }
+    @media (min-width: 740px) { .resumen-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+    .resumen-item { border: 1px solid #e2e8f0; border-radius: 14px; padding: 0.75rem 0.9rem; background:#f8fafc; }
+    .resumen-k { color:#475569; font-weight:800; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .resumen-v { margin-top:0.15rem; color:#0f172a; font-weight: 900; font-size: 1.05rem; }
+</style>
+
+<div class="page-header">
+    <h2>Asistencia Empresas</h2>
+    <p>Acá ves tus turnos y el estado de asistencia cargado por el polo.</p>
+</div>
+
+{% if messages %}
+    <div class="dashboard-alerts">
+        {% for message in messages %}
+            <div class="dashboard-alert dashboard-alert--{{ message.tags|default:'info' }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div style="display:grid; gap: 1rem; max-width: 900px;">
+    <div class="card">
+        <div style="display:flex; justify-content:space-between; gap:1rem; align-items:flex-start; flex-wrap:wrap;">
+            <div>
+                <div style="font-weight:900; color:#0f172a; font-size: 1.05rem;">Tu empresa</div>
+                {% if empresa %}
+                    <div style="margin-top:0.35rem; color:#334155;">Empresa: <strong>{{ empresa.nombre }}</strong></div>
+                    <div style="margin-top:0.2rem; color:#334155;">Estado: <strong>{{ empresa.get_estado_display }}</strong></div>
+                {% else %}
+                    <div style="margin-top:0.35rem; color:#334155;">Todavía no tenés una empresa registrada.</div>
+                {% endif %}
+            </div>
+            <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                <a class="btn btn-secondary" href="{% url 'empresas:mi_empresa' %}">Ver mi empresa</a>
+            </div>
+        </div>
+
+        {% if empresa and empresa.estado != 'aprobada' %}
+            <div style="margin-top: 1rem; background:#eff6ff; border:1px solid #bfdbfe; color:#1e3a8a; border-radius:12px; padding:0.75rem 1rem;">
+                La asistencia se habilita cuando la empresa está <strong>aprobada</strong>.
+            </div>
+        {% endif %}
+    </div>
+
+    {% if empresa %}
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; gap:1rem; align-items:flex-end; flex-wrap:wrap;">
+                <div>
+                    <div style="font-weight:900; color:#0f172a; font-size: 1.05rem;">Resumen del mes</div>
+                    {% if resumen_mes %}
+                        <div style="margin-top:0.2rem; color:#475569;">Período: {{ resumen_mes.mes }}/{{ resumen_mes.anio }}</div>
+                    {% endif %}
+                </div>
+                <form method="get" style="display:flex; gap:0.5rem; align-items:end; flex-wrap:wrap; margin:0;">
+                    <div style="display:flex; flex-direction:column; gap:0.25rem;">
+                        <label style="font-weight:900; color:#0f172a;">Mes</label>
+                        <input type="month" name="periodo" value="{{ resumen_mes.periodo|default:'' }}" style="border:1px solid #cbd5e1; border-radius:10px; padding:0.55rem 0.65rem; background:white;">
+                    </div>
+                    <button type="submit" class="btn btn-secondary">Ver</button>
+                </form>
+            </div>
+
+            {% if resumen_mes %}
+                <div class="resumen-grid">
+                    <div class="resumen-item">
+                        <div class="resumen-k">Total</div>
+                        <div class="resumen-v">{{ resumen_mes.total }}</div>
+                    </div>
+                    <div class="resumen-item">
+                        <div class="resumen-k">Presente</div>
+                        <div class="resumen-v">{{ resumen_mes.presente }}</div>
+                    </div>
+                    <div class="resumen-item">
+                        <div class="resumen-k">Ausente</div>
+                        <div class="resumen-v">{{ resumen_mes.ausente }}</div>
+                    </div>
+                    <div class="resumen-item">
+                        <div class="resumen-k">Sin marcar</div>
+                        <div class="resumen-v">{{ resumen_mes.sin_marcar }}</div>
+                    </div>
+                </div>
+            {% else %}
+                <div style="margin-top:0.85rem; color:#475569;">No hay datos del período seleccionado.</div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div class="card">
+        <div style="font-weight:900; color:#0f172a; font-size: 1.05rem;">Tus turnos</div>
+        <div style="margin-top:0.25rem; color:#475569;">Ventana: 30 días atrás y 30 días adelante.</div>
+
+        {% if not empresa %}
+            <div style="margin-top:0.85rem; color:#475569;">Registrá tu empresa para ver turnos.</div>
+        {% elif not turnos %}
+            <div style="margin-top:0.85rem; color:#475569;">No tenés turnos asignados en esta ventana.</div>
+        {% else %}
+            <div class="table-wrap" style="margin-top:0.85rem;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Horario</th>
+                            <th>Estado</th>
+                            <th>Observación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in turnos %}
+                            <tr {% if t.fecha == hoy %}style="background:#f8fafc;"{% endif %}>
+                                <td style="white-space:nowrap;">{{ t.fecha|date:"d/m/Y" }}</td>
+                                <td style="white-space:nowrap;">{{ t.hora_desde|time:"H:i" }} - {{ t.hora_hasta|time:"H:i" }}</td>
+                                <td>
+                                    {% if t.estado_asistencia == 'presente' %}
+                                        <span class="badge" style="background:#dcfce7; color:#166534;">Presente</span>
+                                    {% elif t.estado_asistencia == 'ausente' %}
+                                        <span class="badge" style="background:#fee2e2; color:#991b1b;">Ausente</span>
+                                    {% else %}
+                                        <span class="badge">Sin marcar</span>
+                                    {% endif %}
+                                </td>
+                                <td style="color:#334155;">
+                                    {% if t.observacion %}{{ t.observacion }}{% else %}-{% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

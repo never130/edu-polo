@@ -1,0 +1,327 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Turnos Empresas{% endblock %}
+
+{% block user_role %}{{ tipo_usuario|default:"Administrador" }}{% endblock %}
+
+{% block sidebar_menu %}
+{% if tipo_usuario == 'Administrador' %}
+<li><a href="{% url 'dashboard_admin' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:panel_cursos' %}"><i class="fa-solid fa-book"></i> Gestión Cursos</a></li>
+<li><a href="{% url 'administracion:panel_comisiones' %}"><i class="fa-solid fa-users-rectangle"></i> Gestión Comisiones</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:panel_inscripciones' %}"><i class="fa-solid fa-clipboard-list"></i> Inscripciones</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'empresas:mesa_entrada_list' %}"><i class="fa-solid fa-building"></i> Solicitudes Empresas</a></li>
+<li><a href="{% url 'empresas:gestion_empresas' %}"><i class="fa-solid fa-building"></i> Gestión Empresas</a></li>
+<li><a href="{% url 'empresas:turnos_admin' %}" class="active"><i class="fa-solid fa-calendar"></i> Turnos Empresas</a></li>
+{% endif %}
+<li><a href="{% url 'empresas:turnos_hoy' %}"><i class="fa-solid fa-calendar-check"></i> Asistencia Empresas</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:gestion_usuarios' %}"><i class="fa-solid fa-users-cog"></i> Gestión Usuarios</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:buscador_estudiantes' %}"><i class="fa-solid fa-search"></i> Buscar Estudiantes</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:panel_polos' %}"><i class="fa-solid fa-map-marker-alt"></i> Polos</a></li>
+{% endif %}
+{% if es_admin_completo %}
+<li><a href="{% url 'administracion:estadisticas' %}"><i class="fa-solid fa-chart-pie"></i> Estadísticas</a></li>
+{% endif %}
+<li><a href="{% url 'administracion:panel_asistencia' %}"><i class="fa-solid fa-calendar-check"></i> Asistencias</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'admin:index' %}"><i class="fa-solid fa-cogs"></i> Django Admin</a></li>
+{% endif %}
+{% else %}
+<li><a href="{% url 'dashboard_admin' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
+<li><a href="{% url 'administracion:panel_inscripciones' %}"><i class="fa-solid fa-clipboard-list"></i> Inscripciones</a></li>
+{% if es_admin_completo %}
+<li><a href="{% url 'empresas:mesa_entrada_list' %}"><i class="fa-solid fa-building"></i> Solicitudes Empresas</a></li>
+<li><a href="{% url 'empresas:gestion_empresas' %}"><i class="fa-solid fa-building"></i> Gestión Empresas</a></li>
+<li><a href="{% url 'empresas:turnos_admin' %}" class="active"><i class="fa-solid fa-calendar"></i> Turnos Empresas</a></li>
+{% endif %}
+<li><a href="{% url 'empresas:turnos_hoy' %}"><i class="fa-solid fa-calendar-check"></i> Asistencia Empresas</a></li>
+<li><a href="{% url 'usuario:mi_perfil' %}"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<style>
+    .page-wrap { max-width: 1250px; margin: 0 auto; }
+    .card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+        padding: 1.25rem 1.5rem;
+        min-width: 0;
+    }
+    .table-wrap { overflow:auto; border: 1px solid #e2e8f0; border-radius: 14px; background: white; }
+    table { width:100%; border-collapse:separate; border-spacing:0; }
+    th, td { padding: 0.6rem 0.55rem; border-bottom: 1px solid #f1f5f9; text-align:left; vertical-align:top; }
+    th { border-bottom: 1px solid #e2e8f0; color:#0f172a; font-weight:900; background: white; }
+    tbody tr:nth-child(even) { background:#fbfdff; }
+    tbody tr:hover { background:#f8fafc; }
+    .badge {
+        display:inline-block;
+        padding: 0.2rem 0.55rem;
+        border-radius: 999px;
+        font-weight: 900;
+        background:#f1f5f9;
+        color:#334155;
+        font-size: 0.8rem;
+        white-space:nowrap;
+    }
+    .grid2 { display:grid; grid-template-columns: 1fr; gap: 1rem; }
+    @media (min-width: 980px) { .grid2 { grid-template-columns: 1fr 1fr; } }
+    .section-title { font-weight:900; color:#0f172a; font-size:1.05rem; }
+    .form-grid { display:grid; grid-template-columns: 1fr; gap:0.75rem; align-items:end; }
+    .span2 { grid-column: auto; }
+    @media (min-width: 760px) {
+        .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .span2 { grid-column: span 2; }
+    }
+    .form-control { display:flex; flex-direction:column; gap:0.25rem; min-width: 0; }
+    .form-control label { font-weight: 900; color:#0f172a; }
+    .form-control input, .form-control select {
+        border:1px solid #cbd5e1;
+        border-radius: 10px;
+        padding: 0.55rem 0.65rem;
+        background: white;
+        width: 100%;
+        min-width: 0;
+    }
+    .dias { display:flex; gap:0.6rem; flex-wrap:wrap; margin-top:0.15rem; }
+    .dia { display:flex; gap:0.35rem; align-items:center; padding:0.35rem 0.55rem; border:1px solid #e2e8f0; border-radius: 999px; background:#f8fafc; }
+    .acciones { display:flex; gap:0.5rem; flex-wrap:wrap; }
+    .main-content .btn-secondary {
+        background: #e2e8f0;
+        color: #334155;
+        border: 1px solid #cbd5e1;
+        backdrop-filter: none;
+    }
+    .main-content .btn-secondary:hover {
+        background: #cbd5e1;
+        transform: translateY(-1px);
+    }
+    .hint { color:#475569; font-weight:600; font-size:0.9rem; margin-top:0.35rem; }
+    th.col-rango, td.col-rango { white-space: nowrap; }
+    th.col-horario, td.col-horario { white-space: nowrap; }
+    @media (min-width: 760px) {
+        th.col-rango, td.col-rango { min-width: 190px; }
+        th.col-horario, td.col-horario { min-width: 150px; }
+    }
+    @media (max-width: 560px) {
+        .card { padding: 1rem; }
+        th, td { padding: 0.5rem 0.45rem; }
+        .toolbar .badge { margin-left:0; }
+    }
+</style>
+
+<div class="page-header">
+    <h2>Turnos Empresas</h2>
+    <p>Definí horarios por empresa y generá turnos automáticamente.</p>
+</div>
+
+{% if messages %}
+    <div class="dashboard-alerts">
+        {% for message in messages %}
+            <div class="dashboard-alert dashboard-alert--{{ message.tags|default:'info' }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="page-wrap">
+<div class="grid2">
+    <div class="card">
+        <div class="section-title">Crear horario</div>
+        <div class="hint">Creá un horario y se generan turnos para las fechas y días que elijas. Si es un solo día, poné <strong>Desde</strong> igual a <strong>Hasta</strong>.</div>
+        <form method="post" style="margin-top:0.85rem;">
+            {% csrf_token %}
+            <input type="hidden" name="accion" value="crear_plan">
+
+            <div class="form-grid">
+                <div class="form-control span2">
+                    <label>Empresa</label>
+                    <select name="empresa_id" required>
+                        <option value="">Seleccioná</option>
+                        {% for e in empresas_aprobadas %}
+                            <option value="{{ e.id }}">{{ e.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-control">
+                    <label>Desde</label>
+                    <input type="date" name="fecha_inicio" required>
+                </div>
+                <div class="form-control">
+                    <label>Hasta</label>
+                    <input type="date" name="fecha_fin" required>
+                </div>
+                <div class="form-control">
+                    <label>Hora desde</label>
+                    <input type="time" name="hora_desde" required>
+                </div>
+                <div class="form-control">
+                    <label>Hora hasta</label>
+                    <input type="time" name="hora_hasta" required>
+                </div>
+            </div>
+
+            <div style="margin-top:0.85rem;">
+                <div style="font-weight:900; color:#0f172a; margin-bottom:0.4rem;">Días</div>
+                <div class="dias">
+                    <label class="dia"><input type="checkbox" name="dias_semana" value="0"> Lun</label>
+                    <label class="dia"><input type="checkbox" name="dias_semana" value="1"> Mar</label>
+                    <label class="dia"><input type="checkbox" name="dias_semana" value="2"> Mié</label>
+                    <label class="dia"><input type="checkbox" name="dias_semana" value="3"> Jue</label>
+                    <label class="dia"><input type="checkbox" name="dias_semana" value="4"> Vie</label>
+                    <label class="dia"><input type="checkbox" name="dias_semana" value="5"> Sáb</label>
+                    <label class="dia"><input type="checkbox" name="dias_semana" value="6"> Dom</label>
+                </div>
+            </div>
+
+            <div style="margin-top:1rem;">
+                <button type="submit" class="btn btn-primary">Crear plan y generar turnos</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card">
+        <div style="display:flex; justify-content:space-between; gap:0.75rem; align-items:baseline; flex-wrap:wrap;">
+            <div class="section-title">Horarios cargados</div>
+            <span class="badge">Total: {{ planes|length }}</span>
+        </div>
+        <div class="hint">Si desactivás un horario, deja de crear turnos nuevos. Los turnos ya creados se mantienen.</div>
+
+        {% if planes %}
+            <div class="table-wrap" style="margin-top:0.85rem;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Empresa</th>
+                            <th class="col-rango">Rango</th>
+                            <th class="col-horario">Horario</th>
+                            <th>Días</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in planes %}
+                            <tr>
+                                <td style="font-weight:900;">{{ p.empresa.nombre }}</td>
+                                <td class="col-rango">
+                                    {% if p.fecha_inicio == p.fecha_fin %}
+                                        {{ p.fecha_inicio|date:"d/m/Y" }}
+                                    {% else %}
+                                        {{ p.fecha_inicio|date:"d/m/Y" }} - {{ p.fecha_fin|date:"d/m/Y" }}
+                                    {% endif %}
+                                </td>
+                                <td class="col-horario">{{ p.hora_desde|time:"H:i" }} - {{ p.hora_hasta|time:"H:i" }}</td>
+                                <td style="white-space:nowrap;">
+                                    {% if p.dias_semana_labels %}
+                                        {% for d in p.dias_semana_labels %}
+                                            <span class="badge">{{ d }}</span>
+                                        {% endfor %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if p.activo %}
+                                        <span class="badge" style="background:#dcfce7; color:#166534;">Activo</span>
+                                    {% else %}
+                                        <span class="badge" style="background:#fee2e2; color:#991b1b;">Inactivo</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <form method="post" style="margin:0;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="accion" value="toggle_plan">
+                                        <input type="hidden" name="plan_id" value="{{ p.id }}">
+                                        <button type="submit" class="btn btn-secondary">{% if p.activo %}Desactivar{% else %}Activar{% endif %}</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div style="margin-top:0.85rem;">No hay horarios cargados.</div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card" style="margin-top: 1rem;">
+    <div style="display:flex; justify-content:space-between; gap:1rem; align-items:flex-end; flex-wrap:wrap;">
+        <div>
+            <div class="section-title">Resumen mensual</div>
+            <div style="margin-top:0.2rem; color:#475569;">
+                Mes: {{ reporte_mensual.mes }}/{{ reporte_mensual.anio }}
+            </div>
+        </div>
+        <form method="get" style="display:flex; gap:0.5rem; align-items:end; flex-wrap:wrap; margin:0;">
+            <div class="form-control">
+                <label>Mes</label>
+                <input type="month" name="periodo" value="{{ reporte_mensual.periodo }}" required>
+            </div>
+            <button type="submit" class="btn btn-secondary">Ver</button>
+        </form>
+    </div>
+
+    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.85rem;">
+        <span class="badge">Total: {{ reporte_mensual.totales.total }}</span>
+        <span class="badge" style="background:#dcfce7; color:#166534;">Presente: {{ reporte_mensual.totales.presente }}</span>
+        <span class="badge" style="background:#fee2e2; color:#991b1b;">Ausente: {{ reporte_mensual.totales.ausente }}</span>
+        <span class="badge" style="background:#f1f5f9; color:#334155;">Sin marcar: {{ reporte_mensual.totales.sin_marcar }}</span>
+        {% if reporte_mensual.totales.cumplimiento is not None %}
+            <span class="badge" style="background:#eff6ff; color:#1d4ed8;">Porcentaje: {{ reporte_mensual.totales.cumplimiento }}%</span>
+        {% else %}
+            <span class="badge" style="background:#eff6ff; color:#1d4ed8;">Porcentaje: -</span>
+        {% endif %}
+    </div>
+
+    {% if reporte_mensual.rows %}
+        <div class="table-wrap" style="margin-top:0.85rem;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Empresa</th>
+                        <th>Total</th>
+                        <th>Presente</th>
+                        <th>Ausente</th>
+                        <th>Sin marcar</th>
+                        <th>Porcentaje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in reporte_mensual.rows %}
+                        <tr>
+                            <td style="font-weight:900;">{{ r.empresa__nombre }}</td>
+                            <td>{{ r.total }}</td>
+                            <td>{{ r.presente }}</td>
+                            <td>{{ r.ausente }}</td>
+                            <td>{{ r.sin_marcar }}</td>
+                            <td>
+                                {% if r.cumplimiento is not None %}
+                                    {{ r.cumplimiento }}%
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div style="margin-top:0.85rem;">No hay turnos en el período seleccionado.</div>
+    {% endif %}
+</div>
+</div>
+{% endblock %}

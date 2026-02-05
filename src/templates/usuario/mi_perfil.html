@@ -14,9 +14,15 @@
     <li><a href="{% url 'administracion:panel_comisiones' %}"><i class="fa-solid fa-users-rectangle"></i> Gestión Comisiones</a></li>
     {% endif %}
     <li><a href="{% url 'administracion:panel_inscripciones' %}"><i class="fa-solid fa-clipboard-list"></i> Inscripciones</a></li>
-    {% if es_admin_completo %}
+    {% if es_admin_completo or es_mesa_entrada %}
     <li><a href="{% url 'empresas:mesa_entrada_list' %}"><i class="fa-solid fa-building"></i> Solicitudes Empresas</a></li>
+    {% endif %}
+    {% if es_admin_completo %}
     <li><a href="{% url 'empresas:gestion_empresas' %}"><i class="fa-solid fa-building"></i> Gestión Empresas</a></li>
+    <li><a href="{% url 'empresas:turnos_admin' %}"><i class="fa-solid fa-calendar"></i> Turnos Empresas</a></li>
+    {% endif %}
+    {% if es_admin_completo or es_mesa_entrada %}
+    <li><a href="{% url 'empresas:turnos_hoy' %}"><i class="fa-solid fa-calendar-check"></i> Asistencia Empresas</a></li>
     {% endif %}
     {% if es_admin_completo %}
     <li><a href="{% url 'administracion:gestion_usuarios' %}"><i class="fa-solid fa-users-cog"></i> Gestión Usuarios</a></li>
@@ -29,9 +35,6 @@
     <li><a href="{% url 'administracion:estadisticas' %}"><i class="fa-solid fa-chart-pie"></i> Estadísticas</a></li>
     {% endif %}
     <li><a href="{% url 'administracion:panel_asistencia' %}"><i class="fa-solid fa-calendar-check"></i> Asistencias</a></li>
-    {% if es_admin_completo %}
-    <li><a href="{% url 'administracion:docentes_cursos' %}"><i class="fa-solid fa-chalkboard-teacher"></i> Docentes y Cursos</a></li>
-    {% endif %}
     <li><a href="{% url 'usuario:mi_perfil' %}" class="active"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
     {% if es_admin_completo %}
     <li><a href="{% url 'admin:index' %}"><i class="fa-solid fa-cogs"></i> Django Admin</a></li>
@@ -47,6 +50,7 @@
 {% elif es_empresa %}
     {# Menú para Empresas #}
     <li><a href="{% url 'dashboard_empresa' %}"><i class="fa-solid fa-home"></i> Inicio</a></li>
+    <li><a href="{% url 'empresas:asistencia_empresas' %}"><i class="fa-solid fa-calendar-check"></i> Asistencia Empresas</a></li>
     <li><a href="{% url 'usuario:mi_perfil' %}" class="active"><i class="fa-solid fa-user"></i> Mi Perfil</a></li>
     <li><a href="{% url 'empresas:mi_empresa' %}"><i class="fa-solid fa-building"></i> Mi Empresa / Startup</a></li>
 {% else %}

@@ -2,17 +2,18 @@ import base64
 import os
 import shutil
 import tempfile
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 from django.contrib.auth import get_user_model
 from django.contrib.messages import get_messages
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from django.utils import timezone
 
 from apps.modulo_1.roles.models import Rol, UsuarioRol
 from apps.modulo_1.usuario.models import Persona, Usuario
-from apps.modulo_7.empresas.models import Empresa, MiembroEmpresa
+from apps.modulo_7.empresas.models import Empresa, MiembroEmpresa, PlanHorarioEmpresa, TurnoEmpresa
 
 
 _TEMP_MEDIA_ROOT = tempfile.mkdtemp(prefix="test_media_empresas_")
@@ -231,3 +232,215 @@ class FlujoEmpresaTests(TestCase):
         response = self.client.get(reverse("empresas:gestion_empresas"), secure=True)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, empresa.nombre)
+
+    def test_turnos_admin_crea_plan_generando_turnos_y_reporte_mensual(self):
+        empresa, _ = self._crear_empresa_pendiente(dni="36100000", nombre_empresa="Empresa Turnos", password="pw")
+        empresa.estado = "aprobada"
+        empresa.save(update_fields=["estado", "actualizado"])
+
+        staff = self._crear_staff_user(username="99500000", password="staffpw")
+        self.assertTrue(self.client.login(username=staff.username, password="staffpw"))
+
+        hoy = timezone.localdate()
+        fecha_inicio = hoy
+        fecha_fin = hoy + timedelta(days=6)
+
+        response = self.client.post(
+            reverse("empresas:turnos_admin"),
+            data={
+                "accion": "crear_plan",
+                "empresa_id": str(empresa.id),
+                "fecha_inicio": fecha_inicio.isoformat(),
+                "fecha_fin": fecha_fin.isoformat(),
+                "hora_desde": "09:00",
+                "hora_hasta": "10:00",
+                "dias_semana": ["0", "1", "2", "3", "4", "5", "6"],
+            },
+            secure=True,
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("empresas:turnos_admin"))
+
+        self.assertTrue(PlanHorarioEmpresa.objects.filter(empresa=empresa).exists())
+        self.assertEqual(
+            TurnoEmpresa.objects.filter(empresa=empresa, fecha__range=(fecha_inicio, fecha_fin)).count(),
+            7,
+        )
+
+        response = self.client.get(
+            f"{reverse('empresas:turnos_admin')}?periodo={hoy.strftime('%Y-%m')}",
+            secure=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        reporte = response.context.get("reporte_mensual")
+        self.assertIsNotNone(reporte)
+        rows = reporte.get("rows") or []
+        row_empresa = next((r for r in rows if r.get("empresa_id") == empresa.id), None)
+        self.assertIsNotNone(row_empresa)
+        self.assertEqual(int(row_empresa.get("total") or 0), 7)
+        self.assertEqual(int(row_empresa.get("sin_marcar") or 0), 7)
+
+    def test_turnos_admin_plan_un_solo_dia_toma_dia_de_la_fecha(self):
+        empresa, _ = self._crear_empresa_pendiente(dni="36110000", nombre_empresa="Empresa Turno Un Día", password="pw")
+        empresa.estado = "aprobada"
+        empresa.save(update_fields=["estado", "actualizado"])
+
+        staff = self._crear_staff_user(username="99510000", password="staffpw")
+        self.assertTrue(self.client.login(username=staff.username, password="staffpw"))
+
+        hoy = timezone.localdate()
+        dia_equivocado = (hoy.weekday() + 1) % 7
+
+        response = self.client.post(
+            reverse("empresas:turnos_admin"),
+            data={
+                "accion": "crear_plan",
+                "empresa_id": str(empresa.id),
+                "fecha_inicio": hoy.isoformat(),
+                "fecha_fin": hoy.isoformat(),
+                "hora_desde": "09:00",
+                "hora_hasta": "10:00",
+                "dias_semana": [str(dia_equivocado)],
+            },
+            secure=True,
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("empresas:turnos_admin"))
+
+        plan = PlanHorarioEmpresa.objects.filter(empresa=empresa).order_by("-id").first()
+        self.assertIsNotNone(plan)
+        self.assertEqual(plan.dias_semana, str(hoy.weekday()))
+        self.assertEqual(TurnoEmpresa.objects.filter(empresa=empresa, fecha=hoy).count(), 1)
+
+        response = self.client.post(
+            reverse("empresas:turnos_admin"),
+            data={
+                "accion": "crear_plan",
+                "empresa_id": str(empresa.id),
+                "fecha_inicio": hoy.isoformat(),
+                "fecha_fin": hoy.isoformat(),
+                "hora_desde": "11:00",
+                "hora_hasta": "12:00",
+            },
+            secure=True,
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("empresas:turnos_admin"))
+
+        plan = PlanHorarioEmpresa.objects.filter(empresa=empresa).order_by("-id").first()
+        self.assertIsNotNone(plan)
+        self.assertEqual(plan.dias_semana, str(hoy.weekday()))
+        self.assertEqual(TurnoEmpresa.objects.filter(empresa=empresa, fecha=hoy).count(), 2)
+
+    def test_mesa_marca_asistencia_y_cierra_dia(self):
+        mesa = self._crear_usuario_app(dni="36200000", password="pw", nombre="Marta", apellido="Mesa", edad=30)
+        self._asignar_rol(mesa, nombre_rol="Mesa de Entrada", jerarquia=2)
+
+        empresa, _ = self._crear_empresa_pendiente(dni="36300000", nombre_empresa="Empresa Hoy", password="pw")
+        empresa.estado = "aprobada"
+        empresa.save(update_fields=["estado", "actualizado"])
+
+        hoy = timezone.localdate()
+        turno_1 = TurnoEmpresa.objects.create(
+            empresa=empresa,
+            fecha=hoy,
+            hora_desde=datetime.strptime("09:00", "%H:%M").time(),
+            hora_hasta=datetime.strptime("10:00", "%H:%M").time(),
+            estado_asistencia=None,
+        )
+        turno_2 = TurnoEmpresa.objects.create(
+            empresa=empresa,
+            fecha=hoy,
+            hora_desde=datetime.strptime("10:00", "%H:%M").time(),
+            hora_hasta=datetime.strptime("11:00", "%H:%M").time(),
+            estado_asistencia=None,
+        )
+
+        self.client.logout()
+        self.assertTrue(self.client.login(username="36200000", password="pw"))
+
+        response = self.client.get(reverse("empresas:turnos_hoy"), secure=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, empresa.nombre)
+
+        response = self.client.post(
+            reverse("empresas:turnos_hoy"),
+            data={"accion": "marcar", "turno_id": str(turno_1.id), "estado": "presente"},
+            secure=True,
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith(reverse("empresas:turnos_hoy")))
+
+        turno_1.refresh_from_db()
+        self.assertEqual(turno_1.estado_asistencia, "presente")
+        self.assertIsNotNone(turno_1.marcado_en)
+        self.assertIsNotNone(turno_1.marcado_por_id)
+
+        response = self.client.post(reverse("empresas:turnos_cerrar_dia"), data={}, secure=True)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith(reverse("empresas:turnos_hoy")))
+
+        turno_2.refresh_from_db()
+        self.assertEqual(turno_2.estado_asistencia, "ausente")
+        self.assertIsNotNone(turno_2.marcado_en)
+        self.assertIsNotNone(turno_2.marcado_por_id)
+
+    def test_empresa_ve_turnos_y_resumen_mes_filtrable(self):
+        empresa, responsable = self._crear_empresa_pendiente(dni="36400000", nombre_empresa="Empresa Panel", password="pw")
+        empresa.estado = "aprobada"
+        empresa.save(update_fields=["estado", "actualizado"])
+
+        hoy = timezone.localdate()
+        TurnoEmpresa.objects.create(
+            empresa=empresa,
+            fecha=hoy,
+            hora_desde=datetime.strptime("09:00", "%H:%M").time(),
+            hora_hasta=datetime.strptime("10:00", "%H:%M").time(),
+            estado_asistencia="presente",
+        )
+
+        if hoy.month == 1:
+            prev_year = hoy.year - 1
+            prev_month = 12
+        else:
+            prev_year = hoy.year
+            prev_month = hoy.month - 1
+
+        TurnoEmpresa.objects.create(
+            empresa=empresa,
+            fecha=date(prev_year, prev_month, 15),
+            hora_desde=datetime.strptime("09:00", "%H:%M").time(),
+            hora_hasta=datetime.strptime("10:00", "%H:%M").time(),
+            estado_asistencia="ausente",
+        )
+
+        self.client.logout()
+        self.assertTrue(self.client.login(username=responsable.persona.dni, password="pw"))
+
+        response = self.client.get(reverse("empresas:asistencia_empresas"), secure=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Tus turnos")
+        self.assertIn("turnos", response.context)
+        self.assertTrue(len(response.context["turnos"]) >= 1)
+
+        periodo_prev = f"{prev_year:04d}-{prev_month:02d}"
+        response = self.client.get(
+            f"{reverse('empresas:asistencia_empresas')}?periodo={periodo_prev}",
+            secure=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        resumen = response.context.get("resumen_mes")
+        self.assertIsNotNone(resumen)
+        self.assertEqual(resumen.get("periodo"), periodo_prev)
+        self.assertEqual(int(resumen.get("total") or 0), 1)
+        self.assertEqual(int(resumen.get("ausente") or 0), 1)
+
+    def test_turnos_admin_no_autorizado_redirige_login(self):
+        mesa = self._crear_usuario_app(dni="36500000", password="pw", nombre="Marta", apellido="Mesa", edad=30)
+        self._asignar_rol(mesa, nombre_rol="Mesa de Entrada", jerarquia=2)
+
+        self.client.logout()
+        self.assertTrue(self.client.login(username="36500000", password="pw"))
+        response = self.client.get(reverse("empresas:turnos_admin"), secure=True)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith(reverse("login")))

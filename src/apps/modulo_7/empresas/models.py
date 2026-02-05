@@ -81,3 +81,81 @@ class MiembroEmpresa(models.Model):
 
     def __str__(self):
         return f'{self.empresa} - {self.usuario}'
+
+
+class PlanHorarioEmpresa(models.Model):
+    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='planes_horarios')
+    fecha_inicio = models.DateField()
+    fecha_fin = models.DateField()
+    hora_desde = models.TimeField()
+    hora_hasta = models.TimeField()
+    dias_semana = models.CharField(max_length=20, default='')
+    activo = models.BooleanField(default=True)
+    creado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='planes_horarios_empresa_creados',
+    )
+    creado = models.DateTimeField(auto_now_add=True)
+    actualizado = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Plan de Horario (Empresa)'
+        verbose_name_plural = 'Planes de Horarios (Empresas)'
+        ordering = ['-actualizado', '-creado']
+
+    def __str__(self):
+        return f'{self.empresa} {self.fecha_inicio} - {self.fecha_fin}'
+
+
+class TurnoEmpresa(models.Model):
+    ESTADOS_ASISTENCIA = [
+        ('presente', 'Presente'),
+        ('ausente', 'Ausente'),
+    ]
+
+    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='turnos')
+    plan = models.ForeignKey(
+        PlanHorarioEmpresa,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='turnos',
+    )
+    fecha = models.DateField()
+    hora_desde = models.TimeField()
+    hora_hasta = models.TimeField()
+    estado_asistencia = models.CharField(
+        max_length=20,
+        choices=ESTADOS_ASISTENCIA,
+        blank=True,
+        null=True,
+        default=None,
+    )
+    marcado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='turnos_empresa_marcados',
+    )
+    marcado_en = models.DateTimeField(blank=True, null=True)
+    observacion = models.CharField(max_length=280, blank=True, default='')
+    creado = models.DateTimeField(auto_now_add=True)
+    actualizado = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Turno (Empresa)'
+        verbose_name_plural = 'Turnos (Empresas)'
+        ordering = ['-fecha', '-hora_desde', '-creado']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['empresa', 'fecha', 'hora_desde', 'hora_hasta'],
+                name='uniq_turno_empresa_fecha_horario',
+            ),
+        ]
+
+    def __str__(self):
+        return f'{self.empresa} {self.fecha} {self.hora_desde}-{self.hora_hasta}'
