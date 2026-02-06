@@ -84,6 +84,25 @@
         font-weight: 700;
         color: #334155;
         border-bottom: 2px solid #e2e8f0;
+        white-space: nowrap;
+    }
+
+    .cursos-table th a {
+        color: inherit;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .cursos-table th a:hover {
+        text-decoration: underline;
+    }
+
+    .cursos-table .sort-ind {
+        color: #94a3b8;
+        font-size: 0.85rem;
+        font-weight: 800;
     }
     
     .cursos-table td {
@@ -164,12 +183,54 @@
     <table>
         <thead>
             <tr>
-                <th>Orden</th>
-                <th>ID</th>
-                <th>Nombre del Curso</th>
-                <th>Edad (Rango)</th>
-                <th>Comisiones</th>
-                <th>Estado</th>
+                <th>
+                    <a href="?sort=orden&dir={% if sort == 'orden' and dir == 'asc' %}desc{% else %}asc{% endif %}">
+                        Orden
+                        {% if sort == 'orden' %}
+                            <span class="sort-ind">{% if dir == 'asc' %}▲{% else %}▼{% endif %}</span>
+                        {% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="?sort=id&dir={% if sort == 'id' and dir == 'asc' %}desc{% else %}asc{% endif %}">
+                        ID
+                        {% if sort == 'id' %}
+                            <span class="sort-ind">{% if dir == 'asc' %}▲{% else %}▼{% endif %}</span>
+                        {% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="?sort=nombre&dir={% if sort == 'nombre' and dir == 'asc' %}desc{% else %}asc{% endif %}">
+                        Nombre del Curso
+                        {% if sort == 'nombre' %}
+                            <span class="sort-ind">{% if dir == 'asc' %}▲{% else %}▼{% endif %}</span>
+                        {% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="?sort=edad&dir={% if sort == 'edad' and dir == 'asc' %}desc{% else %}asc{% endif %}">
+                        Edad (Rango)
+                        {% if sort == 'edad' %}
+                            <span class="sort-ind">{% if dir == 'asc' %}▲{% else %}▼{% endif %}</span>
+                        {% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="?sort=comisiones&dir={% if sort == 'comisiones' and dir == 'asc' %}desc{% else %}asc{% endif %}">
+                        Comisiones
+                        {% if sort == 'comisiones' %}
+                            <span class="sort-ind">{% if dir == 'asc' %}▲{% else %}▼{% endif %}</span>
+                        {% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="?sort=estado&dir={% if sort == 'estado' and dir == 'asc' %}desc{% else %}asc{% endif %}">
+                        Estado
+                        {% if sort == 'estado' %}
+                            <span class="sort-ind">{% if dir == 'asc' %}▲{% else %}▼{% endif %}</span>
+                        {% endif %}
+                    </a>
+                </th>
                 <th>Acciones</th>
             </tr>
         </thead>

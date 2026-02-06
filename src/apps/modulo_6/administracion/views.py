@@ -115,12 +115,40 @@ def es_admin_completo(user):
 @user_passes_test(es_admin_completo)
 def panel_cursos(request):
     """Panel de gestión de cursos"""
+    sort = (request.GET.get('sort') or '').strip().lower()
+    direction = (request.GET.get('dir') or 'asc').strip().lower()
+    if direction not in ('asc', 'desc'):
+        direction = 'asc'
+
+    allowed_sorts = {
+        'orden': ('orden', 'id_curso'),
+        'id': ('id_curso',),
+        'nombre': ('nombre', 'id_curso'),
+        'edad': ('edad_minima', 'edad_maxima', 'id_curso'),
+        'comisiones': ('total_comisiones', 'id_curso'),
+        'estado': ('estado', 'id_curso'),
+    }
+
     cursos = Curso.objects.all().annotate(
         total_comisiones=Count('comision')
-    ).order_by('orden', 'id_curso')
-    
+    )
+
+    order_fields = allowed_sorts.get(sort) or ('orden', 'id_curso')
+    if sort not in allowed_sorts:
+        sort = 'orden'
+        direction = 'asc'
+
+    if direction == 'desc':
+        order_by = [f"-{f}" for f in order_fields]
+    else:
+        order_by = list(order_fields)
+
+    cursos = cursos.order_by(*order_by)
+
     context = {
         'cursos': cursos,
+        'sort': sort,
+        'dir': direction,
     }
     return render(request, 'administracion/panel_cursos.html', context)
 
