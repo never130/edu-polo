@@ -39,11 +39,25 @@
         return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=600&height=400&nologo=true`;
     }
 
+    function preloadAndSet(img, url) {
+        if (!url) return;
+        const probe = new Image();
+        probe.referrerPolicy = 'no-referrer';
+        probe.onload = () => {
+            img.src = url;
+        };
+        probe.onerror = () => {
+        };
+        probe.src = url;
+    }
+
     function apply() {
         document.querySelectorAll('img.js-pollinations-course-img').forEach((img) => {
+            img.referrerPolicy = 'no-referrer';
             const name = img.getAttribute('data-course-name') || img.alt || '';
             const desc = img.getAttribute('data-course-desc') || '';
-            img.src = buildPollinationsUrl(name, desc);
+            const url = buildPollinationsUrl(name, desc);
+            preloadAndSet(img, url);
         });
     }
 
@@ -362,6 +376,8 @@
         <div class="curso-card">
             <div class="curso-img-container">
                 <img class="curso-img js-pollinations-course-img" alt="{{ curso.nombre }}"
+                     loading="lazy"
+                     referrerpolicy="no-referrer"
                      data-course-name="{{ curso.nombre|default:'' }}"
                      data-course-desc="{{ curso.descripcion|default:''|striptags|truncatechars:200 }}"
                      src="https://image.pollinations.ai/prompt/3d%20render%20cute%20kid%20friendly%20learning%20classroom%20colorful%20soft%20lighting%20playful%2C%20no%20text%2C%20no%20watermark%2C%20no%20logo?width=600&height=400&nologo=true"
