@@ -252,6 +252,20 @@
             .navbar-links {
                 display: none;
             }
+
+            .navbar-toggle {
+                display: inline-flex;
+            }
+
+            .navbar-content {
+                flex-wrap: wrap;
+                gap: 0.75rem;
+            }
+
+            .navbar-actions {
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
         }
 
         @media (max-width: 768px) {
@@ -316,8 +330,28 @@
         }
 
         @media (max-width: 640px) {
+            .polos-section {
+                padding: 2.5rem 1rem;
+            }
+
+            .polos-title {
+                font-size: 1.85rem;
+                margin-bottom: 2rem;
+            }
+
             .polos-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .polo-card {
+                max-width: 440px;
+                margin: 0 auto;
+            }
+
+            .polo-img {
+                width: 140px;
+                height: 140px;
+                margin-bottom: 1.1rem;
             }
         }
 
@@ -1091,7 +1125,7 @@
             }
         }
         
-polo/2/cursos/        @media (max-width: 480px) {
+        @media (max-width: 480px) {
             .navbar-actions { gap: 0.5rem; }
             .navbar-actions .btn { padding: 0.45rem 0.75rem; font-size: 0.82rem; }
 
