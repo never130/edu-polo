@@ -30,13 +30,24 @@
 
 <script>
 (function () {
+    function stableSeed(input) {
+        const str = String(input || '').toLowerCase();
+        let h = 2166136261;
+        for (let i = 0; i < str.length; i++) {
+            h ^= str.charCodeAt(i);
+            h = Math.imul(h, 16777619);
+        }
+        return (h >>> 0) % 1000000000;
+    }
+
     function buildPollinationsUrl(name, desc) {
         const cleanName = (name || '').trim();
         const cleanDesc = (desc || '').trim();
         const base = '3d render, cute kid-friendly, colorful, soft lighting, friendly classroom workshop scene, playful, cozy, educational';
         const extra = cleanDesc ? `${cleanName}. ${cleanDesc}` : cleanName;
         const prompt = `${base}, ${extra}, no text, no watermark, no logo`;
-        return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=600&height=400&nologo=true`;
+        const seed = stableSeed(cleanName);
+        return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=600&height=400&seed=${seed}&nologo=true`;
     }
 
     function preloadAndSet(img, url) {

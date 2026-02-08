@@ -428,6 +428,16 @@
 
 <script>
 (function () {
+    function stableSeed(input) {
+        const str = String(input || '').toLowerCase();
+        let h = 2166136261;
+        for (let i = 0; i < str.length; i++) {
+            h ^= str.charCodeAt(i);
+            h = Math.imul(h, 16777619);
+        }
+        return (h >>> 0) % 1000000000;
+    }
+
     function buildPollinationsUrl(name, desc) {
         const cleanName = (name || '').trim();
         const cleanDesc = (desc || '').trim();
@@ -437,7 +447,8 @@
         if (extra) parts.push(extra);
         parts.push('no text', 'no watermark', 'no logo');
         const prompt = parts.join(', ');
-        return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=600&height=400&nologo=true`;
+        const seed = stableSeed(cleanName);
+        return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=600&height=400&seed=${seed}&nologo=true`;
     }
 
     function preloadAndSet(img, url) {
