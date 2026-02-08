@@ -12,6 +12,7 @@ urlpatterns = [
     # Gestión de Comisiones
     path('comisiones/', views.panel_comisiones, name='panel_comisiones'),
     path('comisiones/crear/', views.crear_comision, name='crear_comision'),
+    path('comisiones/toggle-publicacion/<int:comision_id>/', views.toggle_publicacion_comision, name='toggle_publicacion_comision'),
     path('comisiones/asignar-docente/<int:comision_id>/', views.asignar_docente_comision, name='asignar_docente_comision'),
     
     # Gestión de Inscripciones

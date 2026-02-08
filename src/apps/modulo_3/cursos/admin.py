@@ -7,8 +7,8 @@ class ComisionDocenteInline(admin.TabularInline):
     extra = 1  # Cuántos campos vacíos mostrar
 
 class ComisionAdmin(admin.ModelAdmin):
-    list_display = ('id_comision', 'fk_id_curso', 'lugar', 'fecha_inicio', 'get_cupos_info', 'estado')
-    list_filter = ('estado', 'lugar', 'fk_id_curso')
+    list_display = ('id_comision', 'fk_id_curso', 'lugar', 'fecha_inicio', 'publicada', 'get_cupos_info', 'estado')
+    list_filter = ('publicada', 'estado', 'lugar', 'fk_id_curso')
     search_fields = ('fk_id_curso__nombre',)
     inlines = [ComisionDocenteInline]
     readonly_fields = ('get_inscritos', 'get_cupos_disponibles', 'get_porcentaje_ocupacion')

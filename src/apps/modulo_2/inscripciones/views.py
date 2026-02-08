@@ -22,6 +22,10 @@ def formulario_inscripcion(request, comision_id):
     """
     comision = get_object_or_404(Comision, id_comision=comision_id)
 
+    if not getattr(comision, 'publicada', False):
+        messages.error(request, '🚫 Esta comisión aún no está publicada.')
+        return redirect('landing')
+
     if comision.estado != 'Abierta':
         messages.error(request, f'🚫 La inscripción para la comisión del curso "{comision.fk_id_curso.nombre}" está cerrada.')
         return redirect('landing')
@@ -226,6 +230,9 @@ def formulario_inscripcion(request, comision_id):
                 
                 # 8. Crear inscripción con observaciones
                 comision_locked = Comision.objects.select_for_update().get(id_comision=comision.id_comision)
+                if not getattr(comision_locked, 'publicada', False):
+                    messages.error(request, '🚫 Esta comisión aún no está publicada.')
+                    return redirect('landing')
                 if comision_locked.estado != 'Abierta':
                     messages.error(request, f'🚫 La inscripción para la comisión del curso "{comision_locked.fk_id_curso.nombre}" está cerrada.')
                     return redirect('landing')

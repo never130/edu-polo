@@ -273,6 +273,32 @@ def panel_comisiones(request):
 
 @login_required
 @user_passes_test(es_admin_completo)
+def toggle_publicacion_comision(request, comision_id):
+    if request.method != 'POST':
+        return redirect('administracion:panel_comisiones')
+
+    ciudad_mesa_entrada = get_mesa_entrada_ciudad(request.user)
+    if ciudad_mesa_entrada:
+        messages.error(request, '❌ No tienes permisos para publicar comisiones.')
+        return redirect('administracion:panel_comisiones')
+
+    get_object_or_404(Comision, id_comision=comision_id)
+
+    with transaction.atomic():
+        comision_locked = Comision.objects.select_for_update().get(id_comision=comision_id)
+        comision_locked.publicada = not comision_locked.publicada
+        comision_locked.save(update_fields=['publicada'])
+
+    if comision_locked.publicada:
+        messages.success(request, f'✅ Comisión #{comision_locked.id_comision} publicada. Ya es visible al público.')
+    else:
+        messages.success(request, f'✅ Comisión #{comision_locked.id_comision} pasó a borrador. Ya no es visible al público.')
+
+    return redirect('administracion:panel_comisiones')
+
+
+@login_required
+@user_passes_test(es_admin_completo)
 def crear_comision(request):
     """Crear una nueva comisión (SOLO ADMIN COMPLETO)"""
     from apps.modulo_3.cursos.models import ComisionDocente
@@ -286,6 +312,8 @@ def crear_comision(request):
             curso = Curso.objects.get(id_curso=curso_id)
             polo = PoloCreativo.objects.get(id_polo=polo_id) if polo_id else None
             
+            publicada = request.POST.get('publicada') == 'on'
+
             # Crear la comisión
             comision = Comision.objects.create(
                 fk_id_curso=curso,
@@ -296,7 +324,8 @@ def crear_comision(request):
                 fecha_inicio=request.POST.get('fecha_inicio') or None,
                 fecha_fin=request.POST.get('fecha_fin') or None,
                 cupo_maximo=int(request.POST.get('cupo_maximo', 20)),
-                estado='Abierta'
+                estado='Abierta',
+                publicada=publicada,
             )
             
             # Asignar docente si se seleccionó uno

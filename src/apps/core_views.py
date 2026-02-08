@@ -65,10 +65,13 @@ def cursos_por_polo(request, polo_id):
     hoy_real = date.today()
 
     cursos = (
-        Curso.objects.filter(estado='Abierto')
+        Curso.objects.filter(
+            estado='Abierto',
+            comision__fk_id_polo=polo_seleccionado,
+            comision__publicada=True,
+        )
         .prefetch_related('comision_set__inscripciones')
         .order_by('orden', 'id_curso')
-        .filter(comision__fk_id_polo=polo_seleccionado)
         .distinct()
     )
 
@@ -79,6 +82,7 @@ def cursos_por_polo(request, polo_id):
             curso.comision_set.filter(
                 estado='Abierta',
                 fk_id_polo=polo_seleccionado,
+                publicada=True,
             )
             .exclude(Q(fecha_fin__isnull=False, fecha_fin__lte=hoy_real))
             .annotate(
@@ -94,6 +98,7 @@ def cursos_por_polo(request, polo_id):
         curso.comisiones_polo = list(
             curso.comision_set.filter(
                 fk_id_polo=polo_seleccionado,
+                publicada=True,
             )
             .exclude(estado__in=['Cerrada', 'Finalizada'])
             .exclude(Q(fecha_fin__isnull=False, fecha_fin__lte=hoy_real))

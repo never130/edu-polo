@@ -84,6 +84,7 @@ class Comision(models.Model):
     fecha_fin = models.DateField(blank=True, null=True, verbose_name="Fecha de Fin") 
     cupo_maximo = models.IntegerField(default=25, verbose_name="Cupo Máximo") 
     estado = models.CharField(max_length=15, choices=OPCIONES_ESTADO_COMISION, default='Abierta', verbose_name="Estado") 
+    publicada = models.BooleanField(default=False, verbose_name="Publicada")
 
     docentes = models.ManyToManyField(
         Usuario, 

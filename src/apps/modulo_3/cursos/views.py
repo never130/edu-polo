@@ -16,14 +16,15 @@ class CursoListView(ListView):
     context_object_name = 'cursos'
     
     def get_queryset(self):
-        return Curso.objects.filter(estado='Abierto')
+        return Curso.objects.filter(estado='Abierto', comision__publicada=True).distinct()
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Agregar comisiones abiertas para cada curso
         for curso in context['cursos']:
             curso.comisiones_abiertas = curso.comision_set.filter(
-                estado='Abierta'
+                estado='Abierta',
+                publicada=True,
             ).annotate(
                 inscritos_count_annotated=Count(
                     'inscripciones',
