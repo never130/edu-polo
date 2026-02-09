@@ -1788,6 +1788,36 @@
         if (n.includes('startup')) {
             return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, product design desk, laptop, prototype screens, sticky notes, pitch demo scene, no text';
         }
+        if (n.includes('ajedrez') && (n.includes('adult') || n.includes('adultos'))) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, chess club for adults, wooden chessboard, classic pieces, analysis notebook, quiet warm lighting, no text';
+        }
+        if (n.includes('ajedrez') && n.includes('avanzad')) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, advanced chess analysis, chessboard midgame position, timer clock, notebooks, strategy study table, no text';
+        }
+        if (n.includes('ajedrez') && n.includes('inicial')) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, beginner chess lesson, chessboard with pieces, teacher hands pointing at moves, classroom table, no faces, no text';
+        }
+        if (n.includes('ajedrez')) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, chess learning table, chessboard and pieces, calm classroom environment, no faces, no text';
+        }
+        if (
+            n.includes('bio fablab') ||
+            n.includes('biomaterial') ||
+            n.includes('bio material') ||
+            n.includes('bio materiales') ||
+            n.includes('biomateriales')
+        ) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, bio lab workshop, sustainable biomaterials samples, petri dishes, lab glassware, natural fibers, clean scientific workspace, no labels, no text';
+        }
+        if (n.includes('alfabetizacion digital') || n.includes('ciudadania digital')) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, digital literacy classroom, laptops on desks, safe internet concept, icons without text, modern training room';
+        }
+        if (n.includes('podcast')) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, podcast studio setup, microphone, headphones, audio mixer, camera on tripod, recording desk, no logos, no text';
+        }
+        if (n.includes('autocad') || n.includes('sketchup') || n.includes('sketch-up') || n.includes('sketch up')) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, architecture design workstation, CAD drafting and 3d modeling on screen, blueprint sheets, measuring tools, clean professional desk, no text';
+        }
         if (n.includes('robotica star') || (n.includes('robotica') && n.includes(' star'))) {
             return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, kids robotics workshop, educational robot kits, colorful sensors, small wheeled robot chassis, building blocks, safe tools, STEM lab';
         }
