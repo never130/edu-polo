@@ -567,12 +567,15 @@
             return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, hands-on workshop, tools, craft materials, classroom makers table';
         }
 
-        return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, friendly modern classroom workshop scene, educational';
+        return null;
     }
+
+    const DEFAULT_COURSE_IMAGE_URL = 'https://image.pollinations.ai/prompt/3d%20render%20cartoon%20friendly%20student%20using%20smartphone%20and%20laptop%20digital%20citizenship%20online%20safety%20privacy%20shield%20icons%20social%20media%20colorful%20soft%20lighting?width=600&height=400&nologo=true';
 
     function buildPollinationsUrl(name, desc) {
         const cleanName = (name || '').trim();
         const base = chooseBasePrompt(cleanName);
+        if (!base) return DEFAULT_COURSE_IMAGE_URL;
         const extra = cleanName;
         const suffix = 'no text, no watermark, no logo, no letters, no words, not cartoon, not illustration, not anime';
         const prompt = extra ? `${base}, ${extra}, ${suffix}` : `${base}, ${suffix}`;
