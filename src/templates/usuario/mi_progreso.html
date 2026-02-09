@@ -455,6 +455,28 @@
         if (n.includes('mas juego') || n.includes('mas aprendo')) {
             return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, kids learning space, educational board games, puzzles, colorful manipulatives, classroom table, no faces';
         }
+        if (
+            n.includes('ia en el aula') ||
+            ((n.includes('ia') || n.includes('inteligencia artificial')) && (n.includes('aula') || n.includes('docente') || n.includes('docentes') || n.includes('didact')))
+        ) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, modern classroom teacher training workshop, teacher desk with laptop, projector, interactive whiteboard, educational materials, professional development session';
+        }
+        if (n.includes('archi innova') && n.includes('curiosos')) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, kids STEM corner for ages 4-7, colorful learning blocks, simple robot toys, tablets, playful safe classroom, no faces';
+        }
+        if (n.includes('archi innova') && n.includes('inventores')) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, kids maker electronics workshop for ages 8-12, beginner circuits, microcontroller kit, sensors, small robot prototype, laptop programming station, STEM lab, no faces';
+        }
+        if (n.includes('revit') || n.includes('bim')) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, architectural BIM design studio, computer screen with 3d building model, blueprint sheets, measuring tools, clean professional desk, no text';
+        }
+        if (
+            n.includes('produccion de contenidos') ||
+            n.includes('redes sociales') ||
+            (n.includes('contenidos') && n.includes('redes'))
+        ) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, content creation studio, smartphone on tripod, ring light, camera, editing workstation, creative desk setup, no logos, no text';
+        }
         if (n.includes('analisis de datos') || (n.includes('datos') && (n.includes(' ia') || n.includes('ia ') || n.includes('inteligencia artificial')))) {
             return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, modern computer lab, dashboards and data charts on screens, AI assistant concept, clean design';
         }
