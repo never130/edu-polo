@@ -526,8 +526,20 @@
         if (n.includes('startup')) {
             return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, product design desk, laptop, prototype screens, sticky notes, pitch demo scene, no text';
         }
+        if (n.includes('robotica star') || (n.includes('robotica') && n.includes(' star'))) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, kids robotics workshop, educational robot kits, colorful sensors, small wheeled robot chassis, building blocks, safe tools, STEM lab';
+        }
+        if (n.includes('robotica plus') || (n.includes('robotica') && n.includes(' plus'))) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, teen robotics lab, microcontroller boards, sensors, wiring, laptop programming station, robot prototype on workbench';
+        }
+        if (n.includes('nivel pro') || (n.includes('robotica') && (n.includes(' pro') || n.includes('trayecto avanzado') || n.includes('avanzado')))) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, advanced robotics engineering lab, precision tools, oscilloscope, wiring harnesses, robotic arm prototype on bench, technical workshop';
+        }
         if (n.includes('robot') || n.includes('robotica') || n.includes('arduino') || n.includes('sumo') || n.includes('bot')) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, robotics workshop, small educational robots, gears, wires, tools, STEM lab';
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, robotics workshop, educational robots, gears, wires, tools, STEM lab';
+        }
+        if (n.includes('makers kids') || (n.includes('makers') && n.includes('kids'))) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, kids makerspace, 3d printer, colorful filament, simple CAD on tablet, craft tools, creative workshop';
         }
         if (n.includes('makers')) {
             return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, makerspace, 3d printer, tools, electronics components, creative workshop';
