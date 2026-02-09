@@ -131,13 +131,19 @@
             return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, robotics workshop, educational robots, gears, wires, tools, STEM lab';
         }
         if (n.includes('makers kids') || (n.includes('makers') && n.includes('kids'))) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, kids makerspace, 3d printer, colorful filament, simple CAD on tablet, craft tools, creative workshop';
+            return '3d animated, high quality 3d render, clean shapes, correct proportions, friendly kids makerspace for ages 7-12, simple 3d geometric models, 3d printer, colorful filament spools, tablet with 3d shapes (no UI text), craft tools, warm soft lighting, centered composition';
         }
         if (n.includes('makers')) {
             return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, makerspace, 3d printer, tools, electronics components, creative workshop';
         }
         if (n.includes('ingl') || n.includes('idioma')) {
             return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, language learning classroom, books, flashcards, friendly learning space, no text';
+        }
+        if (n.includes('blender') || (n.includes('modelado') && n.includes('animacion') && n.includes('3d'))) {
+            return '3d animated, high quality 3d render, clean shapes, correct proportions, 3d modeling and animation workstation, modern desk with monitor showing a 3d character model (no UI text), viewport lighting, stylized 3d assets, studio environment, soft cinematic lighting';
+        }
+        if (n.includes('desarrollo de videojuegos') || n.includes('videojuegos') || n.includes('videojuego')) {
+            return '3d animated, high quality 3d render, clean shapes, correct proportions, teen-friendly game development lab, game controller on desk, computer showing a 3d game scene (no UI text), level design blocks, game art assets, cozy studio lighting';
         }
         if (
             n.includes('linux') ||
@@ -176,10 +182,15 @@
 
     function buildPollinationsUrl(name, desc) {
         const cleanName = (name || '').trim();
+        const cleanDesc = (desc || '').trim();
         const base = chooseBasePrompt(cleanName);
         if (!base) return DEFAULT_COURSE_IMAGE_URL;
-        const extra = cleanName;
-        const suffix = 'no text, no watermark, no logo, no letters, no words, not cartoon, not illustration, not anime';
+
+        const n = normalizeText(cleanName);
+        const useDescHint = n.includes('makers kids') || n.includes('blender') || n.includes('videojuego') || n.includes('videojuegos');
+        const descHint = useDescHint && cleanDesc ? cleanDesc.split(/[.!?]/)[0].slice(0, 140) : '';
+        const extra = descHint ? `${cleanName}. ${descHint}` : cleanName;
+        const suffix = 'no text, no watermark, no logo, no letters, no words, no distorted, no deformed, no extra fingers, no extra limbs, no bad anatomy, no glitches';
         const prompt = extra ? `${base}, ${extra}, ${suffix}` : `${base}, ${suffix}`;
         const seed = stableSeed(cleanName || base);
         return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=600&height=400&seed=${seed}&nologo=true`;
