@@ -500,13 +500,81 @@
         return (h >>> 0) % 1000000000;
     }
 
+    function normalizeText(input) {
+        return String(input || '')
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .trim();
+    }
+
+    function chooseBasePrompt(courseName) {
+        const n = normalizeText(courseName);
+
+        if (n.includes('stop motion') || n.includes('stopmotion')) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, animation stop motion studio desk, clay figures, mini set, camera tripod, storyboard, craft materials';
+        }
+        if (n.includes('mas juego') || n.includes('mas aprendo')) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, kids learning space, educational board games, puzzles, colorful manipulatives, classroom table, no faces';
+        }
+        if (n.includes('analisis de datos') || (n.includes('datos') && (n.includes(' ia') || n.includes('ia ') || n.includes('inteligencia artificial')))) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, modern computer lab, dashboards and data charts on screens, AI assistant concept, clean design';
+        }
+        if (n.includes('chatbot') || n.includes('n8n') || n.includes('automatiz')) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, messaging chatbot concept, automation nodes and connections, modern computer lab';
+        }
+        if (n.includes('startup')) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, product design desk, laptop, prototype screens, sticky notes, pitch demo scene, no text';
+        }
+        if (n.includes('robot') || n.includes('robotica') || n.includes('arduino') || n.includes('sumo') || n.includes('bot')) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, robotics workshop, small educational robots, gears, wires, tools, STEM lab';
+        }
+        if (n.includes('makers')) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, makerspace, 3d printer, tools, electronics components, creative workshop';
+        }
+        if (n.includes('ingl') || n.includes('idioma')) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, language learning classroom, books, flashcards, friendly learning space, no text';
+        }
+        if (
+            n.includes('linux') ||
+            n.includes('program') ||
+            n.includes('desarrollo') ||
+            n.includes('videojuego') ||
+            n.includes('codigo') ||
+            n.includes('gamer') ||
+            n.includes('gaming') ||
+            n.includes('game') ||
+            n.includes('inteligencia artificial') ||
+            /(^|\s)(ai|ia)(\s|$)/.test(n)
+        ) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, modern computer lab, coding and science learning, friendly workshop scene';
+        }
+        if (
+            n.includes('comic') ||
+            n.includes('ilustracion') ||
+            n.includes('historieta') ||
+            n.includes('fotografia') ||
+            n.includes('diseno') ||
+            n.includes('arte') ||
+            n.includes('animacion') ||
+            n.includes('motion')
+        ) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, creative studio desk, camera, drawing tools, art materials, friendly workshop';
+        }
+        if (n.includes('taller') || n.includes('explorador')) {
+            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, hands-on workshop, tools, craft materials, classroom makers table';
+        }
+
+        return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, friendly modern classroom workshop scene, educational';
+    }
+
     function buildPollinationsUrl(name, desc) {
         const cleanName = (name || '').trim();
-        const cleanDesc = (desc || '').trim();
-        const base = '3d render, cute kid-friendly, colorful, soft lighting, friendly classroom workshop scene, playful, cozy, educational';
-        const extra = cleanDesc ? `${cleanName}. ${cleanDesc}` : cleanName;
-        const prompt = `${base}, ${extra}, no text, no watermark, no logo`;
-        const seed = stableSeed(cleanName);
+        const base = chooseBasePrompt(cleanName);
+        const extra = cleanName;
+        const suffix = 'no text, no watermark, no logo, no letters, no words, not cartoon, not illustration, not anime';
+        const prompt = extra ? `${base}, ${extra}, ${suffix}` : `${base}, ${suffix}`;
+        const seed = stableSeed(cleanName || base);
         return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=600&height=400&seed=${seed}&nologo=true`;
     }
 
