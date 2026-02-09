@@ -58,16 +58,16 @@
             return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, kids learning space, educational board games, puzzles, colorful manipulatives, classroom table, no faces';
         }
         if ((n.includes('ciencia en accion') || n.includes('ciencia en accion:') || n.includes('ciencia en accion')) && (n.includes('mentes curiosas') || n.includes('mente curiosa'))) {
-            return '3d animated, high quality 3d render, clean shapes, correct proportions, kids science workshop ages 6-9, simple safe experiments on table, beakers with colorful liquids, magnifying glass, small volcano model, playful classroom lab, warm soft lighting, no faces';
+            return '3d animated, high quality stylized 3d cartoon render, clean shapes, correct proportions, kids science play lab ages 6-9, hands-on experiments and exploration games, colorful beakers, magnets, simple LED circuit, magnifying glass, small volcano model, warm soft lighting, no faces';
         }
         if (n.includes('ciencia en accion') && (n.includes('exploradores fueguinos') || n.includes('explorador fueguino'))) {
-            return '3d animated, high quality 3d render, clean shapes, correct proportions, science explorers ages 10-12, nature and tech exploration, field notebook, binoculars, simple sensors, microscope, map table, forest-inspired classroom, soft cinematic lighting, no faces';
+            return '3d animated, high quality stylized 3d cartoon render, clean shapes, correct proportions, science explorers ages 10-12, field exploration and experimentation, map table, compass, binoculars, rock samples, leaf specimens, simple environmental sensors, microscope, soft cinematic lighting, no faces';
         }
         if (n.includes('ciencia en accion')) {
-            return '3d animated, high quality 3d render, clean shapes, correct proportions, kids science in action workshop, hands-on experiments table, lab tools, discovery mood, bright but natural colors, no faces';
+            return '3d animated, high quality stylized 3d cartoon render, clean shapes, correct proportions, kids science in action workshop, hands-on experiments table, microscope, beakers, simple sensors, bright natural colors, no faces';
         }
         if (n.includes('bordando ciencia')) {
-            return '3d animated, high quality 3d render, clean shapes, correct proportions, adult embroidery workshop, embroidery hoop with science-inspired stitched patterns (no letters), colorful threads, needles, fabric textures, cozy craft table, subtle lab props, warm lighting';
+            return '3d animated, high quality stylized 3d cartoon render, clean shapes, correct proportions, adult embroidery workshop, embroidery hoop with double helix and microscope stitched pattern (no letters), colorful threads, needles, fabric textures, cozy craft table, subtle science props, warm lighting, no faces';
         }
         if (
             n.includes('ia en el aula') ||
@@ -199,7 +199,7 @@
         if (!base) return DEFAULT_COURSE_IMAGE_URL;
 
         const n = normalizeText(cleanName);
-        const useDescHint = n.includes('makers kids') || n.includes('blender') || n.includes('videojuego') || n.includes('videojuegos');
+        const useDescHint = n.includes('makers kids') || n.includes('blender') || n.includes('videojuego') || n.includes('videojuegos') || n.includes('ciencia en accion') || n.includes('bordando ciencia');
         const descHint = useDescHint && cleanDesc ? cleanDesc.split(/[.!?]/)[0].slice(0, 140) : '';
         const extra = descHint ? `${cleanName}. ${descHint}` : cleanName;
         const suffix = 'no text, no watermark, no logo, no letters, no words, no distorted, no deformed, no extra fingers, no extra limbs, no bad anatomy, no glitches';
