@@ -64,12 +64,17 @@ def cursos_por_polo(request, polo_id):
 
     hoy_real = date.today()
 
+    cursos_scope = Q(comision__fk_id_polo=polo_seleccionado) | Q(
+        comision__modalidad='Virtual',
+        comision__fk_id_polo__isnull=True,
+    )
+
     cursos = (
         Curso.objects.filter(
             estado='Abierto',
-            comision__fk_id_polo=polo_seleccionado,
             comision__publicada=True,
         )
+        .filter(cursos_scope)
         .prefetch_related('comision_set__inscripciones')
         .order_by('orden', 'id_curso')
         .distinct()
@@ -81,8 +86,10 @@ def cursos_por_polo(request, polo_id):
         curso.comisiones_abiertas = (
             curso.comision_set.filter(
                 estado='Abierta',
-                fk_id_polo=polo_seleccionado,
                 publicada=True,
+            ).filter(
+                Q(fk_id_polo=polo_seleccionado) |
+                Q(modalidad='Virtual', fk_id_polo__isnull=True)
             )
             .exclude(Q(fecha_fin__isnull=False, fecha_fin__lte=hoy_real))
             .annotate(
@@ -97,8 +104,10 @@ def cursos_por_polo(request, polo_id):
 
         curso.comisiones_polo = list(
             curso.comision_set.filter(
-                fk_id_polo=polo_seleccionado,
                 publicada=True,
+            ).filter(
+                Q(fk_id_polo=polo_seleccionado) |
+                Q(modalidad='Virtual', fk_id_polo__isnull=True)
             )
             .exclude(estado__in=['Cerrada', 'Finalizada'])
             .exclude(Q(fecha_fin__isnull=False, fecha_fin__lte=hoy_real))
@@ -435,7 +444,8 @@ def dashboard_admin(request):
             if 'Mesa de Entrada' in roles:
                 tipo_usuario = 'Mesa de Entrada'
                 es_admin_completo = False
-                ciudad_mesa_entrada = usuario.persona.ciudad_residencia
+                from apps.modulo_1.usuario.models import Persona
+                ciudad_mesa_entrada = Persona.normalizar_ciudad(usuario.persona.ciudad_residencia)
             elif 'Administrador' in roles:
                 tipo_usuario = 'Administrador'
                 puede_crear_usuarios = True
@@ -445,12 +455,15 @@ def dashboard_admin(request):
 
     if tipo_usuario == 'Mesa de Entrada':
         if ciudad_mesa_entrada:
-            nuevas_preinscripciones = nuevas_preinscripciones.filter(
-                comision__fk_id_polo__ciudad=ciudad_mesa_entrada
+            from apps.modulo_1.usuario.models import Persona
+            ciudades_match = Persona.ciudad_variantes(ciudad_mesa_entrada)
+            scope_mesa = Q(comision__fk_id_polo__ciudad=ciudad_mesa_entrada) | (
+                Q(comision__modalidad='Virtual', comision__fk_id_polo__isnull=True) &
+                Q(estudiante__usuario__persona__ciudad_residencia__in=ciudades_match)
             )
-            inscripciones_hoy = inscripciones_hoy_qs.filter(
-                comision__fk_id_polo__ciudad=ciudad_mesa_entrada
-            ).count()
+
+            nuevas_preinscripciones = nuevas_preinscripciones.filter(scope_mesa)
+            inscripciones_hoy = inscripciones_hoy_qs.filter(scope_mesa).count()
         else:
             nuevas_preinscripciones = Inscripcion.objects.none()
             inscripciones_hoy = 0
@@ -486,7 +499,10 @@ def dashboard_admin(request):
 
     if tipo_usuario == 'Mesa de Entrada':
         if ciudad_mesa_entrada:
-            comisiones_hoy_qs = comisiones_hoy_qs.filter(fk_id_polo__ciudad=ciudad_mesa_entrada)
+            comisiones_hoy_qs = comisiones_hoy_qs.filter(
+                Q(fk_id_polo__ciudad=ciudad_mesa_entrada) |
+                Q(modalidad='Virtual', fk_id_polo__isnull=True)
+            )
         else:
             comisiones_hoy_qs = Comision.objects.none()
 
@@ -649,7 +665,15 @@ def dashboard_admin(request):
     inscripciones_confirmadas_qs = Inscripcion.objects.filter(estado='confirmado')
     if tipo_usuario == 'Mesa de Entrada':
         if ciudad_mesa_entrada:
-            inscripciones_confirmadas_qs = inscripciones_confirmadas_qs.filter(comision__fk_id_polo__ciudad=ciudad_mesa_entrada)
+            from apps.modulo_1.usuario.models import Persona
+            ciudades_match = Persona.ciudad_variantes(ciudad_mesa_entrada)
+            inscripciones_confirmadas_qs = inscripciones_confirmadas_qs.filter(
+                Q(comision__fk_id_polo__ciudad=ciudad_mesa_entrada) |
+                (
+                    Q(comision__modalidad='Virtual', comision__fk_id_polo__isnull=True) &
+                    Q(estudiante__usuario__persona__ciudad_residencia__in=ciudades_match)
+                )
+            )
         else:
             inscripciones_confirmadas_qs = Inscripcion.objects.none()
 
@@ -668,14 +692,45 @@ def dashboard_admin(request):
         comisiones_qs = Comision.objects.filter(fk_id_curso_id__in=curso_ids).select_related('fk_id_polo')
         if tipo_usuario == 'Mesa de Entrada':
             if ciudad_mesa_entrada:
-                comisiones_qs = comisiones_qs.filter(fk_id_polo__ciudad=ciudad_mesa_entrada)
+                comisiones_qs = comisiones_qs.filter(
+                    Q(fk_id_polo__ciudad=ciudad_mesa_entrada) |
+                    Q(modalidad='Virtual', fk_id_polo__isnull=True)
+                )
             else:
                 comisiones_qs = Comision.objects.none()
 
         comisiones_data = list(
             comisiones_qs.annotate(
-                inscritos_total=Count('inscripciones', filter=~Q(inscripciones__estado__in=['lista_espera', 'cancelada'])),
-                confirmados_total=Count('inscripciones', filter=Q(inscripciones__estado='confirmado')),
+                inscritos_total=Count(
+                    'inscripciones',
+                    filter=(
+                        ~Q(inscripciones__estado__in=['lista_espera', 'cancelada'])
+                        & (
+                            Q(fk_id_polo__ciudad=ciudad_mesa_entrada)
+                            | (
+                                Q(modalidad='Virtual', fk_id_polo__isnull=True)
+                                & Q(inscripciones__estudiante__usuario__persona__ciudad_residencia__in=Persona.ciudad_variantes(ciudad_mesa_entrada))
+                            )
+                        )
+                    )
+                    if (tipo_usuario == 'Mesa de Entrada' and ciudad_mesa_entrada)
+                    else ~Q(inscripciones__estado__in=['lista_espera', 'cancelada'])
+                ),
+                confirmados_total=Count(
+                    'inscripciones',
+                    filter=(
+                        Q(inscripciones__estado='confirmado')
+                        & (
+                            Q(fk_id_polo__ciudad=ciudad_mesa_entrada)
+                            | (
+                                Q(modalidad='Virtual', fk_id_polo__isnull=True)
+                                & Q(inscripciones__estudiante__usuario__persona__ciudad_residencia__in=Persona.ciudad_variantes(ciudad_mesa_entrada))
+                            )
+                        )
+                    )
+                    if (tipo_usuario == 'Mesa de Entrada' and ciudad_mesa_entrada)
+                    else Q(inscripciones__estado='confirmado')
+                ),
             ).values(
                 'id_comision',
                 'fk_id_curso_id',
@@ -768,7 +823,8 @@ def api_estudiantes_por_curso(request):
             roles = UsuarioRol.objects.filter(usuario_id=usuario).values_list('rol_id__nombre', flat=True)
             if 'Mesa de Entrada' in roles and 'Administrador' not in roles:
                 tipo_usuario = 'Mesa de Entrada'
-                ciudad_mesa_entrada = usuario.persona.ciudad_residencia
+                from apps.modulo_1.usuario.models import Persona
+                ciudad_mesa_entrada = Persona.normalizar_ciudad(usuario.persona.ciudad_residencia)
         except Usuario.DoesNotExist:
             pass
 
@@ -779,7 +835,15 @@ def api_estudiantes_por_curso(request):
 
     if tipo_usuario == 'Mesa de Entrada':
         if ciudad_mesa_entrada:
-            qs = qs.filter(comision__fk_id_polo__ciudad=ciudad_mesa_entrada)
+            from apps.modulo_1.usuario.models import Persona
+            ciudades_match = Persona.ciudad_variantes(ciudad_mesa_entrada)
+            qs = qs.filter(
+                Q(comision__fk_id_polo__ciudad=ciudad_mesa_entrada) |
+                (
+                    Q(comision__modalidad='Virtual', comision__fk_id_polo__isnull=True) &
+                    Q(estudiante__usuario__persona__ciudad_residencia__in=ciudades_match)
+                )
+            )
         else:
             qs = Inscripcion.objects.none()
 
@@ -816,7 +880,10 @@ def api_estudiantes_por_curso(request):
     comisiones_qs = Comision.objects.filter(fk_id_curso_id=curso.id_curso).select_related('fk_id_polo')
     if tipo_usuario == 'Mesa de Entrada':
         if ciudad_mesa_entrada:
-            comisiones_qs = comisiones_qs.filter(fk_id_polo__ciudad=ciudad_mesa_entrada)
+            comisiones_qs = comisiones_qs.filter(
+                Q(fk_id_polo__ciudad=ciudad_mesa_entrada) |
+                Q(modalidad='Virtual', fk_id_polo__isnull=True)
+            )
         else:
             comisiones_qs = Comision.objects.none()
 

@@ -1,5 +1,5 @@
 import re
-from datetime import date
+from datetime import date, timedelta
 
 from django.contrib.auth.models import User
 from django.test import TestCase
@@ -29,6 +29,7 @@ class CursosViewsTests(TestCase):
             fecha_inicio=date(2025, 1, 1),
             fecha_fin=date(2025, 1, 8),
             estado='Abierta',
+            publicada=True,
         )
         self.comision_2 = Comision.objects.create(
             fk_id_curso=self.curso_abierto,
@@ -37,6 +38,7 @@ class CursosViewsTests(TestCase):
             fecha_inicio=date(2025, 1, 1),
             fecha_fin=date(2025, 1, 8),
             estado='Cerrada',
+            publicada=True,
         )
 
         self.persona = Persona.objects.create(
@@ -78,6 +80,7 @@ class CursosViewsTests(TestCase):
                 fecha_inicio=date(2025, 1, 1),
                 fecha_fin=date(2025, 1, 8),
                 estado='Abierta',
+                publicada=True,
             ),
             estado='cancelada',
         )
@@ -91,14 +94,16 @@ class CursosViewsTests(TestCase):
 
     def test_cursos_por_polo_comisiones_abiertas_excluye_cupo_lleno(self):
         curso_lleno = Curso.objects.create(nombre='Curso Cupo Lleno', estado='Abierto', orden=3)
+        hoy = date.today()
         comision_llena = Comision.objects.create(
             fk_id_curso=curso_lleno,
             fk_id_polo=self.polo,
             dias_horarios='Martes 10:00 - 12:00',
-            fecha_inicio=date(2025, 1, 1),
-            fecha_fin=date(2025, 1, 8),
+            fecha_inicio=hoy,
+            fecha_fin=hoy + timedelta(days=7),
             estado='Abierta',
             cupo_maximo=1,
+            publicada=True,
         )
         Inscripcion.objects.create(estudiante=self.estudiante, comision=comision_llena, estado='confirmado')
 
@@ -127,6 +132,7 @@ class CursosViewsTests(TestCase):
             fecha_fin=date(2025, 1, 8),
             estado='Abierta',
             cupo_maximo=1,
+            publicada=True,
         )
         Inscripcion.objects.create(estudiante=self.estudiante, comision=comision_llena, estado='confirmado')
 
@@ -138,6 +144,7 @@ class CursosViewsTests(TestCase):
             fecha_fin=date(2025, 1, 8),
             estado='Abierta',
             cupo_maximo=1,
+            publicada=True,
         )
 
         response = self.client.get(reverse('cursos:ver_disponibles'), secure=True)
@@ -149,3 +156,51 @@ class CursosViewsTests(TestCase):
 
         pattern = rf"#{comision_ok.id_comision}\s*-\s*[\s\S]*?Abierta[\s\S]*?Disponibles:\s*1/1[\s\S]*?Inscribirme"
         self.assertRegex(html, pattern)
+
+    def test_ver_cursos_disponibles_incluye_virtual_global_y_comparten_cupos(self):
+        curso_virtual = Curso.objects.create(nombre='Curso Virtual Global', estado='Abierto', orden=20)
+        comision_virtual_global = Comision.objects.create(
+            fk_id_curso=curso_virtual,
+            fk_id_polo=None,
+            modalidad='Virtual',
+            dias_horarios='A definir',
+            fecha_inicio=date(2025, 1, 1),
+            fecha_fin=date(2025, 1, 8),
+            estado='Abierta',
+            cupo_maximo=100,
+            publicada=True,
+        )
+
+        Inscripcion.objects.create(
+            estudiante=self.estudiante,
+            comision=comision_virtual_global,
+            estado='confirmado',
+        )
+
+        response = self.client.get(reverse('cursos:ver_disponibles'), secure=True)
+        self.assertEqual(response.status_code, 200)
+        html = response.content.decode('utf-8')
+        self.assertRegex(html, r"Curso Virtual Global[\s\S]*?Virtual")
+        self.assertRegex(html, r"Disponibles:\s*99/100")
+
+        persona_rg = Persona.objects.create(
+            dni='87654321',
+            nombre='Beto',
+            apellido='RG',
+            correo='beto@test.com',
+            ciudad_residencia='Rio Grande',
+        )
+        usuario_rg = Usuario.objects.create(persona=persona_rg, contrasena='x')
+        Estudiante.objects.create(
+            usuario=usuario_rg,
+            nivel_estudios='SE',
+            institucion_actual='Colegio',
+        )
+        auth_user_rg = User.objects.create_user(username=persona_rg.dni, password='x')
+        self.client.force_login(auth_user_rg)
+
+        response = self.client.get(reverse('cursos:ver_disponibles'), secure=True)
+        self.assertEqual(response.status_code, 200)
+        html = response.content.decode('utf-8')
+        self.assertRegex(html, r"Curso Virtual Global[\s\S]*?Virtual")
+        self.assertRegex(html, r"Disponibles:\s*99/100")

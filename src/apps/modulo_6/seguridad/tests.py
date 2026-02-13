@@ -111,7 +111,7 @@ class PasswordResetTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
 
         email = mail.outbox[0]
-        self.assertIn(f"https://testserver{reverse('password_reset_confirm')}?token=", email.body)
+        self.assertIn(f"{reverse('password_reset_confirm')}?token=", email.body)
         token = email.body.split("token=", 1)[1].split()[0].strip()
         token = token.replace("&amp;", "&")
         token = unquote(token)

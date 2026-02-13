@@ -27,6 +27,7 @@ class InscripcionesFlowTests(TestCase):
             fecha_fin=date(2025, 1, 1),
             estado='Abierta',
             cupo_maximo=2,
+            publicada=True,
         )
 
         self.persona = Persona.objects.create(
@@ -92,6 +93,7 @@ class InscripcionesFlowTests(TestCase):
             fecha_fin=date(2020, 1, 16),
             estado='En proceso',
             cupo_maximo=2,
+            publicada=True,
         )
         comision_nueva = Comision.objects.create(
             fk_id_curso=self.curso,
@@ -101,6 +103,7 @@ class InscripcionesFlowTests(TestCase):
             fecha_fin=date(2026, 1, 30),
             estado='Abierta',
             cupo_maximo=2,
+            publicada=True,
         )
         Inscripcion.objects.create(estudiante=self.estudiante, comision=comision_pasada, estado='confirmado')
 
@@ -122,6 +125,7 @@ class InscripcionesFlowTests(TestCase):
             fecha_fin=date(2099, 1, 16),
             estado='Abierta',
             cupo_maximo=2,
+            publicada=True,
         )
         comision_nueva = Comision.objects.create(
             fk_id_curso=self.curso,
@@ -131,6 +135,7 @@ class InscripcionesFlowTests(TestCase):
             fecha_fin=date(2099, 1, 30),
             estado='Abierta',
             cupo_maximo=2,
+            publicada=True,
         )
         Inscripcion.objects.create(estudiante=self.estudiante, comision=comision_vigente, estado='confirmado')
 
@@ -150,6 +155,7 @@ class InscripcionesFlowTests(TestCase):
             dias_horarios='Miércoles 10:00 - 12:00',
             estado='En proceso',
             cupo_maximo=2,
+            publicada=True,
         )
         comision_nueva = Comision.objects.create(
             fk_id_curso=self.curso,
@@ -159,6 +165,7 @@ class InscripcionesFlowTests(TestCase):
             fecha_fin=date(2099, 1, 30),
             estado='Abierta',
             cupo_maximo=2,
+            publicada=True,
         )
         Inscripcion.objects.create(estudiante=self.estudiante, comision=comision_sin_fechas, estado='confirmado')
 
@@ -180,6 +187,7 @@ class InscripcionesFlowTests(TestCase):
             fecha_fin=date(2099, 1, 16),
             estado='Abierta',
             cupo_maximo=2,
+            publicada=True,
         )
         comision_b = Comision.objects.create(
             fk_id_curso=self.curso,
@@ -189,6 +197,7 @@ class InscripcionesFlowTests(TestCase):
             fecha_fin=date(2099, 1, 30),
             estado='Abierta',
             cupo_maximo=2,
+            publicada=True,
         )
         Inscripcion.objects.create(estudiante=self.estudiante, comision=comision_a, estado='confirmado')
 

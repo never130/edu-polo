@@ -234,7 +234,10 @@ def panel_comisiones(request):
     # Filtrar por ciudad si es Mesa de Entrada
     ciudad_mesa_entrada = get_mesa_entrada_ciudad(request.user)
     if ciudad_mesa_entrada:
-        comisiones = comisiones.filter(fk_id_polo__ciudad=ciudad_mesa_entrada)
+        comisiones = comisiones.filter(
+            Q(fk_id_polo__ciudad=ciudad_mesa_entrada) |
+            Q(modalidad='Virtual', fk_id_polo__isnull=True)
+        )
     
     # Obtener docentes asignados para cada comisión
     comisiones_con_docentes = []
@@ -439,7 +442,7 @@ def get_mesa_entrada_ciudad(user):
             return None
             
         if 'Mesa de Entrada' in roles:
-            return usuario.persona.ciudad_residencia
+            return Persona.normalizar_ciudad(usuario.persona.ciudad_residencia)
             
     except Usuario.DoesNotExist:
         pass
@@ -491,7 +494,10 @@ def panel_inscripciones(request):
     ciudad_mesa_entrada = get_mesa_entrada_ciudad(request.user)
     comisiones_scope = Comision.objects.all()
     if ciudad_mesa_entrada:
-        comisiones_scope = comisiones_scope.filter(fk_id_polo__ciudad=ciudad_mesa_entrada)
+        comisiones_scope = comisiones_scope.filter(
+            Q(fk_id_polo__ciudad=ciudad_mesa_entrada) |
+            Q(modalidad='Virtual', fk_id_polo__isnull=True)
+        )
 
     comisiones_con_exceso = comisiones_scope.annotate(
         confirmados_count=Count('inscripciones', filter=Q(inscripciones__estado='confirmado')),
@@ -514,7 +520,14 @@ def panel_inscripciones(request):
         'comision__fk_id_polo'
     )
     if ciudad_mesa_entrada:
-        inscripciones_base = inscripciones_base.filter(comision__fk_id_polo__ciudad=ciudad_mesa_entrada)
+        ciudades_match = Persona.ciudad_variantes(ciudad_mesa_entrada)
+        inscripciones_base = inscripciones_base.filter(
+            Q(comision__fk_id_polo__ciudad=ciudad_mesa_entrada) |
+            (
+                Q(comision__modalidad='Virtual', comision__fk_id_polo__isnull=True) &
+                Q(estudiante__usuario__persona__ciudad_residencia__in=ciudades_match)
+            )
+        )
     
     # Búsqueda
     busqueda = request.GET.get('q')
@@ -553,7 +566,10 @@ def panel_inscripciones(request):
     ).select_related('fk_id_curso', 'fk_id_polo').order_by('fk_id_curso__nombre', 'id_comision')
     
     if ciudad_mesa_entrada:
-        comisiones_disponibles = comisiones_disponibles.filter(fk_id_polo__ciudad=ciudad_mesa_entrada)
+        comisiones_disponibles = comisiones_disponibles.filter(
+            Q(fk_id_polo__ciudad=ciudad_mesa_entrada) |
+            Q(modalidad='Virtual', fk_id_polo__isnull=True)
+        )
     
     # Obtener estudiantes para el selector (SOLO PRE-INSCRIPTOS como solicitado)
     pre_inscripciones_prefetch = Prefetch(
@@ -563,7 +579,14 @@ def panel_inscripciones(request):
     )
     estudiantes = Estudiante.objects.filter(inscripciones__estado='pre_inscripto')
     if ciudad_mesa_entrada:
-        estudiantes = estudiantes.filter(inscripciones__comision__fk_id_polo__ciudad=ciudad_mesa_entrada)
+        ciudades_match = Persona.ciudad_variantes(ciudad_mesa_entrada)
+        estudiantes = estudiantes.filter(
+            Q(inscripciones__comision__fk_id_polo__ciudad=ciudad_mesa_entrada) |
+            (
+                Q(inscripciones__comision__modalidad='Virtual', inscripciones__comision__fk_id_polo__isnull=True) &
+                Q(usuario__persona__ciudad_residencia__in=ciudades_match)
+            )
+        )
     estudiantes = estudiantes.distinct().select_related('usuario__persona').prefetch_related(pre_inscripciones_prefetch).order_by('usuario__persona__apellido', 'usuario__persona__nombre')
     
     context = {
@@ -596,9 +619,16 @@ def inscribir_estudiante_admin(request):
             
             # Validar permisos Mesa de Entrada
             ciudad_mesa_entrada = get_mesa_entrada_ciudad(request.user)
-            if ciudad_mesa_entrada and comision.fk_id_polo and comision.fk_id_polo.ciudad != ciudad_mesa_entrada:
-                 messages.error(request, '❌ No tienes permiso para inscribir en comisiones de otra ciudad.')
-                 return redirect(redirect_url)
+            if ciudad_mesa_entrada:
+                if comision.fk_id_polo and comision.fk_id_polo.ciudad != ciudad_mesa_entrada:
+                    messages.error(request, '❌ No tienes permiso para inscribir en comisiones de otra ciudad.')
+                    return redirect(redirect_url)
+
+                if (comision.modalidad == 'Virtual') and (comision.fk_id_polo_id is None):
+                    ciudad_estudiante = (estudiante.usuario.persona.ciudad_residencia or '').strip()
+                    if ciudad_estudiante and ciudad_estudiante != ciudad_mesa_entrada:
+                        messages.error(request, '❌ No tienes permiso para inscribir estudiantes de otra ciudad en una comisión virtual global.')
+                        return redirect(redirect_url)
             
             # Verificar si ya está inscrito
             inscripcion_existente = Inscripcion.objects.filter(estudiante=estudiante, comision=comision).first()
@@ -707,17 +737,31 @@ def exportar_inscripciones(request):
     """Exportar inscripciones a CSV"""
     response = HttpResponse(content_type='text/csv; charset=utf-8')
     response['Content-Disposition'] = f'attachment; filename="inscripciones_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv"'
-    
+
     writer = csv.writer(response)
     writer.writerow(['ID', 'Estudiante', 'DNI', 'Curso', 'Comisión', 'Fecha Inscripción', 'Estado', 'Observaciones Salud'])
-    
-    inscripciones = Inscripcion.objects.all().select_related('estudiante__usuario__persona', 'comision__fk_id_curso')
-    
-    # Filtrar por ciudad si es Mesa de Entrada
-    ciudad_mesa_entrada = get_mesa_entrada_ciudad(request.user)
+
+    inscripciones = Inscripcion.objects.all().select_related(
+        'estudiante__usuario__persona',
+        'comision__fk_id_curso',
+        'comision__fk_id_polo',
+    )
+
+    # Filtrar por ciudad si es Mesa de Entrada.
+    # Incluye comisiones virtuales "globales" (Virtual sin polo), pero SOLO si el estudiante
+    # pertenece a la misma ciudad_residencia de la Mesa de Entrada.
+    ciudad_mesa_entrada = (get_mesa_entrada_ciudad(request.user) or '').strip()
     if ciudad_mesa_entrada:
-        inscripciones = inscripciones.filter(comision__fk_id_polo__ciudad=ciudad_mesa_entrada)
-    
+        ciudades_match = Persona.ciudad_variantes(ciudad_mesa_entrada)
+        inscripciones = inscripciones.filter(
+            Q(comision__fk_id_polo__ciudad=ciudad_mesa_entrada)
+            |
+            (
+                Q(comision__modalidad='Virtual', comision__fk_id_polo__isnull=True)
+                & Q(estudiante__usuario__persona__ciudad_residencia__in=ciudades_match)
+            )
+        )
+
     for insc in inscripciones:
         writer.writerow([
             insc.id,
@@ -729,7 +773,7 @@ def exportar_inscripciones(request):
             insc.get_estado_display(),
             insc.observaciones_salud or ''
         ])
-    
+
     return response
 
 
@@ -1457,9 +1501,20 @@ def api_detalle_estudiante(request):
         'comision__fk_id_polo',
     ).order_by('-fecha_hora_inscripcion')
 
-    ciudad_mesa_entrada = get_mesa_entrada_ciudad(request.user)
+    # Si es Mesa de Entrada, limitar el detalle a:
+    # - Comisiones presenciales/de polo de su ciudad.
+    # - Comisiones Virtual "globales" (sin polo), pero SOLO si el estudiante tiene ciudad_residencia
+    #   igual a la ciudad de la Mesa de Entrada.
+    ciudad_mesa_entrada = (get_mesa_entrada_ciudad(request.user) or '').strip()
     if ciudad_mesa_entrada:
-        inscripciones_qs = inscripciones_qs.filter(comision__fk_id_polo__ciudad=ciudad_mesa_entrada)
+        inscripciones_qs = inscripciones_qs.filter(
+            Q(comision__fk_id_polo__ciudad=ciudad_mesa_entrada)
+            |
+            (
+                Q(comision__modalidad='Virtual', comision__fk_id_polo__isnull=True)
+                & Q(estudiante__usuario__persona__ciudad_residencia=ciudad_mesa_entrada)
+            )
+        )
 
     inscripciones = []
     for insc in inscripciones_qs:
@@ -1524,7 +1579,7 @@ def api_detalle_estudiante(request):
 
 
 @login_required
-@user_passes_test(es_admin_o_mesa)
+@user_passes_test(es_admin_completo)
 def gestion_usuarios(request):
     """Panel de gestión completa de usuarios con buscador"""
     from django.http import JsonResponse
@@ -1891,7 +1946,7 @@ def eliminar_usuario_admin(request, persona_id):
 
 
 @login_required
-@user_passes_test(es_admin_o_mesa)
+@user_passes_test(es_admin_completo)
 def exportar_usuarios_excel(request):
     """Exportar usuarios a Excel"""
     # Crear workbook y worksheet
@@ -2018,7 +2073,10 @@ def panel_asistencia(request):
         # Filtrar por ciudad si es Mesa de Entrada
         ciudad_mesa_entrada = get_mesa_entrada_ciudad(request.user)
         if ciudad_mesa_entrada:
-            comisiones = comisiones.filter(fk_id_polo__ciudad=ciudad_mesa_entrada)
+            comisiones = comisiones.filter(
+                Q(fk_id_polo__ciudad=ciudad_mesa_entrada) |
+                Q(modalidad='Virtual', fk_id_polo__isnull=True)
+            )
     
     # Si se selecciona una comisión específica, mostrar sus asistencias detalladas y formulario de toma
     comision_id = request.GET.get('comision_id') or request.POST.get('comision_id')
@@ -2054,7 +2112,16 @@ def panel_asistencia(request):
         inscripciones = Inscripcion.objects.filter(
             comision=comision,
             estado='confirmado'
-        ).select_related('estudiante__usuario__persona').order_by('estudiante__usuario__persona__apellido')
+        )
+
+        ciudad_mesa_entrada = get_mesa_entrada_ciudad(request.user)
+        if ciudad_mesa_entrada and comision.modalidad == 'Virtual' and comision.fk_id_polo_id is None:
+            ciudades_match = Persona.ciudad_variantes(ciudad_mesa_entrada)
+            inscripciones = inscripciones.filter(
+                estudiante__usuario__persona__ciudad_residencia__in=ciudades_match
+            )
+
+        inscripciones = inscripciones.select_related('estudiante__usuario__persona').order_by('estudiante__usuario__persona__apellido')
         
         # PROCESAR POST (Guardar asistencia)
         if request.method == 'POST' and 'guardar_asistencia' in request.POST:

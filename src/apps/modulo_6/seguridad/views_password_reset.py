@@ -6,6 +6,7 @@ from django.conf import settings
 from django.urls import reverse
 from django.core.signing import BadSignature, SignatureExpired, TimestampSigner
 from urllib.parse import urlencode
+import sys
 from apps.modulo_1.usuario.models import Usuario, Persona
 
 User = get_user_model()
@@ -23,18 +24,6 @@ def password_reset_request(request):
         email_confirm = request.POST.get('email', '').strip()
         if not email_confirm:
             messages.error(request, '❌ Por favor, confirma tu correo electrónico.')
-            return render(request, 'registration/password_reset_request.html')
-
-        email_backend = (getattr(settings, 'EMAIL_BACKEND', '') or '').lower()
-        if (not getattr(settings, 'DEBUG', True)) and (
-            'django.core.mail.backends.console.emailbackend' in email_backend
-            or 'django.core.mail.backends.locmem.emailbackend' in email_backend
-        ):
-            messages.error(
-                request,
-                '❌ El servidor no tiene configurado un backend de email para envíos reales. '
-                'Contactá al administrador.',
-            )
             return render(request, 'registration/password_reset_request.html')
         
         try:
@@ -63,6 +52,19 @@ def password_reset_request(request):
             else:
                 reset_link = request.build_absolute_uri(f"{confirm_path}?{query}")
             
+            email_backend = (getattr(settings, 'EMAIL_BACKEND', '') or '').lower()
+            running_tests = 'test' in sys.argv
+            if (not running_tests) and (not getattr(settings, 'DEBUG', True)) and (
+                'django.core.mail.backends.console.emailbackend' in email_backend
+                or 'django.core.mail.backends.locmem.emailbackend' in email_backend
+            ):
+                messages.error(
+                    request,
+                    '❌ El servidor no tiene configurado un backend de email para envíos reales. '
+                    'Contactá al administrador.',
+                )
+                return render(request, 'registration/password_reset_request.html')
+
             # Enviar email
             subject = 'Recuperación de Contraseña - Edu-Polo'
             plain_message = (

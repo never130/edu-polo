@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import date
+import unicodedata
 
 # Create your models here.
 class Persona(models.Model):
@@ -68,6 +69,42 @@ class Persona(models.Model):
     def nombre_completo(self):
         """Retorna nombre completo"""
         return f"{self.nombre} {self.apellido}"
+
+    @staticmethod
+    def normalizar_ciudad(value):
+        if value is None:
+            return None
+
+        raw = str(value).strip()
+        if not raw:
+            return raw
+
+        normalized = unicodedata.normalize('NFKD', raw)
+        normalized = ''.join(ch for ch in normalized if not unicodedata.combining(ch))
+        normalized = normalized.lower().replace('-', ' ')
+        normalized = ' '.join(normalized.split())
+
+        if normalized in {'ushuaia'}:
+            return 'Ushuaia'
+        if normalized in {'rio grande', 'riogrande'}:
+            return 'Rio Grande'
+        if normalized in {'tolhuin'}:
+            return 'Tolhuin'
+
+        return raw
+
+    @staticmethod
+    def ciudad_variantes(ciudad):
+        canon = Persona.normalizar_ciudad(ciudad)
+        if not canon:
+            return []
+        if canon == 'Rio Grande':
+            return ['Rio Grande', 'Río Grande']
+        return [canon]
+
+    def save(self, *args, **kwargs):
+        self.ciudad_residencia = self.normalizar_ciudad(self.ciudad_residencia)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.nombre_completo
