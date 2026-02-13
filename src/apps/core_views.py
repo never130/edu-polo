@@ -792,6 +792,7 @@ def dashboard_admin(request):
 @login_required
 def api_estudiantes_por_curso(request):
     from django.http import JsonResponse
+    from django.db.models import Count, Q
     from apps.modulo_1.usuario.models import Usuario
     from apps.modulo_1.roles.models import UsuarioRol
     from apps.modulo_3.cursos.models import Curso
@@ -875,7 +876,6 @@ def api_estudiantes_por_curso(request):
         })
 
     from apps.modulo_3.cursos.models import Comision
-    from django.db.models import Count, Q
 
     comisiones_qs = Comision.objects.filter(fk_id_curso_id=curso.id_curso).select_related('fk_id_polo')
     if tipo_usuario == 'Mesa de Entrada':
