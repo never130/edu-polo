@@ -40,14 +40,23 @@
 {% endblock %}
 
 {% block content %}
+<div class="admin-dashboard">
 <div class="page-header">
     <h2>Panel de Control - {{ tipo_usuario|default:"Administrador" }}</h2>
     <p>Vista general del sistema y estadísticas</p>
 </div>
 
 <style>
+    .admin-dashboard .agenda-layout {
+        min-width: 0;
+    }
+
+    .admin-dashboard .agenda-layout > div {
+        min-width: 0;
+    }
+
     @media (max-width: 850px) {
-        .agenda-layout { grid-template-columns: 1fr !important; }
+        .admin-dashboard .agenda-layout { grid-template-columns: 1fr !important; }
     }
 </style>
 
@@ -81,7 +90,7 @@
 <div style="margin-top: 1.25rem; width: 100%;">
     <div style="background: white; padding: 1rem 1.25rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; flex-wrap:wrap;">
-            <div style="display:flex; flex-direction:column; gap:0.25rem; min-width: 240px;">
+            <div style="display:flex; flex-direction:column; gap:0.25rem; min-width: min(240px, 100%);">
                 <div style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
                     <h3 style="color:#0f172a; margin:0; font-size:1.2rem; font-weight:900;">Agenda de comisiones</h3>
                     <div style="background:#f1f5f9; padding:0.25rem 0.6rem; border-radius:8px; color:#475569; font-weight:800; font-size:0.9rem;">
@@ -96,12 +105,13 @@
             </div>
         </div>
 
-        {% if agenda_timed_items or agenda_untimed_items %}
-            <div class="agenda-layout" style="margin-top: 0.85rem; display:grid; grid-template-columns: 210px 1fr; gap: 1rem; align-items:start;">
-                <div style="border: 1px solid #e2e8f0; background: #f8fafc; border-radius: 14px; padding: 0.75rem;">
-                    <div style="display:flex; justify-content:center; align-items:center; gap:0.75rem;">
-                        <div style="font-weight: 900; color:#0f172a;">{{ mini_calendar_month_label }}</div>
-                    </div>
+        <div class="agenda-layout" style="margin-top: 0.85rem; display:grid; grid-template-columns: 210px 1fr; gap: 1rem; align-items:start;">
+            <div style="border: 1px solid #e2e8f0; background: #f8fafc; border-radius: 14px; padding: 0.75rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:0.75rem;">
+                    <a href="?fecha={{ mini_prev_month_date|date:'Y-m-d' }}" style="width:28px; height:28px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:#ffffff; border:1px solid #e2e8f0; color:#0f172a; text-decoration:none; font-weight:900;">‹</a>
+                    <div style="font-weight: 900; color:#0f172a;">{{ mini_calendar_month_label }}</div>
+                    <a href="?fecha={{ mini_next_month_date|date:'Y-m-d' }}" style="width:28px; height:28px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:#ffffff; border:1px solid #e2e8f0; color:#0f172a; text-decoration:none; font-weight:900;">›</a>
+                </div>
 
                     <div style="margin-top:0.75rem; display:grid; grid-template-columns: repeat(7, 1fr); gap: 0.25rem; color:#64748b; font-weight:900; font-size:0.75rem; text-align:center;">
                         <div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div>
@@ -112,9 +122,11 @@
                             {% for day in week %}
                                 {% if day.month == mini_calendar_month %}
                                     {% if day == actual_today %}
-                                        <div style="height:24px; border-radius:8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:#ffffff; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:0.8rem; box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);">{{ day.day }}</div>
+                                        <a href="?fecha={{ day|date:'Y-m-d' }}" style="height:24px; border-radius:8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:#ffffff; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:0.8rem; box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3); text-decoration:none;">{{ day.day }}</a>
+                                    {% elif day == fecha_hoy %}
+                                        <a href="?fecha={{ day|date:'Y-m-d' }}" style="height:24px; border-radius:8px; background:#ffffff; border:2px solid #667eea; color:#0f172a; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:0.8rem; text-decoration:none;">{{ day.day }}</a>
                                     {% else %}
-                                        <div style="height:24px; border-radius:8px; background:#ffffff; border:1px solid #e2e8f0; color:#94a3b8; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.8rem;">{{ day.day }}</div>
+                                        <a href="?fecha={{ day|date:'Y-m-d' }}" style="height:24px; border-radius:8px; background:#ffffff; border:1px solid #e2e8f0; color:#94a3b8; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.8rem; text-decoration:none;">{{ day.day }}</a>
                                     {% endif %}
                                 {% else %}
                                     <div style="height:24px; border-radius:8px; background:transparent; color:#cbd5e1; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.8rem;">{{ day.day }}</div>
@@ -124,7 +136,10 @@
                     </div>
                 </div>
 
-                <div style="border: 1px solid #e2e8f0; background: #ffffff; border-radius: 14px; overflow:auto; -webkit-overflow-scrolling: touch;">
+                <div style="border: 1px solid #e2e8f0; background: #ffffff; border-radius: 14px; overflow:auto; -webkit-overflow-scrolling: touch; min-width:0;">
+                    {% if not agenda_timed_items and not agenda_untimed_items %}
+                        <div style="padding: 0.75rem; color:#64748b; font-weight:700;">No hay cursos/comisiones activos para esta fecha.</div>
+                    {% endif %}
                     {% if agenda_untimed_items %}
                         <div style="padding: 0.6rem 0.75rem; background:#f8fafc; border-bottom:1px solid #e2e8f0;">
                             <div style="display:flex; justify-content:space-between; align-items:center; gap:0.75rem;">
@@ -145,7 +160,8 @@
                         </div>
                     {% endif %}
 
-                    <div style="display:grid; grid-template-columns: 64px 1fr; min-width: 900px;">
+                    {% if agenda_timed_items %}
+                    <div style="display:grid; grid-template-columns: 64px 1fr; min-width:0; width:100%;">
                         <div style="background:#ffffff; border-right:1px solid #e2e8f0;">
                             {% for h in agenda_hours %}
                                 <div style="height:40px; border-top:1px solid #e2e8f0; display:flex; align-items:flex-start; justify-content:flex-end; padding: 0.25rem 0.5rem; color:#64748b; font-weight:900; font-size:0.78rem;">{{ h }}</div>
@@ -190,11 +206,11 @@
                             {% endfor %}
                         </div>
                     </div>
+                    {% endif %}
                 </div>
             </div>
-        {% else %}
-            <div style="margin-top: 0.75rem; color:#64748b; font-weight:700;">No hay cursos/comisiones activos para hoy.</div>
-        {% endif %}
+
+        </div>
     </div>
 </div>
 
@@ -203,7 +219,7 @@
 <!-- Métricas de Hoy -->
 <div style="margin-top: 2rem;">
     <h3 style="color: #4a5568; margin-bottom: 1rem; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
-        📅 Actividad del {{ fecha_hoy|date:"d/m/Y" }}
+        📅 Actividad del {{ actual_today|date:"d/m/Y" }}
     </h3>
     <div class="dashboard-cards" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
         <div class="dashboard-card" style="border-left: 4px solid #48bb78; cursor: pointer; transition: transform 0.2s;" onclick="openModal('modalPreInscripciones')" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
@@ -281,7 +297,7 @@
 </div>
 
 <!-- Estadísticas Detalladas -->
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(350px, 100%), 1fr)); gap: 1.5rem; margin-top: 2rem;">
     
     <!-- Alertas de Cupo -->
     {% if alertas_cupo %}
@@ -366,7 +382,7 @@
 
 {% if es_admin_completo %}
 <!-- Panel de Gestión Completo -->
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 1.5rem; margin-top: 2rem;">
     
     <!-- Gestión de Cursos -->
     <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
@@ -472,49 +488,49 @@
 {% endif %}
 
 <style>
-    .dashboard-card,
-    .messages li,
-    .acciones-rapidas {
+    .admin-dashboard .dashboard-card,
+    .admin-dashboard .messages li,
+    .admin-dashboard .acciones-rapidas {
         box-shadow: none !important;
     }
 
-    .dashboard-card:hover,
-    .accion-btn:hover {
+    .admin-dashboard .dashboard-card:hover,
+    .admin-dashboard .accion-btn:hover {
         box-shadow: none !important;
     }
 
-    div[style*="box-shadow: 0 4px 15px rgba(0,0,0,0.08)"] {
+    .admin-dashboard div[style*="box-shadow: 0 4px 15px rgba(0,0,0,0.08)"] {
         box-shadow: none !important;
     }
 
-    div[style*="box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1)"] {
+    .admin-dashboard div[style*="box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1)"] {
         box-shadow: none !important;
     }
 
-    div[style*="border-top: 4px solid"] {
+    .admin-dashboard div[style*="border-top: 4px solid"] {
         border-top: none !important;
     }
 
-    div[style*="border: 1px solid #e2e8f0"],
-    div[style*="border: 1px solid #e5e7eb"],
-    div[style*="border: 1px solid #fed7d7"] {
+    .admin-dashboard div[style*="border: 1px solid #e2e8f0"],
+    .admin-dashboard div[style*="border: 1px solid #e5e7eb"],
+    .admin-dashboard div[style*="border: 1px solid #fed7d7"] {
         border: none !important;
     }
 
-    .acciones-rapidas {
+    .admin-dashboard .acciones-rapidas {
         background: white;
         padding: 2rem;
         border-radius: 15px;
         margin-top: 2rem;
     }
 
-    .acciones-grid {
+    .admin-dashboard .acciones-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 1rem;
     }
 
-    .accion-btn {
+    .admin-dashboard .accion-btn {
         display: block;
         padding: 1.5rem;
         color: white;
@@ -525,49 +541,49 @@
         transition: all 0.3s ease;
     }
 
-    .accion-btn:hover {
+    .admin-dashboard .accion-btn:hover {
         transform: translateY(-3px);
     }
 
-    .accion-primary {
+    .admin-dashboard .accion-primary {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
 
-    .accion-secondary {
+    .admin-dashboard .accion-secondary {
         background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
     }
 
-    .accion-tertiary {
+    .admin-dashboard .accion-tertiary {
         background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
     }
 
     @media (max-width: 768px) {
-        .acciones-rapidas {
+        .admin-dashboard .acciones-rapidas {
             padding: 1.5rem;
         }
 
-        .acciones-grid {
+        .admin-dashboard .acciones-grid {
             grid-template-columns: 1fr;
             gap: 0.8rem;
         }
 
-        .accion-btn {
+        .admin-dashboard .accion-btn {
             padding: 1.2rem;
             font-size: 0.95rem;
         }
     }
 
     @media (max-width: 480px) {
-        .acciones-rapidas {
+        .admin-dashboard .acciones-rapidas {
             padding: 1rem;
         }
 
-        .acciones-rapidas h3 {
+        .admin-dashboard .acciones-rapidas h3 {
             font-size: 1.2rem;
             margin-bottom: 1rem;
         }
 
-        .accion-btn {
+        .admin-dashboard .accion-btn {
             padding: 1rem;
             font-size: 0.9rem;
         }
@@ -909,5 +925,6 @@
         }
     });
 </script>
+</div>
 {% endblock %}
 

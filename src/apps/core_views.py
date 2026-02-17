@@ -382,6 +382,12 @@ def dashboard_admin(request):
     hoy_real = hoy
 
     fecha_agenda = hoy_real
+    fecha_param = (request.GET.get('fecha') or '').strip()
+    if fecha_param:
+        try:
+            fecha_agenda = datetime.fromisoformat(fecha_param).date()
+        except ValueError:
+            fecha_agenda = hoy_real
 
     Comision.objects.filter(fecha_fin__lt=hoy_real).exclude(estado='Finalizada').update(estado='Finalizada')
     
@@ -657,6 +663,17 @@ def dashboard_admin(request):
     mini_calendar_year = int(fecha_agenda.year)
     mini_calendar_month = int(fecha_agenda.month)
 
+    first_of_month = date(fecha_agenda.year, fecha_agenda.month, 1)
+    if first_of_month.month == 1:
+        mini_prev_month_date = date(first_of_month.year - 1, 12, 1)
+    else:
+        mini_prev_month_date = date(first_of_month.year, first_of_month.month - 1, 1)
+
+    if first_of_month.month == 12:
+        mini_next_month_date = date(first_of_month.year + 1, 1, 1)
+    else:
+        mini_next_month_date = date(first_of_month.year, first_of_month.month + 1, 1)
+
     cal = calendar.Calendar(firstweekday=0)
     mini_calendar_weeks = cal.monthdatescalendar(mini_calendar_year, mini_calendar_month)
     mini_calendar_month_label = f"{meses.get(mini_calendar_month, mini_calendar_month)} de {mini_calendar_year}"
@@ -772,6 +789,8 @@ def dashboard_admin(request):
         'mini_calendar_month_label': mini_calendar_month_label,
         'mini_calendar_year': mini_calendar_year,
         'mini_calendar_month': mini_calendar_month,
+        'mini_prev_month_date': mini_prev_month_date,
+        'mini_next_month_date': mini_next_month_date,
         'inscripciones_hoy': inscripciones_hoy,
         'asistencias_hoy': asistencias_hoy,
         'cursos_populares': cursos_populares,
