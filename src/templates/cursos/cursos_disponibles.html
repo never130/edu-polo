@@ -84,6 +84,9 @@
         if (n.includes('revit') || n.includes('bim')) {
             return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, architectural BIM design studio, computer screen with 3d building model, blueprint sheets, measuring tools, clean professional desk, no text';
         }
+        if (n.includes('produccion de contenidos para redes sociales')) {
+            return 'Pixar style 3D render, modern and vibrant, a social media content creation setup, a smartphone on a tripod with a ring light, a laptop showing a simple video editor, and fun icons like hearts and thumbs up floating around. masterpiece, best quality, highly detailed. no faces, no people.';
+        }
         if (
             n.includes('produccion de contenidos') ||
             n.includes('redes sociales') ||
@@ -112,6 +115,9 @@
         if (n.includes('ajedrez')) {
             return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, chess learning table, chessboard and pieces, calm classroom environment, no faces, no text';
         }
+        if (n.includes('espacio bio fablab')) {
+            return 'Pixar style 3D render, innovative and organic, a bio-fabrication lab, a table with glowing petri dishes, beakers with colorful liquids, and a microscope looking at plant cells. masterpiece, best quality, highly detailed. no faces, no people.';
+        }
         if (
             n.includes('bio fablab') ||
             n.includes('biomaterial') ||
@@ -130,19 +136,10 @@
         if (n.includes('autocad') || n.includes('sketchup') || n.includes('sketch-up') || n.includes('sketch up')) {
             return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, architecture design workstation, CAD drafting and 3d modeling on screen, blueprint sheets, measuring tools, clean professional desk, no text';
         }
-        if (n.includes('robotica star') || (n.includes('robotica') && n.includes(' star'))) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, kids robotics workshop, educational robot kits, colorful sensors, small wheeled robot chassis, building blocks, safe tools, STEM lab';
-        }
-        if (n.includes('robotica plus') || (n.includes('robotica') && n.includes(' plus'))) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, teen robotics lab, microcontroller boards, sensors, wiring, laptop programming station, robot prototype on workbench';
-        }
-        if (n.includes('nivel pro') || (n.includes('robotica') && (n.includes(' pro') || n.includes('trayecto avanzado') || n.includes('avanzado')))) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, advanced robotics engineering lab, precision tools, oscilloscope, wiring harnesses, robotic arm prototype on bench, technical workshop';
-        }
-        if (n.includes('robot') || n.includes('robotica') || n.includes('arduino') || n.includes('sumo') || n.includes('bot')) {
+        if (n.includes('robotica') || n.includes('robot') || n.includes('arduino') || n.includes('sumo') || n.includes('bot')) {
             return 'Pixar style 3D render, cute and friendly, a kids robotics workshop, a small friendly robot with wheels and simple arms, an arduino board with glowing LEDs, and some building blocks on a workbench. masterpiece, best quality, highly detailed. no faces, no people.';
         }
-        if (n.includes('makers kids') || (n.includes('makers') && n.includes('kids'))) {
+        if (n.includes('makers kids')) {
             return 'Pixar style 3D render, creative and fun, a kids makerspace, a friendly 3D printer creating a small toy, colorful geometric shapes, simple tools, and a tablet showing a basic 3D model. masterpiece, best quality, highly detailed. no faces, no people.';
         }
         if (n.includes('makers')) {
