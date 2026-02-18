@@ -1778,13 +1778,13 @@
             return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, kids learning space, educational board games, puzzles, colorful manipulatives, classroom table, no faces';
         }
         if ((n.includes('ciencia en accion') || n.includes('ciencia en accion:') || n.includes('ciencia en accion')) && (n.includes('mentes curiosas') || n.includes('mente curiosa'))) {
-            return '3d animated, high quality stylized 3d cartoon render, clean shapes, correct proportions, kids science play lab ages 6-9, hands-on experiments and exploration games, colorful beakers, magnets, simple LED circuit, magnifying glass, small volcano model, warm soft lighting, no faces';
+            return 'Pixar style 3D render, cute and playful, vibrant colors, sharp focus, a kids science lab for ages 6-9, table with colorful beakers, fun magnets, a glowing LED circuit, and a magnifying glass. masterpiece, best quality, highly detailed, cinematic lighting. no faces, no people';
         }
         if (n.includes('ciencia en accion') && (n.includes('exploradores fueguinos') || n.includes('explorador fueguino'))) {
-            return '3d animated, high quality stylized 3d cartoon render, clean shapes, correct proportions, science explorers ages 10-12, field exploration and experimentation, map table, compass, binoculars, rock samples, leaf specimens, simple environmental sensors, microscope, soft cinematic lighting, no faces';
+            return 'Pixar style 3D render, adventurous and fun, sharp focus, a young explorers (ages 10-12) setup, a wooden table with an old map of Tierra del Fuego, a compass, binoculars, interesting rock samples, and a microscope. masterpiece, best quality, highly detailed, cinematic lighting. no faces, no people';
         }
         if (n.includes('ciencia en accion')) {
-            return '3d animated, high quality stylized 3d cartoon render, clean shapes, correct proportions, kids science in action workshop, hands-on experiments table, microscope, beakers, simple sensors, bright natural colors, no faces';
+            return 'Pixar style 3D render, cute and educational, vibrant colors, sharp focus, a kids science workshop table with a friendly microscope, colorful beakers, and simple gadgets. masterpiece, best quality, highly detailed. no faces, no people';
         }
         if (n.includes('bordando ciencia')) {
             return '3d animated, high quality stylized 3d cartoon render, clean shapes, correct proportions, adult embroidery workshop, embroidery hoop with double helix and microscope stitched pattern (no letters), colorful threads, needles, fabric textures, cozy craft table, subtle science props, warm lighting, no faces';
@@ -1922,7 +1922,7 @@
         const useDescHint = n.includes('makers kids') || n.includes('blender') || n.includes('videojuego') || n.includes('videojuegos') || n.includes('ciencia en accion') || n.includes('bordando ciencia');
         const descHint = useDescHint && cleanDesc ? cleanDesc.split(/[.!?]/)[0].slice(0, 140) : '';
         const extra = descHint ? `${cleanName}. ${descHint}` : cleanName;
-        const suffix = 'no text, no watermark, no logo, no letters, no words, no distorted, no deformed, no extra fingers, no extra limbs, no bad anatomy, no glitches';
+        const suffix = 'no text, no watermark, no logo, no letters, no words, blurry, ugly, disfigured, poor quality, bad quality, distorted, deformed, bad anatomy, glitches, out of frame, cropped';
         const prompt = extra ? `${base}, ${extra}, ${suffix}` : `${base}, ${suffix}`;
         const seed = stableSeed(cleanName || base);
         return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=600&height=400&seed=${seed}&nologo=true`;
