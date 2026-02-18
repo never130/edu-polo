@@ -119,6 +119,15 @@ def cursos_por_polo(request, polo_id):
             .order_by('id_comision')
         )
 
+        tiene_cupo = bool(curso.comisiones_abiertas)
+        tiene_abiertas_sin_cupo = any(comision.estado == 'Abierta' for comision in curso.comisiones_polo) and not tiene_cupo
+        if tiene_cupo:
+            curso.disponibilidad = 'abierta'
+        elif tiene_abiertas_sin_cupo:
+            curso.disponibilidad = 'cerrada'
+        else:
+            curso.disponibilidad = 'proximamente'
+
         if curso.comisiones_polo:
             cursos_visibles.append(curso)
 
