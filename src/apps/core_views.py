@@ -2,8 +2,13 @@ from datetime import date
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from apps.modulo_1.roles.models import Estudiante, Docente
 from apps.modulo_2.inscripciones.models import Inscripcion
+
+
+def vite_client_stub(request):
+    return HttpResponse('', content_type='application/javascript', status=204)
 
 
 def landing(request):

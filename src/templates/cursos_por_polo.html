@@ -830,7 +830,7 @@
         <div class="courses-grid">
             {% for curso in cursos %}
             {% with lower_name=curso.nombre|lower %}
-            <div class="course-card" data-category="{% if 'alfabetización' in lower_name or 'alfabetizacion' in lower_name or 'ciudadanía digital' in lower_name or 'ciudadania digital' in lower_name %}general{% elif 'ciencia en acción' in lower_name or 'ciencia en accion' in lower_name %}programacion{% elif 'linux' in lower_name or 'program' in lower_name or 'desarrollo' in lower_name or 'videojuego' in lower_name or 'código' in lower_name or 'codigo' in lower_name or 'gamer' in lower_name or 'gaming' in lower_name or 'game' in lower_name or 'inteligencia artificial' in lower_name or ' ai' in lower_name or 'ai ' in lower_name or ' ia' in lower_name or 'ia ' in lower_name %}programacion{% elif 'comic' in lower_name or 'cómic' in lower_name or 'ilustración' in lower_name or 'ilustracion' in lower_name or 'historieta' in lower_name or 'historietas' in lower_name or 'viñeta' in lower_name or 'viñetas' in lower_name %}diseno{% elif 'fotografía' in lower_name or 'fotografia' in lower_name or 'foto' in lower_name or 'fotográfico' in lower_name or 'fotografico' in lower_name or 'diseño' in lower_name or 'arte' in lower_name or 'produccion' in lower_name or 'animación' in lower_name or 'animacion' in lower_name or 'stop motion' in lower_name or 'stopmotion' in lower_name or 'motion' in lower_name %}diseno{% elif 'robótica' in lower_name or 'robotica' in lower_name or 'robot' in lower_name or 'arduino' in lower_name or 'sumo' in lower_name or 'bot' in lower_name %}robotica{% elif 'ingl' in lower_name or 'idioma' in lower_name %}idiomas{% elif 'taller' in lower_name or 'explorador' in lower_name %}taller{% else %}general{% endif %}" data-title="{{ curso.nombre }}" data-age="{{ curso.edad_minima|default:'' }}" data-availability="{{ curso.estado }}">
+            <div class="course-card" data-category="{% if 'alfabetización' in lower_name or 'alfabetizacion' in lower_name or 'ciudadanía digital' in lower_name or 'ciudadania digital' in lower_name %}general{% elif 'ciencia en acción' in lower_name or 'ciencia en accion' in lower_name %}programacion{% elif 'linux' in lower_name or 'program' in lower_name or 'desarrollo' in lower_name or 'videojuego' in lower_name or 'código' in lower_name or 'codigo' in lower_name or 'gamer' in lower_name or 'gaming' in lower_name or 'game' in lower_name or 'inteligencia artificial' in lower_name or ' ai' in lower_name or 'ai ' in lower_name or ' ia' in lower_name or 'ia ' in lower_name %}programacion{% elif 'comic' in lower_name or 'cómic' in lower_name or 'ilustración' in lower_name or 'ilustracion' in lower_name or 'historieta' in lower_name or 'historietas' in lower_name or 'viñeta' in lower_name or 'viñetas' in lower_name %}diseno{% elif 'fotografía' in lower_name or 'fotografia' in lower_name or 'foto' in lower_name or 'fotográfico' in lower_name or 'fotografico' in lower_name or 'diseño' in lower_name or 'arte' in lower_name or 'produccion' in lower_name or 'animación' in lower_name or 'animacion' in lower_name or 'stop motion' in lower_name or 'stopmotion' in lower_name or 'motion' in lower_name %}diseno{% elif 'robótica' in lower_name or 'robotica' in lower_name or 'robot' in lower_name or 'arduino' in lower_name or 'sumo' in lower_name or 'bot' in lower_name %}robotica{% elif 'ingl' in lower_name or 'idioma' in lower_name %}idiomas{% elif 'taller' in lower_name or 'explorador' in lower_name %}taller{% else %}general{% endif %}" data-title="{{ curso.nombre }}" data-age="{{ curso.edad_minima|default:'' }}" data-availability="{{ curso.estado|lower }}">
                 
                 <div class="card-img-container">
                     <img src="{% if 'alfabetización' in lower_name or 'alfabetizacion' in lower_name or 'ciudadanía digital' in lower_name or 'ciudadania digital' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20friendly%20student%20using%20smartphone%20and%20laptop%20digital%20citizenship%20online%20safety%20privacy%20shield%20icons%20social%20media%20colorful%20soft%20lighting?width=600&height=400&nologo=true{% elif 'linux' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20kid%20learning%20linux%20on%20laptop%20with%20penguin%20plush%20on%20desk%2C%20medium%20shot%2C%20normal%20eyes%2C%20natural%20facial%20proportions%2C%20soft%20smile%2C%20bright%20classroom%2C%20soft%20lighting?width=600&height=400&nologo=true{% elif 'program' in lower_name or 'desarrollo' in lower_name or 'videojuego' in lower_name or 'código' in lower_name or 'codigo' in lower_name or 'gamer' in lower_name or 'gaming' in lower_name or 'game' in lower_name or 'inteligencia artificial' in lower_name or ' ai' in lower_name or 'ai ' in lower_name or ' ia' in lower_name or 'ia ' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20cute%20character%20working%20with%20computer%20code%20futuristic%20lab%20colorful%20soft%20lighting?width=600&height=400&nologo=true{% elif 'comic' in lower_name or 'cómic' in lower_name or 'ilustración' in lower_name or 'ilustracion' in lower_name or 'historieta' in lower_name or 'historietas' in lower_name or 'viñeta' in lower_name or 'viñetas' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20comic%20book%20style%20illustration%20of%20dynamic%20comic%20panels%2C%20speech%20bubbles%2C%20ink%20outlines%2C%20halftone%20shading%2C%20vibrant%20colors%2C%20desk%20with%20sketchbook%20and%20pens%2C%20no%20people%2C%20no%20faces%2C%20soft%20studio%20lighting?width=600&height=400&nologo=true{% elif 'introducción a la fotografía' in lower_name or 'introduccion a la fotografia' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20creative%20photography%20classroom%20table%20with%20camera%2C%20smartphone%2C%20printed%20photos%2C%20light%20box%2C%20color%20gels%2C%20reflector%2C%20composition%20frames%2C%20experimenting%20with%20light%20and%20framing%2C%20warm%20inviting%20workshop%20scene%2C%20soft%20studio%20lighting%2C%20no%20people%2C%20no%20faces?width=600&height=400&nologo=true{% elif 'fotografía' in lower_name or 'fotografia' in lower_name or 'foto' in lower_name or 'fotográfico' in lower_name or 'fotografico' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20creative%20photography%20classroom%20table%20with%20camera%2C%20smartphone%2C%20printed%20photos%2C%20light%20box%2C%20color%20gels%2C%20reflector%2C%20composition%20frames%2C%20experimenting%20with%20light%20and%20framing%2C%20warm%20inviting%20workshop%20scene%2C%20soft%20studio%20lighting%2C%20no%20people%2C%20no%20faces?width=600&height=400&nologo=true{% elif 'diseño' in lower_name or 'arte' in lower_name or 'produccion' in lower_name or 'animación' in lower_name or 'animacion' in lower_name or 'stop motion' in lower_name or 'stopmotion' in lower_name or 'motion' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20artist%20character%20painting%20on%20canvas%20creative%20studio%20colorful%20palette?width=600&height=400&nologo=true{% elif 'robot' in lower_name or 'arduino' in lower_name or 'sumo' in lower_name or 'bot' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cute%20robot%20character%20futuristic%20technology%20glowing%20blue%20lights%20sci-fi?width=600&height=400&nologo=true{% elif 'ingl' in lower_name or 'idioma' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20character%20reading%20flying%20books%20learning%20languages%20globe%20travel?width=600&height=400&nologo=true{% elif 'ajedrez' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20top-down%20view%20full%20chessboard%20centered%20on%20table%2C%20all%20pieces%20visible%2C%20wide%20shot%2C%20cozy%20community%20chess%20club%2C%20warm%20inviting%20workshop%20scene%2C%20soft%20studio%20lighting%2C%20no%20people%2C%20no%20faces?width=600&height=400&nologo=true{% elif 'taller' in lower_name or 'explorador' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20young%20maker%20character%20building%20a%20robot%20with%20tools%20and%20electronics%20in%20a%20modern%20technology%20lab%20colorful%20soft%20lighting?width=600&height=400&nologo=true{% else %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20happy%20student%20backpack%20education%20school%20bright?width=600&height=400&nologo=true{% endif %}"
@@ -950,7 +950,7 @@
                         </div>
                     </div>
 
-                    <button class="btn-more" onclick="openCourseModal('{{ curso.id_curso }}')">Más información</button>
+                    <button class="btn-more" type="button" data-open-course-modal="true">Más información</button>
 
                     <div class="comisiones-hidden-content" style="display: none;">
                         {% if curso.comisiones_polo %}
@@ -1006,7 +1006,7 @@
                                     {% elif comision.cupo_lleno %}
                                         <button class="btn-more" style="display: block; width: 100%; text-align: center; background: #94a3b8; cursor: not-allowed; border: none;" disabled>Cupo lleno</button>
                                     {% else %}
-                                        <button onclick="closeCourseModal('{{ curso.id_curso|unlocalize }}'); openLoginModal();" class="btn-more">Iniciar Sesión para Inscribirme</button>
+                                        <button onclick="closeCourseInfoModal(); openLoginModal();" class="btn-more">Iniciar Sesión para Inscribirme</button>
                                     {% endif %}
                                 {% endif %}
                             </div>
@@ -1015,78 +1015,6 @@
                             <p style="color: #94a3b8; text-align: center;">No hay comisiones publicadas por el momento.</p>
                         {% endif %}
                     </div>
-                </div>
-            </div>
-
-            <!-- Course Detail Modal -->
-            <div id="modal-curso-{{ curso.id_curso }}" class="modal-overlay">
-                <div class="modal-container" style="padding: 2rem; max-height: 80vh; overflow-y: auto;">
-                    <button class="modal-close" onclick="closeCourseModal('{{ curso.id_curso }}')">×</button>
-                    <h3 style="font-size: 1.5rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1rem;">{{ curso.nombre }}</h3>
-                    <p style="color: var(--text-gray); line-height: 1.6; margin-bottom: 2rem;">{{ curso.descripcion }}</p>
-                    
-                    <h4 style="font-weight: 700; margin-bottom: 1rem;">Comisiones</h4>
-                    {% if curso.comisiones_polo %}
-                        {% for comision in curso.comisiones_polo %}
-                        <div style="background: #f8fafc; padding: 1rem; border-radius: 12px; margin-bottom: 1rem; border: 1px solid #e2e8f0;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                                <strong>Comisión #{{ comision.id_comision }}</strong>
-                                <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
-                                    {% if comision.modalidad == 'Virtual' %}
-                                        <span style="background:#e0f2fe; color:#0369a1; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Virtual</span>
-                                    {% elif comision.modalidad == 'Hibrido' %}
-                                        <span style="background:#fef3c7; color:#92400e; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Híbrido</span>
-                                    {% else %}
-                                        <span style="background:#dcfce7; color:#166534; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Presencial</span>
-                                    {% endif %}
-
-                                    {% if comision.estado == 'Abierta' and not comision.cupo_lleno %}
-                                        <span style="background:#dcfce7; color:#166534; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Abierta</span>
-                                    {% elif comision.estado == 'Abierta' and comision.cupo_lleno %}
-                                        <span style="background:#fee2e2; color:#991b1b; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Cerrada</span>
-                                    {% elif comision.estado == 'Cerrada' %}
-                                        <span style="background:#fee2e2; color:#991b1b; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Cerrada</span>
-                                    {% elif comision.estado == 'En proceso' %}
-                                        <span style="background:#fef9c3; color:#854d0e; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">En proceso</span>
-                                    {% elif comision.estado == 'Finalizada' %}
-                                        <span style="background:#e2e8f0; color:#334155; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Finalizada</span>
-                                    {% endif %}
-
-                                    <span style="background:#f1f5f9; color:#0f172a; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Cupo: {{ comision.inscritos_count }}/{{ comision.cupo_maximo }}</span>
-                                </div>
-                            </div>
-                            <div style="font-size: 0.9rem; color: #64748b; margin-bottom: 1rem;">
-                                <div style="margin-bottom: 0.3rem;"><i class="fa-regular fa-clock" style="margin-right: 5px;"></i> {{ comision.dias_horarios|default:"Horarios a confirmar" }}</div>
-                                {% if comision.fecha_inicio or comision.fecha_fin %}
-                                    <div>
-                                        <i class="fa-regular fa-calendar-alt" style="margin-right: 5px;"></i>
-                                        Inicio: <strong>{{ comision.fecha_inicio|date:"d/m/Y"|default:"-" }}</strong> 
-                                        al <strong>{{ comision.fecha_fin|date:"d/m/Y"|default:"-" }}</strong>
-                                    </div>
-                                {% endif %}
-                            </div>
-                            {% if user.is_authenticated %}
-                                {% if comision.estado != 'Abierta' %}
-                                    <button class="btn-more" style="display: block; width: 100%; text-align: center; background: #94a3b8; cursor: not-allowed; border: none;" disabled>Inscripción cerrada</button>
-                                {% elif comision.cupo_lleno %}
-                                    <button class="btn-more" style="display: block; width: 100%; text-align: center; background: #94a3b8; cursor: not-allowed; border: none;" disabled>Cupo lleno</button>
-                                {% else %}
-                                    <a href="{% url 'inscripciones:formulario' comision.id_comision|unlocalize %}" class="btn-more" style="display: block; text-align: center; text-decoration: none;">Inscribirme</a>
-                                {% endif %}
-                            {% else %}
-                                {% if comision.estado != 'Abierta' %}
-                                    <button class="btn-more" style="display: block; width: 100%; text-align: center; background: #94a3b8; cursor: not-allowed; border: none;" disabled>Inscripción cerrada</button>
-                                {% elif comision.cupo_lleno %}
-                                    <button class="btn-more" style="display: block; width: 100%; text-align: center; background: #94a3b8; cursor: not-allowed; border: none;" disabled>Cupo lleno</button>
-                                {% else %}
-                                    <button onclick="closeCourseModal('{{ curso.id_curso|unlocalize }}'); openLoginModal();" class="btn-more">Iniciar Sesión para Inscribirme</button>
-                                {% endif %}
-                            {% endif %}
-                        </div>
-                        {% endfor %}
-                    {% else %}
-                        <p style="color: #94a3b8; text-align: center;">No hay comisiones publicadas por el momento.</p>
-                    {% endif %}
                 </div>
             </div>
             {% endwith %}
@@ -1457,18 +1385,9 @@
 
         document.addEventListener('DOMContentLoaded', setupPasswordToggles);
 
-        // Modal Logic
-        function openCourseModal(id) {
-            const modal = document.getElementById('modal-curso-' + id);
-            modal.style.display = 'flex';
-            // Force reflow
-            modal.offsetHeight;
-            modal.classList.add('show');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeCourseModal(id) {
-            const modal = document.getElementById('modal-curso-' + id);
+        function closeCourseInfoModal() {
+            const modal = document.getElementById('course-modal');
+            if (!modal) return;
             modal.classList.remove('show');
             setTimeout(() => {
                 modal.style.display = 'none';
@@ -1528,17 +1447,23 @@
         }
         
         // Close on outside click for Login and Register (Landing style)
-        document.getElementById('loginModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeLoginModal();
-            }
-        });
+        const loginModalEl = document.getElementById('loginModal');
+        if (loginModalEl) {
+            loginModalEl.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeLoginModal();
+                }
+            });
+        }
 
-        document.getElementById('registroModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeRegistroModal();
-            }
-        });
+        const registroModalEl = document.getElementById('registroModal');
+        if (registroModalEl) {
+            registroModalEl.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeRegistroModal();
+                }
+            });
+        }
 
         // Close on outside click for generic modals (Course modals)
         window.addEventListener('click', function(event) {
@@ -1784,11 +1709,14 @@
     }
 
     // Close on outside click
-    document.getElementById('contactoModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeContactoModal();
-        }
-    });
+    const contactoModalEl = document.getElementById('contactoModal');
+    if (contactoModalEl) {
+        contactoModalEl.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeContactoModal();
+            }
+        });
+    }
 
     // Acerca De Modal Logic
     function openAcercaDeModal() {
@@ -1808,11 +1736,14 @@
         }, 300);
     }
 
-    document.getElementById('acercaDeModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeAcercaDeModal();
-        }
-    });
+    const acercaDeModalEl = document.getElementById('acercaDeModal');
+    if (acercaDeModalEl) {
+        acercaDeModalEl.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAcercaDeModal();
+            }
+        });
+    }
 </script>
 
 <!-- Modal Acerca De -->
@@ -2106,15 +2037,12 @@
 
 <!-- Modal Structure -->
 <div class="modal-overlay" id="course-modal">
-    <div class="modal-container">
-        <button class="modal-close" id="close-modal">&times;</button>
-        <div class="modal-content">
-            <h2 id="modal-title" class="modal-title-style"></h2>
-            <p id="modal-desc" class="modal-desc-style"></p>
-            <div id="modal-comisiones" class="modal-comisiones-style">
-                <!-- Comisiones content will be injected here -->
-            </div>
-        </div>
+    <div class="modal-container" style="padding: 2rem; max-height: 80vh; overflow-y: auto;">
+        <button class="modal-close" id="close-modal" type="button">×</button>
+        <h3 id="modal-title" style="font-size: 1.5rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1rem;"></h3>
+        <p id="modal-desc" style="color: var(--text-gray); line-height: 1.6; margin-bottom: 2rem;"></p>
+        <h4 style="font-weight: 700; margin-bottom: 1rem;">Comisiones</h4>
+        <div id="modal-comisiones"></div>
     </div>
 </div>
 
@@ -2124,6 +2052,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const availabilityFilter = document.getElementById('availability-filter');
     const sortControl = document.getElementById('sort-control');
     const coursesGrid = document.querySelector('.courses-grid');
+    if (!coursesGrid) return;
     let courseCards = Array.from(document.querySelectorAll('.course-card'));
 
     // 1. Populate age filter
@@ -2143,12 +2072,33 @@ document.addEventListener('DOMContentLoaded', function () {
         ageFilter.appendChild(option);
     });
 
+    function normalizeAvailability(input) {
+        const raw = String(input || '')
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .trim();
+
+        if (raw.startsWith('abierta')) return 'abierta';
+        if (raw.startsWith('proximamente') || raw.startsWith('proximo')) return 'proximamente';
+        if (raw.startsWith('cerrada')) return 'cerrada';
+        return raw;
+    }
+
+    function availabilityRank(input) {
+        const v = normalizeAvailability(input);
+        if (v === 'abierta') return 1;
+        if (v === 'proximamente') return 2;
+        if (v === 'cerrada') return 3;
+        return 4;
+    }
+
     // 2. Default Sort by Availability
-    const availabilityOrder = { 'abierta': 1, 'proximamente': 2, 'cerrada': 3 };
     courseCards.sort((a, b) => {
-        const availabilityA = availabilityOrder[a.dataset.availability] || 4;
-        const availabilityB = availabilityOrder[b.dataset.availability] || 4;
-        return availabilityA - availabilityB;
+        const availabilityA = availabilityRank(a.dataset.availability);
+        const availabilityB = availabilityRank(b.dataset.availability);
+        if (availabilityA !== availabilityB) return availabilityA - availabilityB;
+        return String(a.dataset.title || '').localeCompare(String(b.dataset.title || ''));
     });
 
     // Initial render with default sort
@@ -2167,7 +2117,8 @@ document.addEventListener('DOMContentLoaded', function () {
         // Filter
         filteredCards = filteredCards.filter(card => {
             const ageMatch = selectedAge === 'all' || card.dataset.age === selectedAge;
-            const availabilityMatch = selectedAvailability === 'all' || card.dataset.availability === selectedAvailability;
+            const availabilityValue = normalizeAvailability(card.dataset.availability);
+            const availabilityMatch = selectedAvailability === 'all' || availabilityValue === selectedAvailability;
             return ageMatch && availabilityMatch;
         });
 
@@ -2197,7 +2148,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const closeModal = document.getElementById('close-modal');
 
     coursesGrid.addEventListener('click', function(e) {
-        const moreInfoButton = e.target.closest('.btn-more');
+        const moreInfoButton = e.target.closest('button[data-open-course-modal="true"]');
         if (moreInfoButton) {
             const card = moreInfoButton.closest('.course-card');
             const title = card.querySelector('.card-title').textContent;
@@ -2207,19 +2158,18 @@ document.addEventListener('DOMContentLoaded', function () {
             modalTitle.textContent = title;
             modalDesc.textContent = desc;
             modalComisiones.innerHTML = comisionesHtml;
-            
+
+            modalOverlay.style.display = 'flex';
+            modalOverlay.offsetHeight;
             modalOverlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
         }
     });
 
-    function hideModal() {
-        modalOverlay.classList.remove('show');
-    }
-
-    closeModal.addEventListener('click', hideModal);
+    closeModal.addEventListener('click', closeCourseInfoModal);
     modalOverlay.addEventListener('click', function(e) {
         if (e.target === modalOverlay) {
-            hideModal();
+            closeCourseInfoModal();
         }
     });
 });

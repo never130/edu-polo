@@ -27,6 +27,8 @@ from apps.modulo_6.seguridad.views_password_reset import password_reset_request,
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('@vite/client', core_views.vite_client_stub),
+    path('@vite/client/', core_views.vite_client_stub),
     path('', core_views.landing, name='landing'),
     path('polos/', core_views.lista_polos, name='lista_polos'),
     path('dashboard/', core_views.dashboard, name='dashboard'),
