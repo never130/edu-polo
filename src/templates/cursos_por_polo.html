@@ -704,6 +704,53 @@
             grid-template-columns: 1fr;
         }
     }
+
+    /* Filter Styles */
+    .filter-container {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+        padding: 1rem;
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .filter-group label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #94a3b8;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+    }
+
+    .filter-select {
+        padding: 0.6rem 1rem;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        background-color: #f8fafc;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        cursor: pointer;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .filter-select:hover {
+        border-color: #cbd5e1;
+    }
+
+    .filter-select:focus {
+        outline: none;
+        border-color: var(--primary-orange);
+        box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
     </style>
 </head>
 <body>
@@ -747,7 +794,35 @@
     <!-- Main Content -->
     <div class="main-container">
         
-        <h2 class="page-title">Cursos disponibles</h2>
+        <h1 class="page-title">Cursos en {{ polo_seleccionado.nombre }}</h1>
+
+        <!-- Filter and Sort Controls -->
+        <div class="filter-container">
+            <div class="filter-group">
+                <label for="age-filter">Edad</label>
+                <select id="age-filter" class="filter-select">
+                    <option value="all">Todas</option>
+                    <!-- Age ranges will be populated by JavaScript -->
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="availability-filter">Disponibilidad</label>
+                <select id="availability-filter" class="filter-select">
+                    <option value="all">Todas</option>
+                    <option value="abierta">Abierta</option>
+                    <option value="proximamente">Próximamente</option>
+                    <option value="cerrada">Cerrada</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="sort-control">Ordenar por</label>
+                <select id="sort-control" class="filter-select">
+                    <option value="default">Defecto</option>
+                    <option value="az">Nombre (A-Z)</option>
+                    <option value="za">Nombre (Z-A)</option>
+                </select>
+            </div>
+        </div>
 
         <!-- Tabs removed per user request -->
 
@@ -755,7 +830,7 @@
         <div class="courses-grid">
             {% for curso in cursos %}
             {% with lower_name=curso.nombre|lower %}
-            <div class="course-card" data-category="{% if 'alfabetización' in lower_name or 'alfabetizacion' in lower_name or 'ciudadanía digital' in lower_name or 'ciudadania digital' in lower_name %}general{% elif 'ciencia en acción' in lower_name or 'ciencia en accion' in lower_name %}programacion{% elif 'linux' in lower_name or 'program' in lower_name or 'desarrollo' in lower_name or 'videojuego' in lower_name or 'código' in lower_name or 'codigo' in lower_name or 'gamer' in lower_name or 'gaming' in lower_name or 'game' in lower_name or 'inteligencia artificial' in lower_name or ' ai' in lower_name or 'ai ' in lower_name or ' ia' in lower_name or 'ia ' in lower_name %}programacion{% elif 'comic' in lower_name or 'cómic' in lower_name or 'ilustración' in lower_name or 'ilustracion' in lower_name or 'historieta' in lower_name or 'historietas' in lower_name or 'viñeta' in lower_name or 'viñetas' in lower_name %}diseno{% elif 'fotografía' in lower_name or 'fotografia' in lower_name or 'foto' in lower_name or 'fotográfico' in lower_name or 'fotografico' in lower_name or 'diseño' in lower_name or 'arte' in lower_name or 'produccion' in lower_name or 'animación' in lower_name or 'animacion' in lower_name or 'stop motion' in lower_name or 'stopmotion' in lower_name or 'motion' in lower_name %}diseno{% elif 'robótica' in lower_name or 'robotica' in lower_name or 'robot' in lower_name or 'arduino' in lower_name or 'sumo' in lower_name or 'bot' in lower_name %}robotica{% elif 'ingl' in lower_name or 'idioma' in lower_name %}idiomas{% elif 'taller' in lower_name or 'explorador' in lower_name %}taller{% else %}general{% endif %}">
+            <div class="course-card" data-category="{% if 'alfabetización' in lower_name or 'alfabetizacion' in lower_name or 'ciudadanía digital' in lower_name or 'ciudadania digital' in lower_name %}general{% elif 'ciencia en acción' in lower_name or 'ciencia en accion' in lower_name %}programacion{% elif 'linux' in lower_name or 'program' in lower_name or 'desarrollo' in lower_name or 'videojuego' in lower_name or 'código' in lower_name or 'codigo' in lower_name or 'gamer' in lower_name or 'gaming' in lower_name or 'game' in lower_name or 'inteligencia artificial' in lower_name or ' ai' in lower_name or 'ai ' in lower_name or ' ia' in lower_name or 'ia ' in lower_name %}programacion{% elif 'comic' in lower_name or 'cómic' in lower_name or 'ilustración' in lower_name or 'ilustracion' in lower_name or 'historieta' in lower_name or 'historietas' in lower_name or 'viñeta' in lower_name or 'viñetas' in lower_name %}diseno{% elif 'fotografía' in lower_name or 'fotografia' in lower_name or 'foto' in lower_name or 'fotográfico' in lower_name or 'fotografico' in lower_name or 'diseño' in lower_name or 'arte' in lower_name or 'produccion' in lower_name or 'animación' in lower_name or 'animacion' in lower_name or 'stop motion' in lower_name or 'stopmotion' in lower_name or 'motion' in lower_name %}diseno{% elif 'robótica' in lower_name or 'robotica' in lower_name or 'robot' in lower_name or 'arduino' in lower_name or 'sumo' in lower_name or 'bot' in lower_name %}robotica{% elif 'ingl' in lower_name or 'idioma' in lower_name %}idiomas{% elif 'taller' in lower_name or 'explorador' in lower_name %}taller{% else %}general{% endif %}" data-title="{{ curso.nombre }}" data-age="{{ curso.edad_minima|default:'' }}">
                 
                 <div class="card-img-container">
                     <img src="{% if 'alfabetización' in lower_name or 'alfabetizacion' in lower_name or 'ciudadanía digital' in lower_name or 'ciudadania digital' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20friendly%20student%20using%20smartphone%20and%20laptop%20digital%20citizenship%20online%20safety%20privacy%20shield%20icons%20social%20media%20colorful%20soft%20lighting?width=600&height=400&nologo=true{% elif 'linux' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20kid%20learning%20linux%20on%20laptop%20with%20penguin%20plush%20on%20desk%2C%20medium%20shot%2C%20normal%20eyes%2C%20natural%20facial%20proportions%2C%20soft%20smile%2C%20bright%20classroom%2C%20soft%20lighting?width=600&height=400&nologo=true{% elif 'program' in lower_name or 'desarrollo' in lower_name or 'videojuego' in lower_name or 'código' in lower_name or 'codigo' in lower_name or 'gamer' in lower_name or 'gaming' in lower_name or 'game' in lower_name or 'inteligencia artificial' in lower_name or ' ai' in lower_name or 'ai ' in lower_name or ' ia' in lower_name or 'ia ' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20cute%20character%20working%20with%20computer%20code%20futuristic%20lab%20colorful%20soft%20lighting?width=600&height=400&nologo=true{% elif 'comic' in lower_name or 'cómic' in lower_name or 'ilustración' in lower_name or 'ilustracion' in lower_name or 'historieta' in lower_name or 'historietas' in lower_name or 'viñeta' in lower_name or 'viñetas' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20comic%20book%20style%20illustration%20of%20dynamic%20comic%20panels%2C%20speech%20bubbles%2C%20ink%20outlines%2C%20halftone%20shading%2C%20vibrant%20colors%2C%20desk%20with%20sketchbook%20and%20pens%2C%20no%20people%2C%20no%20faces%2C%20soft%20studio%20lighting?width=600&height=400&nologo=true{% elif 'introducción a la fotografía' in lower_name or 'introduccion a la fotografia' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20creative%20photography%20classroom%20table%20with%20camera%2C%20smartphone%2C%20printed%20photos%2C%20light%20box%2C%20color%20gels%2C%20reflector%2C%20composition%20frames%2C%20experimenting%20with%20light%20and%20framing%2C%20warm%20inviting%20workshop%20scene%2C%20soft%20studio%20lighting%2C%20no%20people%2C%20no%20faces?width=600&height=400&nologo=true{% elif 'fotografía' in lower_name or 'fotografia' in lower_name or 'foto' in lower_name or 'fotográfico' in lower_name or 'fotografico' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20creative%20photography%20classroom%20table%20with%20camera%2C%20smartphone%2C%20printed%20photos%2C%20light%20box%2C%20color%20gels%2C%20reflector%2C%20composition%20frames%2C%20experimenting%20with%20light%20and%20framing%2C%20warm%20inviting%20workshop%20scene%2C%20soft%20studio%20lighting%2C%20no%20people%2C%20no%20faces?width=600&height=400&nologo=true{% elif 'diseño' in lower_name or 'arte' in lower_name or 'produccion' in lower_name or 'animación' in lower_name or 'animacion' in lower_name or 'stop motion' in lower_name or 'stopmotion' in lower_name or 'motion' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20artist%20character%20painting%20on%20canvas%20creative%20studio%20colorful%20palette?width=600&height=400&nologo=true{% elif 'robot' in lower_name or 'arduino' in lower_name or 'sumo' in lower_name or 'bot' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cute%20robot%20character%20futuristic%20technology%20glowing%20blue%20lights%20sci-fi?width=600&height=400&nologo=true{% elif 'ingl' in lower_name or 'idioma' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20character%20reading%20flying%20books%20learning%20languages%20globe%20travel?width=600&height=400&nologo=true{% elif 'ajedrez' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20top-down%20view%20full%20chessboard%20centered%20on%20table%2C%20all%20pieces%20visible%2C%20wide%20shot%2C%20cozy%20community%20chess%20club%2C%20warm%20inviting%20workshop%20scene%2C%20soft%20studio%20lighting%2C%20no%20people%2C%20no%20faces?width=600&height=400&nologo=true{% elif 'taller' in lower_name or 'explorador' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20young%20maker%20character%20building%20a%20robot%20with%20tools%20and%20electronics%20in%20a%20modern%20technology%20lab%20colorful%20soft%20lighting?width=600&height=400&nologo=true{% else %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20happy%20student%20backpack%20education%20school%20bright?width=600&height=400&nologo=true{% endif %}"
@@ -793,6 +868,13 @@
                         <span class="tag age">{{ curso.edad_minima }} a {{ curso.edad_maxima }} AÑOS</span>
                         {% elif curso.edad_minima %}
                         <span class="tag age">+{{ curso.edad_minima }} AÑOS</span>
+                        {% endif %}
+                        {% if curso.estado == 'abierta' %}
+                            <span class="tag availability" style="background-color: #dcfce7; color: #16a34a;">Abierta</span>
+                        {% elif curso.estado == 'proximamente' %}
+                            <span class="tag availability" style="background-color: #fef9c3; color: #ca8a04;">Próximamente</span>
+                        {% else %}
+                            <span class="tag availability" style="background-color: #fee2e2; color: #dc2626;">Cerrada</span>
                         {% endif %}
                     </div>
 
@@ -1860,9 +1942,9 @@
             return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, advanced robotics engineering lab, precision tools, oscilloscope, wiring harnesses, robotic arm prototype on bench, technical workshop';
         }
         if (n.includes('robotica') || n.includes('robot') || n.includes('arduino') || n.includes('sumo') || n.includes('bot')) {
-            return 'Pixar style 3D render, cute and friendly, a kids robotics workshop, a small friendly robot with wheels and simple arms, an arduino board with glowing LEDs, and some building blocks on a workbench. masterpiece, best quality, highly detailed. no faces, no people.';
+            return '3D render, vibrant and dynamic, a futuristic robotics workshop for kids, with a friendly, sleek robot character assembling a small drone on a clean workbench. Holographic displays show code in the background, and various electronic components like LEDs and sensors are neatly organized. Pixar style, masterpiece, best quality, highly detailed, cinematic lighting. no faces, no people.';
         }
-        if (n.includes('makers kids') || (n.includes('makers') && n.includes('kids'))) {
+        if (n.includes('makers kids') || n.includes('makers')) {
             return 'Pixar style 3D render, creative and fun, a kids makerspace, a friendly 3D printer creating a small toy, colorful geometric shapes, simple tools, and a tablet showing a basic 3D model. masterpiece, best quality, highly detailed. no faces, no people.';
         }
         if (n.includes('makers')) {
@@ -1956,6 +2038,69 @@
         apply();
     }
 })();
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const ageFilter = document.getElementById('age-filter');
+    const availabilityFilter = document.getElementById('availability-filter');
+    const sortControl = document.getElementById('sort-control');
+    const coursesGrid = document.querySelector('.courses-grid');
+    const courseCards = Array.from(document.querySelectorAll('.course-card'));
+
+    // 1. Populate age filter
+    const ageRanges = new Set();
+    courseCards.forEach(card => {
+        const age = card.dataset.age;
+        if (age) {
+            ageRanges.add(age);
+        }
+    });
+
+    const sortedAges = Array.from(ageRanges).sort();
+    sortedAges.forEach(age => {
+        const option = document.createElement('option');
+        option.value = age;
+        option.textContent = age;
+        ageFilter.appendChild(option);
+    });
+
+    // 2. Filter and Sort Logic
+    function applyFiltersAndSort() {
+        const selectedAge = ageFilter.value;
+        const selectedAvailability = availabilityFilter.value;
+        const sortBy = sortControl.value;
+
+        // Filter
+        let filteredCards = courseCards.filter(card => {
+            const ageMatch = selectedAge === 'all' || card.dataset.age === selectedAge;
+            
+            let availabilityMatch = true;
+            if (selectedAvailability !== 'all') {
+                const availabilityTag = card.querySelector('.tag.availability');
+                availabilityMatch = availabilityTag && availabilityTag.textContent.toLowerCase().includes(selectedAvailability);
+            }
+
+            return ageMatch && availabilityMatch;
+        });
+
+        // Sort
+        if (sortBy === 'az') {
+            filteredCards.sort((a, b) => a.dataset.title.localeCompare(b.dataset.title));
+        } else if (sortBy === 'za') {
+            filteredCards.sort((a, b) => b.dataset.title.localeCompare(a.dataset.title));
+        }
+        // 'default' sort is the original DOM order, which we don't need to change explicitly
+
+        // Update DOM
+        coursesGrid.innerHTML = '';
+        filteredCards.forEach(card => coursesGrid.appendChild(card));
+    }
+
+    // 3. Event Listeners
+    ageFilter.addEventListener('change', applyFiltersAndSort);
+    availabilityFilter.addEventListener('change', applyFiltersAndSort);
+    sortControl.addEventListener('change', applyFiltersAndSort);
+});
 </script>
 </body>
 </html>
