@@ -951,6 +951,70 @@
                     </div>
 
                     <button class="btn-more" onclick="openCourseModal('{{ curso.id_curso }}')">Más información</button>
+
+                    <div class="comisiones-hidden-content" style="display: none;">
+                        {% if curso.comisiones_polo %}
+                            {% for comision in curso.comisiones_polo %}
+                            <div style="background: #f8fafc; padding: 1rem; border-radius: 12px; margin-bottom: 1rem; border: 1px solid #e2e8f0;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <strong>Comisión #{{ comision.id_comision }}</strong>
+                                    <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
+                                        {% if comision.modalidad == 'Virtual' %}
+                                            <span style="background:#e0f2fe; color:#0369a1; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Virtual</span>
+                                        {% elif comision.modalidad == 'Hibrido' %}
+                                            <span style="background:#fef3c7; color:#92400e; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Híbrido</span>
+                                        {% else %}
+                                            <span style="background:#dcfce7; color:#166534; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Presencial</span>
+                                        {% endif %}
+
+                                        {% if comision.estado == 'Abierta' and not comision.cupo_lleno %}
+                                            <span style="background:#dcfce7; color:#166534; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Abierta</span>
+                                        {% elif comision.estado == 'Abierta' and comision.cupo_lleno %}
+                                            <span style="background:#fee2e2; color:#991b1b; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Cerrada</span>
+                                        {% elif comision.estado == 'Cerrada' %}
+                                            <span style="background:#fee2e2; color:#991b1b; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Cerrada</span>
+                                        {% elif comision.estado == 'En proceso' %}
+                                            <span style="background:#fef9c3; color:#854d0e; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">En proceso</span>
+                                        {% elif comision.estado == 'Finalizada' %}
+                                            <span style="background:#e2e8f0; color:#334155; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Finalizada</span>
+                                        {% endif %}
+
+                                        <span style="background:#f1f5f9; color:#0f172a; padding:0.15rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:900;">Cupo: {{ comision.inscritos_count }}/{{ comision.cupo_maximo }}</span>
+                                    </div>
+                                </div>
+                                <div style="font-size: 0.9rem; color: #64748b; margin-bottom: 1rem;">
+                                    <div style="margin-bottom: 0.3rem;"><i class="fa-regular fa-clock" style="margin-right: 5px;"></i> {{ comision.dias_horarios|default:"Horarios a confirmar" }}</div>
+                                    {% if comision.fecha_inicio or comision.fecha_fin %}
+                                        <div>
+                                            <i class="fa-regular fa-calendar-alt" style="margin-right: 5px;"></i>
+                                            Inicio: <strong>{{ comision.fecha_inicio|date:"d/m/Y"|default:"-" }}</strong> 
+                                            al <strong>{{ comision.fecha_fin|date:"d/m/Y"|default:"-" }}</strong>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                {% if user.is_authenticated %}
+                                    {% if comision.estado != 'Abierta' %}
+                                        <button class="btn-more" style="display: block; width: 100%; text-align: center; background: #94a3b8; cursor: not-allowed; border: none;" disabled>Inscripción cerrada</button>
+                                    {% elif comision.cupo_lleno %}
+                                        <button class="btn-more" style="display: block; width: 100%; text-align: center; background: #94a3b8; cursor: not-allowed; border: none;" disabled>Cupo lleno</button>
+                                    {% else %}
+                                        <a href="{% url 'inscripciones:formulario' comision.id_comision|unlocalize %}" class="btn-more" style="display: block; text-align: center; text-decoration: none;">Inscribirme</a>
+                                    {% endif %}
+                                {% else %}
+                                    {% if comision.estado != 'Abierta' %}
+                                        <button class="btn-more" style="display: block; width: 100%; text-align: center; background: #94a3b8; cursor: not-allowed; border: none;" disabled>Inscripción cerrada</button>
+                                    {% elif comision.cupo_lleno %}
+                                        <button class="btn-more" style="display: block; width: 100%; text-align: center; background: #94a3b8; cursor: not-allowed; border: none;" disabled>Cupo lleno</button>
+                                    {% else %}
+                                        <button onclick="closeCourseModal('{{ curso.id_curso|unlocalize }}'); openLoginModal();" class="btn-more">Iniciar Sesión para Inscribirme</button>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p style="color: #94a3b8; text-align: center;">No hay comisiones publicadas por el momento.</p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
 
@@ -2039,6 +2103,21 @@
     }
 })();
 </script>
+
+<!-- Modal Structure -->
+<div class="modal-overlay" id="course-modal">
+    <div class="modal-container">
+        <button class="modal-close" id="close-modal">&times;</button>
+        <div class="modal-content">
+            <h2 id="modal-title" class="modal-title-style"></h2>
+            <p id="modal-desc" class="modal-desc-style"></p>
+            <div id="modal-comisiones" class="modal-comisiones-style">
+                <!-- Comisiones content will be injected here -->
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const ageFilter = document.getElementById('age-filter');
@@ -2082,7 +2161,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const selectedAvailability = availabilityFilter.value;
         const sortBy = sortControl.value;
 
-        // Start with the default sorted cards
+        // Start with a copy of the original cards to maintain the default sort order for filtering
         let filteredCards = [...courseCards];
 
         // Filter
@@ -2092,13 +2171,13 @@ document.addEventListener('DOMContentLoaded', function () {
             return ageMatch && availabilityMatch;
         });
 
-        // Custom Sort
+        // Custom Sort (only if a sort option other than default is selected)
         if (sortBy === 'az') {
             filteredCards.sort((a, b) => a.dataset.title.localeCompare(b.dataset.title));
         } else if (sortBy === 'za') {
             filteredCards.sort((a, b) => b.dataset.title.localeCompare(a.dataset.title));
         }
-        // 'default' sort is already handled by the initial sort
+        // If sortBy is 'default', we respect the initial availability-based sort.
 
         // Update DOM
         coursesGrid.innerHTML = '';
@@ -2109,6 +2188,40 @@ document.addEventListener('DOMContentLoaded', function () {
     ageFilter.addEventListener('change', applyFiltersAndSort);
     availabilityFilter.addEventListener('change', applyFiltersAndSort);
     sortControl.addEventListener('change', applyFiltersAndSort);
+
+    // 5. Modal Logic with Event Delegation
+    const modalOverlay = document.getElementById('course-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalDesc = document.getElementById('modal-desc');
+    const modalComisiones = document.getElementById('modal-comisiones');
+    const closeModal = document.getElementById('close-modal');
+
+    coursesGrid.addEventListener('click', function(e) {
+        const moreInfoButton = e.target.closest('.btn-more');
+        if (moreInfoButton) {
+            const card = moreInfoButton.closest('.course-card');
+            const title = card.querySelector('.card-title').textContent;
+            const desc = card.querySelector('.card-desc').textContent;
+            const comisionesHtml = card.querySelector('.comisiones-hidden-content').innerHTML;
+
+            modalTitle.textContent = title;
+            modalDesc.textContent = desc;
+            modalComisiones.innerHTML = comisionesHtml;
+            
+            modalOverlay.classList.add('show');
+        }
+    });
+
+    function hideModal() {
+        modalOverlay.classList.remove('show');
+    }
+
+    closeModal.addEventListener('click', hideModal);
+    modalOverlay.addEventListener('click', function(e) {
+        if (e.target === modalOverlay) {
+            hideModal();
+        }
+    });
 });
 </script>
 </body>
