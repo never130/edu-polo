@@ -616,19 +616,16 @@
 
     function buildPollinationsUrl(name, desc, age, category) {
         const cleanName = (name || '').trim();
-        const cleanDesc = (desc || '').trim();
         const ageValue = parseAge(age);
         const base = chooseBasePrompt(cleanName, category);
         if (!base) return DEFAULT_COURSE_IMAGE_URL;
 
-        const descHint = cleanDesc ? cleanDesc.split(/[.!?]/)[0].slice(0, 90) : '';
-        const hintText = descHint && descHint.length >= 10 ? descHint : '';
         const ageText = ageHint(ageValue);
         const styleVariant = chooseStyleVariant(`${cleanName}|${category || ''}|${ageValue || ''}`);
-        const parts = [base, ageText, styleVariant, cleanName, hintText].filter(Boolean);
+        const parts = [base, ageText, styleVariant, cleanName].filter(Boolean);
         const suffix = 'no text, no watermark, no logo, no letters, no words, no illustration, no 2d, no drawing, no sketch, no watercolor, no oil painting, no hand-drawn, no classroom, no empty room, sharp focus, high detail, clean edges, smooth surfaces, no blurry, no lowres, no pixelated, no noisy, no ugly, no disfigured, no distorted, no deformed, no bad anatomy, no extra fingers, no extra limbs, no bad face, no deformed face, no extra eyes, no glitches, no out of frame, no cropped';
         const prompt = `${parts.join(', ')}, ${suffix}`;
-        const seed = stableSeed(`${cleanName}|${hintText}|${category || ''}|${ageValue || ''}` || base);
+        const seed = stableSeed(`${cleanName}|${category || ''}|${ageValue || ''}` || base);
         return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=600&height=400&seed=${seed}&nologo=true`;
     }
 
