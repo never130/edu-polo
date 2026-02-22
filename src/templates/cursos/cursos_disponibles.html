@@ -48,8 +48,32 @@
             .trim();
     }
 
-    function chooseBasePrompt(courseName) {
+    function parseAge(value) {
+        const n = parseInt(String(value || ''), 10);
+        return Number.isFinite(n) ? n : null;
+    }
+
+    function ageHint(age) {
+        if (age === null) return '';
+        if (age <= 6) return 'cute toddler character';
+        if (age <= 10) return 'cute child character';
+        if (age <= 14) return 'cute teen character';
+        return 'cute young adult character';
+    }
+
+    function chooseStyleVariant(seedBase) {
+        const variants = [
+            'soft pastel gradient background',
+            'clean studio background with subtle bokeh',
+            'simple colorful diorama base and backdrop',
+            'toy-like scene with rounded props'
+        ];
+        return variants[stableSeed(seedBase) % variants.length];
+    }
+
+    function chooseBasePrompt(courseName, category) {
         const n = normalizeText(courseName);
+        const c = normalizeText(category);
 
         if (n.includes('alfabetizacion digital') || n.includes('ciudadania digital')) {
             return 'Pixar-style 3D render, cute friendly character learning with laptop and smartphone, colorful floating cybersecurity shield icons and chat bubbles, bright clean background, soft studio lighting, sharp focus, smooth surfaces, high detail';
@@ -103,24 +127,44 @@
             return 'Pixar-style 3D render, cute character in a hands-on workshop with safe tools and colorful materials, bright clean background, soft studio lighting, sharp focus, high detail';
         }
 
+        if (c) {
+            if (c === 'programacion') {
+                return 'Pixar-style 3D render, cute character coding with a laptop, floating colorful code blocks and tech icons, bright clean background, soft studio lighting, sharp focus, high detail';
+            }
+            if (c === 'diseno') {
+                return 'Pixar-style 3D render, cute character with art tools, palette, camera and creative shapes, bright clean background, soft studio lighting, sharp focus, high detail';
+            }
+            if (c === 'robotica') {
+                return 'Pixar-style 3D render, cute friendly robot and kid character with gears and sensors, bright clean background, soft studio lighting, sharp focus, high detail';
+            }
+            if (c === 'idiomas') {
+                return 'Pixar-style 3D render, cute character with books and colorful language icons (no letters), bright clean background, soft studio lighting, sharp focus, high detail';
+            }
+            if (c === 'taller') {
+                return 'Pixar-style 3D render, cute character in a creative workshop with tools and materials, bright clean background, soft studio lighting, sharp focus, high detail';
+            }
+        }
+
         return 'Pixar-style 3D render, cute friendly character learning with colorful educational icons, bright clean background, soft studio lighting, sharp focus, smooth surfaces, high detail';
     }
 
     const DEFAULT_COURSE_IMAGE_URL = 'https://image.pollinations.ai/prompt/Pixar-style%203D%20render%2C%20cute%20friendly%20character%20learning%20with%20laptop%20and%20colorful%20educational%20icons%2C%20bright%20clean%20background%2C%20soft%20studio%20lighting%2C%20sharp%20focus%2C%20high%20detail%2C%20no%20text%2C%20no%20watermark%2C%20no%20logo%2C%20no%20words%2C%20no%20letters%3Fwidth=600&height=400&nologo=true';
 
-    function buildPollinationsUrl(name, desc) {
+    function buildPollinationsUrl(name, desc, age, category) {
         const cleanName = (name || '').trim();
         const cleanDesc = (desc || '').trim();
-        const base = chooseBasePrompt(cleanName);
+        const ageValue = parseAge(age);
+        const base = chooseBasePrompt(cleanName, category);
         if (!base) return DEFAULT_COURSE_IMAGE_URL;
 
-        const n = normalizeText(cleanName);
-        const useDescHint = n.includes('makers kids') || n.includes('blender') || n.includes('videojuego') || n.includes('videojuegos') || n.includes('ciencia en accion') || n.includes('bordando ciencia');
-        const descHint = useDescHint && cleanDesc ? cleanDesc.split(/[.!?]/)[0].slice(0, 140) : '';
-        const extra = descHint ? `${cleanName}. ${descHint}` : cleanName;
-        const suffix = 'no text, no watermark, no logo, no letters, no words, no illustration, no 2d, no drawing, no sketch, no watercolor, no oil painting, no hand-drawn, sharp focus, high detail, clean edges, smooth surfaces, no blurry, no lowres, no pixelated, no noisy, no ugly, no disfigured, no distorted, no deformed, no bad anatomy, no extra fingers, no extra limbs, no bad face, no deformed face, no extra eyes, no glitches, no out of frame, no cropped';
-        const prompt = extra ? `${base}, ${extra}, ${suffix}` : `${base}, ${suffix}`;
-        const seed = stableSeed(cleanName || base);
+        const descHint = cleanDesc ? cleanDesc.split(/[.!?]/)[0].slice(0, 90) : '';
+        const hintText = descHint && descHint.length >= 10 ? descHint : '';
+        const ageText = ageHint(ageValue);
+        const styleVariant = chooseStyleVariant(`${cleanName}|${category || ''}|${ageValue || ''}`);
+        const parts = [base, ageText, styleVariant, cleanName, hintText].filter(Boolean);
+        const suffix = 'no text, no watermark, no logo, no letters, no words, no illustration, no 2d, no drawing, no sketch, no watercolor, no oil painting, no hand-drawn, no classroom, no empty room, sharp focus, high detail, clean edges, smooth surfaces, no blurry, no lowres, no pixelated, no noisy, no ugly, no disfigured, no distorted, no deformed, no bad anatomy, no extra fingers, no extra limbs, no bad face, no deformed face, no extra eyes, no glitches, no out of frame, no cropped';
+        const prompt = `${parts.join(', ')}, ${suffix}`;
+        const seed = stableSeed(`${cleanName}|${hintText}|${category || ''}|${ageValue || ''}` || base);
         return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=600&height=400&seed=${seed}&nologo=true`;
     }
 
@@ -141,7 +185,10 @@
             img.referrerPolicy = 'no-referrer';
             const name = img.getAttribute('data-course-name') || img.alt || '';
             const desc = img.getAttribute('data-course-desc') || '';
-            const url = buildPollinationsUrl(name, desc);
+            const age = img.getAttribute('data-course-age') || '';
+            const card = img.closest('.curso-card');
+            const category = card ? card.getAttribute('data-category') : '';
+            const url = buildPollinationsUrl(name, desc, age, category);
             preloadAndSet(img, url);
         });
     }
@@ -466,8 +513,9 @@
                      referrerpolicy="no-referrer"
                      data-course-name="{{ curso.nombre|default:'' }}"
                      data-course-desc="{{ curso.descripcion|default:''|striptags|truncatechars:200 }}"
-                     src="https://image.pollinations.ai/prompt/3d%20render%20cute%20kid%20friendly%20learning%20classroom%20colorful%20soft%20lighting%20playful%2C%20no%20text%2C%20no%20watermark%2C%20no%20logo?width=600&height=400&nologo=true"
-                     onerror="this.onerror=null;this.src='https://image.pollinations.ai/prompt/3d%20render%20cute%20kid%20friendly%20learning%20classroom%20colorful%20soft%20lighting%20playful%2C%20no%20text%2C%20no%20watermark%2C%20no%20logo?width=600&height=400&nologo=true';" />
+                     data-course-age="{{ curso.edad_minima|default:'' }}"
+                     src="https://image.pollinations.ai/prompt/Pixar-style%203D%20render%2C%20cute%20friendly%20character%20learning%20with%20laptop%20and%20colorful%20educational%20icons%2C%20bright%20clean%20background%2C%20soft%20studio%20lighting%2C%20sharp%20focus%2C%20high%20detail%2C%20no%20text%2C%20no%20watermark%2C%20no%20logo%2C%20no%20words%2C%20no%20letters%3Fwidth=600&height=400&nologo=true"
+                     onerror="this.onerror=null;this.src='https://image.pollinations.ai/prompt/Pixar-style%203D%20render%2C%20cute%20friendly%20character%20learning%20with%20laptop%20and%20colorful%20educational%20icons%2C%20bright%20clean%20background%2C%20soft%20studio%20lighting%2C%20sharp%20focus%2C%20high%20detail%2C%20no%20text%2C%20no%20watermark%2C%20no%20logo%2C%20no%20words%2C%20no%20letters%3Fwidth=600&height=400&nologo=true';" />
             </div>
 
             <div class="curso-header">
