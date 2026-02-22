@@ -58,7 +58,7 @@
             <div class="active-courses-list">
                 {% for curso in cursos_activos %}
                 {% with lower_name=curso.nombre|lower %}
-                <div class="course-card-horizontal">
+                <div class="course-card-horizontal" data-category="{% if 'alfabetización' in lower_name or 'alfabetizacion' in lower_name or 'ciudadanía digital' in lower_name or 'ciudadania digital' in lower_name %}general{% elif 'ciencia en acción' in lower_name or 'ciencia en accion' in lower_name %}programacion{% elif 'linux' in lower_name or 'program' in lower_name or 'desarrollo' in lower_name or 'videojuego' in lower_name or 'código' in lower_name or 'codigo' in lower_name or 'gamer' in lower_name or 'gaming' in lower_name or 'game' in lower_name or 'inteligencia artificial' in lower_name or ' ai' in lower_name or 'ai ' in lower_name or ' ia' in lower_name or 'ia ' in lower_name or 'chatbot' in lower_name or 'n8n' in lower_name or 'automatiz' in lower_name or 'e-commerce' in lower_name or 'ecommerce' in lower_name or 'tienda online' in lower_name or 'startup' in lower_name or 'bio fablab' in lower_name or 'fablab' in lower_name %}programacion{% elif 'comic' in lower_name or 'cómic' in lower_name or 'ilustración' in lower_name or 'ilustracion' in lower_name or 'historieta' in lower_name or 'historietas' in lower_name or 'viñeta' in lower_name or 'viñetas' in lower_name or 'blender' in lower_name or 'modelado' in lower_name or 'animación 3d' in lower_name or 'animacion 3d' in lower_name or 'podcast' in lower_name or 'redes sociales' in lower_name or 'contenidos' in lower_name %}diseno{% elif 'fotografía' in lower_name or 'fotografia' in lower_name or 'foto' in lower_name or 'fotográfico' in lower_name or 'fotografico' in lower_name or 'diseño' in lower_name or 'arte' in lower_name or 'produccion' in lower_name or 'animación' in lower_name or 'animacion' in lower_name or 'stop motion' in lower_name or 'stopmotion' in lower_name or 'motion' in lower_name %}diseno{% elif 'robótica' in lower_name or 'robotica' in lower_name or 'robot' in lower_name or 'arduino' in lower_name or 'sumo' in lower_name or 'bot' in lower_name %}robotica{% elif 'ingl' in lower_name or 'idioma' in lower_name %}idiomas{% elif 'taller' in lower_name or 'explorador' in lower_name %}taller{% else %}general{% endif %}">
                     <div class="course-img-wrapper">
                         <img
                              class="course-img js-pollinations-course-img"
@@ -545,7 +545,10 @@
         if (n.includes('analisis de datos') || (n.includes('datos') && (n.includes(' ia') || n.includes('ia ') || n.includes('inteligencia artificial')))) {
             return 'Pixar-style 3D render, cute character with tablet and large colorful 3D charts (bar chart, line chart), small friendly AI robot assistant, modern classroom lab vibe, bright clean background, soft studio lighting, sharp focus, high detail';
         }
-        if (n.includes('chatbot') || n.includes('n8n') || n.includes('automatiz')) {
+        if (n.includes('n8n') || (n.includes('chatbot') && n.includes('automatiz'))) {
+            return 'Pixar-style 3D render, cute character linking colorful workflow nodes, friendly robot assistant, chat bubbles, WhatsApp and Telegram style icons (no text), bright clean background, soft studio lighting, sharp focus, high detail';
+        }
+        if (n.includes('chatbot')) {
             return 'Pixar-style 3D render, cute character with a friendly robot assistant, floating chat bubbles and connected automation nodes, bright clean background, soft studio lighting, sharp focus, high detail';
         }
         if (n.includes('archi innova') && n.includes('curiosos')) {
@@ -560,23 +563,35 @@
         if (n.includes('ciencia en accion')) {
             return 'Pixar-style 3D render, cute character in a playful science lab with colorful beakers, microscope, magnets, and a glowing LED circuit, bright clean background, soft studio lighting, sharp focus, high detail';
         }
-        if (n.includes('espacio bio fablab') || n.includes('bio fablab') || n.includes('biomaterial') || n.includes('bio material') || n.includes('bio materiales') || n.includes('biomateriales')) {
+        if (n.includes('espacio bio fablab') || n.includes('bio fablab') || n.includes('fablab') || n.includes('biomaterial') || n.includes('bio material') || n.includes('bio materiales') || n.includes('biomateriales')) {
             return 'Pixar-style 3D render, cute scientist character in a clean eco lab, petri dishes, glassware, natural fibers, leaves, sustainable biomaterial samples, bright clean background, soft studio lighting, sharp focus, high detail';
         }
         if (n.includes('e-commerce') || n.includes('e commerce') || n.includes('ecommerce')) {
             return 'Pixar-style 3D render, cute character with shopping cart and package box, smartphone storefront screen and payment icons (no text), bright clean background, soft studio lighting, sharp focus, high detail';
         }
         if (n.includes('desarrollo de videojuegos') || n.includes('videojuegos') || n.includes('videojuego')) {
-            return 'Pixar-style 3D render, cute teen character with game controller, colorful game UI shapes (no text), a computer showing a simple 3D game scene (no words), bright clean background, soft studio lighting, sharp focus, high detail';
+            return 'Pixar-style 3D render, cute teen character with game controller, 3D level blocks, small joystick, colorful game UI shapes (no text), a computer showing a simple 3D game scene (no words), bright clean background, soft studio lighting, sharp focus, high detail';
+        }
+        if (n.includes('mini startup') || (n.includes('startup') && (n.includes('ia') || n.includes('inteligencia artificial')))) {
+            return 'Pixar-style 3D render, cute teen character presenting a prototype on a tablet, small rocket and lightbulb props, demo day stage vibe, friendly robot assistant, bright clean background, soft studio lighting, sharp focus, high detail';
+        }
+        if (n.includes('blender') || (n.includes('modelado') && n.includes('animacion') && n.includes('3d'))) {
+            return 'Pixar-style 3D render, cute character at a 3D modeling workstation, clay model figure, smooth 3D shapes, stylized turntable, bright clean background, soft studio lighting, sharp focus, high detail';
+        }
+        if (n.includes('produccion') && n.includes('redes')) {
+            return 'Pixar-style 3D render, cute character creating social media content with smartphone on tripod, ring light, camera, storyboard cards with simple icons (no text), bright clean background, soft studio lighting, sharp focus, high detail';
         }
         if (n.includes('dibujo digital') || n.includes('comic') || n.includes('ilustracion') || n.includes('historieta')) {
             return 'Pixar-style 3D render, cute character drawing on a pen tablet, colorful stylized brush strokes and shapes (no text), art tools on desk, bright clean background, soft studio lighting, sharp focus, high detail';
         }
         if (n.includes('podcast')) {
-            return 'Pixar-style 3D render, cute character in a cozy podcast mini studio with microphone and headphones, audio wave shapes (no text), bright clean background, soft studio lighting, sharp focus, high detail';
+            return 'Pixar-style 3D render, cute character in a cozy podcast mini studio with microphone and headphones, mixer knobs, audio wave shapes (no text), bright clean background, soft studio lighting, sharp focus, high detail';
         }
         if (n.includes('robotica') || n.includes('robot') || n.includes('arduino') || n.includes('sumo') || n.includes('bot')) {
             return 'Pixar-style 3D render, cute friendly robot character and a kid/teen character with simple sensors and colorful wires, bright clean background, soft studio lighting, sharp focus, high detail';
+        }
+        if (n.includes('makers kids')) {
+            return 'Pixar-style 3D render, cute child character in a playful makerspace with a small 3D printer, colorful blocks, safe tools, simple robot toy, bright clean background, soft studio lighting, sharp focus, high detail';
         }
         if (n.includes('makers')) {
             return 'Pixar-style 3D render, cute character in a makerspace with a small 3D printer, tools, colorful geometric parts, bright clean background, soft studio lighting, sharp focus, high detail';
