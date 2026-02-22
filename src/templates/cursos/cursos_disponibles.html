@@ -51,143 +51,62 @@
     function chooseBasePrompt(courseName) {
         const n = normalizeText(courseName);
 
-        if (n.includes('stop motion') || n.includes('stopmotion')) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, animation stop motion studio desk, clay figures, mini set, camera tripod, storyboard, craft materials';
-        }
-        if (n.includes('mas juego') || n.includes('mas aprendo')) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, kids learning space, educational board games, puzzles, colorful manipulatives, classroom table, no faces';
-        }
-        if ((n.includes('ciencia en accion') || n.includes('ciencia en accion:') || n.includes('ciencia en accion')) && (n.includes('mentes curiosas') || n.includes('mente curiosa'))) {
-            return 'Pixar style 3D render, cute and playful, vibrant colors, sharp focus, a kids science lab for ages 6-9, table with colorful beakers, fun magnets, a glowing LED circuit, and a magnifying glass. masterpiece, best quality, highly detailed, cinematic lighting. no faces, no people';
-        }
-        if (n.includes('ciencia en accion') && (n.includes('exploradores fueguinos') || n.includes('explorador fueguino'))) {
-            return 'Pixar style 3D render, adventurous and fun, sharp focus, a young explorers (ages 10-12) setup, a wooden table with an old map of Tierra del Fuego, a compass, binoculars, interesting rock samples, and a microscope. masterpiece, best quality, highly detailed, cinematic lighting. no faces, no people';
-        }
-        if (n.includes('ciencia en accion')) {
-            return 'Pixar style 3D render, cute and educational, vibrant colors, sharp focus, a kids science workshop table with a friendly microscope, colorful beakers, and simple gadgets. masterpiece, best quality, highly detailed. no faces, no people';
-        }
-        if (n.includes('bordando ciencia')) {
-            return '3d animated, high quality stylized 3d cartoon render, clean shapes, correct proportions, adult embroidery workshop, embroidery hoop with double helix and microscope stitched pattern (no letters), colorful threads, needles, fabric textures, cozy craft table, subtle science props, warm lighting, no faces';
-        }
-        if (
-            n.includes('ia en el aula') ||
-            ((n.includes('ia') || n.includes('inteligencia artificial')) && (n.includes('aula') || n.includes('docente') || n.includes('docentes') || n.includes('didact')))
-        ) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, modern classroom teacher training workshop, teacher desk with laptop, projector, interactive whiteboard, educational materials, professional development session';
-        }
-        if (n.includes('archi innova') && n.includes('curiosos')) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, kids STEM corner for ages 4-7, colorful learning blocks, simple robot toys, tablets, playful safe classroom, no faces';
-        }
-        if (n.includes('archi innova') && n.includes('inventores')) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, kids maker electronics workshop for ages 8-12, beginner circuits, microcontroller kit, sensors, small robot prototype, laptop programming station, STEM lab, no faces';
-        }
-        if (n.includes('revit') || n.includes('bim')) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, architectural BIM design studio, computer screen with 3d building model, blueprint sheets, measuring tools, clean professional desk, no text';
-        }
-        if (n.includes('produccion de contenidos para redes sociales')) {
-            return 'Pixar style 3D render, modern and vibrant, a social media content creation setup, a smartphone on a tripod with a ring light, a laptop showing a simple video editor, and fun icons like hearts and thumbs up floating around. masterpiece, best quality, highly detailed. no faces, no people.';
-        }
-        if (
-            n.includes('produccion de contenidos') ||
-            n.includes('redes sociales') ||
-            (n.includes('contenidos') && n.includes('redes'))
-        ) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, content creation studio, smartphone on tripod, ring light, camera, editing workstation, creative desk setup, no logos, no text';
+        if (n.includes('alfabetizacion digital') || n.includes('ciudadania digital')) {
+            return 'Pixar-style 3D render, cute friendly character learning with laptop and smartphone, colorful floating cybersecurity shield icons and chat bubbles, bright clean background, soft studio lighting, sharp focus, smooth surfaces, high detail';
         }
         if (n.includes('analisis de datos') || (n.includes('datos') && (n.includes(' ia') || n.includes('ia ') || n.includes('inteligencia artificial')))) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, modern computer lab, dashboards and data charts on screens, AI assistant concept, clean design';
+            return 'Pixar-style 3D render, cute character with tablet and large colorful 3D charts (bar chart, line chart), small friendly AI robot assistant, modern classroom lab vibe, bright clean background, soft studio lighting, sharp focus, high detail';
         }
         if (n.includes('chatbot') || n.includes('n8n') || n.includes('automatiz')) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, messaging chatbot concept, automation nodes and connections, modern computer lab';
+            return 'Pixar-style 3D render, cute character with a friendly robot assistant, floating chat bubbles and connected automation nodes, bright clean background, soft studio lighting, sharp focus, high detail';
         }
-        if (n.includes('startup')) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, product design desk, laptop, prototype screens, sticky notes, pitch demo scene, no text';
+        if (n.includes('archi innova') && n.includes('curiosos')) {
+            return 'Pixar-style 3D render, cute child character in a colorful makerspace with simple robot toy, big building blocks, gears, and a small tablet, bright clean background, soft studio lighting, sharp focus, high detail';
         }
-        if (n.includes('ajedrez') && (n.includes('adult') || n.includes('adultos'))) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, chess club for adults, wooden chessboard, classic pieces, analysis notebook, quiet warm lighting, no text';
+        if (n.includes('archi innova') && n.includes('exploradores')) {
+            return 'Pixar-style 3D render, cute teen character in a makerspace with tools, a small drone, gears, and a simple circuit kit, bright clean background, soft studio lighting, sharp focus, high detail';
         }
-        if (n.includes('ajedrez') && n.includes('avanzad')) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, advanced chess analysis, chessboard midgame position, timer clock, notebooks, strategy study table, no text';
+        if (n.includes('archi innova') && n.includes('inventores')) {
+            return 'Pixar-style 3D render, cute kid character building a simple robot with safe tools and colorful parts, bright clean background, soft studio lighting, sharp focus, high detail';
         }
-        if (n.includes('ajedrez') && n.includes('inicial')) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, beginner chess lesson, chessboard with pieces, teacher hands pointing at moves, classroom table, no faces, no text';
+        if (n.includes('ciencia en accion')) {
+            return 'Pixar-style 3D render, cute character in a playful science lab with colorful beakers, microscope, magnets, and a glowing LED circuit, bright clean background, soft studio lighting, sharp focus, high detail';
         }
-        if (n.includes('ajedrez')) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, chess learning table, chessboard and pieces, calm classroom environment, no faces, no text';
+        if (n.includes('espacio bio fablab') || n.includes('bio fablab') || n.includes('biomaterial') || n.includes('bio material') || n.includes('bio materiales') || n.includes('biomateriales')) {
+            return 'Pixar-style 3D render, cute scientist character in a clean eco lab, petri dishes, glassware, natural fibers, leaves, sustainable biomaterial samples, bright clean background, soft studio lighting, sharp focus, high detail';
         }
-        if (n.includes('espacio bio fablab')) {
-            return 'Pixar style 3D render, innovative and organic, a bio-fabrication lab, a table with glowing petri dishes, beakers with colorful liquids, and a microscope looking at plant cells. masterpiece, best quality, highly detailed. no faces, no people.';
-        }
-        if (
-            n.includes('bio fablab') ||
-            n.includes('biomaterial') ||
-            n.includes('bio material') ||
-            n.includes('bio materiales') ||
-            n.includes('biomateriales')
-        ) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, bio lab workshop, sustainable biomaterials samples, petri dishes, lab glassware, natural fibers, clean scientific workspace, no labels, no text';
-        }
-        if (n.includes('alfabetizacion digital') || n.includes('ciudadania digital')) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, digital literacy classroom, laptops on desks, safe internet concept, icons without text, modern training room';
-        }
-        if (n.includes('podcast')) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, podcast studio setup, microphone, headphones, audio mixer, camera on tripod, recording desk, no logos, no text';
-        }
-        if (n.includes('autocad') || n.includes('sketchup') || n.includes('sketch-up') || n.includes('sketch up')) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, architecture design workstation, CAD drafting and 3d modeling on screen, blueprint sheets, measuring tools, clean professional desk, no text';
-        }
-        if (n.includes('robotica') || n.includes('robot') || n.includes('arduino') || n.includes('sumo') || n.includes('bot')) {
-            return 'Pixar style 3D render of a cute, friendly robot character for kids. The robot is the main focus, with a simple, clean background. masterpiece, best quality, highly detailed, cinematic lighting. no faces, no people.';
-        }
-        if (n.includes('makers kids') || n.includes('makers')) {
-            return 'Pixar style 3D render, creative and fun, a kids makerspace, a friendly 3D printer creating a small toy, colorful geometric shapes, simple tools, and a tablet showing a basic 3D model. masterpiece, best quality, highly detailed. no faces, no people.';
-        }
-        if (n.includes('makers')) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, makerspace, 3d printer, tools, electronics components, creative workshop';
-        }
-        if (n.includes('ingl') || n.includes('idioma')) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, language learning classroom, books, flashcards, friendly learning space, no text';
-        }
-        if (n.includes('blender') || (n.includes('modelado') && n.includes('animacion') && n.includes('3d'))) {
-            return '3d animated, high quality 3d render, clean shapes, correct proportions, 3d modeling and animation workstation, modern desk with monitor showing a 3d character model (no UI text), viewport lighting, stylized 3d assets, studio environment, soft cinematic lighting';
+        if (n.includes('e-commerce') || n.includes('e commerce') || n.includes('ecommerce')) {
+            return 'Pixar-style 3D render, cute character with shopping cart and package box, smartphone storefront screen and payment icons (no text), bright clean background, soft studio lighting, sharp focus, high detail';
         }
         if (n.includes('desarrollo de videojuegos') || n.includes('videojuegos') || n.includes('videojuego')) {
-            return '3d animated, high quality 3d render, clean shapes, correct proportions, teen-friendly game development lab, game controller on desk, computer showing a 3d game scene (no UI text), level design blocks, game art assets, cozy studio lighting';
+            return 'Pixar-style 3D render, cute teen character with game controller, colorful game UI shapes (no text), a computer showing a simple 3D game scene (no words), bright clean background, soft studio lighting, sharp focus, high detail';
         }
-        if (
-            n.includes('linux') ||
-            n.includes('program') ||
-            n.includes('desarrollo') ||
-            n.includes('videojuego') ||
-            n.includes('codigo') ||
-            n.includes('gamer') ||
-            n.includes('gaming') ||
-            n.includes('game') ||
-            n.includes('inteligencia artificial') ||
-            /(^|\s)(ai|ia)(\s|$)/.test(n)
-        ) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, modern computer lab, coding and science learning, friendly workshop scene';
+        if (n.includes('dibujo digital') || n.includes('comic') || n.includes('ilustracion') || n.includes('historieta')) {
+            return 'Pixar-style 3D render, cute character drawing on a pen tablet, colorful stylized brush strokes and shapes (no text), art tools on desk, bright clean background, soft studio lighting, sharp focus, high detail';
         }
-        if (
-            n.includes('comic') ||
-            n.includes('ilustracion') ||
-            n.includes('historieta') ||
-            n.includes('fotografia') ||
-            n.includes('diseno') ||
-            n.includes('arte') ||
-            n.includes('animacion') ||
-            n.includes('motion')
-        ) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, creative studio desk, camera, drawing tools, art materials, friendly workshop';
+        if (n.includes('podcast')) {
+            return 'Pixar-style 3D render, cute character in a cozy podcast mini studio with microphone and headphones, audio wave shapes (no text), bright clean background, soft studio lighting, sharp focus, high detail';
+        }
+        if (n.includes('robotica') || n.includes('robot') || n.includes('arduino') || n.includes('sumo') || n.includes('bot')) {
+            return 'Pixar-style 3D render, cute friendly robot character and a kid/teen character with simple sensors and colorful wires, bright clean background, soft studio lighting, sharp focus, high detail';
+        }
+        if (n.includes('makers')) {
+            return 'Pixar-style 3D render, cute character in a makerspace with a small 3D printer, tools, colorful geometric parts, bright clean background, soft studio lighting, sharp focus, high detail';
+        }
+        if (n.includes('ingl') || n.includes('idioma')) {
+            return 'Pixar-style 3D render, cute character learning languages with books and flashcards showing simple icons (no letters), bright clean background, soft studio lighting, sharp focus, high detail';
+        }
+        if (n.includes('autocad') || n.includes('revit') || n.includes('bim') || n.includes('sketchup') || n.includes('sketch-up') || n.includes('sketch up')) {
+            return 'Pixar-style 3D render, cute character at an architecture desk with a 3D building model mockup and blueprint sheets with simple lines (no text), bright clean background, soft studio lighting, sharp focus, high detail';
         }
         if (n.includes('taller') || n.includes('explorador')) {
-            return 'high quality 3d render, photorealistic, realistic materials, cinematic lighting, global illumination, shallow depth of field, hands-on workshop, tools, craft materials, classroom makers table';
+            return 'Pixar-style 3D render, cute character in a hands-on workshop with safe tools and colorful materials, bright clean background, soft studio lighting, sharp focus, high detail';
         }
 
-        return null;
+        return 'Pixar-style 3D render, cute friendly character learning with colorful educational icons, bright clean background, soft studio lighting, sharp focus, smooth surfaces, high detail';
     }
 
-    const DEFAULT_COURSE_IMAGE_URL = 'https://image.pollinations.ai/prompt/3d%20render%20cartoon%20friendly%20student%20using%20smartphone%20and%20laptop%20digital%20citizenship%20online%20safety%20privacy%20shield%20icons%20social%20media%20colorful%20soft%20lighting?width=600&height=400&nologo=true';
+    const DEFAULT_COURSE_IMAGE_URL = 'https://image.pollinations.ai/prompt/Pixar-style%203D%20render%2C%20cute%20friendly%20character%20learning%20with%20laptop%20and%20colorful%20educational%20icons%2C%20bright%20clean%20background%2C%20soft%20studio%20lighting%2C%20sharp%20focus%2C%20high%20detail%2C%20no%20text%2C%20no%20watermark%2C%20no%20logo%2C%20no%20words%2C%20no%20letters%3Fwidth=600&height=400&nologo=true';
 
     function buildPollinationsUrl(name, desc) {
         const cleanName = (name || '').trim();
@@ -199,7 +118,7 @@
         const useDescHint = n.includes('makers kids') || n.includes('blender') || n.includes('videojuego') || n.includes('videojuegos') || n.includes('ciencia en accion') || n.includes('bordando ciencia');
         const descHint = useDescHint && cleanDesc ? cleanDesc.split(/[.!?]/)[0].slice(0, 140) : '';
         const extra = descHint ? `${cleanName}. ${descHint}` : cleanName;
-        const suffix = 'no text, no watermark, no logo, no letters, no words, blurry, ugly, disfigured, poor quality, bad quality, distorted, deformed, bad anatomy, glitches, out of frame, cropped';
+        const suffix = 'no text, no watermark, no logo, no letters, no words, no illustration, no 2d, no drawing, no sketch, no watercolor, no oil painting, no hand-drawn, sharp focus, high detail, clean edges, smooth surfaces, no blurry, no lowres, no pixelated, no noisy, no ugly, no disfigured, no distorted, no deformed, no bad anatomy, no extra fingers, no extra limbs, no bad face, no deformed face, no extra eyes, no glitches, no out of frame, no cropped';
         const prompt = extra ? `${base}, ${extra}, ${suffix}` : `${base}, ${suffix}`;
         const seed = stableSeed(cleanName || base);
         return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=600&height=400&seed=${seed}&nologo=true`;
