@@ -1,6 +1,8 @@
 asgiref==3.10.0
 Django==5.2.7
 PyMySQL==1.1.2
+mssql-django
+pyodbc
 sqlparse==0.5.3
 tzdata==2025.2
 openpyxl==3.1.2
