@@ -1971,21 +1971,32 @@
         return normalized.replace(/[^a-z0-9\s-]/g, ' ').replace(/\s+/g, ' ').trim();
     }
 
+    function categoryHint(category) {
+        const c = normalizeText((category || '').trim());
+        if (c === 'programacion') return 'coding, computers, technology';
+        if (c === 'diseno') return 'art, design, creativity';
+        if (c === 'robotica') return 'robots, electronics, engineering';
+        if (c === 'idiomas') return 'languages, books, communication';
+        if (c === 'taller') return 'workshop, tools, hands-on';
+        return 'learning, education, school';
+    }
+
     function buildPollinationsUrl(name, desc, age, category) {
         const cleanName = sanitizePromptText(name);
         const cleanDesc = sanitizePromptText(desc);
         const ageValue = parseAge(age);
-        const base = chooseBasePrompt(cleanName, category) || '3d render, friendly learning scene';
+        const base = chooseBasePrompt(cleanName, category) || '3d pixar style, kid friendly learning scene';
 
         const ageText = ageHint(ageValue);
         const styleVariant = chooseStyleVariant(`${cleanName}|${category || ''}|${ageValue || ''}`);
         const nameHint = cleanName.split(' ').slice(0, 8).join(' ');
         const descHint = cleanDesc.split(' ').slice(0, 12).join(' ');
-        const parts = [base, ageText, styleVariant, nameHint, descHint].filter(Boolean);
+        const catHint = categoryHint(category);
+        const parts = [base, '3d pixar style', 'child friendly', catHint, ageText, styleVariant, nameHint, descHint].filter(Boolean);
         const suffix = 'clean background, soft studio lighting, high detail, no text';
         const prompt = `${parts.join(', ')}, ${suffix}`;
         const seed = stableSeed(`${cleanName}|${category || ''}|${ageValue || ''}|${descHint}` || base);
-        const safePrompt = prompt.replace(/pixar-style/gi, '').replace(/stylized/gi, '').replace(/\s+/g, ' ').trim();
+        const safePrompt = prompt.replace(/\s+/g, ' ').trim();
         return `https://image.pollinations.ai/prompt/${encodeURIComponent(safePrompt)}?width=600&height=400&seed=${seed}&nologo=true`;
     }
 
@@ -1993,21 +2004,17 @@
         const cleanName = sanitizePromptText(name);
         const cleanDesc = sanitizePromptText(desc);
         const ageValue = parseAge(age);
-        const base = '3d render, friendly learning scene';
+        const base = '3d pixar style, kid friendly learning scene';
         const ageText = ageHint(ageValue);
         const nameHint = cleanName.split(' ').slice(0, 6).join(' ');
         const descHint = cleanDesc.split(' ').slice(0, 8).join(' ');
-        const parts = [base, ageText, nameHint, descHint].filter(Boolean);
+        const catHint = categoryHint(category);
+        const parts = [base, '3d pixar style', 'child friendly', catHint, ageText, nameHint, descHint].filter(Boolean);
         const suffix = 'clean background, soft studio lighting, high detail, no text';
         const prompt = `${parts.join(', ')}, ${suffix}`;
         const seed = stableSeed(`${cleanName}|${category || ''}|${ageValue || ''}|fallback`);
-        const safePrompt = prompt.replace(/pixar-style/gi, '').replace(/stylized/gi, '').replace(/\s+/g, ' ').trim();
+        const safePrompt = prompt.replace(/\s+/g, ' ').trim();
         return `https://image.pollinations.ai/prompt/${encodeURIComponent(safePrompt)}?width=600&height=400&seed=${seed}&nologo=true`;
-    }
-
-    function buildPicsumUrl(name, age, category) {
-        const seed = stableSeed(`${sanitizePromptText(name)}|${age || ''}|${category || ''}` || 'curso');
-        return `https://picsum.photos/seed/${seed}/600/400`;
     }
 
     function preloadAndSet(img, url, fallbackUrl) {
@@ -2039,19 +2046,9 @@
             const category = card ? card.getAttribute('data-category') : '';
             const url = buildPollinationsUrl(name, desc, age, category);
             const fallbackUrl = buildFallbackUrl(name, desc, age, category);
-            const picsumUrl = buildPicsumUrl(name, age, category);
             img.removeAttribute('onerror');
             img.onerror = () => {
-                if (img.dataset.pollFallback === '1') {
-                    img.src = picsumUrl;
-                    return;
-                }
-                img.dataset.pollFallback = '1';
-                if (fallbackUrl) {
-                    img.src = fallbackUrl;
-                    return;
-                }
-                img.src = picsumUrl;
+                if (fallbackUrl) img.src = fallbackUrl;
             };
             preloadAndSet(img, url, fallbackUrl);
         });

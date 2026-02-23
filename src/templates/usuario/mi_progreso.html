@@ -596,7 +596,7 @@
     function buildPollinationsUrl(name, desc) {
         const cleanName = sanitizePromptText(name);
         const cleanDesc = sanitizePromptText(desc);
-        const base = chooseBasePrompt(cleanName) || '3d render, friendly learning scene';
+        const base = chooseBasePrompt(cleanName) || '3d pixar style, kid friendly learning scene';
 
         const n = normalizeText(cleanName);
         const useDescHint = n.includes('makers kids') || n.includes('blender') || n.includes('videojuego') || n.includes('videojuegos') || n.includes('ciencia en accion') || n.includes('bordando ciencia');
@@ -606,7 +606,7 @@
         const suffix = 'clean background, soft studio lighting, high detail, no text';
         const prompt = extra ? `${base}, ${extra}, ${suffix}` : `${base}, ${suffix}`;
         const seed = stableSeed(`${cleanName}|${descHint}` || base);
-        const safePrompt = prompt.replace(/pixar-style/gi, '').replace(/stylized/gi, '').replace(/\s+/g, ' ').trim();
+        const safePrompt = prompt.replace(/\s+/g, ' ').trim();
         return `https://image.pollinations.ai/prompt/${encodeURIComponent(safePrompt)}?width=600&height=400&seed=${seed}&nologo=true`;
     }
 
@@ -614,19 +614,14 @@
         const cleanName = sanitizePromptText(name);
         const cleanDesc = sanitizePromptText(desc);
         const descHint = cleanDesc.split(' ').slice(0, 8).join(' ');
-        const base = '3d render, friendly learning scene';
+        const base = '3d pixar style, kid friendly learning scene';
         const nameHint = cleanName.split(' ').slice(0, 6).join(' ');
         const parts = [base, nameHint, descHint].filter(Boolean);
         const suffix = 'clean background, soft studio lighting, high detail, no text';
         const prompt = `${parts.join(', ')}, ${suffix}`;
         const seed = stableSeed(`${cleanName}|fallback`);
-        const safePrompt = prompt.replace(/pixar-style/gi, '').replace(/stylized/gi, '').replace(/\s+/g, ' ').trim();
+        const safePrompt = prompt.replace(/\s+/g, ' ').trim();
         return `https://image.pollinations.ai/prompt/${encodeURIComponent(safePrompt)}?width=600&height=400&seed=${seed}&nologo=true`;
-    }
-
-    function buildPicsumUrl(name) {
-        const seed = stableSeed(`${sanitizePromptText(name)}|fallback` || 'curso');
-        return `https://picsum.photos/seed/${seed}/600/400`;
     }
 
     function preloadAndSet(img, url, fallbackUrl) {
@@ -652,19 +647,9 @@
             const desc = img.getAttribute('data-course-desc') || '';
             const url = buildPollinationsUrl(name, desc);
             const fallbackUrl = buildFallbackUrl(name, desc);
-            const picsumUrl = buildPicsumUrl(name);
             img.removeAttribute('onerror');
             img.onerror = () => {
-                if (img.dataset.pollFallback === '1') {
-                    img.src = picsumUrl;
-                    return;
-                }
-                img.dataset.pollFallback = '1';
-                if (fallbackUrl) {
-                    img.src = fallbackUrl;
-                    return;
-                }
-                img.src = picsumUrl;
+                if (fallbackUrl) img.src = fallbackUrl;
             };
             preloadAndSet(img, url, fallbackUrl);
         });
