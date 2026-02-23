@@ -170,48 +170,60 @@
 
     function categoryHint(category) {
         const c = normalizeText((category || '').trim());
-        if (c === 'programacion') return 'coding, computers, technology';
-        if (c === 'diseno') return 'art, design, creativity';
-        if (c === 'robotica') return 'robots, electronics, engineering';
-        if (c === 'idiomas') return 'languages, books, communication';
-        if (c === 'taller') return 'workshop, tools, hands-on';
-        return 'learning, education, school';
+        if (c === 'programacion') return 'coding computers technology';
+        if (c === 'diseno') return 'art design creativity';
+        if (c === 'robotica') return 'robots electronics engineering';
+        if (c === 'idiomas') return 'languages books communication';
+        if (c === 'taller') return 'workshop tools hands on';
+        return 'learning education school';
+    }
+
+    const CATEGORY_IMAGES = {
+        programacion: [
+            'https://images.unsplash.com/photo-1517694712202-14dd9538aa97',
+            'https://images.unsplash.com/photo-1518770660439-4636190af475'
+        ],
+        diseno: [
+            'https://images.unsplash.com/photo-1513364776144-60967b0f800f',
+            'https://images.unsplash.com/photo-1498050108023-c5249f4df085'
+        ],
+        robotica: [
+            'https://images.unsplash.com/photo-1485827404703-89b55fcc595e',
+            'https://images.unsplash.com/photo-1535378917042-10a22c95931a'
+        ],
+        idiomas: [
+            'https://images.unsplash.com/photo-1503676260728-1c00da094a0b',
+            'https://images.unsplash.com/photo-1512820790803-83ca734da794'
+        ],
+        taller: [
+            'https://images.unsplash.com/photo-1452860606245-08befc0ff44b',
+            'https://images.unsplash.com/photo-1504384308090-c894fdcc538d'
+        ],
+        general: [
+            'https://images.unsplash.com/photo-1523240795612-9a054b0db644',
+            'https://images.unsplash.com/photo-1522202176988-66273c2fd55f'
+        ]
+    };
+
+    function pickCategoryImage(category, seedBase) {
+        const c = normalizeText((category || '').trim());
+        const list = CATEGORY_IMAGES[c] || CATEGORY_IMAGES.general;
+        const index = Math.abs(stableSeed(seedBase)) % list.length;
+        return `${list[index]}?auto=format&fit=crop&w=600&h=400&q=80`;
     }
 
     function buildPollinationsUrl(name, desc, age, category) {
         const cleanName = sanitizePromptText(name);
-        const cleanDesc = sanitizePromptText(desc);
         const ageValue = parseAge(age);
-        const base = chooseBasePrompt(cleanName, category) || '3d pixar style, child friendly';
-
-        const ageText = ageHint(ageValue);
-        const styleVariant = chooseStyleVariant(`${cleanName}|${category || ''}|${ageValue || ''}`);
-        const nameHint = cleanName.split(' ').slice(0, 6).join(' ');
-        const descHint = cleanDesc.split(' ').slice(0, 6).join(' ');
-        const catHint = categoryHint(category);
-        const parts = [base, catHint, ageText, styleVariant, nameHint, descHint].filter(Boolean);
-        const suffix = 'clean background, soft studio lighting, high detail, no text';
-        const prompt = `${parts.join(', ')}, ${suffix}`;
-        const seed = stableSeed(`${cleanName}|${category || ''}|${ageValue || ''}|${descHint}` || base);
-        const safePrompt = prompt.replace(/\s+/g, ' ').trim();
-        return `https://image.pollinations.ai/prompt/${encodeURIComponent(safePrompt)}?width=600&height=400&seed=${seed}&nologo=true`;
+        const seedBase = `${cleanName}|${sanitizePromptText(desc)}|${ageValue || ''}|${category || ''}`;
+        return pickCategoryImage(category, seedBase);
     }
 
     function buildFallbackUrl(name, desc, age, category) {
         const cleanName = sanitizePromptText(name);
-        const cleanDesc = sanitizePromptText(desc);
         const ageValue = parseAge(age);
-        const base = '3d pixar style, child friendly';
-        const ageText = ageHint(ageValue);
-        const nameHint = cleanName.split(' ').slice(0, 5).join(' ');
-        const descHint = cleanDesc.split(' ').slice(0, 5).join(' ');
-        const catHint = categoryHint(category);
-        const parts = [base, catHint, ageText, nameHint, descHint].filter(Boolean);
-        const suffix = 'clean background, soft studio lighting, high detail, no text';
-        const prompt = `${parts.join(', ')}, ${suffix}`;
-        const seed = stableSeed(`${cleanName}|${category || ''}|${ageValue || ''}|fallback`);
-        const safePrompt = prompt.replace(/\s+/g, ' ').trim();
-        return `https://image.pollinations.ai/prompt/${encodeURIComponent(safePrompt)}?width=600&height=400&seed=${seed}&nologo=true`;
+        const seedBase = `${cleanName}|${sanitizePromptText(desc)}|${ageValue || ''}|${category || ''}|fallback`;
+        return pickCategoryImage(category, seedBase);
     }
 
     function preloadAndSet(img, url, fallbackUrl) {
