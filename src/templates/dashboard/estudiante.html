@@ -68,8 +68,8 @@
                              data-course-name="{{ curso.nombre|default:'' }}"
                              data-course-desc="{{ curso.descripcion|default:''|striptags|truncatechars:200 }}"
                              data-course-age="{{ curso.edad_minima|default:'' }}"
-                             src="{% if 'alfabetización' in lower_name or 'alfabetizacion' in lower_name or 'ciudadanía digital' in lower_name or 'ciudadania digital' in lower_name %}https://image.pollinations.ai/prompt/Pixar-style%203D%20render%2C%20cute%20teen%20character%20using%20laptop%20and%20smartphone%2C%20floating%20privacy%20shield%20and%20safety%20lock%20icons%2C%20friendly%20cyber%20scene%2C%20bright%20clean%20background%2C%20soft%20studio%20lighting%2C%20sharp%20focus%2C%20smooth%20surfaces%2C%20high%20detail%2C%20no%20text?width=600&height=400&nologo=true{% elif 'linux' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20kid%20learning%20linux%20on%20laptop%20with%20penguin%20plush%20on%20desk%2C%20medium%20shot%2C%20normal%20eyes%2C%20natural%20facial%20proportions%2C%20soft%20smile%2C%20bright%20classroom%2C%20soft%20lighting?width=600&height=400&nologo=true{% elif 'program' in lower_name or 'desarrollo' in lower_name or 'videojuego' in lower_name or 'código' in lower_name or 'codigo' in lower_name or 'gamer' in lower_name or 'gaming' in lower_name or 'game' in lower_name or 'inteligencia artificial' in lower_name or ' ai' in lower_name or 'ai ' in lower_name or ' ia' in lower_name or 'ia ' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20cute%20character%20working%20with%20computer%20code%20futuristic%20lab%20colorful%20soft%20lighting?width=600&height=400&nologo=true{% elif 'comic' in lower_name or 'cómic' in lower_name or 'ilustración' in lower_name or 'ilustracion' in lower_name or 'historieta' in lower_name or 'historietas' in lower_name or 'viñeta' in lower_name or 'viñetas' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20comic%20book%20style%20illustration%20of%20dynamic%20comic%20panels%2C%20speech%20bubbles%2C%20ink%20outlines%2C%20halftone%20shading%2C%20vibrant%20colors%2C%20desk%20with%20sketchbook%20and%20pens%2C%20no%20people%2C%20no%20faces%2C%20soft%20studio%20lighting?width=600&height=400&nologo=true{% elif 'diseño' in lower_name or 'arte' in lower_name or 'produccion' in lower_name or 'animación' in lower_name or 'animacion' in lower_name or 'stop motion' in lower_name or 'stopmotion' in lower_name or 'motion' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20artist%20character%20painting%20on%20canvas%20creative%20studio%20colorful%20palette?width=600&height=400&nologo=true{% elif 'robot' in lower_name or 'arduino' in lower_name or 'sumo' in lower_name or 'bot' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cute%20robot%20character%20futuristic%20technology%20glowing%20blue%20lights%20sci-fi?width=600&height=400&nologo=true{% elif 'ingl' in lower_name or 'idioma' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20character%20reading%20flying%20books%20learning%20languages%20globe%20travel?width=600&height=400&nologo=true{% elif 'ajedrez' in lower_name %}https://image.pollinations.ai/prompt/3d%20render%20cartoon%20top-down%20view%20full%20chessboard%20centered%20on%20table%2C%20all%20pieces%20visible%2C%20wide%20shot%2C%20cozy%20community%20chess%20club%2C%20warm%20inviting%20workshop%20scene%2C%20soft%20studio%20lighting%2C%20no%20people%2C%20no%20faces?width=600&height=400&nologo=true{% elif 'taller' in lower_name or 'explorador' in lower_name %}https://image.pollinations.ai/prompt/Pixar-style%203D%20render%2C%20cute%20child%20maker%20building%20a%20small%20robot%20with%20safe%20tools%2C%20colorful%20gears%20and%20circuits%2C%20tidy%20makerspace%20bench%2C%20bright%20clean%20background%2C%20soft%20studio%20lighting%2C%20sharp%20focus%2C%20smooth%20surfaces%2C%20high%20detail%2C%20no%20text?width=600&height=400&nologo=true{% else %}https://image.pollinations.ai/prompt/Pixar-style%203D%20render%2C%20cute%20friendly%20character%20learning%20with%20colorful%20books%2C%20pencil%2C%20and%20playful%20educational%20shapes%2C%20bright%20clean%20background%2C%20soft%20studio%20lighting%2C%20sharp%20focus%2C%20smooth%20surfaces%2C%20high%20detail%2C%20no%20text?width=600&height=400&nologo=true{% endif %}"
-                             onerror="this.onerror=null;this.src='https://image.pollinations.ai/prompt/stylized%203D%20render%2C%20cute%20friendly%20character%20learning%20with%20colorful%20books%2C%20pencil%2C%20and%20playful%20educational%20shapes%2C%20bright%20clean%20background%2C%20soft%20studio%20lighting%2C%20sharp%20focus%2C%20smooth%20surfaces%2C%20high%20detail%2C%20no%20text?width=600&height=400&nologo=true';" />
+                             src="https://image.pollinations.ai/prompt/{{ curso.nombre|urlencode }}%2C%20{{ curso.edad_minima|default:'' }}%20anos%2C%20{{ curso.descripcion|default:''|striptags|truncatechars:80|urlencode }}%2C%203d%20render?width=600&height=400&nologo=true"
+                             onerror="this.onerror=null;this.src='https://image.pollinations.ai/prompt/{{ curso.nombre|urlencode }}%2C%20{{ curso.edad_minima|default:'' }}%20anos%2C%203d%20render?width=600&height=400&nologo=true';" />
                     </div>
                     <div class="course-content">
                         <div class="course-header-row">
@@ -627,31 +627,62 @@
         return 'stylized 3D render, cute friendly character learning with colorful educational icons, bright clean background, soft studio lighting, sharp focus, smooth surfaces, high detail';
     }
 
-    const DEFAULT_COURSE_IMAGE_URL = 'https://image.pollinations.ai/prompt/stylized%203D%20render%2C%20cute%20friendly%20character%20learning%20with%20laptop%20and%20colorful%20educational%20icons%2C%20bright%20clean%20background%2C%20soft%20studio%20lighting%2C%20sharp%20focus%2C%20high%20detail%2C%20no%20text%2C%20no%20watermark%2C%20no%20logo%2C%20no%20words%2C%20no%20letters%3Fwidth=600&height=400&nologo=true';
+    function sanitizePromptText(value) {
+        const normalized = normalizeText((value || '').trim());
+        return normalized.replace(/[^a-z0-9\s-]/g, ' ').replace(/\s+/g, ' ').trim();
+    }
 
     function buildPollinationsUrl(name, desc, age, category) {
-        const cleanName = (name || '').trim();
+        const cleanName = sanitizePromptText(name);
+        const cleanDesc = sanitizePromptText(desc);
         const ageValue = parseAge(age);
-        const base = chooseBasePrompt(cleanName, category);
-        if (!base) return DEFAULT_COURSE_IMAGE_URL;
+        const base = chooseBasePrompt(cleanName, category) || '3d render, friendly learning scene';
 
         const ageText = ageHint(ageValue);
         const styleVariant = chooseStyleVariant(`${cleanName}|${category || ''}|${ageValue || ''}`);
-        const parts = [base, ageText, styleVariant, cleanName].filter(Boolean);
-        const suffix = 'no text, no watermark, no logo, no letters, no words, no illustration, no 2d, no drawing, no sketch, no watercolor, no oil painting, no hand-drawn, no classroom, no empty room, sharp focus, high detail, clean edges, smooth surfaces, no blurry, no lowres, no pixelated, no noisy, no ugly, no disfigured, no distorted, no deformed, no bad anatomy, no extra fingers, no extra limbs, no bad face, no deformed face, no extra eyes, no glitches, no out of frame, no cropped';
+        const nameHint = cleanName.split(' ').slice(0, 8).join(' ');
+        const descHint = cleanDesc.split(' ').slice(0, 12).join(' ');
+        const parts = [base, ageText, styleVariant, nameHint, descHint].filter(Boolean);
+        const suffix = 'clean background, soft studio lighting, high detail, no text';
         const prompt = `${parts.join(', ')}, ${suffix}`;
-        const seed = stableSeed(`${cleanName}|${category || ''}|${ageValue || ''}` || base);
-        return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=600&height=400&seed=${seed}&nologo=true`;
+        const seed = stableSeed(`${cleanName}|${category || ''}|${ageValue || ''}|${descHint}` || base);
+        const safePrompt = prompt.replace(/pixar-style/gi, '').replace(/stylized/gi, '').replace(/\s+/g, ' ').trim();
+        return `https://image.pollinations.ai/prompt/${encodeURIComponent(safePrompt)}?width=600&height=400&seed=${seed}&nologo=true`;
     }
 
-    function preloadAndSet(img, url) {
-        if (!url) return;
+    function buildFallbackUrl(name, desc, age, category) {
+        const cleanName = sanitizePromptText(name);
+        const cleanDesc = sanitizePromptText(desc);
+        const ageValue = parseAge(age);
+        const base = '3d render, friendly learning scene';
+        const ageText = ageHint(ageValue);
+        const nameHint = cleanName.split(' ').slice(0, 6).join(' ');
+        const descHint = cleanDesc.split(' ').slice(0, 8).join(' ');
+        const parts = [base, ageText, nameHint, descHint].filter(Boolean);
+        const suffix = 'clean background, soft studio lighting, high detail, no text';
+        const prompt = `${parts.join(', ')}, ${suffix}`;
+        const seed = stableSeed(`${cleanName}|${category || ''}|${ageValue || ''}|fallback`);
+        const safePrompt = prompt.replace(/pixar-style/gi, '').replace(/stylized/gi, '').replace(/\s+/g, ' ').trim();
+        return `https://image.pollinations.ai/prompt/${encodeURIComponent(safePrompt)}?width=600&height=400&seed=${seed}&nologo=true`;
+    }
+
+    function buildPicsumUrl(name, age, category) {
+        const seed = stableSeed(`${sanitizePromptText(name)}|${age || ''}|${category || ''}` || 'curso');
+        return `https://picsum.photos/seed/${seed}/600/400`;
+    }
+
+    function preloadAndSet(img, url, fallbackUrl) {
+        if (!url) {
+            if (fallbackUrl) img.src = fallbackUrl;
+            return;
+        }
         const probe = new Image();
         probe.referrerPolicy = 'no-referrer';
         probe.onload = () => {
             img.src = url;
         };
         probe.onerror = () => {
+            if (fallbackUrl) img.src = fallbackUrl;
         };
         probe.src = url;
     }
@@ -665,7 +696,22 @@
             const card = img.closest('.course-card-horizontal');
             const category = card ? card.getAttribute('data-category') : '';
             const url = buildPollinationsUrl(name, desc, age, category);
-            preloadAndSet(img, url);
+            const fallbackUrl = buildFallbackUrl(name, desc, age, category);
+            const picsumUrl = buildPicsumUrl(name, age, category);
+            img.removeAttribute('onerror');
+            img.onerror = () => {
+                if (img.dataset.pollFallback === '1') {
+                    img.src = picsumUrl;
+                    return;
+                }
+                img.dataset.pollFallback = '1';
+                if (fallbackUrl) {
+                    img.src = fallbackUrl;
+                    return;
+                }
+                img.src = picsumUrl;
+            };
+            preloadAndSet(img, url, fallbackUrl);
         });
     }
 
