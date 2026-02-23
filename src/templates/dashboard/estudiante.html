@@ -669,17 +669,143 @@
         ]
     };
 
+    const COURSE_IMAGES = [
+        {
+            keywords: ['ajedrez'],
+            images: [
+                'https://th.bing.com/th/id/OIG4.Onkb2PsT3OulNjkqQasL?pid=ImgGn'
+            ]
+        },
+        {
+            keywords: ['ajedrez avanzado', 'ajedrez avanzado+'],
+            images: [
+                'https://th.bing.com/th/id/OIG1.0AJCOI_p4sdxs38m5g3x?pid=ImgGn'
+            ]
+        },
+        {
+            keywords: ['alfabetizacion digital', 'ciudadania digital'],
+            images: [
+                'https://th.bing.com/th/id/OIG2.ULlGLY_Q97GY9_anOdYk?pid=ImgGn'
+            ]
+        },
+        {
+            keywords: ['analisis de datos', 'datos', 'inteligencia artificial', 'ia'],
+            images: [
+                'https://th.bing.com/th/id/OIG1..zuYbKDO5M4NukHIWXF_?pid=ImgGn'
+            ]
+        },
+        {
+            keywords: ['chatbot', 'chatbots'],
+            images: [
+                'https://th.bing.com/th/id/OIG4.fQtoi.AfDJ_wyjVRw3BI?pid=ImgGn'
+            ]
+        },
+        {
+            keywords: ['mini startup', 'startup'],
+            images: [
+                'https://th.bing.com/th/id/OIG3.UNPmiQ4x0a4SxsJUiNB8?pid=ImgGn'
+            ]
+        },
+        {
+            keywords: ['ciencia en accion', 'exploradores', 'mentes curiosas', 'mas juego', 'mas aprendo'],
+            images: [
+                'https://th.bing.com/th/id/OIG4.NuowZb5wPxUkSGZWhysD?pid=ImgGn'
+            ]
+        },
+        {
+            keywords: ['bio fablab', 'fablab', 'biofablab'],
+            images: [
+                'https://th.bing.com/th/id/OIG1.yGBhTqIGQcgmmuqQjrKn?pid=ImgGn'
+            ]
+        },
+        {
+            keywords: ['animacion 2d', 'animación 2d'],
+            images: [
+                'https://th.bing.com/th/id/OIG4.IQiOyusBCNpIKpD0F9Dh?pid=ImgGn'
+            ]
+        },
+        {
+            keywords: ['comic', 'cómic', 'ilustracion', 'ilustración', 'historieta', 'historietas'],
+            images: [
+                'https://th.bing.com/th/id/OIG1.jSaJq0tIZ3KKU.HRBqrV?pid=ImgGn'
+            ]
+        },
+        {
+            keywords: ['modelado y animacion 3d', 'modelado y animación 3d', 'blender'],
+            images: [
+                'https://th.bing.com/th/id/OIG1.U4c9HXtmDzaR5Wc67ErX?pid=ImgGn'
+            ]
+        },
+        {
+            keywords: ['podcasting', 'podcast', 'podcaster'],
+            images: [
+                'https://th.bing.com/th/id/OIG2.2zhwXrSUWhZUbdYVT4Av?pid=ImgGn'
+            ]
+        },
+        {
+            keywords: ['produccion de contenidos', 'produccion de contenidos para redes sociales', 'redes sociales', 'contenido para redes'],
+            images: [
+                'https://th.bing.com/th/id/OIG2.SN8ILsdDTcpikyF2ba5W?pid=ImgGn'
+            ]
+        },
+        {
+            keywords: ['e-commerce', 'ecommerce', 'tienda online', 'tienda en linea'],
+            images: [
+                'https://th.bing.com/th/id/OIG2.a4CgUWji9AphNhGQgrh0?pid=ImgGn'
+            ]
+        },
+        {
+            keywords: ['autocad', 'sketchup', 'sketch up', 'dibujo tecnico', 'modelado 3d', 'planos', 'arquitectura', 'interiorismo'],
+            images: [
+                'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=600&h=400&q=80'
+            ]
+        },
+        {
+            keywords: ['makers kids', 'makers', 'maker', 'impresion 3d', 'diseno 3d', 'taller creativo'],
+            images: [
+                'https://th.bing.com/th/id/OIG2.Xs8uUA0wuthwSc0CJRBF?pid=ImgGn'
+            ]
+        },
+        {
+            keywords: ['molderia digital', 'molderia', 'patronaje', 'indumentaria', 'valentina', 'moldes', 'costura', 'moda'],
+            images: [
+                'https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=600&h=400&q=80'
+            ]
+        }
+    ];
+
+    function pickImageFromList(list, seedBase) {
+        const index = Math.abs(stableSeed(seedBase)) % list.length;
+        return list[index];
+    }
+
+    function pickCourseImage(name, desc, category, seedBase) {
+        const text = normalizeText(`${name} ${desc} ${category}`);
+        for (const entry of COURSE_IMAGES) {
+            if (entry.keywords.some((keyword) => text.includes(keyword))) {
+                return pickImageFromList(entry.images, seedBase);
+            }
+        }
+        return '';
+    }
+
     function pickCategoryImage(category, seedBase) {
         const c = normalizeText((category || '').trim());
         const list = CATEGORY_IMAGES[c] || CATEGORY_IMAGES.general;
-        const index = Math.abs(stableSeed(seedBase)) % list.length;
-        return `${list[index]}?auto=format&fit=crop&w=600&h=400&q=80`;
+        const url = pickImageFromList(list, seedBase);
+        return `${url}?auto=format&fit=crop&w=600&h=400&q=80`;
+    }
+
+    function isCustomImageUrl(url) {
+        return !!url && !url.includes('images.unsplash.com/photo-');
     }
 
     function buildPollinationsUrl(name, desc, age, category) {
         const cleanName = sanitizePromptText(name);
         const ageValue = parseAge(age);
         const seedBase = `${cleanName}|${sanitizePromptText(desc)}|${ageValue || ''}|${category || ''}`;
+        const courseUrl = pickCourseImage(name, desc, category, seedBase);
+        if (courseUrl) return courseUrl;
         return pickCategoryImage(category, seedBase);
     }
 
@@ -687,6 +813,8 @@
         const cleanName = sanitizePromptText(name);
         const ageValue = parseAge(age);
         const seedBase = `${cleanName}|${sanitizePromptText(desc)}|${ageValue || ''}|${category || ''}|fallback`;
+        const courseUrl = pickCourseImage(name, desc, category, seedBase);
+        if (courseUrl) return courseUrl;
         return pickCategoryImage(category, seedBase);
     }
 
@@ -715,7 +843,13 @@
             const card = img.closest('.course-card-horizontal');
             const category = card ? card.getAttribute('data-category') : '';
             const url = buildPollinationsUrl(name, desc, age, category);
-            const fallbackUrl = buildFallbackUrl(name, desc, age, category);
+            let fallbackUrl = buildFallbackUrl(name, desc, age, category);
+            if (isCustomImageUrl(url)) {
+                img.removeAttribute('onerror');
+                img.onerror = null;
+                img.src = url;
+                return;
+            }
             img.removeAttribute('onerror');
             img.onerror = () => {
                 if (fallbackUrl) img.src = fallbackUrl;
