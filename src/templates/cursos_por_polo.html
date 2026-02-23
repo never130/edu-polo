@@ -1985,14 +1985,14 @@
         const cleanName = sanitizePromptText(name);
         const cleanDesc = sanitizePromptText(desc);
         const ageValue = parseAge(age);
-        const base = chooseBasePrompt(cleanName, category) || '3d pixar style, kid friendly learning scene';
+        const base = chooseBasePrompt(cleanName, category) || '3d pixar style, child friendly';
 
         const ageText = ageHint(ageValue);
         const styleVariant = chooseStyleVariant(`${cleanName}|${category || ''}|${ageValue || ''}`);
-        const nameHint = cleanName.split(' ').slice(0, 8).join(' ');
-        const descHint = cleanDesc.split(' ').slice(0, 12).join(' ');
+        const nameHint = cleanName.split(' ').slice(0, 6).join(' ');
+        const descHint = cleanDesc.split(' ').slice(0, 6).join(' ');
         const catHint = categoryHint(category);
-        const parts = [base, '3d pixar style', 'child friendly', catHint, ageText, styleVariant, nameHint, descHint].filter(Boolean);
+        const parts = [base, catHint, ageText, styleVariant, nameHint, descHint].filter(Boolean);
         const suffix = 'clean background, soft studio lighting, high detail, no text';
         const prompt = `${parts.join(', ')}, ${suffix}`;
         const seed = stableSeed(`${cleanName}|${category || ''}|${ageValue || ''}|${descHint}` || base);
@@ -2004,12 +2004,12 @@
         const cleanName = sanitizePromptText(name);
         const cleanDesc = sanitizePromptText(desc);
         const ageValue = parseAge(age);
-        const base = '3d pixar style, kid friendly learning scene';
+        const base = '3d pixar style, child friendly';
         const ageText = ageHint(ageValue);
-        const nameHint = cleanName.split(' ').slice(0, 6).join(' ');
-        const descHint = cleanDesc.split(' ').slice(0, 8).join(' ');
+        const nameHint = cleanName.split(' ').slice(0, 5).join(' ');
+        const descHint = cleanDesc.split(' ').slice(0, 5).join(' ');
         const catHint = categoryHint(category);
-        const parts = [base, '3d pixar style', 'child friendly', catHint, ageText, nameHint, descHint].filter(Boolean);
+        const parts = [base, catHint, ageText, nameHint, descHint].filter(Boolean);
         const suffix = 'clean background, soft studio lighting, high detail, no text';
         const prompt = `${parts.join(', ')}, ${suffix}`;
         const seed = stableSeed(`${cleanName}|${category || ''}|${ageValue || ''}|fallback`);

@@ -596,12 +596,12 @@
     function buildPollinationsUrl(name, desc) {
         const cleanName = sanitizePromptText(name);
         const cleanDesc = sanitizePromptText(desc);
-        const base = chooseBasePrompt(cleanName) || '3d pixar style, kid friendly learning scene';
+        const base = chooseBasePrompt(cleanName) || '3d pixar style, child friendly';
 
         const n = normalizeText(cleanName);
         const useDescHint = n.includes('makers kids') || n.includes('blender') || n.includes('videojuego') || n.includes('videojuegos') || n.includes('ciencia en accion') || n.includes('bordando ciencia');
-        const descHint = useDescHint ? cleanDesc.split(' ').slice(0, 12).join(' ') : '';
-        const nameHint = cleanName.split(' ').slice(0, 8).join(' ');
+        const descHint = useDescHint ? cleanDesc.split(' ').slice(0, 6).join(' ') : '';
+        const nameHint = cleanName.split(' ').slice(0, 6).join(' ');
         const extra = descHint ? `${nameHint}. ${descHint}` : nameHint;
         const suffix = 'clean background, soft studio lighting, high detail, no text';
         const prompt = extra ? `${base}, ${extra}, ${suffix}` : `${base}, ${suffix}`;
@@ -613,9 +613,9 @@
     function buildFallbackUrl(name, desc) {
         const cleanName = sanitizePromptText(name);
         const cleanDesc = sanitizePromptText(desc);
-        const descHint = cleanDesc.split(' ').slice(0, 8).join(' ');
-        const base = '3d pixar style, kid friendly learning scene';
-        const nameHint = cleanName.split(' ').slice(0, 6).join(' ');
+        const descHint = cleanDesc.split(' ').slice(0, 5).join(' ');
+        const base = '3d pixar style, child friendly';
+        const nameHint = cleanName.split(' ').slice(0, 5).join(' ');
         const parts = [base, nameHint, descHint].filter(Boolean);
         const suffix = 'clean background, soft studio lighting, high detail, no text';
         const prompt = `${parts.join(', ')}, ${suffix}`;
