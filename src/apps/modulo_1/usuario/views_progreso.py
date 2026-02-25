@@ -33,7 +33,8 @@ def mi_progreso(request):
         # Obtener inscripciones confirmadas
         inscripciones = Inscripcion.objects.filter(
             estudiante=estudiante,
-            estado='confirmado'
+            estado='confirmado',
+            comision__publicada=True,
         ).select_related('comision__fk_id_curso')
         
         # Calcular progreso para cada inscripción
@@ -246,7 +247,8 @@ def materiales_estudiante(request):
         # Obtener inscripciones confirmadas
         inscripciones = Inscripcion.objects.filter(
             estudiante=estudiante,
-            estado='confirmado'
+            estado='confirmado',
+            comision__publicada=True,
         ).select_related('comision__fk_id_curso', 'comision__fk_id_polo').order_by('comision__fk_id_curso__nombre')
         
         # Agrupar materiales por comisión
@@ -287,7 +289,8 @@ def materiales_comision_estudiante(request, comision_id):
             Inscripcion,
             estudiante=estudiante,
             comision_id=comision_id,
-            estado='confirmado'
+            estado='confirmado',
+            comision__publicada=True,
         )
         
         # Obtener materiales de la comisión

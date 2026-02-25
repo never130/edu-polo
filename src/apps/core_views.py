@@ -216,6 +216,7 @@ def dashboard_estudiante(request):
 
         inscripciones_pendientes = Inscripcion.objects.filter(
             estudiante=estudiante,
+            comision__publicada=True,
         ).exclude(
             estado__in=['confirmado', 'cancelada'],
         ).select_related('comision__fk_id_curso', 'comision__fk_id_polo')
@@ -231,7 +232,8 @@ def dashboard_estudiante(request):
         # Obtener inscripciones activas (confirmadas)
         inscripciones = Inscripcion.objects.filter(
             estudiante=estudiante,
-            estado='confirmado'
+            estado='confirmado',
+            comision__publicada=True,
         ).select_related('comision__fk_id_curso', 'comision__fk_id_polo')
         
         inscripciones_activas_count = inscripciones.count()

@@ -160,20 +160,50 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# Usar DATABASE_URL si está disponible (producción), sino SQLite (desarrollo)
-if os.environ.get('DATABASE_URL') and dj_database_url:
+_database_url = os.environ.get('DATABASE_URL')
+_db_engine = (os.environ.get('DB_ENGINE') or '').strip()
+_database_flag = (os.environ.get('DATABASE') or '').strip().lower()
+
+if _database_url and dj_database_url:
     DATABASES = {
         'default': dj_database_url.config(
-            default=os.environ.get('DATABASE_URL'),
+            default=_database_url,
             conn_max_age=600,
             conn_health_checks=True,
         )
     }
 else:
+    engine_key = _db_engine or _database_flag
+    if engine_key in ('postgres', 'postgresql'):
+        django_engine = 'django.db.backends.postgresql'
+    elif engine_key in ('mysql', 'mariadb'):
+        django_engine = 'django.db.backends.mysql'
+    elif engine_key in ('mssql', 'sqlserver'):
+        django_engine = 'mssql'
+    elif engine_key in ('sqlite', 'sqlite3', ''):
+        django_engine = 'django.db.backends.sqlite3'
+    else:
+        django_engine = engine_key
+
+    if django_engine == 'django.db.backends.sqlite3':
+        name = BASE_DIR / 'db.sqlite3'
+    else:
+        name = os.environ.get('DB_NAME') or ''
+
+    options = {}
+    if django_engine == 'mssql':
+        driver = (os.environ.get('DB_DRIVER') or 'ODBC Driver 18 for SQL Server').strip()
+        options = {'driver': driver}
+
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+            'ENGINE': django_engine,
+            'NAME': name,
+            'USER': os.environ.get('DB_USER', ''),
+            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+            'HOST': os.environ.get('DB_HOST', ''),
+            'PORT': os.environ.get('DB_PORT', ''),
+            'OPTIONS': options,
         }
     }
 
