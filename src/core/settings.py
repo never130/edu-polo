@@ -165,12 +165,15 @@ _db_engine = (os.environ.get('DB_ENGINE') or '').strip()
 _database_flag = (os.environ.get('DATABASE') or '').strip().lower()
 
 if _database_url and dj_database_url:
+    db_config = dj_database_url.config(
+        default=_database_url,
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
+    if os.environ.get('DISABLE_SERVER_SIDE_CURSORS', '') == '1':
+        db_config['DISABLE_SERVER_SIDE_CURSORS'] = True
     DATABASES = {
-        'default': dj_database_url.config(
-            default=_database_url,
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
+        'default': db_config
     }
 else:
     engine_key = _db_engine or _database_flag
@@ -195,16 +198,19 @@ else:
         driver = (os.environ.get('DB_DRIVER') or 'ODBC Driver 18 for SQL Server').strip()
         options = {'driver': driver}
 
+    db_config = {
+        'ENGINE': django_engine,
+        'NAME': name,
+        'USER': os.environ.get('DB_USER', ''),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', ''),
+        'PORT': os.environ.get('DB_PORT', ''),
+        'OPTIONS': options,
+    }
+    if os.environ.get('DISABLE_SERVER_SIDE_CURSORS', '') == '1':
+        db_config['DISABLE_SERVER_SIDE_CURSORS'] = True
     DATABASES = {
-        'default': {
-            'ENGINE': django_engine,
-            'NAME': name,
-            'USER': os.environ.get('DB_USER', ''),
-            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-            'HOST': os.environ.get('DB_HOST', ''),
-            'PORT': os.environ.get('DB_PORT', ''),
-            'OPTIONS': options,
-        }
+        'default': db_config
     }
 
 
