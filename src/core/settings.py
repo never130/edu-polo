@@ -216,10 +216,7 @@ else:
         }
     }
     if os.environ.get('DISABLE_SERVER_SIDE_CURSORS', '') == '1':
-        db_config['DISABLE_SERVER_SIDE_CURSORS'] = True
-    DATABASES = {
-        'default': db_config
-    }
+        DATABASES['default']['DISABLE_SERVER_SIDE_CURSORS'] = True
 
 
 # Password validation
