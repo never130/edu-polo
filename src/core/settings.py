@@ -197,15 +197,23 @@ else:
     if django_engine == 'mssql':
         driver = (os.environ.get('DB_DRIVER') or 'ODBC Driver 18 for SQL Server').strip()
         options = {'driver': driver}
+        encrypt = (os.environ.get('DB_ENCRYPT') or '').strip()
+        trust_cert = (os.environ.get('DB_TRUST_CERT') or '').strip()
+        if encrypt:
+            options['Encrypt'] = encrypt
+        if trust_cert:
+            options['TrustServerCertificate'] = trust_cert
 
-    db_config = {
-        'ENGINE': django_engine,
-        'NAME': name,
-        'USER': os.environ.get('DB_USER', ''),
-        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-        'HOST': os.environ.get('DB_HOST', ''),
-        'PORT': os.environ.get('DB_PORT', ''),
-        'OPTIONS': options,
+    DATABASES = {
+        'default': {
+            'ENGINE': django_engine,
+            'NAME': name,
+            'USER': os.environ.get('DB_USER', ''),
+            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+            'HOST': os.environ.get('DB_HOST', ''),
+            'PORT': os.environ.get('DB_PORT', ''),
+            'OPTIONS': options,
+        }
     }
     if os.environ.get('DISABLE_SERVER_SIDE_CURSORS', '') == '1':
         db_config['DISABLE_SERVER_SIDE_CURSORS'] = True
