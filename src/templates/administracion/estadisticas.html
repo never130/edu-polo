@@ -223,7 +223,7 @@
 
     {% if cursos_con_alumnos %}
     <div class="table-wrapper">
-        <table>
+        <table id="tablaCursos">
             <thead>
             <tr>
                 <th>Curso</th>
@@ -232,9 +232,9 @@
                 <th>Estado</th>
             </tr>
         </thead>
-            <tbody>
+            <tbody id="tablaCursosBody">
                 {% for curso in cursos_con_alumnos %}
-                <tr>
+                <tr class="curso-row">
                 <td><strong>{{ curso.nombre }}</strong></td>
                 <td>{{ curso.total_alumnos }}</td>
                 <td>
@@ -256,6 +256,79 @@
             </tbody>
         </table>
     </div>
+
+    <!-- Paginación de la tabla -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding: 0 0.5rem;">
+        <div style="color: #64748b; font-size: 0.9rem;">
+            Mostrando <span id="pagInfo">0-0</span> de {{ cursos_con_alumnos|length }} cursos
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+            <button id="btnPrev" style="padding: 0.4rem 0.8rem; border: 1px solid #e2e8f0; background: white; border-radius: 8px; cursor: pointer; color: #334155; font-weight: 600;" disabled>
+                <i class="fa-solid fa-chevron-left"></i> Anterior
+            </button>
+            <button id="btnNext" style="padding: 0.4rem 0.8rem; border: 1px solid #e2e8f0; background: white; border-radius: 8px; cursor: pointer; color: #334155; font-weight: 600;">
+                Siguiente <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const rows = document.querySelectorAll('.curso-row');
+            const rowsPerPage = 10;
+            let currentPage = 1;
+            const totalPages = Math.ceil(rows.length / rowsPerPage);
+            
+            const btnPrev = document.getElementById('btnPrev');
+            const btnNext = document.getElementById('btnNext');
+            const pagInfo = document.getElementById('pagInfo');
+
+            function showPage(page) {
+                const start = (page - 1) * rowsPerPage;
+                const end = start + rowsPerPage;
+                
+                rows.forEach((row, index) => {
+                    if (index >= start && index < end) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Actualizar info
+                const showStart = rows.length > 0 ? start + 1 : 0;
+                const showEnd = Math.min(end, rows.length);
+                pagInfo.textContent = `${showStart}-${showEnd}`;
+
+                // Actualizar botones
+                btnPrev.disabled = page === 1;
+                btnNext.disabled = page === totalPages || totalPages === 0;
+                
+                // Estilos visuales para deshabilitados
+                btnPrev.style.opacity = btnPrev.disabled ? '0.5' : '1';
+                btnNext.style.opacity = btnNext.disabled ? '0.5' : '1';
+            }
+
+            if (btnPrev && btnNext) {
+                btnPrev.addEventListener('click', () => {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        showPage(currentPage);
+                    }
+                });
+
+                btnNext.addEventListener('click', () => {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        showPage(currentPage);
+                    }
+                });
+
+                // Inicializar
+                showPage(1);
+            }
+        });
+    </script>
     {% else %}
     <div class="empty-state">
         <div class="empty-state__icon"><i class="fa-regular fa-folder-open"></i></div>
@@ -613,10 +686,13 @@
     let chartBarrasInstance = null;
 
     const actualizarChartBarras = (limite) => {
-        // Si limite es 0, mostramos todos (o un número muy grande)
-        const limitVal = parseInt(limite) === 0 ? 9999 : parseInt(limite);
+        // Si limite es 0, mostramos todos
+        const limitVal = parseInt(limite) === 0 ? itemsCantidad.length : parseInt(limite);
         
-        const topCantidad = normalizarTop(itemsCantidad, limitVal, 'Otros');
+        // Ordenar y tomar los top, SIN agrupar en "Otros"
+        const ordenados = [...itemsCantidad].sort((a, b) => b.valor - a.valor);
+        const topCantidad = ordenados.slice(0, limitVal);
+        
         const labelsCantidad = topCantidad.map(i => i.etiqueta);
         const valoresCantidad = topCantidad.map(i => i.valor);
         const coloresCantidad = labelsCantidad.map((_, i) => colores[i % colores.length]);
