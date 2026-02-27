@@ -98,8 +98,16 @@
 
     <div class="charts-container">
         <div class="card">
-            <div class="card__header">
+            <div class="card__header card__header--between">
                 <h3 class="card__title">Estudiantes por curso</h3>
+                <select id="filtroCantidadCursos" style="padding:0.5rem 0.75rem; border-radius:10px; border:1px solid #e2e8f0; font-weight:700; color:#0f172a; background:white;">
+                    <option value="5">Top 5</option>
+                    <option value="10">Top 10</option>
+                    <option value="20" selected>Top 20</option>
+                    <option value="50">Top 50</option>
+                    <option value="100">Top 100</option>
+                    <option value="0">Todos</option>
+                </select>
             </div>
             <div class="chart-box">
                 <canvas id="chartBarras"></canvas>
@@ -600,62 +608,76 @@
 
     // Gráfico de Barras (Top cursos por cantidad)
     const ctxBarras = document.getElementById('chartBarras').getContext('2d');
+    const elFiltroCantidad = document.getElementById('filtroCantidadCursos');
     const itemsCantidad = labels.map((etiqueta, i) => ({ etiqueta, valor: valores[i] || 0 }));
-    const topCantidad = normalizarTop(itemsCantidad, 15, 'Otros');
-    const labelsCantidad = topCantidad.map(i => i.etiqueta);
-    const valoresCantidad = topCantidad.map(i => i.valor);
+    let chartBarrasInstance = null;
 
-    new Chart(ctxBarras, {
-        type: 'bar',
-        data: {
-            labels: labelsCantidad,
-            datasets: [{
-                label: 'Cantidad de Estudiantes',
-                data: valoresCantidad,
-                backgroundColor: labelsCantidad.map((_, i) => colores[i % colores.length]),
-                borderColor: labelsCantidad.map((_, i) => colores[i % colores.length].replace('0.8', '1')),
-                borderWidth: 2,
-                borderRadius: 8,
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: {
-                    display: false
+    const actualizarChartBarras = (limite) => {
+        // Si limite es 0, mostramos todos (o un número muy grande)
+        const limitVal = parseInt(limite) === 0 ? 9999 : parseInt(limite);
+        
+        const topCantidad = normalizarTop(itemsCantidad, limitVal, 'Otros');
+        const labelsCantidad = topCantidad.map(i => i.etiqueta);
+        const valoresCantidad = topCantidad.map(i => i.valor);
+        const coloresCantidad = labelsCantidad.map((_, i) => colores[i % colores.length]);
+        const bordesCantidad = labelsCantidad.map((_, i) => colores[i % colores.length].replace('0.8', '1'));
+
+        if (chartBarrasInstance) {
+            chartBarrasInstance.data.labels = labelsCantidad;
+            chartBarrasInstance.data.datasets[0].data = valoresCantidad;
+            chartBarrasInstance.data.datasets[0].backgroundColor = coloresCantidad;
+            chartBarrasInstance.data.datasets[0].borderColor = bordesCantidad;
+            chartBarrasInstance.update();
+        } else {
+            chartBarrasInstance = new Chart(ctxBarras, {
+                type: 'bar',
+                data: {
+                    labels: labelsCantidad,
+                    datasets: [{
+                        label: 'Cantidad de Estudiantes',
+                        data: valoresCantidad,
+                        backgroundColor: coloresCantidad,
+                        borderColor: bordesCantidad,
+                        borderWidth: 2,
+                        borderRadius: 8,
+                    }]
                 },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    padding: 12,
-                    titleFont: { size: 14, weight: 'bold' },
-                    bodyFont: { size: 13 },
-                    borderColor: 'rgba(255, 255, 255, 0.2)',
-                    borderWidth: 1
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 1,
-                        font: { size: 12 }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            titleFont: { size: 14, weight: 'bold' },
+                            bodyFont: { size: 13 },
+                            borderColor: 'rgba(255, 255, 255, 0.2)',
+                            borderWidth: 1
+                        }
                     },
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.05)'
-                    }
-                },
-                x: {
-                    ticks: {
-                        font: { size: 11 }
-                    },
-                    grid: {
-                        display: false
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1, font: { size: 12 } },
+                            grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                        },
+                        x: {
+                            ticks: { font: { size: 11 } },
+                            grid: { display: false }
+                        }
                     }
                 }
-            }
+            });
         }
-    });
+    };
+
+    if (elFiltroCantidad) {
+        actualizarChartBarras(elFiltroCantidad.value);
+        elFiltroCantidad.addEventListener('change', (e) => actualizarChartBarras(e.target.value));
+    } else {
+        actualizarChartBarras(50);
+    }
     
     // Inscripciones por estado
     const elInscripcionesEstado = document.getElementById('chartInscripcionesEstado');
