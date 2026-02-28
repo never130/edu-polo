@@ -558,31 +558,54 @@ def dashboard_admin(request):
             pts.append(f"{x:.1f},{y:.1f}")
         return ' '.join(pts)
 
-    def _parse_time_range(texto):
+    def _parse_time_range(texto, weekday=None):
         import re
-        t = (texto or '').lower()
-        times = re.findall(r"\b([01]?\d|2[0-3])[:\.]([0-5]\d)\b", t)
-        if len(times) >= 2:
-            sh, sm = int(times[0][0]), int(times[0][1])
-            eh, em = int(times[1][0]), int(times[1][1])
-        else:
-            m = re.search(r"\b([01]?\d|2[0-3])\s*(?:hs|h)?\s*(?:a|\-|–|—)\s*([01]?\d|2[0-3])(?:[:\.]([0-5]\d))?\b", t)
-            if not m:
-                return None
-            sh = int(m.group(1))
-            sm = 0
-            eh = int(m.group(2))
-            em = int(m.group(3) or 0)
-        start_min = (sh * 60) + sm
-        end_min = (eh * 60) + em
-        if end_min <= start_min:
-            end_min = start_min + 60
-        return {
-            'start_min': start_min,
-            'end_min': end_min,
-            'start_label': f"{sh:02d}:{sm:02d}",
-            'end_label': f"{eh:02d}:{em:02d}",
-        }
+        def _from_text(t):
+            t = (t or '').lower()
+            times = re.findall(r"\b([01]?\d|2[0-3])[:\.]([0-5]\d)\b", t)
+            if len(times) >= 2:
+                sh, sm = int(times[0][0]), int(times[0][1])
+                eh, em = int(times[1][0]), int(times[1][1])
+            else:
+                m = re.search(r"\b([01]?\d|2[0-3])\s*(?:hs|h)?\s*(?:a|\-|–|—)\s*([01]?\d|2[0-3])(?:[:\.]([0-5]\d))?\b", t)
+                if not m:
+                    return None
+                sh = int(m.group(1))
+                sm = 0
+                eh = int(m.group(2))
+                em = int(m.group(3) or 0)
+            start_min = (sh * 60) + sm
+            end_min = (eh * 60) + em
+            if end_min <= start_min:
+                end_min = start_min + 60
+            return {
+                'start_min': start_min,
+                'end_min': end_min,
+                'start_label': f"{sh:02d}:{sm:02d}",
+                'end_label': f"{eh:02d}:{em:02d}",
+            }
+
+        t_full = (texto or '').lower()
+        if weekday is not None:
+            tokens_map = {
+                0: ['lunes', 'lun', 'lu'],
+                1: ['martes', 'mar', 'ma'],
+                2: ['miércoles', 'miercoles', 'mié', 'mie', 'mi', 'x'],
+                3: ['jueves', 'jue', 'ju'],
+                4: ['viernes', 'vie', 'vi'],
+                5: ['sábado', 'sabado', 'sáb', 'sab', 'sa'],
+                6: ['domingo', 'dom'],
+            }
+            tokens = tokens_map.get(weekday) or []
+            if tokens:
+                parts = re.split(r"[.;\n]+", t_full)
+                for part in parts:
+                    if any(re.search(rf"\b{re.escape(tok)}\b", part) for tok in tokens):
+                        parsed = _from_text(part)
+                        if parsed:
+                            return parsed
+
+        return _from_text(t_full)
 
     palette = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4']
     agenda_row_h = 40
@@ -602,7 +625,7 @@ def dashboard_admin(request):
         has_data = len(valores) > 0
 
         color = palette[com_id % len(palette)]
-        time_range = _parse_time_range(comision.dias_horarios or '')
+        time_range = _parse_time_range(comision.dias_horarios or '', dia_semana)
 
         card = {
             'comision': comision,
