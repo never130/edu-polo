@@ -491,19 +491,6 @@ def dashboard_admin(request):
             inscripciones_hoy = 0
 
     dia_semana = fecha_agenda.weekday()
-    dia_variantes = {
-        0: ['lunes', 'lun'],
-        1: ['martes', 'mar'],
-        2: ['miércoles', 'miercoles', 'mié', 'mie', 'mier'],
-        3: ['jueves', 'jue'],
-        4: ['viernes', 'vie'],
-        5: ['sábado', 'sabado', 'sáb', 'sab'],
-        6: ['domingo', 'dom'],
-    }.get(dia_semana, [])
-
-    filtro_dia = Q()
-    for v in dia_variantes:
-        filtro_dia |= Q(dias_horarios__icontains=v)
 
     comisiones_hoy_qs = Comision.objects.select_related('fk_id_curso', 'fk_id_polo').exclude(
         estado='Finalizada'
@@ -511,11 +498,6 @@ def dashboard_admin(request):
         Q(fecha_inicio__isnull=True) | Q(fecha_inicio__lte=fecha_agenda),
         Q(fecha_fin__isnull=True) | Q(fecha_fin__gte=fecha_agenda),
     )
-
-    if filtro_dia:
-        comisiones_hoy_qs = comisiones_hoy_qs.filter(filtro_dia)
-    else:
-        comisiones_hoy_qs = Comision.objects.none()
 
     comisiones_hoy_qs = comisiones_hoy_qs.order_by('fk_id_curso__nombre', 'id_comision')
 
@@ -528,7 +510,12 @@ def dashboard_admin(request):
         else:
             comisiones_hoy_qs = Comision.objects.none()
 
-    comisiones_hoy = list(comisiones_hoy_qs[:50])
+    comisiones_hoy = []
+    for comision in comisiones_hoy_qs:
+        dias = comision.get_dias_semana_indices()
+        if dias and dia_semana in dias:
+            comisiones_hoy.append(comision)
+    comisiones_hoy = comisiones_hoy[:50]
 
     comisiones_hoy_cards = []
     comision_ids_hoy = [int(c.id_comision) for c in comisiones_hoy]
