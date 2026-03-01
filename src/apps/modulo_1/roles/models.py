@@ -75,7 +75,7 @@ class Tutor(models.Model):
 
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     tipo_tutor = models.CharField(max_length=2, choices=tipo)
-    telefono_contacto = models.CharField(max_length=30)
+    telefono_contacto = models.CharField(max_length=50)
     disponibilidad_horaria = models.CharField(max_length=100)
 
 
