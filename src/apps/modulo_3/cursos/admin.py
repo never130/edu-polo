@@ -10,8 +10,12 @@ class ComisionAdmin(admin.ModelAdmin):
     list_display = ('id_comision', 'fk_id_curso', 'lugar', 'fecha_inicio', 'publicada', 'get_cupos_info', 'estado')
     list_filter = ('publicada', 'estado', 'lugar', 'fk_id_curso')
     search_fields = ('fk_id_curso__nombre',)
+    ordering = ('fk_id_curso__nombre', 'id_comision')
     inlines = [ComisionDocenteInline]
     readonly_fields = ('get_inscritos', 'get_cupos_disponibles', 'get_porcentaje_ocupacion')
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('fk_id_curso')
     
     @admin.display(description='Cupos (Disponibles/Total)')
     def get_cupos_info(self, obj):

@@ -13,6 +13,9 @@ class InscripcionAdmin(admin.ModelAdmin):
     list_display = ('estudiante', 'comision', 'fecha_hora_inscripcion', 'estado', 'orden_lista_espera')
     list_filter = ('estado', 'comision__fk_id_curso')
     search_fields = ('estudiante__usuario__persona__nombre', 'estudiante__usuario__persona__apellido', 'comision__fk_id_curso__nombre')
+    # autocomplete_fields = ['estudiante', 'comision']
+    raw_id_fields = ('estudiante', 'comision')
+    list_select_related = ('estudiante', 'comision')
     date_hierarchy = 'fecha_hora_inscripcion'
     readonly_fields = ('fecha_hora_inscripcion',)
     inlines = [RegistroAsistenciaInline]
