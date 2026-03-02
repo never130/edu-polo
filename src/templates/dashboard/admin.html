@@ -251,7 +251,13 @@
                     <div style="margin-top:0.35rem; color:#64748b; font-weight:700;">Ciudad: {{ ciudad_mesa_entrada }}</div>
                 {% endif %}
             </div>
-            <a href="{% url 'administracion:buscador_estudiantes' %}" style="text-decoration:none; font-weight:800; color:#10b981;">Ir al buscador →</a>
+            <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center;">
+                <form method="get" style="display:flex; gap:0.5rem; align-items:center;">
+                    <input type="text" name="curso" value="{{ curso_query }}" placeholder="Buscar curso" style="border:1px solid #e2e8f0; border-radius:10px; padding:0.55rem 0.75rem; font-weight:700; color:#0f172a; min-width:200px;">
+                    <button type="submit" style="background:#0f172a; color:#fff; border:none; padding:0.55rem 0.9rem; border-radius:10px; font-weight:800; cursor:pointer;">Buscar</button>
+                </form>
+                <a href="{% url 'administracion:buscador_estudiantes' %}" style="text-decoration:none; font-weight:800; color:#10b981;">Ir al buscador →</a>
+            </div>
         </div>
 
         {% if estudiantes_por_curso %}
@@ -290,6 +296,29 @@
                     </tbody>
                 </table>
             </div>
+            {% if estudiantes_por_curso_page and estudiantes_por_curso_page.paginator.num_pages > 1 %}
+                <div style="margin-top:1rem; display:flex; flex-wrap:wrap; gap:0.5rem; justify-content:flex-end;">
+                    {% if estudiantes_por_curso_page.has_previous %}
+                        <a href="?{% if curso_query %}curso={{ curso_query|urlencode }}&{% endif %}page={{ estudiantes_por_curso_page.previous_page_number }}" style="background:#e2e8f0; color:#0f172a; padding:0.45rem 0.9rem; border-radius:10px; text-decoration:none; font-weight:800;">Anterior</a>
+                    {% else %}
+                        <span style="background:#e2e8f0; color:#94a3b8; padding:0.45rem 0.9rem; border-radius:10px; font-weight:800;">Anterior</span>
+                    {% endif %}
+
+                    {% for p in estudiantes_por_curso_page.paginator.page_range %}
+                        {% if p == estudiantes_por_curso_page.number %}
+                            <span style="background:#0f172a; color:#fff; padding:0.45rem 0.9rem; border-radius:10px; font-weight:800;">{{ p }}</span>
+                        {% else %}
+                            <a href="?{% if curso_query %}curso={{ curso_query|urlencode }}&{% endif %}page={{ p }}" style="background:#e2e8f0; color:#0f172a; padding:0.45rem 0.9rem; border-radius:10px; text-decoration:none; font-weight:800;">{{ p }}</a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if estudiantes_por_curso_page.has_next %}
+                        <a href="?{% if curso_query %}curso={{ curso_query|urlencode }}&{% endif %}page={{ estudiantes_por_curso_page.next_page_number }}" style="background:#e2e8f0; color:#0f172a; padding:0.45rem 0.9rem; border-radius:10px; text-decoration:none; font-weight:800;">Siguiente</a>
+                    {% else %}
+                        <span style="background:#e2e8f0; color:#94a3b8; padding:0.45rem 0.9rem; border-radius:10px; font-weight:800;">Siguiente</span>
+                    {% endif %}
+                </div>
+            {% endif %}
         {% else %}
             <div style="margin-top: 1.25rem; color:#64748b; font-weight:700;">No hay inscripciones confirmadas para mostrar.</div>
         {% endif %}

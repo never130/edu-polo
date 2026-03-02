@@ -392,6 +392,7 @@ def dashboard_admin(request):
     
     from apps.modulo_3.cursos.models import Curso, Comision
     from apps.modulo_4.asistencia.models import Asistencia
+    from django.core.paginator import Paginator
     from django.db.models import Count, F, Q
 
     hoy = timezone.now().date()
@@ -720,6 +721,12 @@ def dashboard_admin(request):
         else:
             inscripciones_confirmadas_qs = Inscripcion.objects.none()
 
+    curso_query = (request.GET.get('curso') or '').strip()
+    if curso_query:
+        inscripciones_confirmadas_qs = inscripciones_confirmadas_qs.filter(
+            comision__fk_id_curso__nombre__icontains=curso_query
+        )
+
     estudiantes_por_curso = list(
         inscripciones_confirmadas_qs.values(
             'comision__fk_id_curso_id',
@@ -798,6 +805,10 @@ def dashboard_admin(request):
         cid = c.get('comision__fk_id_curso_id')
         c['comisiones'] = comisiones_por_curso.get(cid, [])
 
+    paginator = Paginator(estudiantes_por_curso, 10)
+    estudiantes_por_curso_page = paginator.get_page(request.GET.get('page'))
+    estudiantes_por_curso = estudiantes_por_curso_page.object_list
+
     context = {
         'total_cursos': total_cursos,
         'total_estudiantes': total_estudiantes,
@@ -830,6 +841,8 @@ def dashboard_admin(request):
         'nuevas_preinscripciones': nuevas_preinscripciones,
         'ciudad_mesa_entrada': ciudad_mesa_entrada,
         'estudiantes_por_curso': estudiantes_por_curso,
+        'estudiantes_por_curso_page': estudiantes_por_curso_page,
+        'curso_query': curso_query,
     }
     return render(request, 'dashboard/admin.html', context)
 
