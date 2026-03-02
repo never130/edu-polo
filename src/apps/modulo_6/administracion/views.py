@@ -910,7 +910,7 @@ def estadisticas_detalladas(request):
     total_registros_asistencia = 0
     cobertura_asistencia = 0
 
-    inscripciones_confirmadas_qs = Inscripcion.objects.filter(estado='confirmado')
+    inscripciones_confirmadas_qs = Inscripcion.objects.filter(estado='confirmado').order_by()
 
     rangos_global = {
         'rango_0_49': 0,
@@ -944,7 +944,7 @@ def estadisticas_detalladas(request):
         ).count()
         cobertura_asistencia = (total_registros_asistencia / total_inscripciones * 100) if total_inscripciones > 0 else 0
 
-        registros_confirmados_qs = RegistroAsistencia.objects.filter(inscripcion__estado='confirmado')
+        registros_confirmados_qs = RegistroAsistencia.objects.filter(inscripcion__estado='confirmado').order_by()
 
         rangos_global = registros_confirmados_qs.aggregate(
             rango_0_49=Count('id', filter=Q(porcentaje_asistencia__lt=50)),
