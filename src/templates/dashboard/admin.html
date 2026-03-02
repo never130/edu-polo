@@ -798,17 +798,28 @@
 
                     const rows = sorted.map(e => {
                         const comisionLabel = e.comision_id == null ? '' : `#${e.comision_id}`;
+                        // Lógica robusta mejorada: Normalización agresiva para evitar falsos positivos
                         const condiciones = (e.condiciones_medicas || '').trim();
-                        // Normalizar: minúsculas, quitar puntos finales, quitar acentos
-                        const condicionesNorm = condiciones.toLowerCase().replace(/\.$/, '').normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                        // Normalizar: minúsculas, quitar acentos, reemplazar puntuación por espacios, quitar espacios extra
+                        const condicionesNorm = condiciones.toLowerCase()
+                            .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Quitar acentos
+                            .replace(/[.,;:\-_]/g, " ")                       // Reemplazar puntuación por espacios
+                            .replace(/\s+/g, " ").trim();                     // Unificar espacios
                         
                         const valoresNegativos = [
-                            'no', 'ninguna', 'ninguno', 'sin', '-', 'n/a', 'na', 
+                            'no', 'ninguna', 'ninguno', 'sin', 'n/a', 'na', 
                             'no posee', 'no tiene', 'none', 'no aplica', 
-                            'sin particularidades', 'sin antecedentes', 'sano', 'sana'
+                            'sin particularidades', 'sin antecedentes', 'sano', 'sana',
+                            'niega', 'negativo', 's/p', 'sd', 's/d', 'no refiere',
+                            'no presenta', 'ningun antecedente'
                         ];
 
-                        // Si tiene texto y NO está en la lista de negativos, es una alerta
+                        // Log para depuración en consola del navegador
+                        if (condiciones.length > 0) {
+                            console.log(`[Salud Check] Original: "${condiciones}" | Norm: "${condicionesNorm}" | Es Alerta: ${!valoresNegativos.includes(condicionesNorm)}`);
+                        }
+
+                        // Es alerta solo si tiene texto Y ese texto NO está en la lista de "negativos/sanos"
                         const esAlertaSalud = condiciones.length > 0 && !valoresNegativos.includes(condicionesNorm);
 
                         const salud = esAlertaSalud ? 
