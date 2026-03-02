@@ -799,13 +799,21 @@
                     const rows = sorted.map(e => {
                         const comisionLabel = e.comision_id == null ? '' : `#${e.comision_id}`;
                         const condiciones = (e.condiciones_medicas || '').trim();
-                        const valoresNegativos = ['no', 'ninguna', 'ninguno', 'sin', '-', 'n/a', 'na', 'no posee', 'no tiene', 'none'];
+                        // Normalizar: minúsculas, quitar puntos finales, quitar acentos
+                        const condicionesNorm = condiciones.toLowerCase().replace(/\.$/, '').normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                        
+                        const valoresNegativos = [
+                            'no', 'ninguna', 'ninguno', 'sin', '-', 'n/a', 'na', 
+                            'no posee', 'no tiene', 'none', 'no aplica', 
+                            'sin particularidades', 'sin antecedentes', 'sano', 'sana'
+                        ];
+
                         // Si tiene texto y NO está en la lista de negativos, es una alerta
-                        const esAlertaSalud = condiciones.length > 0 && !valoresNegativos.includes(condiciones.toLowerCase());
+                        const esAlertaSalud = condiciones.length > 0 && !valoresNegativos.includes(condicionesNorm);
 
                         const salud = esAlertaSalud ? 
                             `<i class="fa-solid fa-circle-exclamation" title="Observaciones: ${escapeHtml(condiciones)}" style="color:#ef4444; font-size:1.1rem; cursor:help;"></i>` : 
-                            '<i class="fa-solid fa-circle-check" title="Salud: Sin observaciones relevantes" style="color:#10b981; font-size:1.1rem;"></i>';
+                            `<i class="fa-solid fa-circle-check" title="Salud: ${condiciones ? escapeHtml(condiciones) : 'Sin observaciones'}" style="color:#10b981; font-size:1.1rem;"></i>`;
                         
                         const imgAuth = e.autorizacion_imagen ? 
                             '<i class="fa-solid fa-camera" title="Imagen: AUTORIZADO" style="color:#10b981; margin-right:8px; font-size:1.1rem;"></i>' : 
