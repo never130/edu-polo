@@ -550,7 +550,7 @@ def panel_inscripciones(request):
     else:
         inscripciones = inscripciones.order_by('-fecha_hora_inscripcion')
 
-    resumen_estados_qs = inscripciones_base.values('estado').annotate(total=Count('id'))
+    resumen_estados_qs = inscripciones_base.order_by().values('estado').annotate(total=Count('id'))
     resumen_estados = {row['estado']: row['total'] for row in resumen_estados_qs}
     
     # Obtener comisiones con cupo disponible para el formulario de inscripción
