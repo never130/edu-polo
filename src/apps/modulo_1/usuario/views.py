@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.db import transaction
 from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
+from django.utils.http import url_has_allowed_host_and_scheme
 from .models import Persona, Usuario
 from apps.modulo_1.roles.models import Estudiante, Docente, Rol, UsuarioRol
 from datetime import date
@@ -60,12 +61,28 @@ class UsuarioDeleteView(DeleteView):
 @method_decorator(csrf_protect, name='dispatch')
 class RegistroView(View):
     """Vista para registro de nuevos usuarios"""
+
+    def _get_next_url(self, request):
+        candidate = (request.POST.get('next') or request.META.get('HTTP_REFERER') or '').strip()
+        if candidate and url_has_allowed_host_and_scheme(
+            candidate,
+            allowed_hosts={request.get_host()},
+            require_https=request.is_secure(),
+        ):
+            return candidate
+        return None
+
+    def _invalid_response(self, request, next_url):
+        if next_url:
+            return redirect(next_url)
+        return render(request, 'usuario/registro.html')
     
     def get(self, request):
         context = {}
         return render(request, 'usuario/registro.html', context)
     
     def post(self, request):
+        next_url = self._get_next_url(request)
         try:
             with transaction.atomic():
                 # Obtener datos del formulario
@@ -96,7 +113,7 @@ class RegistroView(View):
                 tipo_usuario = (request.POST.get('tipo_usuario') or 'estudiante').strip().lower()
                 if tipo_usuario not in {'estudiante', 'empresa'}:
                     messages.error(request, 'El tipo de usuario seleccionado no es válido.')
-                    return render(request, 'usuario/registro.html')
+                    return self._invalid_response(request, next_url)
 
                 # Combinar observaciones en condiciones_medicas
                 condiciones_medicas_list = []
@@ -112,19 +129,19 @@ class RegistroView(View):
                 # Validaciones
                 if not politica_datos:
                     messages.error(request, 'Debes aceptar la política de uso de datos personales.')
-                    return render(request, 'usuario/registro.html')
+                    return self._invalid_response(request, next_url)
 
                 if not datos_veridicos:
                     messages.error(request, 'Debes confirmar que los datos ingresados son verídicos.')
-                    return render(request, 'usuario/registro.html')
+                    return self._invalid_response(request, next_url)
 
                 if not dni:
                     messages.error(request, 'Ingresá un DNI válido.')
-                    return render(request, 'usuario/registro.html')
+                    return self._invalid_response(request, next_url)
 
                 if password != password_confirm:
                     messages.error(request, 'Las contraseñas no coinciden.')
-                    return render(request, 'usuario/registro.html')
+                    return self._invalid_response(request, next_url)
                 
                 dni_candidates = {dni}
                 if dni_raw and dni_raw != dni:
@@ -132,15 +149,21 @@ class RegistroView(View):
 
                 if Persona.objects.filter(dni__in=dni_candidates).exists():
                     messages.error(request, 'Ya existe una persona con ese DNI.')
-                    return render(request, 'usuario/registro.html')
+                    return self._invalid_response(request, next_url)
                 
                 if not telefono:
                     messages.error(request, 'El teléfono es obligatorio.')
-                    return render(request, 'usuario/registro.html')
+                    return self._invalid_response(request, next_url)
                 
-                if User.objects.filter(username__in=dni_candidates).exists():
-                    messages.error(request, 'Ya existe un usuario con ese DNI.')
-                    return render(request, 'usuario/registro.html')
+                auth_user_qs = User.objects.filter(username__in=dni_candidates)
+                if auth_user_qs.exists():
+                    if auth_user_qs.filter(is_staff=True).exists() or auth_user_qs.filter(is_superuser=True).exists():
+                        messages.error(request, 'Ya existe un usuario con ese DNI.')
+                        return self._invalid_response(request, next_url)
+                    if Usuario.objects.filter(persona__dni__in=dni_candidates).exists():
+                        messages.error(request, 'Ya existe un usuario con ese DNI.')
+                        return self._invalid_response(request, next_url)
+                    auth_user_qs.delete()
 
                 fecha_nacimiento_date = None
                 if fecha_nacimiento:
@@ -148,17 +171,17 @@ class RegistroView(View):
                         fecha_nacimiento_date = date.fromisoformat(fecha_nacimiento)
                     except ValueError:
                         messages.error(request, 'La fecha de nacimiento no es válida.')
-                        return render(request, 'usuario/registro.html')
+                        return self._invalid_response(request, next_url)
 
                     if fecha_nacimiento_date > date.today():
                         messages.error(request, 'La fecha de nacimiento no puede ser futura.')
-                        return render(request, 'usuario/registro.html')
+                        return self._invalid_response(request, next_url)
 
                 empresa_form = None
                 if tipo_usuario == 'empresa':
                     if not fecha_nacimiento_date:
                         messages.error(request, 'Para registrarte como empresa, la fecha de nacimiento es obligatoria.')
-                        return render(request, 'usuario/registro.html')
+                        return self._invalid_response(request, next_url)
 
                     hoy = date.today()
                     edad = hoy.year - fecha_nacimiento_date.year - (
@@ -166,7 +189,7 @@ class RegistroView(View):
                     )
                     if edad < 18:
                         messages.error(request, 'El Punto Empresarial está disponible solo para mayores de 18 años.')
-                        return render(request, 'usuario/registro.html')
+                        return self._invalid_response(request, next_url)
 
                     from apps.modulo_7.empresas.forms import EmpresaForm
 
@@ -187,7 +210,7 @@ class RegistroView(View):
                         for _, errs in empresa_form.errors.items():
                             for err in errs:
                                 messages.error(request, str(err))
-                        return render(request, 'usuario/registro.html')
+                        return self._invalid_response(request, next_url)
                 
                 # Crear Persona
                 persona = Persona.objects.create(
@@ -250,8 +273,10 @@ class RegistroView(View):
                 
                 # Redirigir a login
                 messages.success(request, f'¡Registro exitoso! Usuario: {dni}. Ahora puedes iniciar sesión.')
+                if next_url:
+                    return redirect(next_url)
                 return redirect('login')
                 
         except Exception as e:
             messages.error(request, f'Error al registrar: {str(e)}')
-            return render(request, 'usuario/registro.html')
+            return self._invalid_response(request, next_url)

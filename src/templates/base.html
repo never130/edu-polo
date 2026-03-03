@@ -597,6 +597,7 @@
 
         <form method="post" action="{% url 'usuario:registro' %}" class="registro-form" enctype="multipart/form-data">
             {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
             <div class="form-grid">
                 <!-- Basic Fields -->
                 <div class="form-group"><label>DNI</label><input type="text" name="dni" required placeholder="Número de documento" class="form-input"></div>

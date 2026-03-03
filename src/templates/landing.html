@@ -1185,6 +1185,7 @@
 
             <form method="post" action="{% url 'usuario:registro' %}" class="registro-form">
                 {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
                 <div class="form-grid">
                     <!-- Basic Fields -->
                     <div class="form-group"><label>DNI</label><input type="text" name="dni" required
@@ -1351,6 +1352,7 @@
 
             <form method="post" action="{% url 'usuario:registro' %}" class="registro-form" enctype="multipart/form-data">
                 {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
                 <input type="hidden" name="tipo_usuario" value="empresa">
 
                 <div class="form-grid">

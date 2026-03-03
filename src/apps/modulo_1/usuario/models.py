@@ -1,4 +1,7 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from datetime import date
 import unicodedata
 
@@ -138,3 +141,8 @@ class Usuario(models.Model):
 
     def __str__(self):
         return f"{self.persona.nombre} {self.persona.apellido}"
+
+
+@receiver(post_delete, sender=Persona)
+def eliminar_usuario_auth_al_borrar_persona(sender, instance, **kwargs):
+    User.objects.filter(username=instance.dni).delete()

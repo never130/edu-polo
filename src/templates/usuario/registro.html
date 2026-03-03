@@ -282,6 +282,7 @@
             
             <form method="post" action="{% url 'usuario:registro' %}" id="registroForm" enctype="multipart/form-data">
                 {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
                 
                 <div class="form-group">
                     <label for="tipo_usuario">Registrarme como *</label>
