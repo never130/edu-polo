@@ -880,14 +880,32 @@ def estadisticas_detalladas(request):
     total_estudiantes = Estudiante.objects.count()
     total_inscripciones = Inscripcion.objects.filter(estado='confirmado').count()
     
-    # Cursos con cantidad de alumnos
+    # Filtros de fecha
+    fecha_desde = request.GET.get('fecha_desde')
+    fecha_hasta = request.GET.get('fecha_hasta')
+
+    # Definir inscripciones_qs base para usar en otras consultas
+    inscripciones_qs = Inscripcion.objects.filter(estado='confirmado')
+    if fecha_desde:
+        inscripciones_qs = inscripciones_qs.filter(comision__fecha_inicio__gte=fecha_desde)
+    if fecha_hasta:
+        inscripciones_qs = inscripciones_qs.filter(comision__fecha_inicio__lte=fecha_hasta)
+
+    # Cursos con cantidad de alumnos (respetando filtros)
+    # Construimos el filtro para el Count dinámicamente
+    filtro_count = Q(comision__inscripciones__estado='confirmado')
+    if fecha_desde:
+        filtro_count &= Q(comision__fecha_inicio__gte=fecha_desde)
+    if fecha_hasta:
+        filtro_count &= Q(comision__fecha_inicio__lte=fecha_hasta)
+
     cursos_con_alumnos = Curso.objects.annotate(
         total_alumnos=Count(
             'comision__inscripciones__estudiante',
-            filter=Q(comision__inscripciones__estado='confirmado'),
+            filter=filtro_count,
             distinct=True,
         )
-    ).order_by('-total_alumnos')
+    ).filter(total_alumnos__gt=0).order_by('-total_alumnos')
     
     # Datos para gráficos
     datos_grafico = []
@@ -1154,8 +1172,18 @@ def estadisticas_detalladas(request):
         'comisiones': comisiones_opciones,
     }
 
+    fecha_desde = request.GET.get('fecha_desde')
+    fecha_hasta = request.GET.get('fecha_hasta')
+
+    # Estado Inscripciones
+    insc_estado_filter = Q()
+    if fecha_desde:
+        insc_estado_filter &= Q(comision__fecha_inicio__gte=fecha_desde)
+    if fecha_hasta:
+        insc_estado_filter &= Q(comision__fecha_inicio__lte=fecha_hasta)
+    
     inscripciones_estado_raw = list(
-        Inscripcion.objects.values('estado').annotate(total=Count('id')).order_by('estado')
+        Inscripcion.objects.filter(insc_estado_filter).values('estado').annotate(total=Count('id')).order_by('estado')
     )
 
     # ESTIMACIÓN DE ELIMINADOS FÍSICOS (Solicitado por usuario)
@@ -1189,8 +1217,15 @@ def estadisticas_detalladas(request):
         for row in inscripciones_estado_raw
     ]
 
+    # Generos (filtrado manual para evitar subquery compleja)
+    estudiantes_filter = Q(inscripciones__estado='confirmado')
+    if fecha_desde:
+        estudiantes_filter &= Q(inscripciones__comision__fecha_inicio__gte=fecha_desde)
+    if fecha_hasta:
+        estudiantes_filter &= Q(inscripciones__comision__fecha_inicio__lte=fecha_hasta)
+
     generos_raw = list(
-        Estudiante.objects.values('usuario__persona__genero').annotate(
+        Estudiante.objects.filter(estudiantes_filter).values('usuario__persona__genero').annotate(
             total=Count('id'),
         )
     )
