@@ -910,7 +910,8 @@ def estadisticas_detalladas(request):
     total_registros_asistencia = 0
     cobertura_asistencia = 0
 
-    inscripciones_confirmadas_qs = Inscripcion.objects.filter(estado='confirmado').order_by()
+    # Usamos inscripciones_qs que ya tiene el filtro aplicado
+    inscripciones_confirmadas_qs = inscripciones_qs.order_by()
 
     rangos_global = {
         'rango_0_49': 0,
