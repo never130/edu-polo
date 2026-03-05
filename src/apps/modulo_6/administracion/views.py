@@ -875,23 +875,54 @@ def estadisticas_detalladas(request):
     from django.db.models import Avg, Count, DecimalField, Q, Value
     from django.db.models.functions import Coalesce
     
-    # Estadísticas generales
-    total_cursos = Curso.objects.count()
-    total_estudiantes = Estudiante.objects.count()
-    total_inscripciones = Inscripcion.objects.filter(estado='confirmado').count()
-    
-    # Filtros de fecha
+    # Filtros de fecha (por inicio de comisión)
     fecha_desde = request.GET.get('fecha_desde')
     fecha_hasta = request.GET.get('fecha_hasta')
 
-    # Definir inscripciones_qs base para usar en otras consultas
+    # --- 1. Filtrado de Inscripciones Activas (Base para todo lo demás) ---
     inscripciones_qs = Inscripcion.objects.filter(estado='confirmado')
-    if fecha_desde:
-        inscripciones_qs = inscripciones_qs.filter(comision__fecha_inicio__gte=fecha_desde)
-    if fecha_hasta:
-        inscripciones_qs = inscripciones_qs.filter(comision__fecha_inicio__lte=fecha_hasta)
 
-    # Cursos con cantidad de alumnos (respetando filtros)
+    # Filtros para Comisiones
+    filtro_comision = Q()
+    if fecha_desde:
+        filtro_comision &= Q(comision__fecha_inicio__gte=fecha_desde)
+    if fecha_hasta:
+        filtro_comision &= Q(comision__fecha_inicio__lte=fecha_hasta)
+
+    # Aplicamos filtro de fechas a las inscripciones
+    if fecha_desde or fecha_hasta:
+        inscripciones_qs = inscripciones_qs.filter(filtro_comision)
+
+    # --- 2. Estadísticas Generales (Calculadas con filtro) ---
+    total_inscripciones = inscripciones_qs.count()
+    
+    # Total Cursos: Cursos que tienen comisiones en el rango (o todos si no hay filtro)
+    cursos_qs = Curso.objects.all()
+    if fecha_desde or fecha_hasta:
+        cursos_filter = Q()
+        if fecha_desde:
+            cursos_filter &= Q(comision__fecha_inicio__gte=fecha_desde)
+        if fecha_hasta:
+            cursos_filter &= Q(comision__fecha_inicio__lte=fecha_hasta)
+        cursos_qs = cursos_qs.filter(cursos_filter).distinct()
+        total_cursos = cursos_qs.count()
+    else:
+        total_cursos = cursos_qs.count()
+
+    # Total Estudiantes: Estudiantes con inscripciones confirmadas en el rango (o todos si no hay filtro)
+    estudiantes_qs = Estudiante.objects.all()
+    if fecha_desde or fecha_hasta:
+        est_filter = Q(inscripciones__estado='confirmado')
+        if fecha_desde:
+            est_filter &= Q(inscripciones__comision__fecha_inicio__gte=fecha_desde)
+        if fecha_hasta:
+            est_filter &= Q(inscripciones__comision__fecha_inicio__lte=fecha_hasta)
+        estudiantes_qs = estudiantes_qs.filter(est_filter).distinct()
+        total_estudiantes = estudiantes_qs.count()
+    else:
+        total_estudiantes = estudiantes_qs.count()
+
+    # --- 3. Cursos con cantidad de alumnos (respetando filtros) ---
     # Construimos el filtro para el Count dinámicamente
     filtro_count = Q(comision__inscripciones__estado='confirmado')
     if fecha_desde:
