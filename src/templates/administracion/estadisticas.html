@@ -66,12 +66,10 @@
                     <i class="fa-solid fa-times"></i> Limpiar
                 </a>
                 {% endif %}
+                <button type="submit" formaction="{% url 'administracion:exportar_estadisticas_estudiantes_curso' %}" formtarget="_blank" class="action-btn" style="height: 34px; display: flex; align-items: center; gap: 0.5rem; background: #10b981; color: #fff; border: none;">
+                    <i class="fa-solid fa-file-excel"></i> Exportar
+                </button>
             </form>
-
-            <a href="{% url 'administracion:exportar_estadisticas_estudiantes_curso' %}" class="action-btn" target="_blank">
-                <i class="fa-solid fa-file-excel"></i>
-                Exportar
-            </a>
         </div>
     </div>
 </div>

@@ -901,9 +901,9 @@ def estadisticas_detalladas(request):
     if fecha_desde or fecha_hasta:
         cursos_filter = Q()
         if fecha_desde:
-            cursos_filter &= Q(comision__fecha_inicio__gte=fecha_desde)
+            cursos_filter &= Q(comision_set__fecha_inicio__gte=fecha_desde)
         if fecha_hasta:
-            cursos_filter &= Q(comision__fecha_inicio__lte=fecha_hasta)
+            cursos_filter &= Q(comision_set__fecha_inicio__lte=fecha_hasta)
         cursos_qs = cursos_qs.filter(cursos_filter).distinct()
         total_cursos = cursos_qs.count()
     else:
@@ -924,15 +924,16 @@ def estadisticas_detalladas(request):
 
     # --- 3. Cursos con cantidad de alumnos (respetando filtros) ---
     # Construimos el filtro para el Count dinámicamente
-    filtro_count = Q(comision__inscripciones__estado='confirmado')
+    # Nota: Al usar comision_set, el filtro dentro de Count debe usar la ruta relativa desde Curso
+    filtro_count = Q(comision_set__inscripciones__estado='confirmado')
     if fecha_desde:
-        filtro_count &= Q(comision__fecha_inicio__gte=fecha_desde)
+        filtro_count &= Q(comision_set__fecha_inicio__gte=fecha_desde)
     if fecha_hasta:
-        filtro_count &= Q(comision__fecha_inicio__lte=fecha_hasta)
+        filtro_count &= Q(comision_set__fecha_inicio__lte=fecha_hasta)
 
     cursos_con_alumnos = Curso.objects.annotate(
         total_alumnos=Count(
-            'comision__inscripciones__estudiante',
+            'comision_set__inscripciones__estudiante',
             filter=filtro_count,
             distinct=True,
         )
@@ -1488,6 +1489,8 @@ def estadisticas_detalladas(request):
     import json
     
     context = {
+        'fecha_desde': fecha_desde,
+        'fecha_hasta': fecha_hasta,
         'total_cursos': total_cursos,
         'total_estudiantes': total_estudiantes,
         'total_inscripciones': total_inscripciones,

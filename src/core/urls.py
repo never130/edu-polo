@@ -30,6 +30,7 @@ urlpatterns = [
     path('@vite/client', core_views.vite_client_stub),
     path('@vite/client/', core_views.vite_client_stub),
     path('', core_views.landing, name='landing'),
+    path('repositorio-ia/', core_views.repositorio_ia, name='repositorio_ia'),
     path('polos/', core_views.lista_polos, name='lista_polos'),
     path('dashboard/', core_views.dashboard, name='dashboard'),
     path('dashboard/estudiante/', core_views.dashboard_estudiante, name='dashboard_estudiante'),

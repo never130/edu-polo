@@ -1,0 +1,1669 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Herramientas de IA - Agencia de Innovación</title>
+    
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" href="LOGO SIN TEXTO 32x32.png">
+    <link rel="shortcut icon" type="image/png" href="LOGO SIN TEXTO 32x32.png">
+    <link rel="apple-touch-icon" href="LOGO SIN TEXTO 32x32.png">
+
+    <!-- LIBRERÍAS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* --- TEMA CLARO (Por defecto - Base Project) --- */
+            --bg-main: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-input: #ffffff;
+            --border-color: #cbd5e1;
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --text-highlight: #FF512F;
+            --glass-bg: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(255, 81, 47, 0.2);
+            --nav-bg: linear-gradient(90deg, rgba(255, 81, 47, 0.95) 0%, rgba(240, 152, 25, 0.95) 100%);
+            --card-hover-shadow: rgba(255, 81, 47, 0.25);
+            --accent-color: #FF512F;
+            --accent-hover: #F09819;
+            --filter-btn-bg: #fff7ed;
+            --filter-btn-text: #7c2d12;
+            
+            /* Badge Colors */
+            --badge-free-bg: #dcfce7;
+            --badge-free-text: #15803d;
+            --badge-freemium-bg: #dbeafe;
+            --badge-freemium-text: #1e40af;
+            --badge-paid-bg: #f3e8ff;
+            --badge-paid-text: #7e22ce;
+        }
+
+        /* --- TEMA OSCURO --- */
+        body.dark-mode {
+            --bg-main: #0f0f11;
+            --bg-secondary: #18181b;
+            --bg-input: rgba(255, 255, 255, 0.03); 
+            --border-color: rgba(234, 88, 12, 0.2);
+            --text-main: #fff7ed;
+            --text-muted: #9ca3af;
+            --text-highlight: #fb923c;
+            --glass-bg: rgba(24, 24, 27, 0.7);
+            --glass-border: rgba(234, 88, 12, 0.15);
+            --nav-bg: rgba(15, 15, 17, 0.95);
+            --card-hover-shadow: rgba(234, 88, 12, 0.25);
+            --accent-color: #ea580c;
+            --accent-hover: #f97316;
+            --filter-btn-bg: #27272a;
+            --filter-btn-text: #9ca3af;
+            
+            --badge-free-bg: rgba(34, 197, 94, 0.15);
+            --badge-free-text: #4ade80;
+            --badge-freemium-bg: rgba(59, 130, 246, 0.15);
+            --badge-freemium-text: #60a5fa;
+            --badge-paid-bg: rgba(168, 85, 247, 0.15);
+            --badge-paid-text: #c084fc;
+        }
+
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            background-image: 
+                radial-gradient(circle at 10% 20%, var(--bg-gradient-1), transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(234, 88, 12, 0.1), transparent 40%);
+            background-attachment: fixed;
+        }
+
+        h1, h2, h3, .font-heading { font-family: 'Be Vietnam Pro', sans-serif; }
+        
+        .theme-bg-secondary { background-color: var(--bg-secondary); }
+        .theme-bg-input { background-color: var(--bg-input); }
+        .theme-border { border-color: var(--border-color); }
+        .theme-text-main { color: var(--text-main); }
+        .theme-text-muted { color: var(--text-muted); }
+        .theme-text-highlight { color: var(--text-highlight); }
+
+        .ai-output {
+            width: 100%;
+            max-width: 100%;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            white-space: normal;
+            line-height: 1.6;
+        }
+        .ai-output h1, .ai-output h2, .ai-output h3, .ai-output h4, .ai-output h5, .ai-output h6 {
+            font-weight: 700;
+            margin: 0.6rem 0 0.4rem;
+            color: var(--text-main);
+        }
+        .ai-output p { margin: 0.4rem 0; }
+        .ai-output ul, .ai-output ol { padding-left: 1.25rem; margin: 0.4rem 0; }
+        .ai-output li { margin: 0.2rem 0; }
+        .ai-output a {
+            color: var(--text-highlight);
+            text-decoration: underline;
+            word-break: break-word;
+        }
+        .ai-output code {
+            background: rgba(148, 163, 184, 0.15);
+            padding: 0.1rem 0.35rem;
+            border-radius: 6px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 0.95em;
+        }
+        .ai-output pre {
+            background: rgba(148, 163, 184, 0.15);
+            padding: 0.75rem 0.9rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .ai-output blockquote {
+            border-left: 3px solid var(--border-color);
+            padding-left: 0.75rem;
+            color: var(--text-muted);
+            margin: 0.5rem 0;
+        }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-main); }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-color); }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0,0,0, 0.1);
+        }
+
+        /* Profile Card */
+        .profile-card {
+            background: linear-gradient(145deg, var(--bg-secondary), var(--bg-main));
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        .profile-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            border-color: var(--accent-color);
+            box-shadow: 0 15px 25px -5px var(--card-hover-shadow);
+        }
+        .profile-card:hover .profile-icon { transform: scale(1.1) rotate(5deg); }
+
+        /* Tool Cards */
+        .tool-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 1;
+            cursor: pointer;
+        }
+        .tool-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-color);
+            box-shadow: 0 10px 30px -10px var(--card-hover-shadow);
+            z-index: 10;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+            box-shadow: 0 4px 15px rgba(234, 88, 12, 0.4);
+            color: white; border: none;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            transform: translateY(-1px);
+        }
+        
+        /* Filters */
+        .price-filter-btn {
+            background-color: var(--bg-input);
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .price-filter-btn:hover, .price-filter-btn.active {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+        
+        .filter-btn-default {
+            background-color: var(--filter-btn-bg);
+            color: var(--filter-btn-text);
+            border: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+        .filter-btn-default:hover, .filter-btn.active {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        /* Navbar Fixed */
+        .nav-fixed {
+            background: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Navbar Action Buttons (Home, Favs, Theme) */
+        .nav-icon-btn {
+            padding: 0.5rem;
+            border-radius: 9999px;
+            color: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .nav-icon-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        body.dark-mode .nav-icon-btn {
+            color: var(--text-muted);
+        }
+        body.dark-mode .nav-icon-btn:hover {
+            color: var(--accent-color);
+            background-color: var(--bg-input);
+        }
+
+        /* Navbar Actions & Home Button */
+        .nav-action-btn {
+            padding: 0.5rem;
+            border-radius: 9999px;
+            color: rgba(255, 255, 255, 0.95);
+            transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .nav-action-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .nav-brand-btn {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.25rem 0.75rem 0.25rem 0.25rem;
+            border-radius: 9999px;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+            text-decoration: none;
+        }
+        .nav-brand-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+        .nav-brand-btn .brand-logo-box {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 9999px; padding: 0.25rem; transition: transform 0.3s;
+        }
+        .nav-brand-btn:hover .brand-logo-box { transform: scale(1.1); }
+        .nav-brand-btn .brand-text-sub { color: rgba(255, 255, 255, 0.8); font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500; }
+        .nav-brand-btn .brand-text-main { color: white; font-weight: 700; font-size: 0.875rem; }
+
+        .nav-brand-divider {
+            height: 2rem; width: 1px;
+            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.4), transparent);
+            display: none;
+        }
+        @media (min-width: 768px) { .nav-brand-divider { display: block; } }
+
+        /* Dark Mode Overrides */
+        body.dark-mode .nav-action-btn { color: var(--text-main); }
+        body.dark-mode .nav-action-btn:hover { color: var(--accent-color); background-color: var(--bg-input); }
+        
+        body.dark-mode .nav-brand-btn { background-color: transparent; }
+        body.dark-mode .nav-brand-btn:hover { background-color: var(--bg-input); box-shadow: none; }
+        
+        body.dark-mode .nav-brand-btn .brand-logo-box { background-color: rgba(255, 255, 255, 0.1); }
+        body.dark-mode .nav-brand-btn .brand-text-sub { color: var(--text-muted); }
+        body.dark-mode .nav-brand-btn .brand-text-main { color: var(--text-main); }
+        
+        body.dark-mode .nav-brand-btn:hover .brand-text-sub,
+        body.dark-mode .nav-brand-btn:hover .brand-text-main { color: var(--accent-color); }
+
+        body.dark-mode .nav-brand-divider { background: linear-gradient(to bottom, transparent, var(--border-color), transparent); }
+        
+        .nav-divider { border-left: 1px solid rgba(255, 255, 255, 0.3); }
+        body.dark-mode .nav-divider { border-left-color: var(--border-color); }
+
+        /* Navbar Input & Button Specifics for Default (Light/Gradient) Mode */
+        .nav-fixed input {
+            color: #334155;
+            background-color: #ffffff !important; /* Force white input on gradient */
+        }
+        .nav-fixed input::placeholder {
+            color: #94a3b8;
+        }
+        .nav-fixed button[onclick="window.surpriseMe()"] {
+            background-color: #ffffff;
+            color: #FF512F !important;
+            border-color: white;
+        }
+        .nav-fixed button[onclick="window.surpriseMe()"]:hover {
+            color: #F09819 !important;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+        }
+
+        /* Dark Mode Overrides for Navbar Elements */
+        body.dark-mode .nav-fixed input {
+            background-color: rgba(255, 255, 255, 0.03) !important;
+            color: #fff7ed;
+        }
+        body.dark-mode .nav-fixed input::placeholder {
+            color: #9ca3af;
+        }
+        body.dark-mode .nav-fixed button[onclick="window.surpriseMe()"] {
+            background-color: transparent;
+            color: var(--accent-color) !important;
+            border-color: var(--border-color);
+        }
+
+        /* Redes Sociales Header */
+        .social-icon-btn {
+            padding: 0.5rem; border-radius: 0.5rem;
+            color: rgba(255, 255, 255, 0.9); /* Default to white for gradient navbar */
+            transition: all 0.2s ease;
+            display: flex; align-items: center; justify-content: center;
+        }
+        body.dark-mode .social-icon-btn { color: var(--text-main); }
+        
+        .social-icon-btn:hover {
+            color: white !important;
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .social-link {
+            display: inline-flex; flex-direction: row;
+            align-items: center; justify-content: center;
+            gap: 0.75rem; padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem; color: var(--text-muted);
+            transition: all 0.2s ease; font-size: 0.875rem;
+            font-weight: 500; white-space: nowrap;
+        }
+        .social-link:hover { color: var(--accent-color); background-color: var(--bg-input); }
+        
+        .action-btn {
+            z-index: 20;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+        .action-btn:hover { transform: scale(1.2); }
+        
+        .is-fav { color: #ef4444 !important; fill: #ef4444 !important; }
+        .is-fav svg { fill: #ef4444; stroke: #ef4444; }
+
+        .tool-logo-container {
+            width: 48px; height: 48px; min-width: 48px;
+            background: white; border-radius: 12px; padding: 4px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); overflow: hidden;
+        }
+        .tool-logo { width: 100%; height: 100%; object-fit: contain; }
+        
+        /* SUGERENCIAS DE BÚSQUEDA */
+        #search-suggestions {
+            position: absolute; top: 100%; left: 0; right: 0;
+            background-color: var(--bg-secondary); border: 1px solid var(--border-color);
+            border-top: none; border-radius: 0 0 12px 12px;
+            z-index: 100; max-height: 300px; overflow-y: auto;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
+        }
+        .suggestion-item {
+            padding: 12px 16px; cursor: pointer;
+            display: flex; align-items: center; gap: 12px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s; color: var(--text-main);
+        }
+        .suggestion-item:last-child { border-bottom: none; }
+        .suggestion-item:hover { background-color: var(--bg-input); }
+        
+        .suggestion-img { 
+            width: 32px !important; height: 32px !important; 
+            min-width: 32px !important; flex-shrink: 0;
+            border-radius: 6px; background: white; padding: 2px; 
+            object-fit: contain; border: 1px solid #e5e7eb; 
+        }
+
+        #modal-title-container { display: flex; align-items: center; gap: 1rem; }
+        #modal-title-container h2 { margin-bottom: 0; line-height: 1.2; }
+        #modal-fav-btn { padding: 0; margin: 0; width: 28px; height: 28px; color: var(--text-muted); transition: all 0.2s; }
+        #modal-fav-btn:hover { color: #ef4444; transform: scale(1.15); }
+        #modal-fav-btn.is-fav { color: #ef4444; fill: #ef4444; }
+
+        .listening svg { animation: pulse-red 1.5s infinite; }
+        @keyframes pulse-red {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* Select Styling */
+        select {
+            background-color: var(--bg-secondary); color: var(--text-main);
+            border: 1px solid var(--border-color); border-radius: 0.5rem;
+            padding: 0.25rem 2rem 0.25rem 0.5rem; cursor: pointer; appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em;
+        }
+        select option { background-color: var(--bg-main); color: var(--text-main); }
+        
+        .badge-price {
+            font-size: 0.7rem; 
+            font-weight: 700; 
+            text-transform: uppercase;
+            padding: 0.25rem 0.75rem; 
+            border-radius: 9999px; 
+            letter-spacing: 0.05em;
+        }
+        
+        .badge-gratis { background-color: var(--badge-free-bg); color: var(--badge-free-text); }
+        .badge-freemium { background-color: var(--badge-freemium-bg); color: var(--badge-freemium-text); }
+        .badge-pago { background-color: var(--badge-paid-bg); color: var(--badge-paid-text); }
+        
+        .show { opacity: 1 !important; }
+        .hidden { display: none !important; }
+
+        /* Floating Animation for Hero Icon */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <!-- TOAST -->
+    <div id="toast" class="bg-gray-800 text-white px-4 py-2 rounded-full shadow-lg border border-gray-700 flex items-center gap-2 fixed bottom-5 right-5 z-[100] transition-opacity duration-300 opacity-0 pointer-events-none">
+        <span class="text-green-500">✓</span> <span id="toast-msg" class="text-sm">Notificación</span>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav class="nav-fixed fixed top-0 w-full z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 lg:px-8 h-auto py-3 md:h-20 flex flex-wrap md:flex-nowrap items-center justify-between gap-4" style="max-width: 1400px;">
+            <div class="flex items-center gap-3 md:gap-4 select-none flex-shrink-0">
+                <!-- Creative "Back to Home" Navigation -->
+                <a href="{% url 'landing' %}" class="nav-brand-btn group" title="Volver a la Página Principal">
+                    <div class="brand-logo-box">
+                        <img id="app-logo" src="{% static 'img/polocreativoblanco.png' %}" alt="Polo Creativo" class="h-6 w-auto object-contain">
+                    </div>
+                    <div class="flex flex-col leading-none">
+                        <span class="brand-text-sub">Volver a</span>
+                        <span class="brand-text-main">Inicio</span>
+                    </div>
+                </a>
+
+                <!-- Divider -->
+                <div class="nav-brand-divider"></div>
+
+                <!-- Current Context (Reset Action) -->
+                <div onclick="window.resetApp()" class="hidden md:flex flex-col justify-center cursor-pointer group/title" title="Reiniciar filtros">
+                    <span class="text-white font-bold leading-none text-lg tracking-tight group-hover/title:text-white/90 transition-colors shadow-sm">Herramientas IA</span>
+                    <span class="text-white/70 text-[10px] font-medium tracking-[0.15em] uppercase group-hover/title:text-white transition-colors">Explorar</span>
+                </div>
+            </div>
+
+            <!-- BUSCADOR -->
+            <div class="order-last md:order-none w-full md:flex-1 md:max-w-xl mx-0 md:mx-4 flex items-center gap-2 mt-2 md:mt-0 relative">
+                <div class="relative group flex-1">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-500 group-focus-within:text-orange-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input type="text" id="global-search" autocomplete="off" placeholder="Buscar herramienta (ej: Diseño, Chat, Legal...)" 
+                        class="block w-full pl-12 pr-4 py-2 theme-bg-input theme-border border rounded-full text-sm theme-text-main placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all shadow-sm">
+                    <!-- Dropdown -->
+                    <div id="search-suggestions" class="hidden absolute top-full left-0 right-0 rounded-b-xl overflow-hidden shadow-xl border theme-border theme-bg-secondary z-50 mt-1 max-h-60 overflow-y-auto"></div>
+                </div>
+                <button onclick="window.surpriseMe()" class="p-2 rounded-full theme-bg-input theme-border border hover:border-orange-500 text-orange-500 transition-all flex-shrink-0" title="¡Sorpréndeme!">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </button>
+            </div>
+
+            <div class="flex items-center gap-2 md:gap-3">
+                <button onclick="window.showFavorites()" class="nav-action-btn relative group" title="Mis Favoritos">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                    <span id="fav-count" class="absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full hidden">0</span>
+                </button>
+
+                <button id="theme-toggle" class="nav-action-btn" title="Cambiar Tema">
+                    <svg id="sun-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    <svg id="moon-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                </button>
+
+                <div class="flex items-center nav-divider pl-4 ml-2 gap-1">
+                    <a href="https://www.facebook.com/aif.tdf" target="_blank" class="social-icon-btn" title="Facebook">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    </a>
+                    <a href="https://www.instagram.com/aif.tdf" target="_blank" class="social-icon-btn" title="Instagram">
+                         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4C4,18.39 5.61,20 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6C20,5.61 18.39,4 16.4,4H7.6M17.25,5.5A1.25,1.25 0 0,1 18.5,6.75A1.25,1.25 0 0,1 17.25,8A1.25,1.25 0 0,1 16,6.75A1.25,1.25 0 0,1 17.25,5.5M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z"/></svg>
+                    </a>
+                    <a href="https://www.tiktok.com/@conocimientotdf" target="_blank" class="social-icon-btn" title="TikTok">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.03 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.35-1.17 1.09-1.25 1.92-.02 1.21.74 2.48 1.88 2.91 1.55.6 3.26-.24 3.82-1.84.17-.38.29-.78.34-1.2.05-5.13.04-10.27.04-15.41z"/></svg>
+                    </a>
+                    <a href="https://polos.aif.gob.ar/" target="_blank" class="social-icon-btn" title="Polos AIF">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.6 9h16.8M3.6 15h16.8M12 3c-2.4 0-4.5 4-4.5 9s2.1 9 4.5 9s4.5-4 4.5-9s-2.1-9-4.5-9z"></path></svg>
+                    </a>
+                    <a href="https://www.aif.gob.ar/" target="_blank" class="social-icon-btn" title="Sitio Web AIF">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.6 9h16.8M3.6 15h16.8M12 3c-2.4 0-4.5 4-4.5 9s2.1 9 4.5 9s4.5-4 4.5-9s-2.1-9-4.5-9z"></path></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-10 relative z-10">
+        
+        <!-- VISTA INICIAL -->
+        <div id="home-view" class="transition-opacity duration-500 ease-in-out">
+            <section class="mb-12 max-w-6xl mx-auto">
+                <div class="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 mb-10 px-4">
+                    <!-- Icono Cajita (Left) -->
+                    <div class="flex-shrink-0 animate-float order-1 md:order-none">
+                        <img src="{% static 'img/logoia.png' %}" alt="Cajita de IA" class="w-40 h-40 md:w-64 md:h-64 object-contain drop-shadow-2xl filter brightness-110 hover:scale-105 transition-transform duration-500">
+                    </div>
+                    
+                    <!-- Texto (Right) -->
+                    <div class="text-center md:text-left flex-1 max-w-2xl">
+                         <span class="inline-block py-1.5 px-4 rounded-full bg-orange-500/10 text-orange-500 text-sm font-bold mb-4 border border-orange-500/20 tracking-wide shadow-sm shadow-orange-500/10 uppercase">Inteligencia Artificial</span>
+                        <h1 class="text-4xl md:text-7xl font-extrabold tracking-tight mb-5 theme-text-main leading-[1.1]">
+                            Potencia tu <br class="hidden md:block"><span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600">Futuro</span>
+                        </h1>
+                        <p class="text-lg md:text-xl theme-text-muted max-w-xl mx-auto md:mx-0 leading-relaxed">
+                            Explora la colección más completa de herramientas de IA seleccionadas para profesionales. Encuentra exactamente lo que necesitas.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Asistente IA Principal Card -->
+                <div class="glass-panel rounded-2xl p-1 p-sm-8 shadow-2xl transform hover:scale-[1.01] transition-transform duration-500">
+                    <div class="theme-bg-secondary rounded-xl p-6 md:p-8 border theme-border">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center shadow-lg shadow-orange-500/30">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            </div>
+                            <h2 class="text-2xl font-bold theme-text-main text-left">Asistente Inteligente</h2>
+                        </div>
+                        
+                        <div class="relative">
+                            <textarea id="task-input" class="w-full h-40 theme-bg-input theme-border border rounded-xl p-5 pb-16 theme-text-main placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition resize-none text-lg" placeholder="¿Qué necesitas hacer hoy? (ej: 'Crear un video publicitario', 'Resumir un contrato', 'Diseñar un logo')"></textarea>
+                            <div class="absolute bottom-4 right-4 flex items-center gap-2">
+                                <button id="voice-assist-btn" class="p-2.5 rounded-xl theme-bg-secondary theme-border border hover:border-orange-500 text-gray-500 hover:text-orange-500 transition-colors" title="Dictar consulta">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+                                </button>
+                                <button id="recommend-btn" class="btn-primary font-bold py-2.5 px-6 rounded-xl text-sm flex items-center gap-2 transition-transform active:scale-95">
+                                    <span>Consultar IA</span>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="recommendations-output" class="ai-output mt-6 text-left hidden p-5 rounded-xl theme-bg-input theme-border border theme-text-muted text-base leading-relaxed"></div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="featured-tools" class="mb-16 max-w-6xl mx-auto">
+                <div class="flex items-center gap-3 mb-6 px-2">
+                    <span class="text-2xl">🔥</span>
+                    <h3 class="text-xl font-bold theme-text-main font-heading uppercase tracking-wider">Destacadas</h3>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="featured-grid"></div>
+            </section>
+
+            <section id="profile-selection">
+                <div class="flex items-center justify-between mb-8">
+                    <h3 class="text-2xl font-bold theme-text-main">Explorar Todos los Perfiles</h3>
+                    <div class="h-px bg-orange-500/20 flex-1 ml-6"></div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" id="profiles-grid"></div>
+            </section>
+        </div>
+
+        <!-- VISTA DE HERRAMIENTAS -->
+        <div id="tools-view" class="hidden-section hidden transition-opacity duration-500 ease-in-out">
+            <div class="mb-10">
+                <button id="back-to-profiles" class="group flex items-center gap-2 theme-text-muted hover:text-orange-500 transition-colors mb-4 font-medium">
+                    <svg class="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    Volver a Perfiles
+                </button>
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b theme-border pb-6">
+                    <div>
+                        <h2 id="profile-title" class="text-4xl font-bold theme-text-main mb-2 font-heading"></h2>
+                        <p class="theme-text-muted" id="profile-subtitle">Herramientas seleccionadas para potenciar tu flujo de trabajo.</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <!-- Filtros de Precio -->
+                         <div class="flex items-center gap-1 theme-bg-secondary p-1 rounded-lg border theme-border overflow-x-auto">
+                             <button onclick="window.setPriceFilter('all')" class="price-filter-btn px-3 py-1 rounded-md text-xs font-bold active" id="price-btn-all">Todos</button>
+                             <button onclick="window.setPriceFilter('gratis')" class="price-filter-btn px-3 py-1 rounded-md text-xs font-bold" id="price-btn-gratis">Gratis</button>
+                             <button onclick="window.setPriceFilter('freemium')" class="price-filter-btn px-3 py-1 rounded-md text-xs font-bold" id="price-btn-freemium">Freemium</button>
+                             <button onclick="window.setPriceFilter('pago')" class="price-filter-btn px-3 py-1 rounded-md text-xs font-bold" id="price-btn-pago">Pago</button>
+                         </div>
+                        
+                        <div class="flex items-center gap-3 theme-bg-secondary px-4 py-2 rounded-lg theme-border border shadow-sm">
+                            <span class="theme-text-muted text-sm uppercase font-bold tracking-wider">Ordenar:</span>
+                            <select id="sort-select" class="bg-transparent theme-text-main text-sm font-medium focus:outline-none cursor-pointer">
+                                <option value="relevance-desc">Más Relevante</option>
+                                <option value="alpha-asc">A - Z</option>
+                                <option value="alpha-desc">Z - A</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-xl p-6 mb-10 border-l-4 border-l-orange-500">
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 p-2 rounded-lg bg-orange-500/10 text-orange-500 hidden sm:block">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-bold theme-text-main mb-1">Asistente Especializado: <span id="profile-assist-name" class="text-orange-500"></span></h3>
+                        <p class="text-sm theme-text-muted mb-4">¿Buscas algo específico dentro de esta categoría? Pregúntame.</p>
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <input type="text" id="profile-task-input" class="flex-1 theme-bg-input theme-border border rounded-lg px-4 py-3 text-sm theme-text-main focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none transition" placeholder="Ej: Herramienta para automatizar reportes mensuales...">
+                            <button id="profile-recommend-btn" class="theme-bg-secondary border theme-border hover:bg-gray-100 dark:hover:bg-gray-700 theme-text-main px-6 py-3 rounded-lg text-sm font-medium transition-colors w-full sm:w-auto">Buscar</button>
+                        </div>
+                        <div id="profile-recommendations-output" class="ai-output mt-4 hidden p-3 theme-bg-input rounded-lg theme-border border text-sm theme-text-muted"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtros de Categoría -->
+            <div id="filters-container" class="flex flex-wrap gap-2 mb-8 filter-container-scroll"></div>
+            
+            <div id="tools-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t theme-border theme-bg-input mt-auto relative z-10">
+        <div class="container mx-auto px-6 py-12 text-center">
+            <div class="mb-8 text-center">
+                <p class="theme-text-muted text-sm font-semibold uppercase tracking-wider mb-6">¡Seguinos en nuestras redes!</p>
+                <div class="flex flex-wrap justify-center gap-6">
+                    <a href="https://www.facebook.com/aif.tdf" target="_blank" class="social-link group bg-orange-500/5 hover:bg-orange-500/10 border theme-border hover:border-orange-500/50 px-6 py-3 rounded-xl transition-all">
+                        <svg class="w-6 h-6 text-orange-500" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        <span class="text-base font-medium group-hover:text-orange-500 transition-colors">@aif.tdf</span>
+                    </a>
+                    <a href="https://www.instagram.com/aif.tdf" target="_blank" class="social-link group bg-orange-500/5 hover:bg-orange-500/10 border theme-border hover:border-orange-500/50 px-6 py-3 rounded-xl transition-all">
+                        <svg class="w-6 h-6 text-orange-500" fill="currentColor" viewBox="0 0 24 24"><path d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4C4,18.39 5.61,20 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6C20,5.61 18.39,4 16.4,4H7.6M17.25,5.5A1.25,1.25 0 0,1 18.5,6.75A1.25,1.25 0 0,1 17.25,8A1.25,1.25 0 0,1 16,6.75A1.25,1.25 0 0,1 17.25,5.5M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z"/></svg>
+                        <span class="text-base font-medium group-hover:text-orange-500 transition-colors">@aif.tdf</span>
+                    </a>
+                    <a href="https://www.tiktok.com/@conocimientotdf" target="_blank" class="social-link group bg-orange-500/5 hover:bg-orange-500/10 border theme-border hover:border-orange-500/50 px-6 py-3 rounded-xl transition-all">
+                        <svg class="w-6 h-6 text-orange-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.03 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.35-1.17 1.09-1.25 1.92-.02 1.21.74 2.48 1.88 2.91 1.55.6 3.26-.24 3.82-1.84.17-.38.29-.78.34-1.2.05-5.13.04-10.27.04-15.41z"/></svg>
+                        <span class="text-base font-medium group-hover:text-orange-500 transition-colors">@conocimientotdf</span>
+                    </a>
+                    <a href="https://polos.aif.gob.ar/" target="_blank" class="social-link group bg-orange-500/5 hover:bg-orange-500/10 border theme-border hover:border-orange-500/50 px-6 py-3 rounded-xl transition-all">
+                        <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.6 9h16.8M3.6 15h16.8M12 3c-2.4 0-4.5 4-4.5 9s2.1 9 4.5 9s4.5-4 4.5-9s-2.1-9-4.5-9z"></path></svg>
+                        <span class="text-base font-medium group-hover:text-orange-500 transition-colors">Polos Creativos</span>
+                    </a>
+                    <a href="https://www.aif.gob.ar/" target="_blank" class="social-link group bg-orange-500/5 hover:bg-orange-500/10 border theme-border hover:border-orange-500/50 px-6 py-3 rounded-xl transition-all">
+                        <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.6 9h16.8M3.6 15h16.8M12 3c-2.4 0-4.5 4-4.5 9s2.1 9 4.5 9s4.5-4 4.5-9s-2.1-9-4.5-9z"></path></svg>
+                        <span class="text-base font-medium group-hover:text-orange-500 transition-colors">Sitio Web AIF</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="border-t theme-border pt-8 mt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="theme-text-muted text-sm text-center md:text-left">© 2025 Agencia de Innovación.</p>
+                <div class="flex items-center gap-4 text-xs theme-text-muted">
+                    <span class="opacity-60">Desarrollado por Franco Morandi Roch</span>
+                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=franmorandi080807@gmail.com" target="_blank" class="hover:text-orange-500 transition" title="Enviar Email via Gmail">
+                        <!-- ICONO CORREO ESTÁNDAR (SOBRE) -->
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+                    </a>
+                    <a href="https://wa.me/5492964605810" target="_blank" class="hover:text-green-500 transition" title="WhatsApp">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.017-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODAL -->
+    <div id="tool-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity" id="modal-backdrop"></div>
+        <div id="modal-content" class="theme-bg-secondary theme-border border w-full max-w-2xl rounded-2xl shadow-2xl relative z-10 flex flex-col max-h-[85vh] md:max-h-[90vh] transform transition-all scale-95 opacity-0">
+            <div class="p-4 md:p-6 border-b theme-border flex justify-between items-start theme-bg-input rounded-t-2xl">
+                <div id="modal-title-container">
+                    <h2 id="modal-title" class="text-2xl font-bold theme-text-main font-heading pr-8"></h2>
+                    <button id="modal-fav-btn" class="action-btn" title="Agregar a Favoritos">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                    </button>
+                </div>
+                <button id="close-modal-btn" class="theme-text-muted hover:text-orange-500 transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="p-4 md:p-6 overflow-y-auto theme-text-muted space-y-6">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
+                     <div class="tool-logo-container w-16 h-16 min-w-[64px] rounded-xl bg-white p-1 border border-gray-200 flex items-center justify-center shadow-sm">
+                        <img id="modal-logo-img" src="" alt="Logo" class="w-full h-full object-contain">
+                     </div>
+                     <div class="flex flex-wrap gap-2" id="modal-tags"></div>
+                </div>
+                <p id="modal-desc" class="text-lg leading-relaxed theme-text-main"></p>
+                <div class="bg-orange-500/5 border border-orange-500/20 rounded-xl p-5">
+                    <h3 class="text-orange-500 font-bold mb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        Generador de Ideas
+                    </h3>
+                    <p class="text-sm theme-text-muted mb-4">Descubre 3 formas prácticas de usar esta herramienta para tu perfil.</p>
+                    <button id="generate-ideas-btn" class="w-full py-2.5 theme-bg-secondary hover:brightness-110 theme-text-main rounded-lg text-sm font-medium transition-colors theme-border border">
+                        ✨ Generar Ideas de Uso
+                    </button>
+                    <div id="ideas-output" class="ai-output mt-4 text-sm space-y-2 hidden"></div>
+                </div>
+            </div>
+            <div class="p-4 md:p-6 border-t theme-border flex justify-end theme-bg-input rounded-b-2xl">
+                <a id="modal-link" href="#" target="_blank" class="btn-primary font-bold py-3 px-8 rounded-xl inline-flex items-center gap-2 transition hover:-translate-y-1 w-full sm:w-auto justify-center">
+                    Visitar Sitio Web
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apiKey = "AIzaSyCOb8D_rKAq7AA0Khoh1O3yTGw9e7gY73Y"; // CLAVE API ASISTENTE
+        
+        // DATOS DE PERFILES
+        const profilesList = [
+            { id: 'administracion', name: 'Administración y Gestión', icon: '📋', desc: 'Optimiza flujos de trabajo, documentos y coordinación de equipos.' },
+            { id: 'ciencia', name: 'Ciencia e Investigación', icon: '🔬', desc: 'Herramientas para análisis de datos, papers y descubrimiento.' },
+            { id: 'comunicacion', name: 'Comunicación y Marketing', icon: '📣', desc: 'Potencia redes sociales, copywriting y estrategias digitales.' },
+            { id: 'creatividad', name: 'Creatividad y Diseño', icon: '🎨', desc: 'Generación de arte, edición de video y diseño multimedia.' },
+            { id: 'directivo', name: 'Dirección Ejecutiva', icon: '📈', desc: 'Toma de decisiones, planificación estratégica y liderazgo.' },
+            { id: 'docente', name: 'Docencia y Educación', icon: '🎓', desc: 'Creación de material didáctico, evaluaciones y gestión del aula.' },
+            { id: 'estudiante', name: 'Estudiantes y Académicos', icon: '📚', desc: 'Apoyo en investigación, resúmenes y organización de estudio.' },
+            { id: 'finanzas', name: 'Finanzas y Contabilidad', icon: '📊', desc: 'Análisis financiero, reportes automáticos y proyecciones.' },
+            { id: 'ingenieria', name: 'Ingeniería y Arquitectura', icon: '🏗️', desc: 'Cálculo estructural, diseño CAD y gestión de obras.' },
+            { id: 'juridico', name: 'Sector Jurídico y Legal', icon: '⚖️', desc: 'Análisis de contratos, jurisprudencia y gestión de casos.' },
+            { id: 'negocios', name: 'Negocios y Emprendimiento', icon: '🚀', desc: 'Desarrollo de startups, planes de negocio y escalabilidad.' },
+            { id: 'recursoshumanos', name: 'Recursos Humanos (RRHH)', icon: '🤝', desc: 'Selección de talento, capacitación y clima organizacional.' },
+            { id: 'salud', name: 'Salud y Bienestar', icon: '🏥', desc: 'Soporte clínico, investigación médica y gestión de pacientes.' },
+            { id: 'tecnologia', name: 'Tecnología y Desarrollo', icon: '💻', desc: 'Asistentes de código, arquitectura de software y DevOps.' },
+            { id: 'ventas', name: 'Ventas y Atención al Cliente', icon: '💰', desc: 'CRM, prospección, cierre de ventas y soporte al usuario.' },
+            { id: 'general', name: 'Directorio Completo', icon: '🌐', desc: 'Explora la colección completa de todas las herramientas.' }
+        ];
+
+        const profilesData = {
+            administracion: { title: 'Administración y Gestión', filters: { all: 'Todo', gestion_proyectos: 'Proyectos', comunicacion_interna: 'Comunicación', documentacion: 'Documentos', automatizacion: 'Automatización', planificacion: 'Planificación' } },
+            ciencia: { title: 'Ciencia e Investigación', filters: { all: 'Todo', busqueda: 'Búsqueda', analisis_datos: 'Análisis de Datos', redaccion_cientifica: 'Redacción', revision_literatura: 'Literatura', simulacion: 'Simulación' } },
+            comunicacion: { title: 'Comunicación y Marketing', filters: { all: 'Todo', video: 'Video', imagen: 'Imagen', redaccion: 'Redacción Creativa', redes_sociales: 'Redes Sociales', presentar: 'Presentaciones', seo: 'Posicionamiento Web' } },
+            creatividad: { title: 'Creatividad y Diseño', filters: { all: 'Todo', imagen: 'Gen. Imágenes', audio: 'Audio/Música', video: 'Video/Animación', multimedia: 'Multimedia', diseno: 'Diseño de Interfaces', edicion: 'Edición' } },
+            directivo: { title: 'Dirección Ejecutiva', filters: { all: 'Todo', planificacion: 'Estrategia', presentaciones_ejecutivas: 'Presentaciones', analisis_datos: 'Inteligencia de Negocios', gestion: 'Gestión de Equipos' } },
+            docente: { title: 'Docencia y Educación', filters: { all: 'Todo', crear_contenido: 'Material Didáctico', evaluar: 'Evaluación', presentar: 'Clases', gestion_aula: 'Gestión del Aula', gamificacion: 'Gamificación' } },
+            estudiante: { title: 'Estudiantes', filters: { all: 'Todo', investigacion: 'Investigación', estudio: 'Tutoría', organizacion: 'Organización', redaccion: 'Escritura', resumen: 'Resúmenes' } },
+            finanzas: { title: 'Finanzas y Contabilidad', filters: { all: 'Todo', analisis_financiero: 'Análisis', gestion_financiera: 'Gestión', visualizacion_datos: 'Visualización', excel: 'Hojas de Cálculo' } },
+            ingenieria: { title: 'Ingeniería y Arquitectura', filters: { all: 'Todo', gestion_proyectos: 'Proyectos', diseno_cad: 'Diseño 3D y Planos', simulacion: 'Cálculo', programacion: 'Código', productividad: 'Productividad' } },
+            juridico: { title: 'Sector Jurídico y Legal', filters: { all: 'Todo', investigacion_legal: 'Jurisprudencia', redaccion_documentos: 'Contratos', analisis_documentos: 'Análisis', gestion_casos: 'Gestión' } },
+            negocios: { title: 'Negocios y Emprendimiento', filters: { all: 'Todo', planificacion: 'Plan de Negocio', marketing: 'Marketing', ventas: 'Ventas', startup: 'Emprendimiento', productividad: 'Productividad' } },
+            recursoshumanos: { title: 'Recursos Humanos (RRHH)', filters: { all: 'Todo', seleccion_personal: 'Reclutamiento', capacitacion: 'Formación', comunicacion_interna: 'Cultura', productividad: 'Gestión' } },
+            salud: { title: 'Salud y Bienestar', filters: { all: 'Todo', diagnostico: 'Soporte Clínico', gestion_pacientes: 'Administración', investigacion_medica: 'Investigación', transcripcion: 'Transcripción' } },
+            tecnologia: { title: 'Tecnología y Desarrollo', filters: { all: 'Todo', programacion: 'Asistente de Programación', analisis_datos: 'Datos', automatizacion: 'Automatización', diseno_software: 'Arquitectura' } },
+            ventas: { title: 'Ventas y Atención al Cliente', filters: { all: 'Todo', gestion_crm: 'Gestión de Clientes (CRM)', gestion_clientes: 'Prospección', presentaciones_ventas: 'Presentación de Ventas', analisis_llamadas: 'Análisis de Llamadas', email: 'Correo Masivo' } },
+            general: { title: 'Directorio Completo', filters: { all: 'Todo', imagen: 'Imagen', video: 'Video', redaccion: 'Texto', audio: 'Audio', gestion: 'Productividad', estudio: 'Educación', programacion: 'Código' } }
+        };
+
+        const allTools = [
+            { name: 'Adobe Firefly', link: 'https://firefly.adobe.com/generate/', price: 'Freemium', shortDescription: 'Creación de imágenes profesionales con IA.', longDescription: 'Colección de modelos de IA generativa integrada en las herramientas de Adobe. Se especializa en la creación de imágenes, efectos de texto y vectores a partir de descripciones de texto. Sus funciones más destacadas incluyen el Relleno Generativo y la Expansión Generativa.', priceCategory: 'freemium', profiles: ['docente', 'comunicacion', 'creatividad'], tags: { docente: ['crear_contenido'], comunicacion: ['imagen'], creativity: ['imagen', 'edicion'], general: ['imagen'] }, relevance: { docente: 4, comunicacion: 5, creativity: 5 }, isNew: true },
+            { name: 'Grok (xAI)', link: 'https://x.com/i/grok', price: 'De pago', shortDescription: 'IA con acceso en tiempo real a X (Twitter).', longDescription: 'IA desarrollada por xAI con acceso exclusivo a la información en tiempo real de la plataforma X. Perfecta para investigar tendencias actuales, noticias de última hora y análisis de sentimiento social.', priceCategory: 'pago', profiles: ['comunicacion', 'negocios', 'tecnologia'], tags: { comunicacion: ['redes_sociales'], general: ['redaccion'] }, relevance: { comunicacion: 5 }, isNew: true },
+            { name: 'DeepSeek', link: 'https://chat.deepseek.com/', price: 'Gratuito', shortDescription: 'Modelo open source potente para código.', longDescription: 'Potente modelo de lenguaje de código abierto que destaca excepcionalmente en tareas de codificación (DeepSeek Coder) y resolución de problemas lógicos y matemáticos complejos.', priceCategory: 'gratis', profiles: ['tecnologia', 'ingenieria'], tags: { tecnologia: ['programacion'], general: ['programacion'] }, relevance: { tecnologia: 5 }, isNew: true },
+            { name: 'Mistral AI', link: 'https://chat.mistral.ai/', price: 'Freemium', shortDescription: 'IA europea eficiente y concisa.', longDescription: 'Modelo de lenguaje optimizado para ofrecer respuestas directas, rápidas y naturales en múltiples idiomas europeos. Ideal para redacción empresarial.', priceCategory: 'freemium', profiles: ['negocios', 'docente'], tags: { negocios: ['productividad'], general: ['redaccion'] }, relevance: { negocios: 4 }, isNew: true },
+            { name: 'Cursor', link: 'https://www.cursor.com/', price: 'Freemium', shortDescription: 'Editor de código inteligente con IA nativa.', longDescription: 'Un editor de código construido sobre VS Code que integra la IA en su núcleo. Permite editar código usando lenguaje natural y chatear con tu base de código entera.', priceCategory: 'freemium', profiles: ['tecnologia', 'ingenieria'], tags: { tecnologia: ['programacion'], general: ['programacion'] }, relevance: { tecnologia: 5 }, isNew: true },
+            { name: 'Google Gemini', link: 'https://gemini.google.com/', price: 'Freemium', shortDescription: 'IA multimodal de Google.', longDescription: 'El modelo más avanzado de Google, capaz de razonar sobre texto, imágenes, audio y video simultáneamente. Se integra profundamente con Google Workspace.', priceCategory: 'freemium', profiles: ['general', 'estudiante'], tags: { general: ['redaccion'] }, relevance: { general: 5 }, isNew: true },
+            { name: 'Claude', link: 'https://claude.ai/', price: 'Freemium', shortDescription: 'Asistente de IA con gran capacidad de análisis.', longDescription: 'Conocido por su redacción natural y segura. Su gran ventana de contexto le permite analizar libros enteros o múltiples documentos legales/técnicos a la vez.', priceCategory: 'freemium', profiles: ['comunicacion', 'juridico'], tags: { comunicacion: ['redaccion'], general: ['redaccion'] }, relevance: { comunicacion: 5 }, isNew: true },
+            { name: 'Suno AI', link: 'https://suno.com/', price: 'Freemium', shortDescription: 'Crea canciones completas con texto.', longDescription: 'Revolucionaria IA musical que genera canciones realistas de alta calidad (letra y voz) en cualquier estilo a partir de una descripción de texto.', priceCategory: 'freemium', profiles: ['creatividad'], tags: { creativity: ['audio'], general: ['audio'] }, relevance: { creativity: 5 }, isNew: true },
+             { name: 'ChatGPT', link: 'https://chat.openai.com/', price: 'Freemium', shortDescription: 'El asistente de IA más popular.', longDescription: 'Modelo líder de OpenAI capaz de realizar casi cualquier tarea de procesamiento de lenguaje natural, desde redacción creativa hasta programación y análisis de datos.', priceCategory: 'freemium', profiles: ['general', 'estudiante', 'negocios'], tags: { general: ['redaccion'] }, relevance: { general: 5 } },
+            { name: 'Canva', link: 'https://www.canva.com/', price: 'Freemium', shortDescription: 'Diseño gráfico simplificado con IA.', longDescription: 'Plataforma de diseño que integra herramientas mágicas de IA para generar imágenes, borrar fondos, editar fotos mágicamente y rediseñar formatos.', priceCategory: 'freemium', profiles: ['comunicacion', 'docente'], tags: { comunicacion: ['imagen'], general: ['diseno'] }, relevance: { comunicacion: 5 } },
+            { name: 'Asana', link: 'https://asana.com/', price: 'Freemium', shortDescription: 'Gestión de proyectos y tareas.', longDescription: 'Herramienta organizativa que usa IA para optimizar flujos de trabajo, crear resúmenes de estado de proyectos y asignar tareas eficientemente.', priceCategory: 'freemium', profiles: ['administracion', 'directivo', 'juridico', 'negocios', 'recursoshumanos', 'ingenieria', 'ventas'], tags: { administracion: ['gestion_proyectos', 'planificacion'], directivo: ['planificacion'], juridico: ['gestion_casos'], negocios: ['organizacion'], recursoshumanos: ['productividad'], ingenieria: ['gestion_proyectos'], ventas: ['gestion_clientes'], general: ['gestion'] }, relevance: { administracion: 5, directivo: 4, juridico: 3, negocios: 5, recursoshumanos: 4, ingenieria: 4, ventas: 4 } },
+            { name: 'Beautiful.ai', link: 'https://www.beautiful.ai/', price: 'Freemium', shortDescription: 'Presentaciones automáticas.', longDescription: 'Software de presentaciones que aplica reglas de diseño automáticamente para crear diapositivas profesionales en minutos.', priceCategory: 'freemium', profiles: ['docente', 'directivo', 'comunicacion', 'creatividad', 'negocios', 'ventas'], tags: { docente: ['presentar'], directivo: ['presentaciones_ejecutivas'], comunicacion: ['presentar'], creatividad: ['multimedia', 'diseno'], negocios: ['marketing'], ventas: ['presentaciones_ventas'], general: ['diseno'] }, relevance: { docente: 4, directivo: 4, comunicacion: 4, creatividad: 4, negocios: 3, ventas: 4 } },
+            { name: 'CapCut', link: 'https://www.capcut.com/', price: 'Freemium', shortDescription: 'Editor de video todo en uno.', longDescription: 'Editor popular con funciones de IA como subtítulos automáticos y eliminación de fondo. Esencial para crear contenido rápido para redes sociales.', priceCategory: 'freemium', profiles: ['docente', 'comunicacion', 'creatividad'], tags: { docente: ['crear_contenido'], comunicacion: ['video', 'redes_sociales'], creatividad: ['video', 'edicion'], general: ['video'] }, relevance: { docente: 4, comunicacion: 4, creatividad: 5 } },
+            { name: 'Midjourney', link: 'https://www.midjourney.com/', price: 'De pago', shortDescription: 'Generación de imágenes artísticas.', longDescription: 'IA generativa de imágenes conocida por su estilo artístico superior y fotorrealismo. Funciona a través de Discord.', priceCategory: 'pago', profiles: ['comunicacion', 'creatividad'], tags: { comunicacion: ['imagen'], creatividad: ['imagen', 'diseno'], general: ['imagen'] }, relevance: { comunicacion: 5, creatividad: 5 }, isNew: true },
+            { name: 'Notion AI', link: 'https://www.notion.so/', price: 'Freemium', shortDescription: 'Espacio de trabajo con IA.', longDescription: 'Asistente de IA integrado en Notion. Ayuda a resumir notas, corregir redacción, traducir textos y generar ideas directamente en tus documentos.', priceCategory: 'freemium', profiles: ['administracion', 'estudiante', 'juridico', 'negocios', 'ingenieria'], tags: { administracion: ['documentacion', 'organizacion', 'planificacion'], estudiante: ['organizacion', 'resumen'], juridico: ['gestion_casos'], negocios: ['productividad'], ingenieria: ['productividad'], general: ['gestion', 'redaccion'] }, relevance: { administracion: 5, estudiante: 4, juridico: 4, negocios: 4, ingenieria: 3 } },
+            { name: 'Perplexity', link: 'https://www.perplexity.ai/', price: 'Freemium', shortDescription: 'Buscador con citas.', longDescription: 'Buscador impulsado por IA que ofrece respuestas directas y precisas, citando siempre las fuentes originales para verificación.', priceCategory: 'freemium', profiles: ['estudiante', 'docente', 'juridico', 'ciencia', 'salud'], tags: { estudiante: ['investigacion'], docente:['crear_contenido'], juridico: ['investigacion_legal'], ciencia: ['busqueda'], salud: ['investigacion_medica'], general: ['estudio'] }, relevance: { estudiante: 5, docente: 4, juridico: 5, ciencia: 5, salud: 5 } },
+            { name: 'Synthesia', link: 'https://www.synthesia.io/', price: 'De pago', shortDescription: 'Videos con avatares de IA.', longDescription: 'Plataforma para crear videos de formación y marketing utilizando avatares de IA hiperrealistas que hablan el texto que escribas.', priceCategory: 'pago', profiles: ['directivo', 'comunicacion', 'creatividad', 'recursoshumanos', 'ventas'], tags: { directivo: ['presentaciones_ejecutivas'], comunicacion: ['video'], creatividad: ['video'], recursoshumanos: ['capacitacion'], ventas: ['presentaciones_ventas'], general: ['video'] }, relevance: { directivo: 4, comunicacion: 4, creatividad: 4, recursoshumanos: 4, ventas: 3 } },
+            { name: 'GitHub Copilot', link: 'https://github.com/features/copilot', price: 'De pago', shortDescription: 'Tu par programador.', longDescription: 'Asistente de codificación que sugiere líneas completas o funciones enteras en tiempo real directamente en tu editor.', priceCategory: 'pago', profiles: ['estudiante', 'tecnologia', 'ingenieria'], tags: { estudiante: ['programacion'], tecnologia: ['programacion'], ingenieria: ['programacion'], general: ['programacion'] }, relevance: { estudiante: 5, tecnologia: 5, ingenieria: 4 } },
+            { name: 'Zapier', link: 'https://zapier.com/', price: 'Freemium', shortDescription: 'Automatización de flujos.', longDescription: 'Plataforma de automatización que conecta tus aplicaciones web favoritas. Su IA ayuda a crear "Zaps" describiéndolos en lenguaje natural.', priceCategory: 'freemium', profiles: ['administracion', 'tecnologia', 'ventas'], tags: { administracion: ['automatizacion', 'gestion_proyectos'], tecnologia: ['automatizacion'], ventas: ['gestion_crm'], general: ['gestion', 'programacion'] }, relevance: { administracion: 5, tecnologia: 5, ventas: 3 } },
+            { name: 'RunwayML', link: 'https://runwayml.com/', price: 'Freemium', shortDescription: 'Edición y generación de video.', longDescription: 'Suite creativa avanzada. Permite generar video a partir de texto (Gen-2), editar video con IA (borrar objetos) y entrenar modelos propios.', priceCategory: 'freemium', profiles: ['comunicacion', 'creatividad'], tags: { comunicacion: ['video'], creatividad: ['video', 'edicion', 'multimedia'], general: ['video'] }, relevance: { comunicacion: 4, creatividad: 5 } },
+            { name: 'Otter.ai', link: 'https://otter.ai/', price: 'Freemium', shortDescription: 'Asistente de reuniones.', longDescription: 'Toma notas automáticamente en tus reuniones. Graba el audio, transcribe en tiempo real, identifica a los oradores y genera resúmenes.', priceCategory: 'freemium', profiles: ['administracion', 'directivo', 'juridico', 'salud', 'ventas'], tags: { administracion: ['documentacion', 'gestion_proyectos'], directivo: ['gestion'], juridico: ['gestion_casos'], salud: ['transcripcion'], ventas: ['analisis_llamadas'], general: ['audio', 'gestion'] }, relevance: { administracion: 4, directivo: 4, juridico: 5, salud: 4, ventas: 4 } },
+            { name: 'Jasper', link: 'https://www.jasper.ai/', price: 'De pago', shortDescription: 'Copywriting para marketing.', longDescription: 'IA entrenada para redactar contenido de marketing de alto rendimiento, blogs y anuncios manteniendo la voz de marca.', priceCategory: 'pago', profiles: ['comunicacion', 'negocios'], tags: { comunicacion: ['redaccion', 'seo'], negocios: ['marketing'], general: ['redaccion'] }, relevance: { comunicacion: 5, negocios: 5 } },
+            { name: 'Gamma', link: 'https://gamma.app/', price: 'Freemium', shortDescription: 'Presentaciones web.', longDescription: 'Genera presentaciones, documentos o páginas web interactivas y visualmente pulidas en segundos a partir de un simple prompt.', priceCategory: 'freemium', profiles: ['docente', 'negocios', 'directivo'], tags: { docente: ['presentar'], negocios: ['presentaciones_ventas'], directivo: ['presentaciones_ejecutivas'], general: ['diseno'] }, relevance: { docente: 4, negocios: 4, directivo: 4 } },
+            { name: 'Fireflies.ai', link: 'https://fireflies.ai/', price: 'Freemium', shortDescription: 'Notas de reuniones.', longDescription: 'Se une a tus reuniones para grabar y transcribir. Permite buscar dentro de las conversaciones y analizar métricas.', priceCategory: 'freemium', profiles: ['administracion', 'directivo', 'juridico', 'salud'], tags: { administracion: ['documentacion'], directivo: ['planificacion'], juridico: ['investigacion_legal'], salud: ['gestion_pacientes'], general: ['gestion', 'audio'] }, relevance: { administracion: 4, directivo: 4, juridico: 5, salud: 4 } },
+            { name: 'Consensus', link: 'https://consensus.app/', price: 'Freemium', shortDescription: 'Buscador científico.', longDescription: 'Motor de búsqueda que utiliza IA para encontrar y resumir respuestas basándose puramente en estudios científicos revisados.', priceCategory: 'freemium', profiles: ['ciencia', 'estudiante', 'salud'], tags: { ciencia: ['busqueda', 'revision_literatura'], estudiante: ['investigacion'], salud: ['investigacion_medica'], general: ['estudio'] }, relevance: { ciencia: 5, estudiante: 5, salud: 5 } },
+            { name: 'Elicit', link: 'https://elicit.org/', price: 'Freemium', shortDescription: 'Asistente de investigación.', longDescription: 'Herramienta que encuentra papers relevantes, resume hallazgos clave y extrae información específica de múltiples documentos.', priceCategory: 'freemium', profiles: ['ciencia', 'estudiante', 'salud'], tags: { ciencia: ['revision_literatura', 'busqueda'], estudiante: ['investigacion'], salud: ['investigacion_medica'], general: ['estudio'] }, relevance: { ciencia: 5, estudiante: 5, salud: 5 } },
+            { name: 'Grammarly', link: 'https://www.grammarly.com/', price: 'Freemium', shortDescription: 'Corrector de escritura.', longDescription: 'Mejora la claridad, el compromiso y el tono de tu escritura en tiempo real, además de corregir ortografía y gramática.', priceCategory: 'freemium', profiles: ['comunicacion', 'estudiante', 'administracion', 'docente'], tags: { comunicacion: ['redaccion'], estudiante: ['redaccion'], administracion: ['comunicacion_interna'], docente: ['crear_contenido'], general: ['redaccion'] }, relevance: { comunicacion: 5, estudiante: 5, administracion: 4, docente: 4 } },
+            { name: 'Copy.ai', link: 'https://www.copy.ai/', price: 'Freemium', shortDescription: 'Textos de marketing.', longDescription: 'Plataforma para generar textos de marketing y ventas. Crea blogs, correos electrónicos y posts de redes sociales.', priceCategory: 'freemium', profiles: ['comunicacion', 'negocios', 'ventas'], tags: { comunicacion: ['redaccion', 'redes_sociales'], negocios: ['marketing'], ventas: ['email'], general: ['redaccion'] }, relevance: { comunicacion: 4, negocios: 5, ventas: 4 } },
+            { name: 'Tableau', link: 'https://www.tableau.com/', price: 'De pago', shortDescription: 'Análisis de datos.', longDescription: 'Herramienta de BI líder. Su IA permite crear informes y obtener insights haciendo preguntas en lenguaje natural.', priceCategory: 'pago', profiles: ['directivo', 'finanzas', 'ciencia'], tags: { directivo: ['analisis_datos'], finanzas: ['visualizacion_datos'], ciencia: ['analisis_datos'], general: ['gestion'] }, relevance: { directivo: 5, finanzas: 5, ciencia: 4 } },
+            { name: 'Gong', link: 'https://www.gong.io/', price: 'De pago', shortDescription: 'Inteligencia de ingresos.', longDescription: 'Analiza las interacciones con clientes para revelar qué funciona, mejorando el cierre de tratos y la estrategia.', priceCategory: 'pago', profiles: ['ventas', 'directivo'], tags: { ventas: ['analisis_llamadas', 'gestion_crm'], directivo: ['analisis_datos'], general: ['gestion'] }, relevance: { ventas: 5, directivo: 4 } },
+            { name: 'MagicSchool.ai', link: 'https://www.magicschool.ai/', price: 'Freemium', shortDescription: 'IA para profesores.', longDescription: 'Ayuda a planificar lecciones, crear rúbricas, escribir correos a padres y generar material didáctico adaptado.', priceCategory: 'freemium', profiles: ['docente'], tags: { docente: ['crear_contenido', 'evaluar', 'gestion_aula'], general: ['estudio'] }, relevance: { docente: 5 } },
+            { name: 'Kahoot!', link: 'https://kahoot.com/', price: 'Freemium', shortDescription: 'Aprendizaje basado en juegos.', longDescription: 'Herramienta que usa IA para generar preguntas y cuestionarios automáticamente a partir de un documento o tema.', priceCategory: 'freemium', profiles: ['docente', 'recursoshumanos'], tags: { docente: ['gamificacion', 'evaluar'], recursoshumanos: ['capacitacion'], general: ['estudio'] }, relevance: { docente: 5, recursoshumanos: 4 } },
+            { name: 'Socratic', link: 'https://socratic.org/', price: 'Gratuito', shortDescription: 'Ayuda con tareas.', longDescription: 'App educativa que ayuda a estudiantes a comprender sus tareas mediante explicaciones visuales paso a paso.', priceCategory: 'gratis', profiles: ['estudiante'], tags: { estudiante: ['estudio', 'investigacion'], general: ['estudio'] }, relevance: { estudiante: 5 } },
+            { name: 'WolframAlpha', link: 'https://www.wolframalpha.com/', price: 'Freemium', shortDescription: 'Motor de conocimiento.', longDescription: 'Calcula soluciones paso a paso para problemas complejos de matemáticas, física y ciencias.', priceCategory: 'freemium', profiles: ['estudiante', 'ciencia', 'ingenieria'], tags: { estudiante: ['estudio'], ciencia: ['simulacion'], ingenieria: ['simulacion'], general: ['estudio'] }, relevance: { estudiante: 5, ciencia: 5, ingenieria: 5 } },
+            { name: 'Excel AI', link: 'https://www.microsoft.com/en-us/microsoft-365/excel', price: 'De pago', shortDescription: 'Copilot en Excel.', longDescription: 'Permite analizar datos, identificar tendencias, crear gráficos y escribir fórmulas usando lenguaje natural.', priceCategory: 'pago', profiles: ['finanzas', 'administracion', 'negocios'], tags: { finanzas: ['excel', 'analisis_financiero'], administracion: ['automatizacion'], negocios: ['productividad'], general: ['gestion'] }, relevance: { finanzas: 5, administracion: 4, negocios: 4 } },
+            { name: 'AutoCAD', link: 'https://www.autodesk.com/products/autocad', price: 'De pago', shortDescription: 'Diseño asistido por IA.', longDescription: 'El estándar para diseño 2D y 3D. Sus funciones de IA automatizan la colocación de bloques y tareas repetitivas.', priceCategory: 'pago', profiles: ['ingenieria'], tags: { ingenieria: ['diseno_cad'], general: ['gestion'] }, relevance: { ingenieria: 5 } },
+            { name: 'Casetext', link: 'https://casetext.com/', price: 'De pago', shortDescription: 'Asistente legal IA.', longDescription: 'Realiza revisión de documentos, investigación legal, deposiciones y análisis de contratos de forma precisa.', priceCategory: 'pago', profiles: ['juridico'], tags: { juridico: ['investigacion_legal', 'analisis_documentos'], general: ['gestion'] }, relevance: { juridico: 5 } },
+            { name: 'Harvey', link: 'https://www.harvey.ai/', price: 'De pago', shortDescription: 'IA generativa legal.', longDescription: 'IA entrenada con datos legales. Ayuda a bufetes en investigación, redacción y análisis de litigios complejos.', priceCategory: 'pago', profiles: ['juridico'], tags: { juridico: ['redaccion_documentos', 'gestion_casos'], general: ['gestion'] }, relevance: { juridico: 5 }, isNew: true },
+            { name: 'Tome', link: 'https://tome.app/', price: 'Freemium', shortDescription: 'Narrativa generativa.', longDescription: 'Escribe un prompt y Tome generará una presentación completa con texto, imágenes y diseño responsivo.', priceCategory: 'freemium', profiles: ['negocios', 'comunicacion', 'docente'], tags: { negocios: ['planificacion'], comunicacion: ['presentar'], docente: ['presentar'], general: ['diseno'] }, relevance: { negocios: 4, comunicacion: 4, docente: 4 } },
+            { name: 'Paradox', link: 'https://www.paradox.ai/', price: 'De pago', shortDescription: 'Reclutamiento IA.', longDescription: 'Asistente que automatiza la selección de candidatos, programa entrevistas y responde preguntas 24/7.', priceCategory: 'pago', profiles: ['recursoshumanos'], tags: { recursoshumanos: ['seleccion_personal', 'productividad'], general: ['gestion'] }, relevance: { recursoshumanos: 5 } },
+            { name: 'Textio', link: 'https://textio.com/', price: 'De pago', shortDescription: 'Escritura inclusiva.', longDescription: 'Analiza descripciones de trabajo y comunicaciones para eliminar sesgos inconscientes y asegurar lenguaje efectivo.', priceCategory: 'pago', profiles: ['recursoshumanos'], tags: { recursoshumanos: ['seleccion_personal', 'comunicacion_interna'], general: ['redaccion'] }, relevance: { recursoshumanos: 5 } },
+            { name: 'Nabla', link: 'https://www.nabla.com/', price: 'De pago', shortDescription: 'Copiloto médico.', longDescription: 'Escucha la consulta médica y genera automáticamente la nota clínica estructurada en tiempo real.', priceCategory: 'pago', profiles: ['salud'], tags: { salud: ['transcripcion', 'gestion_pacientes'], general: ['gestion'] }, relevance: { salud: 5 } },
+            { name: 'Glass Health', link: 'https://glass.health/', price: 'Freemium', shortDescription: 'Diagnóstico clínico.', longDescription: 'Ayuda a médicos a generar diagnósticos diferenciales y planes clínicos basados en evidencia.', priceCategory: 'freemium', profiles: ['salud', 'estudiante'], tags: { salud: ['diagnostico', 'investigacion_medica'], estudiante: ['estudio'], general: ['estudio'] }, relevance: { salud: 5, estudiante: 4 }, isNew: true },
+            { name: 'Tabnine', link: 'https://www.tabnine.com/', price: 'Freemium', shortDescription: 'Código seguro.', longDescription: 'Autocompletado de código IA que se ejecuta localmente o en nube privada, garantizando la privacidad.', priceCategory: 'freemium', profiles: ['tecnologia', 'estudiante'], tags: { tecnologia: ['programacion'], estudiante: ['programacion'], general: ['programacion'] }, relevance: { tecnologia: 4, estudiante: 4 } },
+            { name: 'Replit', link: 'https://replit.com/', price: 'Freemium', shortDescription: 'IDE online con IA.', longDescription: 'Entorno de desarrollo en el navegador. Su IA genera, explica y depura código directamente en el editor.', priceCategory: 'freemium', profiles: ['tecnologia', 'estudiante', 'docente'], tags: { tecnologia: ['programacion', 'automatizacion'], estudiante: ['programacion'], docente: ['gestion_aula'], general: ['programacion'] }, relevance: { tecnologia: 4, estudiante: 5, docente: 4 } },
+            { name: 'Salesforce Einstein', link: 'https://www.salesforce.com/products/einstein/', price: 'De pago', shortDescription: 'IA en CRM.', longDescription: 'Ofrece puntuación de leads, predicción de oportunidades y recomendaciones de acción en ventas.', priceCategory: 'pago', profiles: ['ventas', 'negocios'], tags: { ventas: ['gestion_crm', 'analisis_llamadas'], negocios: ['ventas'], general: ['gestion'] }, relevance: { ventas: 5, negocios: 5 } },
+            { name: 'Apollo.io', link: 'https://www.apollo.io/', price: 'Freemium', shortDescription: 'Inteligencia de ventas.', longDescription: 'Base de datos B2B para encontrar clientes, enriquecer datos y automatizar correos de ventas.', priceCategory: 'freemium', profiles: ['ventas', 'negocios'], tags: { ventas: ['gestion_clientes', 'email'], negocios: ['marketing'], general: ['gestion'] }, relevance: { ventas: 5, negocios: 4 } },
+            { name: 'DeepL', link: 'https://www.deepl.com/', price: 'Freemium', shortDescription: 'Traductor preciso.', longDescription: 'Traductor que capta matices sutiles del lenguaje mejor que sus competidores, ideal para documentos profesionales.', priceCategory: 'freemium', profiles: ['estudiante', 'docente', 'comunicacion', 'juridico'], tags: { estudiante: ['investigacion'], docente: ['crear_contenido'], comunicacion: ['redaccion'], juridico: ['analisis_documentos'], general: ['redaccion'] }, relevance: { estudiante: 4, docente: 3, comunicacion: 4, juridico: 3 } },
+            { name: 'Quizlet', link: 'https://quizlet.com/', price: 'Freemium', shortDescription: 'Fichas de estudio.', longDescription: 'Transforma apuntes en fichas, exámenes de práctica y juegos de aprendizaje personalizados.', priceCategory: 'freemium', profiles: ['estudiante', 'docente'], tags: { estudiante: ['estudio'], docente: ['evaluar'], general: ['estudio'] }, relevance: { estudiante: 5, docente: 4 } },
+            { name: 'Slidesgo', link: 'https://slidesgo.com/', price: 'Freemium', shortDescription: 'Plantillas IA.', longDescription: 'Ofrece miles de plantillas y un creador de presentaciones por IA que genera estructura e imágenes.', priceCategory: 'freemium', profiles: ['docente', 'directivo', 'comunicacion', 'creatividad'], tags: { docente: ['presentar'], directivo: ['presentaciones_ejecutivas'], comunicacion: ['presentar'], creatividad: ['multimedia', 'diseno'], general: ['diseno'] }, relevance: { docente: 4, directivo: 3, comunicacion: 3, creatividad: 3 } },
+            { name: 'Lalal.ai', link: 'https://www.lalal.ai/', price: 'Freemium', shortDescription: 'Separación de audio.', longDescription: 'Extrae voz, acompañamiento y varios instrumentos de cualquier archivo de audio con gran calidad.', priceCategory: 'freemium', profiles: ['comunicacion', 'creatividad'], tags: { comunicacion: ['video'], creativity: ['audio'], general: ['audio'] }, relevance: { comunicacion: 3, creativity: 3 } },
+            { name: 'Murf.ai', link: 'https://murf.ai/', price: 'Freemium', shortDescription: 'Voces realistas.', longDescription: 'Estudio de voz en off versátil con voces de IA humanas para videos y presentaciones.', priceCategory: 'freemium', profiles: ['comunicacion', 'docente', 'creatividad'], tags: { comunicacion: ['video'], docente: ['presentar'], creatividad: ['audio'], general: ['audio'] }, relevance: { comunicacion: 4, docente: 3, creatividad: 4 } },
+            { name: 'InVideo', link: 'https://invideo.io/', price: 'Freemium', shortDescription: 'Texto a video.', longDescription: 'Convierte guiones de texto en videos completos con imágenes de stock y voz en off automáticamente.', priceCategory: 'freemium', profiles: ['comunicacion', 'creatividad'], tags: { comunicacion: ['video'], creativity: ['video'], general: ['video'] }, relevance: { comunicacion: 3, creativity: 3 } },
+            { name: 'Pictory', link: 'https://pictory.ai/', price: 'De pago', shortDescription: 'Videos cortos.', longDescription: 'Extrae automáticamente clips cortos y compartibles de grabaciones largas de Zoom o webinars.', priceCategory: 'pago', profiles: ['comunicacion', 'creatividad'], tags: { comunicacion: ['video'], red_sociales: ['redes_sociales'], creatividad: ['video'], general: ['video'] }, relevance: { comunicacion: 4, creatividad: 4 } },
+            { name: 'Sheet+', link: 'https://sheetplus.ai/', price: 'Freemium', shortDescription: 'Fórmulas Excel.', longDescription: 'Escribe fórmulas complejas de hojas de cálculo a partir de texto simple y explica las existentes.', priceCategory: 'freemium', profiles: ['administracion', 'estudiante', 'negocios', 'ciencia', 'finanzas'], tags: { administracion: ['documentacion'], estudiante: ['organizacion'], negocios: ['gestion_financiera'], ciencia: ['analisis_datos'], finanzas: ['gestion_financiera'], general: ['gestion'] }, relevance: { administracion: 3, estudiante: 3, negocios: 4, ciencia: 3, finanzas: 5 } },
+            { name: 'Guidde', link: 'https://www.guidde.com/', price: 'Freemium', shortDescription: 'Video documentación.', longDescription: 'Crea guías paso a paso con video, voz y texto para documentación de software o entrenamiento.', priceCategory: 'freemium', profiles: ['docente', 'administracion', 'recursoshumanos'], tags: { docente: ['crear_contenido'], administracion: ['documentacion'], recursoshumanos: ['capacitacion'], general: ['video', 'gestion'] }, relevance: { docente: 3, administracion: 3, recursoshumanos: 4 } },
+            { name: 'Yabble', link: 'https://www.yabble.com/', price: 'De pago', shortDescription: 'Investigación de mercado.', longDescription: 'Analiza comentarios abiertos y datos no estructurados de clientes a gran escala.', priceCategory: 'pago', profiles: ['directivo', 'negocios', 'ventas'], tags: { directivo: ['planificacion'], negocios: ['marketing'], ventas: ['analisis_clientes'], general: ['gestion'] }, relevance: { directivo: 3, negocios: 3, ventas: 3 } },
+            { name: 'Glean', link: 'https://www.glean.com/', price: 'De pago', shortDescription: 'Buscador interno.', longDescription: 'Conecta todas las apps de tu empresa para encontrar cualquier documento o información al instante.', priceCategory: 'pago', profiles: ['administracion', 'directivo', 'juridico'], tags: { administracion: ['documentacion'], directivo: ['planificacion'], juridico: ['investigacion_legal'], general: ['gestion'] }, relevance: { administracion: 4, directivo: 4, juridico: 3 } },
+            { name: 'Curipod', link: 'https://curipod.com/', price: 'Freemium', shortDescription: 'Lecciones interactivas.', longDescription: 'Genera lecciones completas con diapositivas, encuestas y dibujos interactivos en segundos.', priceCategory: 'freemium', profiles: ['docente', 'recursoshumanos'], tags: { docente: ['crear_contenido'], evalular: ['evaluar'], recursoshumanos: ['capacitacion'], general: ['estudio'] }, relevance: { docente: 4, recursoshumanos: 3 } },
+            { name: 'Mindgrasp', link: 'https://mindgrasp.ai/', price: 'De pago', shortDescription: 'Estudio inteligente.', longDescription: 'Sube libros o videos y la IA generará notas detalladas, resúmenes y tarjetas de estudio automáticamente.', priceCategory: 'pago', profiles: ['estudiante'], tags: { estudiante: ['estudio', 'organizacion'], general: ['estudio'] }, relevance: { estudiante: 4 } },
+            { name: 'Poe', link: 'https://poe.com/', price: 'Freemium', shortDescription: 'Chat multi-bot.', longDescription: 'Plataforma para acceder a GPT-4, Claude, Llama y crear tus propios chatbots personalizados.', priceCategory: 'freemium', profiles: ['estudiante', 'docente', 'tecnologia'], tags: { estudiante: ['investigacion'], docente: ['crear_contenido'], tecnologia: ['programacion'], general: ['estudio', 'redaccion'] }, relevance: { estudiante: 4, docente: 3, tecnologia: 4 } },
+            { name: 'Leonardo Ai', link: 'https://leonardo.ai/', price: 'Freemium', shortDescription: 'Arte para juegos.', longDescription: 'Generador de imágenes con gran control estilístico, ideal para assets de videojuegos y arte conceptual.', priceCategory: 'freemium', profiles: ['comunicacion', 'creatividad'], tags: { comunicacion: ['imagen'], creativity: ['imagen'], general: ['imagen'] }, relevance: { comunicacion: 4, creatividad: 5 } },
+            { name: 'Krea', link: 'https://www.krea.ai/', price: 'Freemium', shortDescription: 'IA en tiempo real.', longDescription: 'Genera y mejora imágenes instantáneamente mientras dibujas formas simples o usas la webcam.', priceCategory: 'freemium', profiles: ['comunicacion', 'creatividad'], tags: { comunicacion: ['imagen'], creativity: ['imagen'], general: ['imagen'] }, relevance: { comunicacion: 4, creatividad: 5 } },
+            { name: 'Taskade', link: 'https://www.taskade.com/', price: 'Freemium', shortDescription: 'Productividad unificada.', longDescription: 'Combina tareas, notas, mapas mentales y chat de video en una sola plataforma con IA.', priceCategory: 'freemium', profiles: ['administracion', 'estudiante'], tags: { administracion: ['gestion_proyectos'], estudiante: ['organizacion'], general: ['gestion'] }, relevance: { administracion: 3, estudiante: 3 } },
+            { name: 'Todoist', link: 'https://todoist.com/', price: 'Freemium', shortDescription: 'Lista de tareas.', longDescription: 'Organiza tu vida y trabajo. Usa IA para sugerir prioridades y fechas de vencimiento.', priceCategory: 'freemium', profiles: ['estudiante', 'administracion'], tags: { estudiante: ['organizacion'], administracion: ['gestion_proyectos'], general: ['gestion'] }, relevance: { estudiante: 4, administracion: 3 } },
+            { name: 'Superhuman', link: 'https://superhuman.com/', price: 'De pago', shortDescription: 'Email rápido.', longDescription: 'Cliente de email que usa IA para redactar, resumir y organizar tu bandeja de entrada automáticamente.', priceCategory: 'pago', profiles: ['directivo', 'administracion', 'ventas'], tags: { directivo: ['planificacion'], administracion: ['comunicacion_interna'], ventas: ['redaccion_correos'], general: ['gestion'] }, relevance: { directivo: 4, administracion: 3, ventas: 4 } },
+            { name: 'CodiumAI', link: 'https://www.codium.ai/', price: 'Freemium', shortDescription: 'Tests de código.', longDescription: 'Analiza tu código y sugiere pruebas unitarias significativas para encontrar errores antes de lanzar.', priceCategory: 'freemium', profiles: ['estudiante', 'tecnologia'], tags: { estudiante: ['estudio'], tecnologia: ['programacion'], general: ['programacion'] }, relevance: { estudiante: 3, tecnologia: 4 } },
+            { name: 'Padlet', link: 'https://padlet.com/', price: 'Freemium', shortDescription: 'Tablones colaborativos.', longDescription: 'Espacio para organizar ideas, ahora con generación de contenido por IA.', priceCategory: 'freemium', profiles: ['docente'], tags: { docente: ['gestion_aula'], general: ['gestion', 'estudio'] }, relevance: { docente: 4 } },
+            { name: 'Wix ADI', link: 'https://www.wix.com/', price: 'Freemium', shortDescription: 'Diseño web automático.', longDescription: 'Crea un sitio web completo y personalizado respondiendo unas pocas preguntas.', priceCategory: 'freemium', profiles: ['comunicacion', 'negocios'], tags: { comunicacion: ['redaccion'], negocios: ['marketing'], general: ['diseno'] }, relevance: { comunicacion: 2, negocios: 2 } },
+            { name: 'Framer AI', link: 'https://www.framer.com/', price: 'Freemium', shortDescription: 'Diseño web interactivo.', longDescription: 'Genera y publica sitios web reales y animados a partir de descripciones de texto.', priceCategory: 'freemium', profiles: ['creatividad', 'negocios'], tags: { creativity: ['diseno'], negocios: ['marketing'], general: ['diseno'] }, relevance: { creativity: 5 } },
+            { name: 'Surfer SEO', link: 'https://surferseo.com/', price: 'De pago', shortDescription: 'Optimización SEO.', longDescription: 'Ayuda a planificar y escribir contenido que posicione en Google analizando a la competencia.', priceCategory: 'pago', profiles: ['comunicacion', 'negocios'], tags: { comunicacion: ['seo', 'redaccion'], negocios: ['marketing'], general: ['redaccion'] }, relevance: { comunicacion: 4, negocios: 4 } },
+            { name: 'Durable', link: 'https://durable.co/', price: 'De pago', shortDescription: 'Webs en 30s.', longDescription: 'Genera un sitio web comercial completo con imágenes y copia en segundos usando IA.', priceCategory: 'pago', profiles: ['comunicacion', 'negocios'], tags: { comunicacion: ['redaccion'], negocios: ['marketing'], general: ['diseno'] }, relevance: { comunicacion: 2, negocios: 2 } },
+            { name: 'Uizard', link: 'https://uizard.io/', price: 'Freemium', shortDescription: 'Boceto a diseño.', longDescription: 'Convierte bocetos a mano en diseños de interfaz de usuario digitales y editables automáticamente.', priceCategory: 'freemium', profiles: ['comunicacion', 'creatividad', 'tecnologia'], tags: { comunicacion: ['imagen'], creativity: ['imagen', 'diseno'], tecnologia: ['diseno_software'], general: ['diseno'] }, relevance: { comunicacion: 3, creativity: 3, tecnologia: 3 } },
+            { name: 'Adobe Podcast', link: 'https://podcast.adobe.com/', price: 'Gratuito', shortDescription: 'Mejora de audio.', longDescription: 'Limpia el ruido de fondo y hace que las grabaciones suenen como en un estudio.', priceCategory: 'gratis', profiles: ['comunicacion', 'docente', 'creatividad'], tags: { comunicacion: ['video'], docente: ['crear_contenido'], creativity: ['audio'], general: ['audio'] }, relevance: { comunicacion: 5, docente: 3, creativity: 5 } },
+            { name: 'Calendly', link: 'https://calendly.com/', price: 'Freemium', shortDescription: 'Agenda citas.', longDescription: 'Elimina el intercambio de correos. Permite que otros reserven tiempo según tu disponibilidad.', priceCategory: 'freemium', profiles: ['ventas', 'recursoshumanos', 'administracion', 'directivo'], tags: { ventas: ['gestion_clientes'], recursoshumanos: ['seleccion_personal'], administracion: ['gestion_proyectos'], directivo: ['planificacion'], general: ['gestion'] }, relevance: { ventas: 5 } },
+            { name: 'Motion', link: 'https://www.usemotion.com/', price: 'De pago', shortDescription: 'Planificador inteligente.', longDescription: 'Organiza tu calendario y tareas automáticamente, reagendando lo que no completaste.', priceCategory: 'pago', profiles: ['directivo', 'administracion'], tags: { directivo: ['planificacion'], administracion: ['planificacion'], general: ['gestion'] }, relevance: { directivo: 5 } },
+            { name: 'Feedly', link: 'https://feedly.com/', price: 'Freemium', shortDescription: 'Noticias con IA.', longDescription: 'Filtra y prioriza temas relevantes de diversas fuentes con un asistente de IA.', priceCategory: 'freemium', profiles: ['directivo', 'estudiante'], tags: { directivo: ['planificacion'], estudiante: ['investigacion'], general: ['estudio'] }, relevance: { directivo: 3 } },
+            { name: 'Evernote', link: 'https://evernote.com/', price: 'Freemium', shortDescription: 'Notas mejoradas.', longDescription: 'Usa IA para limpiar, resumir y buscar dentro de tus notas personales.', priceCategory: 'freemium', profiles: ['general'], tags: { general: ['gestion'] }, relevance: { general: 4 } },
+            { name: 'Sembly AI', link: 'https://www.sembly.ai/', price: 'Freemium', shortDescription: 'Actas automáticas.', longDescription: 'Graba, transcribe y genera resúmenes inteligentes de tus reuniones profesionales.', priceCategory: 'freemium', profiles: ['administracion', 'directivo'], tags: { administracion: ['documentacion'], directivo: ['gestion'], general: ['gestion', 'audio'] }, relevance: { administracion: 4 } },
+            { name: 'Wordtune', link: 'https://www.wordtune.com/', price: 'Freemium', shortDescription: 'Reescritura IA.', longDescription: 'Cambia el tono, acorta o expande tus frases para escribir con más claridad.', priceCategory: 'freemium', profiles: ['comunicacion', 'estudiante'], tags: { comunicacion: ['redaccion'], estudiante: ['redaccion'], general: ['redaccion'] }, relevance: { comunicacion: 4 } },
+            { name: 'Civitai', link: 'https://civitai.com/', price: 'Gratuito', shortDescription: 'Modelos Stable Diffusion.', longDescription: 'Comunidad para compartir y descargar modelos y LoRAs para generación de imágenes.', priceCategory: 'gratis', profiles: ['creatividad', 'comunicacion'], tags: { creativity: ['imagen'], comunicacion: ['imagen'], general: ['imagen'] }, relevance: { creativity: 4 } },
+            { name: 'Hugging Face', link: 'https://huggingface.co/', price: 'Gratuito', shortDescription: 'Hub de modelos IA.', longDescription: 'Repositorio masivo de modelos, datasets y demos de IA de código abierto.', priceCategory: 'gratis', profiles: ['tecnologia', 'estudiante'], tags: { tecnologia: ['programacion'], estudiante: ['estudio'], general: ['programacion'] }, relevance: { tecnologia: 5 } },
+            { name: 'AutoDraw', link: 'https://www.autodraw.com/', price: 'Gratuito', shortDescription: 'Dibujo rápido.', longDescription: 'Convierte garabatos en dibujos limpios y profesionales.', priceCategory: 'gratis', profiles: ['docente', 'creatividad'], tags: { docente: ['presentar'], creativity: ['imagen'], general: ['imagen'] }, relevance: { creativity: 3 } },
+            { name: 'Remove.bg', link: 'https://www.remove.bg/', price: 'Freemium', shortDescription: 'Quitar fondo.', longDescription: 'Elimina el fondo de cualquier imagen automáticamente en segundos.', priceCategory: 'freemium', profiles: ['comunicacion', 'creatividad'], tags: { comunicacion: ['imagen'], creativity: ['imagen'], general: ['imagen'] }, relevance: { comunicacion: 5 } },
+            { name: 'PhotoRoom', link: 'https://www.photoroom.com/', price: 'Freemium', shortDescription: 'Fotos de producto.', longDescription: 'Crea imágenes de productos profesionales eliminando fondos y generando escenarios.', priceCategory: 'freemium', profiles: ['negocios', 'comunicacion'], tags: { negocios: ['marketing'], comunicacion: ['imagen'], general: ['imagen'] }, relevance: { negocios: 4 } },
+            { name: 'NVIDIA Canvas', link: 'https://www.nvidia.com/en-us/studio/canvas/', price: 'Gratuito', shortDescription: 'Pinta paisajes.', longDescription: 'Transforma garabatos simples en paisajes fotorrealistas en tiempo real.', priceCategory: 'gratis', profiles: ['creatividad'], tags: { creativity: ['imagen'], general: ['imagen'] }, relevance: { creativity: 4 } },
+            { name: 'Magic Eraser', link: 'https://magicstudio.com/magiceraser/', price: 'Freemium', shortDescription: 'Borrar objetos.', longDescription: 'Elimina cosas no deseadas de tus fotos rápidamente.', priceCategory: 'freemium', profiles: ['creatividad', 'comunicacion'], tags: { creativity: ['imagen'], comunicacion: ['imagen'], general: ['imagen'] }, relevance: { creativity: 4 } },
+            { name: 'Decktopus', link: 'https://www.decktopus.com/', price: 'De pago', shortDescription: 'Presentaciones rápidas.', longDescription: 'Generador de diapositivas que se ocupa del diseño y el contenido.', priceCategory: 'pago', profiles: ['negocios'], tags: { negocios: ['presentaciones_ventas'], general: ['diseno'] }, relevance: { negocios: 4 } },
+            { name: 'DataRobot', link: 'https://www.datarobot.com/', price: 'De pago', shortDescription: 'Plataforma ML.', longDescription: 'Plataforma para construir y operar modelos de IA empresariales.', priceCategory: 'pago', profiles: ['ciencia', 'tecnologia'], tags: { ciencia: ['analisis_datos'], tecnologia: ['analisis_datos'], general: ['gestion'] }, relevance: { ciencia: 4 } },
+            { name: 'Power BI', link: 'https://powerbi.microsoft.com/', price: 'Freemium', shortDescription: 'Visualización de datos.', longDescription: 'Analítica empresarial con Copilot para obtener insights rápidos.', priceCategory: 'freemium', profiles: ['finanzas', 'directivo'], tags: { finanzas: ['visualizacion_datos'], directivo: ['analisis_datos'], general: ['gestion'] }, relevance: { finanzas: 5 } },
+            { name: 'Rytr', link: 'https://rytr.me/', price: 'Freemium', shortDescription: 'Escritura rápida.', longDescription: 'Generador de contenido para blogs, emails y anuncios.', priceCategory: 'freemium', profiles: ['comunicacion'], tags: { comunicacion: ['redaccion'], general: ['redaccion'] }, relevance: { comunicacion: 3 } },
+            { name: 'ShortlyAI', link: 'https://www.shortlyai.com/', price: 'De pago', shortDescription: 'Completa texto.', longDescription: 'Asistente que escribe por ti cuando te bloqueas.', priceCategory: 'pago', profiles: ['comunicacion'], tags: { comunicacion: ['redaccion'], general: ['redaccion'] }, relevance: { comunicacion: 3 } },
+            { name: 'Play.ht', link: 'https://play.ht/', price: 'De pago', shortDescription: 'Voces realistas.', longDescription: 'Generador de voz y clonación para contenido de audio.', priceCategory: 'pago', profiles: ['comunicacion', 'creatividad'], tags: { comunicacion: ['audio'], creativity: ['audio'], general: ['audio'] }, relevance: { comunicacion: 3 } },
+            { name: 'Artbreeder', link: 'https://www.artbreeder.com/', price: 'Freemium', shortDescription: 'Mezcla imágenes.', longDescription: 'Crea personajes y arte combinando imágenes existentes.', priceCategory: 'freemium', profiles: ['creatividad'], tags: { creativity: ['imagen'], general: ['imagen'] }, relevance: { creativity: 4 } },
+            { name: 'Epidemic Sound', link: 'https://www.epidemicsound.com/', price: 'De pago', shortDescription: 'Música IA.', longDescription: 'Encuentra pistas musicales similares a las que te gustan.', priceCategory: 'pago', profiles: ['creatividad', 'comunicacion'], tags: { creativity: ['audio'], comunicacion: ['video'], general: ['audio'] }, relevance: { creativity: 3 } },
+            { name: 'OtterTune', link: 'https://ottertune.com/', price: 'De pago', shortDescription: 'Ajuste DB.', longDescription: 'Optimiza automáticamente la configuración de bases de datos.', priceCategory: 'pago', profiles: ['tecnologia'], tags: { tecnologia: ['automatizacion'], general: ['programacion'] }, relevance: { tecnologia: 3 } },
+            { name: 'Xembly', link: 'https://www.xembly.com/', price: 'De pago', shortDescription: 'Asistente ejecutivo.', longDescription: 'Automatiza tareas administrativas como agendar y tomar notas.', priceCategory: 'pago', profiles: ['directivo', 'administracion'], tags: { directivo: ['gestion'], administracion: ['gestion_proyectos'], general: ['gestion'] }, relevance: { directivo: 3 } },
+            { name: 'Reply.io', link: 'https://reply.io/', price: 'De pago', shortDescription: 'Ventas auto.', longDescription: 'Automatiza correos y seguimientos para equipos de ventas.', priceCategory: 'pago', profiles: ['ventas'], tags: { ventas: ['email'], general: ['gestion'] }, relevance: { ventas: 4 } },
+            { name: 'Unscreen', link: 'https://www.unscreen.com/', price: 'Freemium', shortDescription: 'Fondo video.', longDescription: 'Elimina fondos de video automáticamente.', priceCategory: 'freemium', profiles: ['creatividad', 'comunicacion'], tags: { creativity: ['video'], comunicacion: ['video'], general: ['video'] }, relevance: { creativity: 4 } },
+            { name: 'Fliki', link: 'https://fliki.ai/', price: 'Freemium', shortDescription: 'Texto a video.', longDescription: 'Crea videos con voces de IA a partir de guiones.', priceCategory: 'freemium', profiles: ['comunicacion', 'docente'], tags: { comunicacion: ['video'], docente: ['crear_contenido'], general: ['video'] }, relevance: { comunicacion: 3 } },
+            { name: 'Boomy', link: 'https://boomy.com/', price: 'Freemium', shortDescription: 'Música instant.', longDescription: 'Crea canciones originales en segundos.', priceCategory: 'freemium', profiles: ['creatividad'], tags: { creativity: ['audio'], general: ['audio'] }, relevance: { creativity: 2 } },
+            { name: 'Voilà', link: 'https://www.getvoila.ai/', price: 'De pago', shortDescription: 'Asistente web.', longDescription: 'Trae IA a cualquier sitio web para escribir y responder.', priceCategory: 'pago', profiles: ['general'], tags: { general: ['redaccion'] }, relevance: { general: 3 } },
+            { name: 'Stockimg.ai', link: 'https://stockimg.ai/', price: 'De pago', shortDescription: 'Genera stock.', longDescription: 'Imágenes de stock, logos y portadas con IA.', priceCategory: 'pago', profiles: ['creatividad', 'comunicacion'], tags: { creativity: ['imagen'], comunicacion: ['imagen'], general: ['imagen'] }, relevance: { creativity: 3 } },
+            { name: 'CodePal', link: 'https://codepal.ai/', price: 'Freemium', shortDescription: 'Ayuda código.', longDescription: 'Genera, corrige y traduce código.', priceCategory: 'freemium', profiles: ['tecnologia'], tags: { tecnologia: ['programacion'], general: ['programacion'] }, relevance: { tecnologia: 3 } },
+            { name: 'Heyday', link: 'https://heyday.xyz/', price: 'De pago', shortDescription: 'Memoria IA.', longDescription: 'Guarda lo que lees y te lo recuerda en contexto.', priceCategory: 'pago', profiles: ['estudiante'], tags: { estudiante: ['estudio'], general: ['estudio'] }, relevance: { estudiante: 3 } },
+            { name: 'Humata.ai', link: 'https://www.humata.ai/', price: 'Freemium', shortDescription: 'Chat PDF.', longDescription: 'Pregunta a tus documentos y obtén respuestas citadas.', priceCategory: 'freemium', profiles: ['estudiante', 'administracion'], tags: { estudiante: ['investigacion'], administracion: ['documentacion'], general: ['estudio'] }, relevance: { estudiante: 4 } },
+            { name: 'Vidyo.ai', link: 'https://vidyo.ai/', price: 'Freemium', shortDescription: 'Clips cortos.', longDescription: 'Reutiliza videos largos en cortos virales.', priceCategory: 'freemium', profiles: ['comunicacion'], tags: { comunicacion: ['video', 'redes_sociales'], general: ['video'] }, relevance: { comunicacion: 5 } },
+            { name: 'Opus Clip', link: 'https://www.opus.pro/', price: 'Freemium', shortDescription: 'Videos virales.', longDescription: 'Recorta videos y agrega subtítulos dinámicos.', priceCategory: 'freemium', profiles: ['comunicacion'], tags: { comunicacion: ['video', 'redes_sociales'], general: ['video'] }, relevance: { comunicacion: 5 } },
+            { name: 'Kajabi', link: 'https://kajabi.com/', price: 'De pago', shortDescription: 'Vende cursos.', longDescription: 'Plataforma para monetizar conocimiento.', priceCategory: 'pago', profiles: ['negocios'], tags: { negocios: ['ventas'], general: ['gestion'] }, relevance: { negocios: 4 } },
+            { name: 'Teachable', link: 'https://teachable.com/', price: 'Freemium', shortDescription: 'Crea cursos.', longDescription: 'Plataforma para crear y vender cursos online.', priceCategory: 'freemium', profiles: ['docente'], tags: { docente: ['gestion_aula'], general: ['estudio'] }, relevance: { docente: 3 } },
+            { name: 'vLex', link: 'https://vlex.com/', price: 'De pago', shortDescription: 'Inteligencia legal.', longDescription: 'Base de datos jurídica con asistente IA.', priceCategory: 'pago', profiles: ['juridico'], tags: { juridico: ['investigacion_legal'], general: ['estudio'] }, relevance: { juridico: 5 } },
+            { name: 'Luminance', link: 'https://www.luminance.com/', price: 'De pago', shortDescription: 'Contratos IA.', longDescription: 'IA que lee y entiende contratos legales.', priceCategory: 'pago', profiles: ['juridico'], tags: { juridico: ['analisis_documentos'], general: ['gestion'] }, relevance: { juridico: 4 } },
+            { name: 'Slack', link: 'https://slack.com', price: 'Freemium', shortDescription: 'Chat equipos.', longDescription: 'Mensajería con IA para resumir hilos y buscar.', priceCategory: 'freemium', profiles: ['administracion', 'recursoshumanos'], tags: { administracion: ['comunicacion_interna'], recursoshumanos: ['comunicacion_interna'], general: ['gestion'] }, relevance: { administracion: 5 } },
+            { name: 'Trello', link: 'https://trello.com', price: 'Freemium', shortDescription: 'Gestión visual.', longDescription: 'Tableros Kanban con automatización IA.', priceCategory: 'freemium', profiles: ['administracion', 'negocios'], tags: { administracion: ['planificacion', 'gestion_proyectos'], negocios: ['organizacion'], general: ['gestion'] }, relevance: { administracion: 4 } },
+            { name: 'Ansys', link: 'https://www.ansys.com', price: 'De pago', shortDescription: 'Simulación.', longDescription: 'Simulación de ingeniería multifísica con IA.', priceCategory: 'pago', profiles: ['ingenieria'], tags: { ingenieria: ['simulacion'], general: ['gestion'] }, relevance: { ingenieria: 5 } },
+            { name: 'BioRender', link: 'https://biorender.com', price: 'Freemium', shortDescription: 'Ilustración científica.', longDescription: 'Crea diagramas científicos profesionales.', priceCategory: 'freemium', profiles: ['ciencia', 'salud'], tags: { ciencia: ['redaccion_cientifica'], salud: ['investigacion_medica'], general: ['diseno'] }, relevance: { ciencia: 5 } },
+            { name: 'Lattice', link: 'https://lattice.com', price: 'De pago', shortDescription: 'Gestión desempeño.', longDescription: 'Plataforma de RRHH para cultura y objetivos.', priceCategory: 'pago', profiles: ['recursoshumanos'], tags: { recursoshumanos: ['cultura', 'productividad'], general: ['gestion'] }, relevance: { recursoshumanos: 5 } },
+            { name: 'Culture Amp', link: 'https://www.cultureamp.com', price: 'De pago', shortDescription: 'Experiencia empleado.', longDescription: 'Mejora compromiso y retención con datos.', priceCategory: 'pago', profiles: ['recursoshumanos'], tags: { recursoshumanos: ['comunicacion_interna'], general: ['gestion'] }, relevance: { recursoshumanos: 4 } },
+            { name: 'SketchUp', link: 'https://www.sketchup.com', price: 'Freemium', shortDescription: 'Modelado 3D.', longDescription: 'Diseño 3D intuitivo con extensiones de IA.', priceCategory: 'freemium', profiles: ['ingenieria', 'creatividad'], tags: { ingenieria: ['diseno_cad'], creativity: ['diseno'], general: ['diseno'] }, relevance: { ingenieria: 4 } },
+            { name: 'Salesforce', link: 'https://www.salesforce.com', price: 'De pago', shortDescription: 'CRM líder.', longDescription: 'Gestión de clientes con IA generativa.', priceCategory: 'pago', profiles: ['ventas', 'negocios'], tags: { ventas: ['gestion_crm'], negocios: ['ventas'], general: ['gestion'] }, relevance: { ventas: 5 } },
+            { name: 'HubSpot', link: 'https://www.hubspot.com', price: 'Freemium', shortDescription: 'CRM y marketing.', longDescription: 'Software de inbound marketing con IA para contenido.', priceCategory: 'freemium', profiles: ['negocios', 'ventas'], tags: { negocios: ['marketing'], ventas: ['gestion_crm'], general: ['gestion'] }, relevance: { negocios: 5 } },
+            { name: 'LivePlan', link: 'https://www.liveplan.com', price: 'De pago', shortDescription: 'Plan de negocios.', longDescription: 'Crea planes y previsiones financieras.', priceCategory: 'pago', profiles: ['negocios'], tags: { negocios: ['planificacion', 'startup'], general: ['gestion'] }, relevance: { negocios: 5 } },
+            { name: 'IdeaBuddy', link: 'https://ideabuddy.com', price: 'Freemium', shortDescription: 'Ideas de negocio.', longDescription: 'Guía para transformar ideas en negocios.', priceCategory: 'freemium', profiles: ['negocios'], tags: { negocios: ['startup'], general: ['gestion'] }, relevance: { negocios: 4 } },
+            { name: 'Sana', link: 'https://www.sana.ai', price: 'De pago', shortDescription: 'Aprendizaje IA.', longDescription: 'LMS que crea y personaliza formación.', priceCategory: 'pago', profiles: ['recursoshumanos'], tags: { recursoshumanos: ['capacitacion'], general: ['estudio'] }, relevance: { recursoshumanos: 5 } },
+            { name: 'Workvivo', link: 'https://www.workvivo.com', price: 'De pago', shortDescription: 'Comunicación interna.', longDescription: 'Intranet y red social corporativa.', priceCategory: 'pago', profiles: ['recursoshumanos'], tags: { recursoshumanos: ['comunicacion_interna'], general: ['gestion'] }, relevance: { recursoshumanos: 4 } },
+            { name: 'Monday.com', link: 'https://monday.com', price: 'Freemium', shortDescription: 'Gestión de trabajo.', longDescription: 'Plataforma flexible con automatización IA.', priceCategory: 'freemium', profiles: ['administracion', 'recursoshumanos'], tags: { administracion: ['gestion_proyectos', 'planificacion'], recursoshumanos: ['productividad'], general: ['gestion'] }, relevance: { administracion: 4 } },
+            { name: 'DrChrono', link: 'https://www.drchrono.com', price: 'De pago', shortDescription: 'EHR móvil.', longDescription: 'Historia clínica electrónica y facturación.', priceCategory: 'pago', profiles: ['salud'], tags: { salud: ['gestion_pacientes'], general: ['gestion'] }, relevance: { salud: 4 } },
+            { name: 'PubMed', link: 'https://pubmed.ncbi.nlm.nih.gov', price: 'Gratuito', shortDescription: 'Base biomédica.', longDescription: 'Búsqueda de literatura médica y científica.', priceCategory: 'gratis', profiles: ['salud', 'ciencia'], tags: { salud: ['investigacion_medica'], ciencia: ['busqueda'], general: ['estudio'] }, relevance: { salud: 5 } },
+            { name: 'Splunk', link: 'https://www.splunk.com', price: 'De pago', shortDescription: 'Datos y seguridad.', longDescription: 'Observabilidad de datos con IA.', priceCategory: 'pago', profiles: ['tecnologia'], tags: { tecnologia: ['analisis_datos'], general: ['gestion'] }, relevance: { tecnologia: 4 } },
+            { name: 'Pitch', link: 'https://pitch.com', price: 'Freemium', shortDescription: 'Presentaciones.', longDescription: 'Software de presentaciones para equipos.', priceCategory: 'freemium', profiles: ['ventas', 'negocios'], tags: { ventas: ['presentaciones_ventas'], negocios: ['presentaciones_ventas'], general: ['diseno'] }, relevance: { ventas: 4 } },
+            { name: 'Lavender', link: 'https://www.lavender.ai', price: 'Freemium', shortDescription: 'Email de ventas.', longDescription: 'Ayuda a escribir correos que obtienen respuestas.', priceCategory: 'freemium', profiles: ['ventas'], tags: { ventas: ['email'], general: ['redaccion'] }, relevance: { ventas: 5 } },
+            { name: 'Clio', link: 'https://www.clio.com', price: 'De pago', shortDescription: 'Gestión legal.', longDescription: 'Plataforma líder para bufetes de abogados.', priceCategory: 'pago', profiles: ['juridico'], tags: { juridico: ['gestion_casos'], general: ['gestion'] }, relevance: { juridico: 5 } },
+            { name: 'Quickbooks', link: 'https://quickbooks.intuit.com', price: 'De pago', shortDescription: 'Contabilidad.', longDescription: 'Gestión financiera para pequeñas empresas.', priceCategory: 'pago', profiles: ['finanzas'], tags: { finanzas: ['gestion_financiera'], general: ['gestion'] }, relevance: { finanzas: 5 } },
+            { name: 'Descript', link: 'https://www.descript.com/', price: 'Freemium', shortDescription: 'Edita audio/video.', longDescription: 'Edita media borrando el texto transcrito.', priceCategory: 'freemium', profiles: ['comunicacion', 'creatividad'], tags: { comunicacion: ['video', 'audio'], creativity: ['edicion'], general: ['video'] }, relevance: { comunicacion: 5 } },
+            { name: 'Looka', link: 'https://looka.com/', price: 'Freemium', shortDescription: 'Diseño de logos.', longDescription: 'Generador de marcas con IA.', priceCategory: 'freemium', profiles: ['negocios', 'creatividad'], tags: { negocios: ['startup', 'marketing'], creativity: ['diseno'], general: ['diseno'] }, relevance: { negocios: 4 } },
+            { name: 'Browse AI', link: 'https://www.browse.ai/', price: 'Freemium', shortDescription: 'Web scraping.', longDescription: 'Extrae datos de webs sin programar.', priceCategory: 'freemium', profiles: ['tecnologia', 'negocios'], tags: { tecnologia: ['automatizacion'], negocios: ['marketing'], general: ['gestion'] }, relevance: { tecnologia: 4 } },
+            { name: 'Frase', link: 'https://www.frase.io/', price: 'De pago', shortDescription: 'Contenido SEO.', longDescription: 'Investiga y optimiza contenido para buscadores.', priceCategory: 'pago', profiles: ['comunicacion', 'negocios'], tags: { comunicacion: ['seo', 'redaccion'], negocios: ['marketing'], general: ['redaccion'] }, relevance: { comunicacion: 4 } }
+        ];
+
+        // --- VARIABLES GLOBALES ---
+        let currentProfile = null;
+        let currentFilter = 'all';
+        let currentPriceFilter = 'all'; 
+        let currentSearch = '';
+        let isLightMode = false;
+        let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        let showFavoritesOnly = false;
+        let modalToolName = '';
+
+        // --- FUNCIONES WINDOW ---
+
+        window.init = function() {
+            renderProfiles();
+            renderFeatured();
+            updateFavCount();
+            setupEventListeners();
+            setupTheme();
+        };
+
+        window.resetApp = function() {
+            const toolsView = document.getElementById('tools-view');
+            const homeView = document.getElementById('home-view');
+            const searchInput = document.getElementById('global-search');
+            
+            if(toolsView) toolsView.classList.add('hidden');
+            if(homeView) homeView.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            currentProfile = null;
+            if(searchInput) searchInput.value = '';
+            showFavoritesOnly = false;
+            
+            renderProfiles(); 
+            renderFeatured(); 
+        };
+
+        window.showFavorites = function() {
+            showFavoritesOnly = true;
+            window.openProfile('general');
+            
+            const profileTitle = document.getElementById('profile-title');
+            const profileAssistName = document.getElementById('profile-assist-name');
+            const sub = document.getElementById('profile-subtitle');
+            const filtersContainer = document.getElementById('filters-container');
+            
+            if(profileTitle) profileTitle.textContent = "Mis Favoritos ❤️";
+            if(profileAssistName) profileAssistName.textContent = "Tus Favoritos";
+            if(sub) sub.textContent = "Tus herramientas guardadas para acceso rápido.";
+            if(filtersContainer) filtersContainer.innerHTML = ''; 
+        };
+
+        window.openProfile = function(profileId) {
+            currentProfile = profileId;
+            const toolsView = document.getElementById('tools-view');
+            const homeView = document.getElementById('home-view');
+            const profileTitle = document.getElementById('profile-title');
+            const profileAssistName = document.getElementById('profile-assist-name');
+            const filtersContainer = document.getElementById('filters-container');
+            
+            if(homeView) homeView.classList.add('hidden');
+            if(toolsView) toolsView.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Resetear filtros
+            currentFilter = 'all'; 
+            currentPriceFilter = 'all';
+            
+            // Resetear botones de precio visualmente
+            const priceButtons = document.querySelectorAll('.price-filter-btn');
+            priceButtons.forEach(btn => {
+                 btn.classList.remove('active');
+                 if(btn.id === 'price-btn-all') btn.classList.add('active');
+            });
+
+            if (!showFavoritesOnly) {
+                const data = profilesData[profileId];
+                if(profileTitle) profileTitle.textContent = data ? data.title : "Directorio";
+                if(profileAssistName) profileAssistName.textContent = data ? data.title : "Asistente";
+                if(filtersContainer && data) renderFilters(data.filters);
+            }
+            
+            renderTools();
+        };
+
+        window.setFilter = function(filterKey) {
+            currentFilter = filterKey;
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.getAttribute('onclick').includes(`'${filterKey}'`)) {
+                    btn.classList.add('active');
+                }
+            });
+            renderTools();
+        };
+
+        window.setPriceFilter = function(priceKey) {
+            currentPriceFilter = priceKey;
+            const priceButtons = document.querySelectorAll('.price-filter-btn');
+            priceButtons.forEach(btn => {
+                 btn.classList.remove('active');
+                 if(btn.id === `price-btn-${priceKey}`) btn.classList.add('active');
+            });
+            renderTools();
+        };
+
+        window.openModal = function(toolName) {
+            const tool = allTools.find(t => t.name === toolName);
+            if (!tool) return;
+            
+            modalToolName = toolName;
+            const isFav = favorites.includes(toolName);
+            
+            const modalTitle = document.getElementById('modal-title');
+            const modalDesc = document.getElementById('modal-desc');
+            const modalLink = document.getElementById('modal-link');
+            const modalLogoImg = document.getElementById('modal-logo-img');
+            
+            if (modalTitle) modalTitle.textContent = tool.name;
+            if (modalDesc) modalDesc.textContent = tool.longDescription || tool.shortDescription;
+            if (modalLink) modalLink.href = tool.link;
+            if (modalLogoImg) modalLogoImg.src = getLogoUrl(tool.link);
+            
+            // Fix Fav Button state in Modal
+            const modalFavBtn = document.getElementById('modal-fav-btn');
+            if(modalFavBtn) {
+                if (isFav) modalFavBtn.classList.add('is-fav');
+                else modalFavBtn.classList.remove('is-fav');
+                
+                const newBtn = modalFavBtn.cloneNode(true);
+                modalFavBtn.parentNode.replaceChild(newBtn, modalFavBtn);
+                newBtn.onclick = (e) => window.toggleFavorite(e, toolName);
+            }
+            
+            const tagsDiv = document.getElementById('modal-tags');
+            if(tagsDiv) {
+                const tags = tool.tags?.general || []; 
+                 tagsDiv.innerHTML = tags.map(tag => 
+                    `<span class="px-2 py-1 rounded text-xs bg-orange-500/10 text-orange-500 border border-orange-500/30 capitalize">${tag.replace('_', ' ')}</span>`
+                ).join('') + `<span class="badge-price ${getBadgeClass(tool.priceCategory)} ml-2">${tool.price}</span>`;
+            }
+
+            const toolModal = document.getElementById('tool-modal');
+            const modalContent = document.getElementById('modal-content');
+            if(toolModal) {
+                toolModal.classList.remove('hidden');
+                setTimeout(() => {
+                    if(modalContent) {
+                        modalContent.classList.remove('scale-95', 'opacity-0');
+                        modalContent.classList.add('scale-100', 'opacity-100');
+                    }
+                }, 10);
+            }
+        };
+
+        window.toggleFavorite = function(e, toolName) {
+            e.stopPropagation(); 
+            const index = favorites.indexOf(toolName);
+            let isFav;
+            if (index > -1) {
+                favorites.splice(index, 1);
+                showToast("Eliminado de favoritos");
+                isFav = false;
+            } else {
+                favorites.push(toolName);
+                showToast("Agregado a favoritos ❤️");
+                isFav = true;
+            }
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            updateFavCount();
+            
+            const btn = e.currentTarget;
+            if (btn.classList.contains('is-fav')) {
+                btn.classList.remove('is-fav');
+            } else {
+                btn.classList.add('is-fav');
+            }
+            
+            const modalFavBtn = document.getElementById('modal-fav-btn');
+            if (modalToolName === toolName && modalFavBtn && modalFavBtn !== btn) {
+                 if(isFav) modalFavBtn.classList.add('is-fav');
+                 else modalFavBtn.classList.remove('is-fav');
+            }
+            
+            if (showFavoritesOnly) renderTools();
+        };
+        
+        window.shareTool = function(e, name, link) {
+            e.stopPropagation();
+            navigator.clipboard.writeText(`${name}: ${link}`).then(() => {
+                showToast("¡Enlace copiado!");
+            });
+        };
+        
+        window.surpriseMe = function() {
+             const randomTool = allTools[Math.floor(Math.random() * allTools.length)];
+             window.openModal(randomTool.name);
+        };
+
+        window.generateIdeas = async function(tool) {
+            const output = document.getElementById('ideas-output');
+            output.innerHTML = "Para usar esta función, necesitas configurar una API Key de Gemini en el código.";
+            output.classList.remove('hidden');
+        };
+
+        // --- HELPERS ---
+
+        function setupTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') setTheme(false);
+            else setTheme(true); // Default to light
+        }
+
+        function setTheme(isLight) {
+            isLightMode = isLight;
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
+            
+            if (isLight) {
+                document.body.classList.remove('dark-mode');
+                if(sunIcon) sunIcon.classList.add('hidden');
+                if(moonIcon) moonIcon.classList.remove('hidden');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.body.classList.add('dark-mode');
+                if(sunIcon) sunIcon.classList.remove('hidden');
+                if(moonIcon) moonIcon.classList.add('hidden');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        
+        function getLogoUrl(url) {
+            return `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${url}&size=128`;
+        }
+        
+        function getBadgeClass(cat) {
+            if(cat === 'gratis') return 'badge-gratis';
+            if(cat === 'pago') return 'badge-pago';
+            return 'badge-freemium';
+        }
+
+        function updateFavCount() {
+            const favCount = document.getElementById('fav-count');
+            if(favCount) {
+                favCount.textContent = favorites.length;
+                if(favorites.length > 0) favCount.classList.remove('hidden');
+                else favCount.classList.add('hidden');
+            }
+        }
+        
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            if(toastMsg) toastMsg.textContent = msg;
+            if(toast) {
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            }
+        }
+
+        function closeModal() {
+            const toolModal = document.getElementById('tool-modal');
+            const modalContent = document.getElementById('modal-content');
+            if(modalContent) {
+                modalContent.classList.remove('scale-100', 'opacity-100');
+                modalContent.classList.add('scale-95', 'opacity-0');
+            }
+            setTimeout(() => { if(toolModal) toolModal.classList.add('hidden'); }, 300);
+            modalToolName = ''; 
+        }
+
+        function renderProfiles() {
+            const profilesGrid = document.getElementById('profiles-grid');
+            if(!profilesGrid) return;
+            
+            profilesGrid.innerHTML = profilesList.map(p => `
+                <div class="profile-card p-6 rounded-xl cursor-pointer group flex flex-col h-full relative border border-transparent" onclick="window.openProfile('${p.id}')">
+                    <div class="flex items-center justify-between mb-4 mt-2">
+                        <span class="text-4xl profile-icon transition-transform duration-300">${p.icon}</span>
+                        <div class="w-8 h-8 rounded-full theme-bg-secondary flex items-center justify-center group-hover:bg-orange-500 transition-colors shadow-sm flex-shrink-0">
+                            <svg class="w-4 h-4 theme-text-main group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-start mb-2 relative">
+                        <h3 class="text-xl font-bold theme-text-main group-hover:text-orange-500 transition-colors font-heading pr-2">${p.name}</h3>
+                    </div>
+                    <p class="text-sm theme-text-muted leading-relaxed flex-grow">${p.desc}</p>
+                    
+                    <div class="mt-4 pt-4 border-t theme-border opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex justify-between items-center">
+                        <span class="text-xs font-bold text-orange-500 flex items-center gap-1">
+                            VER HERRAMIENTAS
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderFeatured() {
+            const featuredGrid = document.getElementById('featured-grid');
+            if(!featuredGrid) return;
+            const featuredNames = ['ChatGPT', 'Adobe Firefly', 'Canva']; 
+            const featuredTools = allTools.filter(t => featuredNames.includes(t.name));
+            
+            featuredGrid.innerHTML = featuredTools.map(t => {
+                const isFav = favorites.includes(t.name);
+                return `
+                 <div class="tool-card rounded-xl p-5 flex flex-col h-full group relative overflow-hidden cursor-pointer border-l-4 border-l-orange-500" onclick="window.openModal('${t.name}')">
+                    <button class="absolute top-3 right-3 z-20 p-2 rounded-full hover:bg-red-500/10 transition-colors ${isFav ? 'text-red-500' : 'text-gray-400'}" onclick="window.toggleFavorite(event, '${t.name}')" title="Añadir a favoritos">
+                        <svg class="w-5 h-5" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                    </button>
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-white p-1 flex items-center justify-center shadow-sm border border-gray-100">
+                                <img src="${getLogoUrl(t.link)}" alt="${t.name}" class="w-full h-full object-contain">
+                            </div>
+                            <h4 class="text-lg font-bold theme-text-main group-hover:text-orange-500 transition-colors font-heading">${t.name}</h4>
+                        </div>
+                        <span class="badge-price ${getBadgeClass(t.priceCategory)}">${t.price}</span>
+                    </div>
+                    <p class="theme-text-muted text-sm line-clamp-2 mt-2">${t.shortDescription}</p>
+                </div>
+            `}).join('');
+        }
+
+        function renderTools() {
+            const toolsGrid = document.getElementById('tools-grid');
+            if(!toolsGrid) return;
+            let tools = allTools.filter(t => {
+                if (showFavoritesOnly) return favorites.includes(t.name);
+                
+                const matchesProfile = currentProfile === 'general' || (t.profiles && t.profiles.includes(currentProfile));
+                const matchesSearch = t.name.toLowerCase().includes(currentSearch.toLowerCase()) || t.shortDescription.toLowerCase().includes(currentSearch.toLowerCase());
+                
+                // Filtro Tags
+                let matchesTag = true;
+                if (currentFilter !== 'all' && t.tags) {
+                     const tagsToCheck = currentProfile === 'general' ? t.tags.general : (t.tags[currentProfile] || []);
+                     matchesTag = tagsToCheck && tagsToCheck.includes(currentFilter);
+                }
+                
+                // Filtro Precio
+                let matchesPrice = true;
+                if (currentPriceFilter !== 'all') {
+                    matchesPrice = t.priceCategory === currentPriceFilter;
+                }
+
+                return matchesProfile && matchesSearch && matchesTag && matchesPrice;
+            });
+            
+            const sortSelect = document.getElementById('sort-select');
+            const sortVal = sortSelect ? sortSelect.value : 'relevance-desc';
+            
+            if (sortVal === 'alpha-asc') {
+                tools.sort((a, b) => a.name.localeCompare(b.name));
+            } else if (sortVal === 'alpha-desc') {
+                tools.sort((a, b) => b.name.localeCompare(a.name));
+            }
+
+            if (tools.length === 0) {
+                toolsGrid.innerHTML = `<p class="col-span-full text-center text-gray-500 py-10">No se encontraron herramientas con estos filtros.</p>`;
+                return;
+            }
+
+            toolsGrid.innerHTML = tools.map(t => {
+                const isFav = favorites.includes(t.name);
+                return `
+                <div class="tool-card rounded-xl p-6 flex flex-col h-full group relative overflow-hidden cursor-pointer" onclick="window.openModal('${t.name}')">
+                    <div class="flex justify-between items-start mb-4 relative z-10 card-header">
+                         <div class="flex items-center gap-3 w-full">
+                             <div class="tool-logo-container flex-shrink-0 bg-white rounded-lg p-1 border border-gray-200/10 shadow-sm w-12 h-12 flex items-center justify-center">
+                                <img src="${getLogoUrl(t.link)}" alt="${t.name}" class="w-full h-full object-contain rounded-md">
+                             </div>
+                             <div class="flex-1 min-w-0">
+                                 <h4 class="text-lg font-bold theme-text-main group-hover:text-orange-500 transition-colors font-heading truncate">${t.name}</h4>
+                                 ${t.isNew ? '<span class="text-[10px] bg-orange-500 text-white px-2 py-0.5 rounded-full font-bold ml-2">NUEVO</span>' : ''}
+                             </div>
+                         </div>
+                         <button class="p-2 -mr-2 -mt-2 text-gray-400 hover:text-red-500 transition-colors ${isFav ? 'text-red-500' : ''}" onclick="window.toggleFavorite(event, '${t.name}')" title="Favorito">
+                            <svg class="w-6 h-6" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                         </button>
+                    </div>
+                    <div class="card-body flex-grow">
+                        <p class="theme-text-muted text-sm mb-4 leading-relaxed line-clamp-3">${t.shortDescription}</p>
+                    </div>
+                    <div class="card-footer flex items-center justify-between mt-auto pt-4 border-t theme-border">
+                         <span class="badge-price ${getBadgeClass(t.priceCategory)}">${t.price}</span>
+                         <button onclick="window.shareTool(event, '${t.name}', '${t.link}')" class="action-btn text-gray-400 hover:text-blue-400 transition-colors" title="Copiar enlace">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                         </button>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        function renderFilters(filters) {
+            const filtersContainer = document.getElementById('filters-container');
+            if(!filtersContainer) return;
+            let html = `<button onclick="window.setFilter('all')" class="filter-btn filter-btn-default px-4 py-1.5 rounded-full text-sm font-medium border ${currentFilter === 'all' ? 'active' : ''}">Todo</button>`;
+            
+            html += Object.entries(filters).filter(([key]) => key !== 'all').map(([key, val]) => 
+                `<button onclick="window.setFilter('${key}')" class="filter-btn filter-btn-default px-4 py-1.5 rounded-full text-sm font-medium border ${currentFilter === key ? 'active' : ''}">${val}</button>`
+            ).join('');
+            
+            filtersContainer.innerHTML = html;
+        }
+
+        function updateSuggestions(query) {
+             const suggestions = document.getElementById('search-suggestions');
+             if(!suggestions) return;
+             
+             if(!query) {
+                 suggestions.classList.add('hidden');
+                 return;
+             }
+             
+             const lower = query.toLowerCase();
+             const matches = allTools.filter(t => t.name.toLowerCase().includes(lower) || t.shortDescription.toLowerCase().includes(lower)).slice(0, 5);
+             
+             if(matches.length > 0) {
+                 suggestions.innerHTML = matches.map(t => `
+                    <div class="suggestion-item" onclick="window.openModal('${t.name}')">
+                        <img src="${getLogoUrl(t.link)}" class="suggestion-img">
+                        <div class="suggestion-text text-sm ml-2">${t.name}</div>
+                    </div>
+                 `).join('');
+                 suggestions.classList.remove('hidden');
+             } else {
+                 suggestions.classList.add('hidden');
+             }
+        }
+
+        function executeGlobalSearch() {
+             const searchInput = document.getElementById('global-search');
+             const suggestions = document.getElementById('search-suggestions');
+             if(suggestions) suggestions.classList.add('hidden');
+             
+             if(searchInput) {
+                 currentSearch = searchInput.value;
+                 window.openProfile('general');
+             }
+        }
+
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function formatInlineMarkdown(text) {
+            let t = text;
+            t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
+            t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            t = t.replace(/(^|[^*])\*([^*]+)\*(?!\*)/g, '$1<em>$2</em>');
+            t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, label, url) => {
+                const safeUrl = /^https?:\/\//i.test(url) ? url : '#';
+                return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${label}</a>`;
+            });
+            return t;
+        }
+
+        function renderMarkdown(text) {
+            const lines = escapeHtml(text || '').split(/\r?\n/);
+            let html = '';
+            let inCode = false;
+            let inUl = false;
+            let inOl = false;
+            let codeBuffer = [];
+            let paragraph = '';
+
+            const flushParagraph = () => {
+                if (paragraph) {
+                    html += `<p>${paragraph}</p>`;
+                    paragraph = '';
+                }
+            };
+
+            const closeLists = () => {
+                if (inUl) { html += '</ul>'; inUl = false; }
+                if (inOl) { html += '</ol>'; inOl = false; }
+            };
+
+            for (const rawLine of lines) {
+                const line = rawLine.trimEnd();
+
+                if (line.trim().startsWith('```')) {
+                    if (inCode) {
+                        html += `<pre><code>${codeBuffer.join('\n')}</code></pre>`;
+                        codeBuffer = [];
+                        inCode = false;
+                    } else {
+                        flushParagraph();
+                        closeLists();
+                        inCode = true;
+                    }
+                    continue;
+                }
+
+                if (inCode) {
+                    codeBuffer.push(line);
+                    continue;
+                }
+
+                if (!line.trim()) {
+                    flushParagraph();
+                    closeLists();
+                    continue;
+                }
+
+                const headingMatch = line.match(/^(#{1,6})\s+(.*)$/);
+                if (headingMatch) {
+                    flushParagraph();
+                    closeLists();
+                    const level = headingMatch[1].length;
+                    html += `<h${level}>${formatInlineMarkdown(headingMatch[2])}</h${level}>`;
+                    continue;
+                }
+
+                const ulMatch = line.match(/^[-*]\s+(.*)$/);
+                if (ulMatch) {
+                    flushParagraph();
+                    if (inOl) { html += '</ol>'; inOl = false; }
+                    if (!inUl) { html += '<ul>'; inUl = true; }
+                    html += `<li>${formatInlineMarkdown(ulMatch[1])}</li>`;
+                    continue;
+                }
+
+                const olMatch = line.match(/^\d+\.\s+(.*)$/);
+                if (olMatch) {
+                    flushParagraph();
+                    if (inUl) { html += '</ul>'; inUl = false; }
+                    if (!inOl) { html += '<ol>'; inOl = true; }
+                    html += `<li>${formatInlineMarkdown(olMatch[1])}</li>`;
+                    continue;
+                }
+
+                paragraph += (paragraph ? '<br>' : '') + formatInlineMarkdown(line);
+            }
+
+            if (inCode) {
+                html += `<pre><code>${codeBuffer.join('\n')}</code></pre>`;
+            }
+
+            flushParagraph();
+            closeLists();
+
+            return html || escapeHtml(text || '').replace(/\n/g, '<br>');
+        }
+
+        async function callGemini(prompt, outputElement) {
+             if(!apiKey) {
+                 outputElement.innerHTML = "Por favor configura tu API Key en el código.";
+                 outputElement.classList.remove('hidden');
+                 return;
+             }
+
+             if (!prompt || prompt.trim() === "") {
+                 return;
+             }
+
+             outputElement.innerHTML = "Pensando...";
+             outputElement.classList.remove('hidden');
+
+             const finalPrompt = prompt;
+
+             // Estrategia de fallback: probar varios modelos/versiones hasta que uno funcione
+             const models = [
+                 { id: 'gemini-2.5-flash-lite', version: 'v1beta' },
+                 { id: 'gemini-2.5-flash', version: 'v1beta' },
+                 { id: 'gemini-2.0-flash-lite', version: 'v1beta' },
+                 { id: 'gemini-2.0-flash', version: 'v1beta' },
+                 { id: 'gemini-flash-latest', version: 'v1beta' },
+                 { id: 'gemini-pro-latest', version: 'v1beta' }
+             ];
+
+             for (const model of models) {
+                 try {
+                     console.log(`Intentando conectar con modelo: ${model.id} (${model.version})...`);
+                     const response = await fetch(`https://generativelanguage.googleapis.com/${model.version}/models/${model.id}:generateContent?key=${apiKey}`, {
+                         method: 'POST',
+                         headers: { 'Content-Type': 'application/json' },
+                         body: JSON.stringify({
+                            contents: [{ parts: [{ text: finalPrompt }] }],
+                            generationConfig: {
+                               temperature: 0.6,
+                               maxOutputTokens: 3072,
+                               topP: 0.9
+                           }
+                         })
+                     });
+                     
+                     const data = await response.json();
+                     
+                     if (data.error) {
+                         console.warn(`Fallo con ${model.id}:`, data.error.message);
+                         // Si es el último modelo, lanzamos el error para mostrarlo
+                         if (model === models[models.length - 1]) throw new Error(data.error.message);
+                         continue; // Probamos el siguiente
+                     }
+
+                     if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+                         if (model === models[models.length - 1]) throw new Error("La IA no devolvió contenido (posible bloqueo de seguridad).");
+                         continue;
+                     }
+
+                     const text = data.candidates[0].content.parts[0].text;
+                     outputElement.innerHTML = renderMarkdown(text);
+                     return; // ¡Éxito! Salimos de la función
+
+                 } catch(e) {
+                     console.error(`Error con modelo ${model.id}:`, e);
+                     if (model === models[models.length - 1]) {
+                         // Si todos fallan, intentamos listar los modelos disponibles para ayudar al usuario
+                         outputElement.innerHTML = `Error al consultar la IA. Verificando modelos disponibles...`;
+                         try {
+                             const listResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+                             const listData = await listResponse.json();
+                             if (listData.models) {
+                                 const availableModels = listData.models.map(m => m.name.replace('models/', '')).join(', ');
+                                 outputElement.innerHTML = `Error: Ninguno de los modelos probados funcionó. <br>Modelos disponibles para tu API Key: <br><b>${availableModels}</b><br><br>Detalle del error: ${e.message}`;
+                             } else {
+                                 outputElement.innerHTML = `Error al consultar la IA: ${e.message}. No se pudieron listar los modelos.`;
+                             }
+                         } catch (listError) {
+                             outputElement.innerHTML = `Error al consultar la IA: ${e.message}. (Fallo adicional al listar modelos: ${listError.message})`;
+                         }
+                     }
+                 }
+             }
+        }
+
+        function setupEventListeners() {
+            const searchInput = document.getElementById('global-search');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const modalBackdrop = document.getElementById('modal-backdrop');
+            const themeToggle = document.getElementById('theme-toggle');
+            const sortSelect = document.getElementById('sort-select');
+            const backBtn = document.getElementById('back-to-profiles');
+            const taskInput = document.getElementById('task-input');
+            const recommendBtn = document.getElementById('recommend-btn');
+            const profileTaskInput = document.getElementById('profile-task-input');
+            const profileRecommendBtn = document.getElementById('profile-recommend-btn');
+            
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                   updateSuggestions(e.target.value);
+                });
+                searchInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        executeGlobalSearch();
+                    }
+                });
+            }
+
+            if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+            if (modalBackdrop) modalBackdrop.addEventListener('click', closeModal);
+            
+            if (themeToggle) {
+                themeToggle.addEventListener('click', () => {
+                    const isDark = document.body.classList.toggle('dark-mode');
+                    setTheme(!isDark);
+                });
+            }
+            
+            if (sortSelect) sortSelect.addEventListener('change', renderTools);
+            if (backBtn) backBtn.addEventListener('click', window.resetApp);
+
+            if (taskInput) {
+                taskInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault(); 
+                        if (recommendBtn) recommendBtn.click();
+                    }
+                });
+            }
+            if (recommendBtn) {
+                recommendBtn.addEventListener('click', () => {
+                   const val = taskInput.value;
+                   const output = document.getElementById('recommendations-output');
+                   if(val) callGemini("Recomienda herramientas para: " + val, output);
+                });
+            }
+
+            if (profileTaskInput) {
+                profileTaskInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (profileRecommendBtn) profileRecommendBtn.click();
+                    }
+                });
+            }
+            if (profileRecommendBtn) {
+                profileRecommendBtn.addEventListener('click', () => {
+                    const val = profileTaskInput.value;
+                    const output = document.getElementById('profile-recommendations-output');
+                    const context = profilesData[currentProfile]?.title || 'general';
+                    if(val) callGemini(`Soy un ${context}. Recomienda herramientas para: ` + val, output);
+                });
+            }
+            
+            document.addEventListener('click', (e) => {
+                const suggestions = document.getElementById('search-suggestions');
+                if (searchInput && suggestions && !searchInput.contains(e.target) && !suggestions.contains(e.target)) {
+                    suggestions.classList.add('hidden');
+                }
+            });
+        }
+        
+        function setupVoiceSearch() {
+             const micBtn = document.getElementById('voice-assist-btn');
+             if (!micBtn) return;
+             
+             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                micBtn.style.display = 'none';
+                return;
+             }
+             
+             micBtn.addEventListener('click', () => {
+                 alert("Búsqueda por voz activada (simulada). En un servidor real usaría la API del navegador.");
+             });
+        }
+
+        // --- INICIALIZACIÓN SEGURA ---
+        document.addEventListener('DOMContentLoaded', () => {
+            window.init();
+        });
+    </script>
+</body>
+</html>

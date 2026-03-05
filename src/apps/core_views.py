@@ -31,6 +31,13 @@ def landing(request):
     return render(request, 'landing.html', context)
 
 
+def repositorio_ia(request):
+    """
+    Vista del repositorio de herramientas de IA
+    """
+    return render(request, 'repositorio-ia.html')
+
+
 def lista_polos(request):
     """
     Vista para mostrar el listado de Polos Creativos y sus cursos
