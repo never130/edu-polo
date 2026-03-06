@@ -872,7 +872,7 @@ def crear_polo(request):
 def estadisticas_detalladas(request):
     """Panel de estadísticas detalladas con gráficos"""
     from apps.modulo_4.asistencia.models import RegistroAsistencia
-    from django.db.models import Avg, Count, DecimalField, Q, Value
+    from django.db.models import Avg, Count, DecimalField, Q, Value, Max
     from django.db.models.functions import Coalesce
     
     # Filtros de fecha (por inicio de comisión)
