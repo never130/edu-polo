@@ -164,7 +164,7 @@
                                         </button>
                                     </form>
                                 {% endif %}
-                                {% if inscripcion.estado == 'confirmado' %}
+                                {% if inscripcion.estado == 'confirmado' and es_admin_completo %}
                                     <form method="post" action="/panel/inscripciones/cancelar/{{ inscripcion.id|unlocalize }}/" style="display: inline;" onsubmit="return confirm('¿Dar de baja la inscripción de {{ inscripcion.estudiante.usuario.persona.nombre_completo }} en la comisión #{{ inscripcion.comision.id_comision }}?');">
                                         {% csrf_token %}
                                         <input type="hidden" name="next" value="{% url 'administracion:panel_inscripciones' %}">
