@@ -732,6 +732,49 @@ def inscribir_estudiante_admin(request):
 
 
 @login_required
+@user_passes_test(es_admin_o_mesa)
+def cancelar_inscripcion_admin(request, inscripcion_id):
+    if request.method != 'POST':
+        return redirect('administracion:panel_inscripciones')
+
+    redirect_url = request.POST.get('next', 'administracion:panel_inscripciones')
+    inscripcion = get_object_or_404(Inscripcion, pk=inscripcion_id)
+    comision = inscripcion.comision
+
+    ciudad_mesa_entrada = get_mesa_entrada_ciudad(request.user)
+    if ciudad_mesa_entrada:
+        if comision.fk_id_polo and comision.fk_id_polo.ciudad != ciudad_mesa_entrada:
+            messages.error(request, '❌ No tienes permiso para dar de baja inscripciones de otra ciudad.')
+            return redirect(redirect_url)
+
+        if (comision.modalidad == 'Virtual') and (comision.fk_id_polo_id is None):
+            ciudades_match = Persona.ciudad_variantes(ciudad_mesa_entrada)
+            ciudad_estudiante = (inscripcion.estudiante.usuario.persona.ciudad_residencia or '').strip()
+            if ciudad_estudiante and ciudad_estudiante not in ciudades_match:
+                messages.error(request, '❌ No tienes permiso para dar de baja inscripciones de estudiantes de otra ciudad en comisiones virtuales globales.')
+                return redirect(redirect_url)
+
+    if inscripcion.estado == 'cancelada':
+        messages.warning(request, '⚠️ La inscripción ya está cancelada.')
+        return redirect(redirect_url)
+
+    try:
+        with transaction.atomic():
+            comision_locked = Comision.objects.select_for_update().get(id_comision=comision.id_comision)
+            inscripcion_locked = Inscripcion.objects.select_for_update().get(pk=inscripcion.pk)
+            inscripcion_locked.estado = 'cancelada'
+            inscripcion_locked.orden_lista_espera = None
+            inscripcion_locked.save(update_fields=['estado', 'orden_lista_espera'])
+            _normalizar_cupos_y_espera(comision_locked)
+
+        messages.success(request, f'✅ Inscripción dada de baja para {inscripcion.estudiante.usuario.persona.nombre_completo}.')
+    except Exception as e:
+        messages.error(request, f'❌ Error al dar de baja la inscripción: {str(e)}')
+
+    return redirect(redirect_url)
+
+
+@login_required
 @user_passes_test(es_admin)
 def exportar_inscripciones(request):
     """Exportar inscripciones a CSV"""

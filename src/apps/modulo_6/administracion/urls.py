@@ -18,6 +18,7 @@ urlpatterns = [
     # Gestión de Inscripciones
     path('inscripciones/', views.panel_inscripciones, name='panel_inscripciones'),
     path('inscripciones/inscribir/', views.inscribir_estudiante_admin, name='inscribir_estudiante'),
+    path('inscripciones/cancelar/<int:inscripcion_id>/', views.cancelar_inscripcion_admin, name='cancelar_inscripcion'),
     path('inscripciones/exportar/', views.exportar_inscripciones, name='exportar_inscripciones'),
     
     # Buscadores

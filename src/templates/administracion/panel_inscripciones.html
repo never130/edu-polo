@@ -58,16 +58,6 @@
         </div>
     </div>
 
-    {% if messages %}
-    <div style="margin-bottom: 1.5rem;">
-        {% for message in messages %}
-            <div style="padding: 1rem 1.5rem; border-radius: 0.5rem; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.9rem; {% if message.tags == 'error' %}background: #fee2e2; color: #991b1b;{% elif message.tags == 'success' %}background: #d1fae5; color: #065f46;{% elif message.tags == 'warning' %}background: #fef3c7; color: #92400e;{% else %}background: #dbeafe; color: #1e40af;{% endif %}">
-                {{ message }}
-            </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-
     <!-- Filter Bar -->
     <div style="background: white; padding: 1rem 1.5rem; border-radius: 0.75rem; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 1rem;">
         <div style="min-width: 260px;">
@@ -174,9 +164,15 @@
                                         </button>
                                     </form>
                                 {% endif %}
-                                <button type="button" onclick="toggleDetalles('{{ inscripcion.id|unlocalize }}')" class="btn-ver-detalles" style="background-color: white; color: #374151; border: 1px solid #e5e7eb; padding: 0.5rem 0.9rem; border-radius: 0.5rem; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: background-color 0.2s; margin-left: 0.4rem;">
-                                    Ver
-                                </button>
+                                {% if inscripcion.estado == 'confirmado' %}
+                                    <form method="post" action="/panel/inscripciones/cancelar/{{ inscripcion.id|unlocalize }}/" style="display: inline;" onsubmit="return confirm('¿Dar de baja la inscripción de {{ inscripcion.estudiante.usuario.persona.nombre_completo }} en la comisión #{{ inscripcion.comision.id_comision }}?');">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="next" value="{% url 'administracion:panel_inscripciones' %}">
+                                        <button type="submit" style="background-color: #ef4444; color: white; border: none; padding: 0.5rem 0.9rem; border-radius: 0.5rem; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: background-color 0.2s;">
+                                             Dar de baja
+                                        </button>
+                                    </form>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>
