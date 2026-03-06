@@ -220,6 +220,32 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
+        .mobile-menu-btn {
+            background: linear-gradient(135deg, #FF512F 0%, #F09819 100%);
+            box-shadow: 0 4px 15px rgba(240, 152, 25, 0.3);
+            color: white;
+        }
+
+        .mobile-menu-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .mobile-menu-link {
+            color: var(--text-main);
+        }
+
+        .mobile-menu-link:hover {
+            background-color: var(--bg-input);
+        }
+
+        body.dark-mode .mobile-menu-btn {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            box-shadow: none;
+        }
+
         /* Navbar Action Buttons (Home, Favs, Theme) */
         .nav-icon-btn {
             padding: 0.5rem;
@@ -535,19 +561,19 @@
                 </div>
 
                 <!-- Mobile Menu Button -->
-                <button id="mobile-menu-btn" class="lg:hidden text-white border-none py-2 px-3 rounded-lg cursor-pointer shadow-lg transition-all duration-300 hover:-translate-y-0.5" style="background: linear-gradient(135deg, #FF512F 0%, #F09819 100%); box-shadow: 0 4px 15px rgba(240, 152, 25, 0.3);" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+                <button id="mobile-menu-btn" class="lg:hidden text-white border-none py-2 px-3 rounded-lg cursor-pointer shadow-lg transition-all duration-300 hover:-translate-y-0.5 mobile-menu-btn" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                 </button>
             </div>
         </div>
 
         <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden lg:hidden absolute top-full left-4 right-4 mt-3 p-4 rounded-2xl border border-white/15 backdrop-blur-md shadow-2xl z-50 flex flex-col gap-2" style="background: rgba(15, 23, 42, 0.95);">
-            <a href="{% url 'landing' %}" class="block p-3 rounded-xl text-white/95 font-bold hover:bg-white/10 transition-colors text-center">Inicio</a>
-            <a href="{% url 'lista_polos' %}" class="block p-3 rounded-xl text-white/95 font-bold hover:bg-white/10 transition-colors text-center">Cursos</a>
-            <a href="{% url 'landing' %}" class="block p-3 rounded-xl text-white/95 font-bold hover:bg-white/10 transition-colors text-center">Punto Empresarial</a>
-            <a href="{% url 'landing' %}" class="block p-3 rounded-xl text-white/95 font-bold hover:bg-white/10 transition-colors text-center">Contacto</a>
-            <a href="{% url 'landing' %}" class="block p-3 rounded-xl text-white/95 font-bold hover:bg-white/10 transition-colors text-center">Acerca de</a>
+        <div id="mobile-menu" class="hidden lg:hidden absolute top-full left-4 right-4 mt-3 p-4 rounded-2xl backdrop-blur-md shadow-2xl z-50 flex flex-col gap-2 mobile-menu-panel">
+            <a href="{% url 'landing' %}" class="block p-3 rounded-xl font-bold transition-colors text-center mobile-menu-link">Inicio</a>
+            <a href="{% url 'lista_polos' %}" class="block p-3 rounded-xl font-bold transition-colors text-center mobile-menu-link">Cursos</a>
+            <a href="{% url 'landing' %}" class="block p-3 rounded-xl font-bold transition-colors text-center mobile-menu-link">Punto Empresarial</a>
+            <a href="{% url 'landing' %}" class="block p-3 rounded-xl font-bold transition-colors text-center mobile-menu-link">Contacto</a>
+            <a href="{% url 'landing' %}" class="block p-3 rounded-xl font-bold transition-colors text-center mobile-menu-link">Acerca de</a>
         </div>
     </nav>
 

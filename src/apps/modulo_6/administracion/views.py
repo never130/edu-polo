@@ -917,10 +917,21 @@ def estadisticas_detalladas(request):
     from apps.modulo_4.asistencia.models import RegistroAsistencia
     from django.db.models import Avg, Count, DecimalField, Q, Value, Max
     from django.db.models.functions import Coalesce
-    
+    from datetime import date as dt_date
+
     # Filtros de fecha (por inicio de comisión)
-    fecha_desde = request.GET.get('fecha_desde')
-    fecha_hasta = request.GET.get('fecha_hasta')
+    def _parse_fecha(valor):
+        if not valor:
+            return None
+        try:
+            return dt_date.fromisoformat(valor)
+        except ValueError:
+            return None
+
+    fecha_desde_raw = request.GET.get('fecha_desde') or ''
+    fecha_hasta_raw = request.GET.get('fecha_hasta') or ''
+    fecha_desde = _parse_fecha(fecha_desde_raw)
+    fecha_hasta = _parse_fecha(fecha_hasta_raw)
 
     # --- 1. Filtrado de Inscripciones Activas (Base para todo lo demás) ---
     inscripciones_qs = Inscripcion.objects.filter(estado='confirmado')
@@ -944,9 +955,9 @@ def estadisticas_detalladas(request):
     if fecha_desde or fecha_hasta:
         cursos_filter = Q()
         if fecha_desde:
-            cursos_filter &= Q(comision_set__fecha_inicio__gte=fecha_desde)
+            cursos_filter &= Q(comision__fecha_inicio__gte=fecha_desde)
         if fecha_hasta:
-            cursos_filter &= Q(comision_set__fecha_inicio__lte=fecha_hasta)
+            cursos_filter &= Q(comision__fecha_inicio__lte=fecha_hasta)
         cursos_qs = cursos_qs.filter(cursos_filter).distinct()
         total_cursos = cursos_qs.count()
     else:
@@ -967,16 +978,15 @@ def estadisticas_detalladas(request):
 
     # --- 3. Cursos con cantidad de alumnos (respetando filtros) ---
     # Construimos el filtro para el Count dinámicamente
-    # Nota: Al usar comision_set, el filtro dentro de Count debe usar la ruta relativa desde Curso
-    filtro_count = Q(comision_set__inscripciones__estado='confirmado')
+    filtro_count = Q(comision__inscripciones__estado='confirmado')
     if fecha_desde:
-        filtro_count &= Q(comision_set__fecha_inicio__gte=fecha_desde)
+        filtro_count &= Q(comision__fecha_inicio__gte=fecha_desde)
     if fecha_hasta:
-        filtro_count &= Q(comision_set__fecha_inicio__lte=fecha_hasta)
+        filtro_count &= Q(comision__fecha_inicio__lte=fecha_hasta)
 
     cursos_con_alumnos = Curso.objects.annotate(
         total_alumnos=Count(
-            'comision_set__inscripciones__estudiante',
+            'comision__inscripciones__estudiante',
             filter=filtro_count,
             distinct=True,
         )
@@ -1177,8 +1187,6 @@ def estadisticas_detalladas(request):
         'comisiones': comisiones_opciones,
     }
 
-    from datetime import date as dt_date
-
     def nuevo_contador_edad():
         return {
             'menor_6': 0,
@@ -1246,9 +1254,6 @@ def estadisticas_detalladas(request):
         'cursos': cursos_opciones,
         'comisiones': comisiones_opciones,
     }
-
-    fecha_desde = request.GET.get('fecha_desde')
-    fecha_hasta = request.GET.get('fecha_hasta')
 
     # Estado Inscripciones
     insc_estado_filter = Q()
@@ -1532,8 +1537,8 @@ def estadisticas_detalladas(request):
     import json
     
     context = {
-        'fecha_desde': fecha_desde,
-        'fecha_hasta': fecha_hasta,
+        'fecha_desde': fecha_desde_raw,
+        'fecha_hasta': fecha_hasta_raw,
         'total_cursos': total_cursos,
         'total_estudiantes': total_estudiantes,
         'total_inscripciones': total_inscripciones,
