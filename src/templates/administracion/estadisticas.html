@@ -49,24 +49,24 @@
         </div>
 
         <div class="page-hero__actions">
-            <form method="get" class="stats-filter-form" style="display: flex; gap: 1rem; align-items: flex-end; background: rgba(255,255,255,0.1); padding: 0.5rem 1rem; border-radius: 8px;">
-                <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                    <label for="fecha_desde" style="font-size: 0.75rem; font-weight: 700; color: #fff;">Desde (Inicio)</label>
-                    <input type="date" name="fecha_desde" id="fecha_desde" value="{{ fecha_desde|default:'' }}" style="padding: 0.4rem; border-radius: 4px; border: 1px solid #ccc; font-size: 0.85rem;">
+            <form method="get" class="stats-filter-form">
+                <div class="stats-filter-field">
+                    <label for="fecha_desde" class="stats-filter-label">Desde (Inicio)</label>
+                    <input type="date" name="fecha_desde" id="fecha_desde" value="{{ fecha_desde|default:'' }}" class="stats-filter-input">
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                    <label for="fecha_hasta" style="font-size: 0.75rem; font-weight: 700; color: #fff;">Hasta (Inicio)</label>
-                    <input type="date" name="fecha_hasta" id="fecha_hasta" value="{{ fecha_hasta|default:'' }}" style="padding: 0.4rem; border-radius: 4px; border: 1px solid #ccc; font-size: 0.85rem;">
+                <div class="stats-filter-field">
+                    <label for="fecha_hasta" class="stats-filter-label">Hasta (Inicio)</label>
+                    <input type="date" name="fecha_hasta" id="fecha_hasta" value="{{ fecha_hasta|default:'' }}" class="stats-filter-input">
                 </div>
-                <button type="submit" class="action-btn" style="height: 34px; display: flex; align-items: center; gap: 0.5rem; background: #fff; color: #0f172a;">
+                <button type="submit" class="action-btn action-btn--light">
                     <i class="fa-solid fa-filter"></i> Filtrar
                 </button>
                 {% if fecha_desde or fecha_hasta %}
-                <a href="{% url 'administracion:estadisticas' %}" class="action-btn" style="height: 34px; display: flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4);">
+                <a href="{% url 'administracion:estadisticas' %}" class="action-btn action-btn--ghost">
                     <i class="fa-solid fa-times"></i> Limpiar
                 </a>
                 {% endif %}
-                <button type="submit" formaction="{% url 'administracion:exportar_estadisticas_estudiantes_curso' %}" formtarget="_blank" class="action-btn" style="height: 34px; display: flex; align-items: center; gap: 0.5rem; background: #10b981; color: #fff; border: none;">
+                <button type="submit" formaction="{% url 'administracion:exportar_estadisticas_estudiantes_curso' %}" formtarget="_blank" class="action-btn action-btn--success">
                     <i class="fa-solid fa-file-excel"></i> Exportar
                 </button>
             </form>
@@ -411,6 +411,63 @@
         transform: translateY(-1px);
     }
 
+    .action-btn--light {
+        background: #ffffff;
+        color: #0f172a;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+    }
+
+    .action-btn--ghost {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    .action-btn--success {
+        background: #10b981;
+        color: #ffffff;
+        border: none;
+    }
+
+    .stats-filter-form {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-end;
+        background: rgba(255,255,255,0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        flex-wrap: wrap;
+    }
+
+    .stats-filter-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        min-width: 160px;
+    }
+
+    .stats-filter-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #ffffff;
+    }
+
+    .stats-filter-input {
+        padding: 0.4rem 0.6rem;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        font-size: 0.85rem;
+        background: #ffffff;
+        color: #0f172a;
+    }
+
+    .stats-filter-form .action-btn {
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0 0.9rem;
+    }
+
     .section {
         margin-bottom: 1.75rem;
     }
@@ -631,6 +688,21 @@
         }
     }
 
+    @media (max-width: 900px) {
+        .page-hero__content {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .page-hero__actions {
+            width: 100%;
+        }
+
+        .stats-filter-form {
+            width: 100%;
+        }
+    }
+
     @media (max-width: 640px) {
         .page-hero {
             padding: 1.5rem;
@@ -638,6 +710,21 @@
 
         .page-hero__title {
             font-size: 1.7rem;
+        }
+
+        .stats-filter-form {
+            padding: 0.75rem;
+            gap: 0.75rem;
+        }
+
+        .stats-filter-field {
+            min-width: 0;
+            width: 100%;
+        }
+
+        .stats-filter-form .action-btn {
+            width: 100%;
+            justify-content: center;
         }
 
         .stats-grid {

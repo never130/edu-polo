@@ -249,21 +249,34 @@ def dashboard_estudiante(request):
         cursos_activos = []
         asistencia_promedio_total = 0
         cursos_con_asistencia = 0
+        cursos_completados_count = 0
+        cursos_en_progreso_count = 0
         hoy = date.today()
 
         for inscripcion in inscripciones:
             registro, _ = RegistroAsistencia.objects.get_or_create(inscripcion=inscripcion)
             registro.calcular_porcentaje()
 
-            total_clases = registro.total_clases
+            comision = inscripcion.comision
+            total_programadas = None
+            if hasattr(comision, 'get_total_clases_programadas'):
+                total_programadas = comision.get_total_clases_programadas(hasta=comision.fecha_fin)
+            if total_programadas is None:
+                total_programadas = registro.total_clases
+
+            total_clases = total_programadas
             presentes = registro.clases_asistidas
             porcentaje_asistencia = int(registro.porcentaje_asistencia)
+            curso_completado = porcentaje_asistencia >= 100 or registro.cumple_requisito_certificado
 
             if total_clases and total_clases > 0:
                 asistencia_promedio_total += porcentaje_asistencia
                 cursos_con_asistencia += 1
 
-            comision = inscripcion.comision
+            if curso_completado:
+                cursos_completados_count += 1
+            else:
+                cursos_en_progreso_count += 1
 
             es_finalizada = (
                 comision.estado == 'Finalizada'
@@ -299,6 +312,9 @@ def dashboard_estudiante(request):
                 'total_clases': total_clases,
                 'presentes': presentes,
                 'estado_ui': estado_ui,
+                'inscripcion_id': inscripcion.id,
+                'cumple_certificado': registro.cumple_requisito_certificado,
+                'completado': curso_completado,
             })
             
         # Calcular promedio general
@@ -333,6 +349,8 @@ def dashboard_estudiante(request):
             'promedio_general': promedio_general,
             'certificados': certificados_count,
             'proxima_clase': proxima_clase,
+            'cursos_completados': cursos_completados_count,
+            'cursos_en_progreso': cursos_en_progreso_count,
         }
         return render(request, 'dashboard/estudiante.html', context)
     except Estudiante.DoesNotExist:

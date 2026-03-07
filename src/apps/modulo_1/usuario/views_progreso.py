@@ -13,10 +13,11 @@ from apps.modulo_4.asistencia.models import Asistencia, RegistroAsistencia
 from apps.modulo_3.cursos.models import Material
 
 try:
-    from reportlab.lib.pagesizes import letter, A4
+    from reportlab.lib.pagesizes import letter, A4, landscape
     from reportlab.lib.units import inch
     from reportlab.lib import colors
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
+    from reportlab.pdfgen import canvas
+    from reportlab.platypus import Paragraph, Frame
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
     REPORTLAB_AVAILABLE = True
@@ -47,8 +48,15 @@ def mi_progreso(request):
 
             registro.calcular_porcentaje()
 
+            total_programadas = None
+            comision = inscripcion.comision
+            if hasattr(comision, 'get_total_clases_programadas'):
+                total_programadas = comision.get_total_clases_programadas(hasta=comision.fecha_fin)
+            if total_programadas is None:
+                total_programadas = registro.total_clases
+
             inscripcion.progreso = int(registro.porcentaje_asistencia)
-            inscripcion.total_clases = registro.total_clases
+            inscripcion.total_clases = total_programadas
             inscripcion.asistencias_count = registro.clases_asistidas
             inscripcion.cumple_certificado = registro.cumple_requisito_certificado
             
@@ -116,118 +124,72 @@ def descargar_certificado(request, inscripcion_id):
                 messages.error(request, '❌ No cumples con el requisito mínimo de 80% de asistencia para obtener el certificado.')
             return redirect('usuario:mi_progreso')
         
-        # Crear el PDF
         response = HttpResponse(content_type='application/pdf')
         nombre_archivo = f"Certificado_{inscripcion.comision.fk_id_curso.nombre.replace(' ', '_')}_{estudiante.usuario.persona.dni}.pdf"
         response['Content-Disposition'] = f'attachment; filename="{nombre_archivo}"'
-        
-        # Crear el documento PDF
-        doc = SimpleDocTemplate(response, pagesize=A4)
-        story = []
-        
-        # Estilos
+
+        page_size = landscape(A4)
+        page_width, page_height = page_size
+        pdf = canvas.Canvas(response, pagesize=page_size)
+
+        template_path = os.path.join(settings.STATIC_ROOT or settings.STATICFILES_DIRS[0], 'img', 'plantilla.png')
+        if not os.path.exists(template_path):
+            template_path = os.path.join(settings.BASE_DIR, 'stc', 'img', 'plantilla.png')
+
+        if os.path.exists(template_path):
+            pdf.drawImage(template_path, 0, 0, width=page_width, height=page_height, mask='auto')
+
+        img_w = 1091
+        img_h = 789
+
+        def sx(value):
+            return value / img_w * page_width
+
+        def sy(value):
+            return value / img_h * page_height
+
+        def frame_from_top(x, top, w, h):
+            return (sx(x), page_height - sy(top + h), sx(w), sy(h))
+
+        nombre = estudiante.usuario.persona.nombre_completo
+        dni = estudiante.usuario.persona.dni
+        curso = inscripcion.comision.fk_id_curso.nombre
+
         styles = getSampleStyleSheet()
-        title_style = ParagraphStyle(
-            'CustomTitle',
-            parent=styles['Heading1'],
-            fontSize=28,
-            textColor=colors.HexColor('#1e40af'),
-            spaceAfter=30,
+        name_style = ParagraphStyle(
+            'CertName',
+            parent=styles['Normal'],
+            fontSize=26,
+            textColor=colors.HexColor('#333333'),
             alignment=TA_CENTER,
+            leading=30,
             fontName='Helvetica-Bold'
         )
-        
         body_style = ParagraphStyle(
-            'CustomBody',
+            'CertBody',
             parent=styles['Normal'],
-            fontSize=14,
-            textColor=colors.HexColor('#334155'),
+            fontSize=15.5,
+            textColor=colors.HexColor('#4b5563'),
             alignment=TA_JUSTIFY,
-            spaceAfter=15,
-            leading=20
+            leading=22
         )
-        
-        # Logo
-        logo_path = os.path.join(settings.STATIC_ROOT or settings.STATICFILES_DIRS[0], 'img', 'LOGO COLOR.png')
-        if not os.path.exists(logo_path):
-            # Intentar con STATICFILES_DIRS
-            logo_path = os.path.join(settings.BASE_DIR, 'stc', 'img', 'LOGO COLOR.png')
-        
-        if os.path.exists(logo_path):
-            logo = Image(logo_path, width=3*inch, height=1*inch)
-            logo.hAlign = 'CENTER'
-            story.append(logo)
-            story.append(Spacer(1, 0.3*inch))
-        
-        # Título del certificado
-        story.append(Paragraph("CERTIFICADO DE FINALIZACIÓN", title_style))
-        story.append(Spacer(1, 0.2*inch))
-        
-        # Texto del certificado
-        texto_certificado = f"""
-        Por medio del presente, se certifica que <b>{estudiante.usuario.persona.nombre_completo}</b>, 
-        con DNI <b>{estudiante.usuario.persona.dni}</b>, ha completado exitosamente el curso:
-        """
-        story.append(Paragraph(texto_certificado, body_style))
-        story.append(Spacer(1, 0.1*inch))
-        
-        # Nombre del curso (destacado)
-        curso_style = ParagraphStyle(
-            'CursoStyle',
-            parent=styles['Heading2'],
-            fontSize=20,
-            textColor=colors.HexColor('#1e40af'),
-            spaceAfter=20,
-            alignment=TA_CENTER,
-            fontName='Helvetica-Bold'
+
+        name_frame = Frame(*frame_from_top(140, 230, 810, 60), showBoundary=0)
+        body_frame = Frame(*frame_from_top(140, 310, 810, 140), showBoundary=0)
+
+        name_para = Paragraph(f"{nombre}, D.N.I {dni}", name_style)
+        body_text = (
+            f"ha asistido y aprobado el curso de <b>{curso}</b>, desarrollado en el marco de las actividades de "
+            "formación de los Polos Creativos, dependiente de la Agencia de Innovación de la Provincia de "
+            "Tierra del Fuego, Antártida e Islas del Atlántico Sur."
         )
-        story.append(Paragraph(inscripcion.comision.fk_id_curso.nombre, curso_style))
-        story.append(Spacer(1, 0.2*inch))
-        
-        # Información adicional
-        info_texto = f"""
-        Habiendo cumplido con el <b>{registro.porcentaje_asistencia:.2f}%</b> de asistencia 
-        ({registro.clases_asistidas} de {registro.total_clases} clases), 
-        cumpliendo así con los requisitos establecidos para la obtención del presente certificado.
-        """
-        story.append(Paragraph(info_texto, body_style))
-        story.append(Spacer(1, 0.3*inch))
-        
-        # Fecha
-        fecha_actual = datetime.now().strftime("%d de %B de %Y")
-        fecha_texto = f"Emitido el {fecha_actual}"
-        fecha_style = ParagraphStyle(
-            'FechaStyle',
-            parent=styles['Normal'],
-            fontSize=12,
-            textColor=colors.HexColor('#64748b'),
-            alignment=TA_CENTER,
-            spaceAfter=0.5*inch
-        )
-        story.append(Paragraph(fecha_texto, fecha_style))
-        
-        # Firma (espacio para firma)
-        firma_data = [
-            ['', ''],
-            ['_________________________', '_________________________'],
-            ['Agencia de Innovación', 'Director/a']
-        ]
-        firma_table = Table(firma_data, colWidths=[3*inch, 3*inch])
-        firma_table.setStyle(TableStyle([
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica'),
-            ('FONTSIZE', (0, 0), (-1, 0), 10),
-            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-            ('FONTSIZE', (0, 1), (-1, -1), 9),
-            ('TEXTCOLOR', (0, 1), (-1, -1), colors.HexColor('#64748b')),
-            ('TOPPADDING', (0, 0), (-1, -1), 12),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
-        ]))
-        story.append(firma_table)
-        
-        # Construir el PDF
-        doc.build(story)
-        
+        body_para = Paragraph(body_text, body_style)
+
+        name_frame.addFromList([name_para], pdf)
+        body_frame.addFromList([body_para], pdf)
+
+        pdf.showPage()
+        pdf.save()
         return response
         
     except Estudiante.DoesNotExist:
@@ -310,4 +272,3 @@ def materiales_comision_estudiante(request, comision_id):
     except Estudiante.DoesNotExist:
         messages.error(request, 'No tienes perfil de estudiante.')
         return redirect('dashboard')
-

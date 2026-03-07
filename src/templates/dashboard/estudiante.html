@@ -25,9 +25,11 @@
 {% if messages %}
     <div class="dashboard-alerts">
         {% for message in messages %}
+            {% if 'Bienvenido' not in message %}
             <div class="dashboard-alert dashboard-alert--{{ message.tags|default:'info' }}">
                 {{ message }}
             </div>
+            {% endif %}
         {% endfor %}
     </div>
 {% endif %}
@@ -98,9 +100,16 @@
                             </div>
                         </div>
                         
+                        {% if curso.cumple_certificado %}
+                        <a href="{% url 'usuario:descargar_certificado' curso.inscripcion_id %}" class="btn-continue" target="_blank" rel="noopener noreferrer">
+                            <i class="fa-solid fa-file-arrow-down"></i> Descargar certificado
+                        </a>
+                        {% endif %}
+                        {% if not curso.completado %}
                         <a href="{% url 'usuario:mi_progreso' %}" class="btn-continue">
                             <i class="fa-solid fa-play-circle"></i> Continuar curso
                         </a>
+                        {% endif %}
                     </div>
                 </div>
                 {% endwith %}
@@ -124,14 +133,14 @@
             <div class="stat-card">
                 <div class="stat-icon success"><i class="fa-solid fa-check-circle"></i></div>
                 <div class="stat-info">
-                    <span class="stat-value">0</span> <!-- Placeholder as data not available in context -->
+                    <span class="stat-value">{{ cursos_completados }}</span>
                     <span class="stat-label">Cursos Completados</span>
                 </div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon warning"><i class="fa-solid fa-chart-line"></i></div>
                 <div class="stat-info">
-                    <span class="stat-value">{{ inscripciones_activas }}</span>
+                    <span class="stat-value">{{ cursos_en_progreso }}</span>
                     <span class="stat-label">En Progreso</span>
                 </div>
             </div>

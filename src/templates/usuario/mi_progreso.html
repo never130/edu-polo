@@ -394,7 +394,7 @@
                 
                 {% if inscripcion.cumple_certificado %}
                     <div class="progreso-actions">
-                        <a href="{% url 'usuario:descargar_certificado' inscripcion.id %}" class="btn btn-primary">
+                        <a href="{% url 'usuario:descargar_certificado' inscripcion.id %}" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
                             <i class="fa-solid fa-file-arrow-down"></i> Descarga tu Certificado!!
                         </a>
                     </div>

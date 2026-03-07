@@ -212,9 +212,11 @@
 {% if messages %}
     <div style="margin-bottom: 1.25rem;">
         {% for message in messages %}
+            {% if 'Bienvenido' not in message %}
             <div class="alert-box {% if message.tags == 'warning' %}alert-box--warning{% elif message.tags == 'error' %}alert-box--warning{% endif %}">
                 {{ message }}
             </div>
+            {% endif %}
         {% endfor %}
     </div>
 {% endif %}

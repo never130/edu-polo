@@ -83,13 +83,17 @@ class RegistroAsistencia(models.Model):
         """Calcula el porcentaje de asistencia"""
         comision = self.inscripcion.comision
 
-        total_programadas_hasta_hoy = comision.get_total_clases_programadas(hasta=date.today()) if hasattr(comision, 'get_total_clases_programadas') else None
-        if total_programadas_hasta_hoy is not None:
-            self.total_clases = total_programadas_hasta_hoy
+        cutoff_total = comision.fecha_fin or date.today()
+        total_programadas_curso = None
+        if hasattr(comision, 'get_total_clases_programadas'):
+            total_programadas_curso = comision.get_total_clases_programadas(hasta=cutoff_total)
+
+        if total_programadas_curso is not None:
+            self.total_clases = total_programadas_curso
         else:
             self.total_clases = Asistencia.objects.filter(
                 inscripcion__comision=comision,
-                fecha_clase__lte=date.today(),
+                fecha_clase__lte=cutoff_total,
             ).values('fecha_clase').distinct().count()
 
         self.clases_asistidas = Asistencia.objects.filter(
@@ -104,17 +108,13 @@ class RegistroAsistencia(models.Model):
             self.porcentaje_asistencia = 0
 
         cumple_certificado = False
-        if comision.fecha_fin and comision.fecha_fin <= date.today():
-            total_programadas_curso = comision.get_total_clases_programadas(hasta=comision.fecha_fin) if hasattr(comision, 'get_total_clases_programadas') else None
-            if total_programadas_curso is None:
-                total_programadas_curso = Asistencia.objects.filter(
-                    inscripcion__comision=comision,
-                    fecha_clase__lte=comision.fecha_fin,
-                ).values('fecha_clase').distinct().count()
+        total_para_certificado = total_programadas_curso
+        if total_para_certificado is None:
+            total_para_certificado = self.total_clases
 
-            if total_programadas_curso > 0:
-                porcentaje_certificado = (self.clases_asistidas / total_programadas_curso) * 100
-                cumple_certificado = 80 <= porcentaje_certificado <= 100
+        if total_para_certificado > 0:
+            porcentaje_certificado = (self.clases_asistidas / total_para_certificado) * 100
+            cumple_certificado = porcentaje_certificado >= 80
 
         self.cumple_requisito_certificado = cumple_certificado
         self.save()
