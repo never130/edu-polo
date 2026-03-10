@@ -580,11 +580,31 @@
                 overflow-y: auto;
                 -webkit-overflow-scrolling: touch;
             }
-            .login-right {
-                padding: 2rem;
+            .login-right, .login-left {
+                flex: 0 0 auto;
+                padding: 1.25rem;
             }
-            .login-left {
-                padding: 2rem;
+            .login-right {
+                padding-top: 2.75rem;
+                padding-right: 3.25rem;
+                padding-bottom: 1.25rem;
+            }
+            .login-right h2 {
+                font-size: 1.35rem !important;
+                margin-bottom: 0.45rem !important;
+            }
+            .login-right p {
+                font-size: 0.88rem !important;
+                margin-bottom: 0.8rem !important;
+            }
+            .login-left .login-title { font-size: 2rem; }
+            .login-left .login-subtitle { margin-bottom: 1.25rem; }
+            .login-left img { height: 64px !important; }
+            .modal-close {
+                top: 0.75rem;
+                right: 0.75rem;
+                width: 36px;
+                height: 36px;
             }
             .page-title { font-size: 2rem; }
             .courses-grid { grid-template-columns: 1fr; }

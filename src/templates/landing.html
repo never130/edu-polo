@@ -903,13 +903,50 @@
         @media (max-width: 768px) {
             .modal-container.split-design {
                 flex-direction: column-reverse;
-                max-height: 90vh;
+                max-height: calc(100dvh - 2rem);
                 overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
             }
 
             .login-right,
             .login-left {
-                padding: 2rem;
+                flex: 0 0 auto;
+                padding: 1.25rem;
+            }
+
+            .login-right {
+                padding-top: 2.75rem;
+                padding-right: 3.25rem;
+                padding-bottom: 1.25rem;
+            }
+
+            .login-right h2 {
+                font-size: 1.35rem !important;
+                margin-bottom: 0.45rem !important;
+            }
+
+            .login-right p {
+                font-size: 0.88rem !important;
+                margin-bottom: 0.8rem !important;
+            }
+
+            .login-left .login-title {
+                font-size: 2rem;
+            }
+
+            .login-left .login-subtitle {
+                margin-bottom: 1.25rem;
+            }
+
+            .login-left img {
+                height: 64px !important;
+            }
+
+            .modal-close {
+                top: 0.75rem;
+                right: 0.75rem;
+                width: 36px;
+                height: 36px;
             }
         }
 
@@ -1002,11 +1039,11 @@
             }
 
             .login-right h2 {
-                font-size: 2rem !important;
+                font-size: 1.35rem !important;
             }
 
             .login-right p {
-                font-size: 1rem !important;
+                font-size: 0.88rem !important;
             }
 
             .punto-empresarial-body {
